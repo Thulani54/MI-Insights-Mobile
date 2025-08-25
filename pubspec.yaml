@@ -1,0 +1,284 @@
+name: mi_insights
+description: A MI insights mobile application.
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.40+40 #Change this for logs as well
+
+environment:
+  sdk: '>=3.0.6 <4.0.0'
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+  shared_preferences: ^2.3.3
+  http: ^1.2.2
+  flutter_spinkit: ^5.2.1
+  introduction_screen: ^3.1.14
+  flutter_svg: ^2.0.14
+  fluttertoast: ^8.2.12
+  video_player: ^2.9.2
+  feather_icons: ^1.2.0
+  iconsax: ^0.0.8
+  cached_network_image: ^3.4.1
+  intl: ^0.19.0
+  fl_chart: ^0.69.0
+  d_chart: ^2.10.2
+  community_charts_flutter: ^1.0.4
+  grouped_list: ^6.0.0
+  local_auth: ^2.3.0
+  carousel_slider: ^5.0.0
+  mrx_charts: ^0.1.3
+  excel: ^4.0.6
+  motion_toast: ^2.11.0
+
+  animate_do: ^3.3.4
+  crypto: ^3.0.6
+  percent_indicator: ^4.2.3
+  gauge_indicator: ^0.4.3
+  encrypt: ^5.0.3
+  geekyants_flutter_gauges: ^1.0.4
+  file_picker: ^8.1.4
+  flutter_image_compress: ^2.3.0
+  mime: ^2.0.0
+  audioplayers: ^6.1.0
+  flutter_swipe_action_cell: ^3.1.5
+  timeago: ^3.7.0
+  primer_progress_bar: ^0.5.0
+  graphic: ^2.5.0
+  quiver: ^3.2.2
+  gif_view: ^0.4.4
+  flutter_gif_plus: ^0.0.5
+  photo_view: ^0.15.0
+  image_picker: ^1.1.2
+  image_cropper: ^8.0.2
+  geolocator: ^13.0.1
+  tween_image_widget: ^0.0.2
+  firebase_core: ^3.8.0
+  #firebase_analytics: ^11.3.5
+  page_flip: ^0.2.3
+  just_audio: ^0.9.42
+  screenshot: ^3.0.0
+  audio_session: ^0.1.21
+  flutter_pdfview: ^1.3.4
+  package_info_plus: ^8.1.1
+  url_launcher: ^6.3.1
+  dropdown_button2: ^2.3.9
+  permission_handler: ^11.3.1
+  material_table_view: ^5.0.0
+  flutter_screenutil: ^5.9.3
+  styled_text: ^8.1.0
+  syncfusion_flutter_pdfviewer: ^28.1.39
+  cloud_firestore: ^5.6.1
+  firebase_database: ^11.3.0
+  syncfusion_flutter_signaturepad: ^28.1.41
+  rename_app: ^1.6.5
+  flutter_charts: ^0.5.2
+
+
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^4.0.0
+  google_fonts: ^6.1.0
+  flutter_launcher_icons: ^0.14.4
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/logos/MI AnalytiX Logo.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "assets/logos/MI AnalytiX Logo.png"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/logos/MI AnalytiX Logo.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/logos/MI AnalytiX Logo.png"
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+  assets:
+    - assets/logo_main.svg
+    - assets/vid_2.mp4
+    - assets/icons/claims_logo.svg
+    - assets/icons/collections_logo.svg
+    - assets/icons/communications_logo.svg
+    - assets/icons/maintanence_report.svg
+    - assets/icons/marketing_logo.svg
+    - assets/icons/quality_assurance.svg
+    - assets/icons/reprint_logo.svg
+    - assets/icons/sales_logo.svg
+    - assets/icons/underwriting_logo.svg
+    - assets/icons/verifications_logo.svg
+    - assets/backGround.jpg
+    - assets/dashb.png
+    - assets/backGround2.jpg
+    - assets/backGround3.jpg
+    - assets/icons/sales_icon.svg
+    - assets/fingerprint.svg
+    - assets/icons/people_matters.svg
+    - assets/icons/policy_search.svg
+    - assets/icons/attendance.svg
+    - assets/icons/collections_icon.svg
+    - assets/icons/commission_logo.svg
+    - assets/icons/customers.svg
+    - assets/icons/Happy.svg
+    - assets/icons/maintanence_report.svg
+    - assets/icons/man-toilet-color-icon.svg
+    - assets/icons/marketing_logo.svg
+    - assets/icons/micro_l.svg
+    - assets/icons/my_chats.svg
+    - assets/icons/people_matters.svg
+    - assets/icons/policy_search.svg
+    - assets/icons/quality_assurance.svg
+    - assets/icons/reprint_logo.svg
+    - assets/icons/Sad.svg
+    - assets/icons/sales_icon.svg
+    - assets/icons/sales_logo.svg
+    - assets/icons/underwriting_logo.svg
+    - assets/icons/unsure.svg
+    - assets/icons/unsure_2.svg
+    - assets/icons/verifications_logo.svg
+    - assets/icons/women-toilet-color-icon.svg
+    - assets/icons/down-arrow-svgrepo-com.svg
+    - assets/icons/bank_icons/absa.png
+    - assets/icons/bank_icons/african_bank.png
+    - assets/icons/bank_icons/capitec.png
+    - assets/icons/bank_icons/discovery.png
+    - assets/icons/bank_icons/fnb.png
+    - assets/icons/bank_icons/investec.png
+    - assets/icons/bank_icons/nedbank.png
+    - assets/icons/bank_icons/standard_bank.png
+    - assets/icons/bank_icons/tymebank.png
+    - assets/icons/bank_icons/old_mutual.png
+    - assets/icons/customcolor_logo_transparent_background.png
+    - assets/business_logos/two_mountains_logo.jpeg
+    - assets/MI Insight Logo - Animated.gif
+    - assets/static_logo_transparent.png
+    - assets/business_logos/black_logo_white_background.png
+    - assets/business_logos/pop_and_spin1.png
+    - assets/business_logos/pop_and_spin2.png
+    - assets/business_logos/pop_and_spin3.png
+    - assets/everest_images/Everest-Funeral-DSC07610-1024x361-6.jpg
+    - assets/everest_images/Everest-Funeral-DSC07610-1024x361-9.jpg
+    - assets/everest_images/WhatsApp-Image-2023-08-07-at-16.41.43.jpeg
+    - assets/intro/image_.09.jpeg
+    - assets/intro/image_.09 (1).jpeg
+    - assets/intro/image_.09 (2).jpeg
+    - assets/intro/image_.28.jpeg
+    - assets/intro/image_.28 (1).jpeg
+    - assets/intro/image_.28 (2).jpeg
+    - assets/intro/image_.28 (3).jpeg
+    - assets/intro/image_.39.jpeg
+    - assets/intro/image_.39 (1).jpeg
+    - assets/intro/image_.39 (2).jpeg
+    - assets/everest_images/WhatsApp Image 2024-04-10 at 15.17.09.jpeg
+    - assets/everest_images/WhatsApp Image 2024-04-10 at 15.17.09 (1).jpeg
+    - assets/everest_images/WhatsApp Image 2024-04-10 at 15.17.10.jpeg
+    - assets/everest_images/WhatsApp Image 2024-04-10 at 15.17.10 (1).jpeg
+    - assets/everest_images/WhatsApp Image 2024-04-10 at 15.17.10 (2).jpeg
+    - assets/default-user.png
+    - assets/icons/Down Arrow.svg
+    - assets/icons/Up Arrow.svg
+    - assets/business_logos/tlholo.png
+    - assets/tones/mixkit-long-pop-2358.wav
+    - assets/business_logos/logo-brandmark.png
+    - assets/valuetainment/8814.jpg
+    - assets/img/
+    - assets/img/1.5x/
+    - assets/img/2.0x/
+    - assets/img/3.0x/
+    - assets/img/4.0x/
+    - assets/valuetainment/backgrounds/Picture1_background.jpg
+    - assets/pop_and_spin/pop_and_spin4.png
+    - assets/pop_and_spin/pop_and_spin5.png
+    - lib/assets/audio/Correct.mp3
+    - lib/assets/audio/Incorrect.mp3
+    - lib/assets/audio/Round.mp3
+    - lib/assets/audio/Ambient Chill Music [Full Tracks]  Royalty Free Background Music.mp3
+    - assets/icons/cooperate.svg
+    - assets/icons/affinity.svg
+    - assets/icons/individual.svg
+    - assets/valuetainment/backgrounds/thumbnail_001.png
+    - lib/assets/MI_Pay_Training_0.02_Aug_2023.pdf
+    - assets/business_logos/sena.png
+    - assets/business_logos/vccv_images.png
+    - assets/static_logo_transparent (1).png
+    - assets/icons/prospects.svg
+    - assets/logos/MI AnalytiX 2 Tone.png
+    - assets/logos/New MI Icon.png
+    - assets/logos/MI AnalytiX Logo.png
+  # To add assets to your application, add an assets section, like this:
+  # assets:
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
