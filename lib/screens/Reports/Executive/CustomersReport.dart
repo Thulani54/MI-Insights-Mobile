@@ -1022,32 +1022,7 @@ class _CustomersReportState extends State<CustomersReport>
                                                                                   child: Padding(
                                                                                 padding: const EdgeInsets.all(8.0),
                                                                                 child: Text(
-                                                                                  formatLargeNumber((_selectedButton == 1
-                                                                                          ? grid_index == 1
-                                                                                              ? Constants.customers_sectionsList1a_1_1[index].amount
-                                                                                              : grid_index == 0
-                                                                                                  ? Constants.customers_sectionsList1a_1_2[index].amount
-                                                                                                  : grid_index == 2
-                                                                                                      ? Constants.customers_sectionsList1a_1_3[index].amount
-                                                                                                      : Constants.customers_sectionsList1a_1_4[index].amount
-                                                                                          : _selectedButton == 2
-                                                                                              ? grid_index == 1
-                                                                                                  ? Constants.customers_sectionsList2a_1_1[index].amount
-                                                                                                  : grid_index == 0
-                                                                                                      ? Constants.customers_sectionsList2a_1_2[index].amount
-                                                                                                      : grid_index == 2
-                                                                                                          ? Constants.customers_sectionsList2a_1_3[index].amount
-                                                                                                          : Constants.customers_sectionsList2a_1_4[index].amount
-                                                                                              : _selectedButton == 3
-                                                                                                  ? grid_index == 1
-                                                                                                      ? Constants.customers_sectionsList3a_1_1[index].amount
-                                                                                                      : grid_index == 0
-                                                                                                          ? Constants.customers_sectionsList3a_1_2[index].amount
-                                                                                                          : grid_index == 2
-                                                                                                              ? Constants.customers_sectionsList3a_1_3[index].amount
-                                                                                                              : Constants.customers_sectionsList3a_1_4[index].amount
-                                                                                                  : 0)
-                                                                                      .toString()),
+                                                                                  formatLargeNumber(getAcquiredAccount().toString()),
                                                                                   style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
                                                                                   textAlign: TextAlign.center,
                                                                                   maxLines: 2,

@@ -4211,11 +4211,10 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                       .customers_segment_1a[
                                                                           0]
                                                                       .color,
-                                                                  value: 30 +
-                                                                      Constants
-                                                                          .customers_segment_1a[
-                                                                              0]
-                                                                          .pecentage,
+                                                                  value: Constants
+                                                                      .customers_segment_1a[
+                                                                          0]
+                                                                      .pecentage,
                                                                   title:
                                                                       '${Constants.customers_segment_1a[0].pecentage.toStringAsFixed(1)}',
                                                                   radius: (MediaQuery.of(context)
@@ -4241,11 +4240,10 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                       .customers_segment_1a[
                                                                           1]
                                                                       .color,
-                                                                  value: 30 +
-                                                                      Constants
-                                                                          .customers_segment_1a[
-                                                                              1]
-                                                                          .pecentage,
+                                                                  value: Constants
+                                                                      .customers_segment_1a[
+                                                                          1]
+                                                                      .pecentage,
                                                                   title:
                                                                       '${Constants.customers_segment_1a[1].pecentage.toStringAsFixed(1)}',
                                                                   radius: (MediaQuery.of(context)
@@ -4271,11 +4269,10 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                       .customers_segment_1a[
                                                                           2]
                                                                       .color,
-                                                                  value: 30 +
-                                                                      Constants
-                                                                          .customers_segment_1a[
-                                                                              2]
-                                                                          .pecentage,
+                                                                  value: Constants
+                                                                      .customers_segment_1a[
+                                                                          2]
+                                                                      .pecentage,
                                                                   title:
                                                                       '${Constants.customers_segment_1a[2].pecentage.toStringAsFixed(1)}',
                                                                   radius: (MediaQuery.of(context)
@@ -4301,11 +4298,10 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                       .customers_segment_1a[
                                                                           3]
                                                                       .color,
-                                                                  value: 30 +
-                                                                      Constants
-                                                                          .customers_segment_1a[
-                                                                              3]
-                                                                          .pecentage,
+                                                                  value: Constants
+                                                                      .customers_segment_1a[
+                                                                          3]
+                                                                      .pecentage,
                                                                   title:
                                                                       '${Constants.customers_segment_1a[3].pecentage.toStringAsFixed(1)}',
                                                                   radius: (MediaQuery.of(context)
@@ -5910,6 +5906,12 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
     DateTime endDate = DateTime.now();
     isShowingAPI = false;
     isShowingType = false;
+    target_index_2 = 0;
+    target_index_10 = 0;
+    target_index_9 = 0;
+    collections_grid_index = 0;
+    grid_index_2 = 0;
+
     setState(() {});
     _generateLast6Years();
 
@@ -8624,7 +8626,7 @@ class AgentPersistencyWidget extends StatelessWidget {
     if (agent.percentageDebitOrderClients > 0) {
       sections.add(PieChartSectionData(
         color: Colors.orange,
-        value: 45 + agent.percentageDebitOrderClients,
+        value: agent.percentageDebitOrderClients,
         title: '${agent.percentageDebitOrderClients.toStringAsFixed(1)}%',
         radius: agent.percentageDebitOrderClients < 10
             ? (agent.percentageDebitOrderClients + 40)
@@ -8640,7 +8642,7 @@ class AgentPersistencyWidget extends StatelessWidget {
     if (agent.percentageCashClients > 0) {
       sections.add(PieChartSectionData(
         color: Colors.blue,
-        value: 45 + agent.percentageCashClients,
+        value: agent.percentageCashClients,
         title: '${agent.percentageCashClients.toStringAsFixed(1)}%',
         radius: agent.percentageCashClients < 10
             ? (agent.percentageCashClients + 40)
@@ -8656,7 +8658,7 @@ class AgentPersistencyWidget extends StatelessWidget {
     if (agent.percentageSalaryDeductionClients > 0) {
       sections.add(PieChartSectionData(
         color: Colors.yellow,
-        value: 45 + agent.percentageSalaryDeductionClients,
+        value: agent.percentageSalaryDeductionClients,
         title: '${agent.percentageSalaryDeductionClients.toStringAsFixed(1)}%',
         radius: agent.percentageSalaryDeductionClients < 10
             ? (agent.percentageSalaryDeductionClients + 40)
@@ -8672,7 +8674,7 @@ class AgentPersistencyWidget extends StatelessWidget {
     if (agent.percentagePersalClients > 0) {
       sections.add(PieChartSectionData(
         color: Colors.grey,
-        value: 45 + agent.percentagePersalClients,
+        value: agent.percentagePersalClients,
         title: '${agent.percentagePersalClients.toStringAsFixed(1)}%',
         radius: agent.percentagePersalClients < 10
             ? (agent.percentagePersalClients + 40)
