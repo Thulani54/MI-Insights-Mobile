@@ -9,6 +9,7 @@ class CustomerProfile {
   final ClaimsData claimsData;
   final Map<String, double> claimsRatioDict;
   final List<int> deceasedAgesList;
+  final AgeDistributionLists ageDistributionLists;
 
   CustomerProfile({
     required this.totalMembers,
@@ -21,6 +22,7 @@ class CustomerProfile {
     required this.claimsData,
     required this.claimsRatioDict,
     required this.deceasedAgesList,
+    required this.ageDistributionLists,
   });
 
   // Empty/default constructor
@@ -36,6 +38,7 @@ class CustomerProfile {
       claimsData: ClaimsData.empty(),
       claimsRatioDict: {},
       deceasedAgesList: [],
+      ageDistributionLists: AgeDistributionLists.empty(),
     );
   }
 
@@ -51,6 +54,7 @@ class CustomerProfile {
     ClaimsData? claimsData,
     Map<String, double>? claimsRatioDict,
     List<int>? deceasedAgesList,
+    AgeDistributionLists? ageDistributionLists,
   }) {
     return CustomerProfile(
       totalMembers: totalMembers ?? this.totalMembers,
@@ -64,6 +68,7 @@ class CustomerProfile {
       claimsData: claimsData ?? this.claimsData,
       claimsRatioDict: claimsRatioDict ?? this.claimsRatioDict,
       deceasedAgesList: deceasedAgesList ?? this.deceasedAgesList,
+      ageDistributionLists: ageDistributionLists ?? this.ageDistributionLists,
     );
   }
 
@@ -83,6 +88,7 @@ class CustomerProfile {
           (json['claims_ratio_dict'] ?? {})
               .map((k, v) => MapEntry(k, v.toDouble()))),
       deceasedAgesList: List<int>.from(json['deceased_ages_list'] ?? []),
+      ageDistributionLists: AgeDistributionLists.fromJson(json),
     );
   }
 
@@ -468,6 +474,7 @@ class ClaimsData {
   final int onNotInforcedPolicies;
   final GenderDistribution genderDistribution;
   final MembersCountsData membersCountsData;
+  final AgeDistributionLists ageDistributionLists;
 
   ClaimsData({
     required this.totalMembers,
@@ -476,6 +483,7 @@ class ClaimsData {
     required this.onNotInforcedPolicies,
     required this.genderDistribution,
     required this.membersCountsData,
+    required this.ageDistributionLists,
   });
 
   factory ClaimsData.empty() {
@@ -486,6 +494,7 @@ class ClaimsData {
       onNotInforcedPolicies: 0,
       genderDistribution: GenderDistribution.empty(),
       membersCountsData: MembersCountsData.empty(),
+      ageDistributionLists: AgeDistributionLists.empty(),
     );
   }
 
@@ -499,6 +508,7 @@ class ClaimsData {
           json['claims_gender_distribution_by_age'] ?? {}),
       membersCountsData:
           MembersCountsData.fromJson(json['claims_members_counts'] ?? {}),
+      ageDistributionLists: AgeDistributionLists.fromClaimsJson(json),
     );
   }
 
@@ -515,4 +525,56 @@ class ClaimsData {
 
   // Calculate total gender distribution for claims
   GenderTotals get genderTotals => genderDistribution.totals;
+}
+
+class AgeDistributionLists {
+  final List<double> mainMember;
+  final List<double> partner;
+  final List<double> child;
+  final List<double> extendedFamily;
+
+  AgeDistributionLists({
+    required this.mainMember,
+    required this.partner,
+    required this.child,
+    required this.extendedFamily,
+  });
+
+  factory AgeDistributionLists.empty() {
+    return AgeDistributionLists(
+      mainMember: [],
+      partner: [],
+      child: [],
+      extendedFamily: [],
+    );
+  }
+
+  factory AgeDistributionLists.fromJson(Map<String, dynamic> json) {
+    final ageDistLists = json['age_distribution_lists'] ?? {};
+    return AgeDistributionLists(
+      mainMember: List<double>.from((ageDistLists['main_member'] ?? []).map((x) => x.toDouble())),
+      partner: List<double>.from((ageDistLists['partner'] ?? []).map((x) => x.toDouble())),
+      child: List<double>.from((ageDistLists['child'] ?? []).map((x) => x.toDouble())),
+      extendedFamily: List<double>.from((ageDistLists['extended_family'] ?? []).map((x) => x.toDouble())),
+    );
+  }
+
+  factory AgeDistributionLists.fromClaimsJson(Map<String, dynamic> json) {
+    final claimsAgeDistLists = json['claims_age_distribution_lists'] ?? {};
+    return AgeDistributionLists(
+      mainMember: List<double>.from((claimsAgeDistLists['main_member'] ?? []).map((x) => x.toDouble())),
+      partner: List<double>.from((claimsAgeDistLists['partner'] ?? []).map((x) => x.toDouble())),
+      child: List<double>.from((claimsAgeDistLists['child'] ?? []).map((x) => x.toDouble())),
+      extendedFamily: List<double>.from((claimsAgeDistLists['extended_family'] ?? []).map((x) => x.toDouble())),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'main_member': mainMember,
+      'partner': partner,
+      'child': child,
+      'extended_family': extendedFamily,
+    };
+  }
 }

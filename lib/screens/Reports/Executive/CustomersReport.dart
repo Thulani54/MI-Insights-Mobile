@@ -16,6 +16,9 @@ import '../../../constants/Constants.dart';
 import '../../../customwidgets/BellCurveChart.dart' as bc;
 import '../../../customwidgets/BellCurveChart.dart';
 import '../../../customwidgets/CustomCard.dart';
+import '../../../customwidgets/DemographicsBarChartWidget.dart';
+import '../../../customwidgets/DemographicsBarChatWidget2.dart';
+import '../../../customwidgets/DemographicsGenderWidget.dart';
 import '../../../customwidgets/custom_date_range_picker.dart';
 import '../../../models/CustomerProfile.dart';
 import '../../../services/Executive/customers_service.dart';
@@ -29,10 +32,7 @@ int target_index = 0;
 int target_index_2 = 0;
 int target_index_7 = 0;
 int noOfDaysThisMonth = 30;
-bool isCustomerDataLoading1a = false;
-bool isCustomerDataLoading2a = false;
-bool isCustomerDataLoading3a = false;
-bool isCustomerDataLoading3b = false;
+bool isCustomerDataLoading = false;
 Map<String, dynamic> sales_jsonResponse1a = {};
 Map<String, dynamic> sales_jsonResponse2a = {};
 Map<String, dynamic> sales_jsonResponse3a = {};
@@ -68,6 +68,210 @@ class CustomersReport extends StatefulWidget {
 
 int _selectedButton = 1;
 bool isSameDaysRange = true;
+List<GridItemData> _getGridData(
+    int targetIndex, int selectedButton, int gridIndex) {
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return [];
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  if (targetIndex == 0) {
+    // Customer data (members)
+    return _getMemberGridData(profile, gridIndex);
+  } else if (targetIndex == 1) {
+    // Claims data
+    return _getClaimsGridData(profile, gridIndex);
+  }
+
+  return [];
+}
+
+List<GridItemData> _getMemberGridData(CustomerProfile profile, int gridIndex) {
+  final membersData = profile.membersCountsData;
+
+  // Get the specific member type based on grid_index
+  MemberTypeCount memberTypeData;
+  String memberTypeName;
+
+  switch (gridIndex) {
+    case 0: // Main
+      memberTypeData = membersData.mainMember;
+      memberTypeName = "Main Members";
+      break;
+    case 1: // All Lives
+      // For "All Lives", sum up all member types
+      int totalAll = membersData.mainMember.total +
+          membersData.partner.total +
+          membersData.child.total +
+          membersData.adultChild.total +
+          membersData.beneficiary.total +
+          membersData.extendedFamily.total;
+
+      int enforcedAll = membersData.mainMember.enforced +
+          membersData.partner.enforced +
+          membersData.child.enforced +
+          membersData.adultChild.enforced +
+          membersData.beneficiary.enforced +
+          membersData.extendedFamily.enforced;
+
+      int notEnforcedAll = membersData.mainMember.notEnforced +
+          membersData.partner.notEnforced +
+          membersData.child.notEnforced +
+          membersData.adultChild.notEnforced +
+          membersData.beneficiary.notEnforced +
+          membersData.extendedFamily.notEnforced;
+
+      return [
+        GridItemData(id: "Acquired", amount: totalAll),
+        GridItemData(id: "Active", amount: enforcedAll),
+        GridItemData(id: "Inactive", amount: notEnforcedAll),
+      ];
+
+    case 2: // Dependents
+      // Sum up children, adult children, and beneficiaries
+      int totalDependents = membersData.child.total +
+          membersData.adultChild.total +
+          membersData.beneficiary.total;
+
+      int enforcedDependents = membersData.child.enforced +
+          membersData.adultChild.enforced +
+          membersData.beneficiary.enforced;
+
+      int notEnforcedDependents = membersData.child.notEnforced +
+          membersData.adultChild.notEnforced +
+          membersData.beneficiary.notEnforced;
+
+      return [
+        GridItemData(id: "Acquired", amount: totalDependents),
+        GridItemData(id: "Active", amount: enforcedDependents),
+        GridItemData(id: "Inactive", amount: notEnforcedDependents),
+      ];
+
+    case 3: // Spouse
+      memberTypeData = membersData.partner;
+      memberTypeName = "Spouses";
+      break;
+
+    default:
+      memberTypeData = membersData.mainMember;
+      memberTypeName = "Main Members";
+      break;
+  }
+
+  // For specific member types (Main and Spouse)
+  return [
+    GridItemData(
+      id: "Acquired",
+      amount: memberTypeData.total,
+    ),
+    GridItemData(
+      id: "Active",
+      amount: memberTypeData.enforced,
+    ),
+    GridItemData(
+      id: "Inactive",
+      amount: memberTypeData.notEnforced,
+    ),
+  ];
+}
+
+List<GridItemData> _getClaimsGridData(CustomerProfile profile, int gridIndex) {
+  final claimsData = profile.claimsData.membersCountsData;
+
+  // Get the specific member type based on grid_index
+  MemberTypeCount claimsMemberTypeData;
+  String memberTypeName;
+
+  switch (gridIndex) {
+    case 0: // Main
+      claimsMemberTypeData = claimsData.mainMember;
+      memberTypeName = "Main Members";
+      break;
+
+    case 1: // All Lives
+      // For "All Lives", sum up all member types from claims
+      int totalAllClaims = claimsData.mainMember.total +
+          claimsData.partner.total +
+          claimsData.child.total +
+          claimsData.adultChild.total +
+          claimsData.beneficiary.total +
+          claimsData.extendedFamily.total;
+
+      int enforcedAllClaims = claimsData.mainMember.enforced +
+          claimsData.partner.enforced +
+          claimsData.child.enforced +
+          claimsData.adultChild.enforced +
+          claimsData.beneficiary.enforced +
+          claimsData.extendedFamily.enforced;
+
+      int notEnforcedAllClaims = claimsData.mainMember.notEnforced +
+          claimsData.partner.notEnforced +
+          claimsData.child.notEnforced +
+          claimsData.adultChild.notEnforced +
+          claimsData.beneficiary.notEnforced +
+          claimsData.extendedFamily.notEnforced;
+
+      return [
+        GridItemData(id: "Acquired", amount: totalAllClaims),
+        GridItemData(id: "Active", amount: enforcedAllClaims),
+        GridItemData(id: "Inactive", amount: notEnforcedAllClaims),
+      ];
+
+    case 2: // Dependents
+      // Sum up children, adult children, and beneficiaries from claims
+      int totalDependentsClaims = claimsData.child.total +
+          claimsData.adultChild.total +
+          claimsData.beneficiary.total;
+
+      int enforcedDependentsClaims = claimsData.child.enforced +
+          claimsData.adultChild.enforced +
+          claimsData.beneficiary.enforced;
+
+      int notEnforcedDependentsClaims = claimsData.child.notEnforced +
+          claimsData.adultChild.notEnforced +
+          claimsData.beneficiary.notEnforced;
+
+      return [
+        GridItemData(id: "Acquired", amount: totalDependentsClaims),
+        GridItemData(id: "Active", amount: enforcedDependentsClaims),
+        GridItemData(id: "Inactive", amount: notEnforcedDependentsClaims),
+      ];
+
+    case 3: // Spouse
+      claimsMemberTypeData = claimsData.partner;
+      memberTypeName = "Spouses";
+      break;
+
+    default:
+      claimsMemberTypeData = claimsData.mainMember;
+      memberTypeName = "Main Members";
+      break;
+  }
+
+  // For specific member types (Main and Spouse) from claims
+  return [
+    GridItemData(
+      id: "Acquired",
+      amount: claimsMemberTypeData.total,
+    ),
+    GridItemData(
+      id: "Active",
+      amount: claimsMemberTypeData.enforced,
+    ),
+    GridItemData(
+      id: "Inactive",
+      amount: claimsMemberTypeData.notEnforced,
+    ),
+  ];
+}
+
+class GridItemData {
+  final String id;
+  final int amount;
+
+  GridItemData({required this.id, required this.amount});
+}
 
 class _CustomersReportState extends State<CustomersReport>
     with InactivityLogoutMixin {
@@ -94,7 +298,7 @@ class _CustomersReportState extends State<CustomersReport>
     } else if (buttonNumber == 2) {
       _sliderPosition = (MediaQuery.of(context).size.width / 3) - 18;
     } else if (buttonNumber == 3) {
-      isCustomerDataLoading3a = true;
+      isCustomerDataLoading = true;
 
       _sliderPosition = 2 * (MediaQuery.of(context).size.width / 3) - 32;
     }
@@ -117,11 +321,7 @@ class _CustomersReportState extends State<CustomersReport>
       DateTime now = DateTime.now();
 
       // Set loading state
-      if (buttonNumber == 1) {
-        isCustomerDataLoading1a = true;
-      } else if (buttonNumber == 2) {
-        isCustomerDataLoading2a = true;
-      }
+      isCustomerDataLoading = true;
 
       // Set date ranges based on button selection
       if (buttonNumber == 1) {
@@ -150,11 +350,7 @@ class _CustomersReportState extends State<CustomersReport>
         kyrt = UniqueKey();
         if (mounted)
           setState(() {
-            if (buttonNumber == 1) {
-              isCustomerDataLoading1a = false;
-            } else if (buttonNumber == 2) {
-              isCustomerDataLoading2a = false;
-            }
+            isCustomerDataLoading = false;
           });
       }).catchError((error) {
         if (kDebugMode) {
@@ -163,11 +359,7 @@ class _CustomersReportState extends State<CustomersReport>
         }
         if (mounted)
           setState(() {
-            if (buttonNumber == 1) {
-              isCustomerDataLoading1a = false;
-            } else if (buttonNumber == 2) {
-              isCustomerDataLoading2a = false;
-            }
+            isCustomerDataLoading = false;
           });
       });
 
@@ -190,7 +382,7 @@ class _CustomersReportState extends State<CustomersReport>
 
           days_difference = end!.difference(start).inDays;
 
-          isCustomerDataLoading3a = true;
+          isCustomerDataLoading = true;
 
           customersReportValue.value++;
           if (end.month == start.month) {
@@ -264,9 +456,9 @@ class _CustomersReportState extends State<CustomersReport>
   void _animateButton2(int buttonNumber) {
     restartInactivityTimer();
 
-    setState(() {});
-
-    target_index = buttonNumber;
+    setState(() {
+      target_index = buttonNumber;
+    });
     if (buttonNumber == 0) {
       _sliderPosition2 = 0.0;
     } else if (buttonNumber == 1) {
@@ -415,11 +607,11 @@ class _CustomersReportState extends State<CustomersReport>
                     SizedBox(
                       height: 12,
                     ),
-                    if (isCustomerDataLoading1a)
+                    if (isCustomerDataLoading)
                       SizedBox(
                         height: 12,
                       ),
-                    _selectedButton == 1 && isCustomerDataLoading1a == true
+                    _selectedButton == 1 && isCustomerDataLoading == true
                         ? Center(
                             child: Center(
                             child: Padding(
@@ -435,7 +627,7 @@ class _CustomersReportState extends State<CustomersReport>
                             ),
                           ))
                         : Container(),
-                    _selectedButton == 2 && isCustomerDataLoading2a == true
+                    _selectedButton == 2 && isCustomerDataLoading == true
                         ? Center(
                             child: Center(
                             child: Padding(
@@ -451,7 +643,7 @@ class _CustomersReportState extends State<CustomersReport>
                             ),
                           ))
                         : Container(),
-                    _selectedButton == 3 && isCustomerDataLoading3a == true
+                    _selectedButton == 3 && isCustomerDataLoading == true
                         ? Center(
                             child: Center(
                             child: Padding(
@@ -876,30 +1068,48 @@ class _CustomersReportState extends State<CustomersReport>
                                   physics: NeverScrollableScrollPhysics(),
                                   gridDelegate:
                                       SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 3,
-                                          childAspectRatio:
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  (MediaQuery.of(context)
-                                                          .size
-                                                          .height /
-                                                      2.3)),
-                                  itemCount: _selectedButton == 1
-                                      ? Constants
-                                          .customers_sectionsList1a_1_1.length
-                                      : _selectedButton == 2
-                                          ? Constants
-                                              .customers_sectionsList2a_1_1
-                                              .length
-                                          : _selectedButton == 3
-                                              ? Constants
-                                                  .customers_sectionsList3a_1_1
-                                                  .length
-                                              : 0,
+                                    crossAxisCount: 3,
+                                    childAspectRatio: MediaQuery.of(context)
+                                            .size
+                                            .width /
+                                        (MediaQuery.of(context).size.height /
+                                            (MediaQuery.of(context).size.width <
+                                                    390
+                                                ? 2.0
+                                                : MediaQuery.of(context)
+                                                                .size
+                                                                .width >=
+                                                            390 &&
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width <
+                                                            600
+                                                    ? 2.3
+                                                    : MediaQuery.of(context)
+                                                                    .size
+                                                                    .width >=
+                                                                600 &&
+                                                            MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width <
+                                                                900
+                                                        ? 2.5
+                                                        : 2.5)),
+                                  ),
+                                  itemCount: _getGridData(target_index,
+                                          _selectedButton, grid_index)
+                                      .length,
                                   padding: EdgeInsets.all(2.0),
                                   itemBuilder:
                                       (BuildContext context, int index) {
+                                    final gridData = _getGridData(target_index,
+                                        _selectedButton, grid_index);
+                                    if (index >= gridData.length)
+                                      return SizedBox.shrink();
+
+                                    final item = gridData[index];
+
                                     return InkWell(
                                         onTap: () {},
                                         child: Container(
@@ -915,15 +1125,11 @@ class _CustomersReportState extends State<CustomersReport>
                                                   customers_index = index;
                                                   setState(() {});
                                                   if (kDebugMode) {
-                                                    print(
-                                                        "customers_indexjkjjk " +
-                                                            index.toString());
+                                                    print("customers_index " +
+                                                        index.toString());
                                                   }
                                                   if (index == 1) {
-                                                    /*     Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) => SalesReport()));*/
+                                                    // Navigation logic here
                                                   }
                                                   restartInactivityTimer();
                                                 },
@@ -995,15 +1201,6 @@ class _CustomersReportState extends State<CustomersReport>
                                                                             .width,
                                                                         height:
                                                                             270,
-                                                                        /*     decoration: BoxDecoration(
-                                                            color:Colors.white,
-                                                            borderRadius:
-                                                            BorderRadius.circular(
-                                                                8),
-                                                            border: Border.all(
-                                                                width: 1,
-                                                                color: Colors
-                                                                    .grey.withOpacity(0.2))),*/
                                                                         margin: EdgeInsets.only(
                                                                             right:
                                                                                 0,
@@ -1014,15 +1211,13 @@ class _CustomersReportState extends State<CustomersReport>
                                                                         child:
                                                                             Column(
                                                                           children: [
-                                                                            SizedBox(
-                                                                              height: 8,
-                                                                            ),
+                                                                            SizedBox(height: 8),
                                                                             Expanded(
                                                                               child: Center(
                                                                                   child: Padding(
                                                                                 padding: const EdgeInsets.all(8.0),
                                                                                 child: Text(
-                                                                                  formatLargeNumber(getAcquiredAccount().toString()),
+                                                                                  formatLargeNumber(item.amount.toString()),
                                                                                   style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
                                                                                   textAlign: TextAlign.center,
                                                                                   maxLines: 2,
@@ -1033,13 +1228,7 @@ class _CustomersReportState extends State<CustomersReport>
                                                                                 child: Padding(
                                                                               padding: const EdgeInsets.all(8.0),
                                                                               child: Text(
-                                                                                _selectedButton == 1
-                                                                                    ? Constants.customers_sectionsList1a_1_1[index].id
-                                                                                    : _selectedButton == 2
-                                                                                        ? Constants.customers_sectionsList2a_1_1[index].id
-                                                                                        : _selectedButton == 3
-                                                                                            ? Constants.customers_sectionsList3a_1_1[index].id
-                                                                                            : "",
+                                                                                item.id,
                                                                                 style: TextStyle(fontSize: 12.5),
                                                                                 textAlign: TextAlign.center,
                                                                                 maxLines: 1,
@@ -1079,26 +1268,23 @@ class _CustomersReportState extends State<CustomersReport>
                                                           .size
                                                           .height /
                                                       2.3)),
-                                  itemCount: _selectedButton == 1
-                                      ? Constants
-                                          .customers_claims_sectionsList1a_1_1
-                                          .length
-                                      : _selectedButton == 2
-                                          ? Constants
-                                              .customers_claims_sectionsList2a_1_1
-                                              .length
-                                          : _selectedButton == 3
-                                              ? Constants
-                                                  .customers_claims_sectionsList3a_1_1
-                                                  .length
-                                              : 0,
+                                  itemCount: _getGridData(target_index,
+                                          _selectedButton, grid_index)
+                                      .length,
                                   padding: EdgeInsets.all(2.0),
                                   itemBuilder:
                                       (BuildContext context, int index) {
+                                    final gridData = _getGridData(target_index,
+                                        _selectedButton, grid_index);
+                                    if (index >= gridData.length)
+                                      return SizedBox.shrink();
+
+                                    final item = gridData[index];
+
                                     return InkWell(
                                         onTap: () {},
                                         child: Container(
-                                          height: 290,
+                                          height: 300,
                                           width: MediaQuery.of(context)
                                                   .size
                                                   .width /
@@ -1111,14 +1297,11 @@ class _CustomersReportState extends State<CustomersReport>
                                                   setState(() {});
                                                   if (kDebugMode) {
                                                     print(
-                                                        "customers_claims_indexjkjjk " +
+                                                        "customers_claims_index " +
                                                             index.toString());
                                                   }
                                                   if (index == 1) {
-                                                    /*     Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) => SalesReport()));*/
+                                                    // Navigation logic here
                                                   }
                                                   restartInactivityTimer();
                                                 },
@@ -1153,7 +1336,7 @@ class _CustomersReportState extends State<CustomersReport>
                                                             border: Border(
                                                                 bottom: BorderSide(
                                                                     color: Constants
-                                                                        .ftaColorLight,
+                                                                        .ctaColorLight,
                                                                     width: 6))),
                                                         child: Column(
                                                           children: [
@@ -1190,15 +1373,6 @@ class _CustomersReportState extends State<CustomersReport>
                                                                             .width,
                                                                         height:
                                                                             270,
-                                                                        /*     decoration: BoxDecoration(
-                                                            color:Colors.white,
-                                                            borderRadius:
-                                                            BorderRadius.circular(
-                                                                8),
-                                                            border: Border.all(
-                                                                width: 1,
-                                                                color: Colors
-                                                                    .grey.withOpacity(0.2))),*/
                                                                         margin: EdgeInsets.only(
                                                                             right:
                                                                                 0,
@@ -1209,40 +1383,13 @@ class _CustomersReportState extends State<CustomersReport>
                                                                         child:
                                                                             Column(
                                                                           children: [
-                                                                            SizedBox(
-                                                                              height: 8,
-                                                                            ),
+                                                                            SizedBox(height: 8),
                                                                             Expanded(
                                                                               child: Center(
                                                                                   child: Padding(
                                                                                 padding: const EdgeInsets.all(8.0),
                                                                                 child: Text(
-                                                                                  formatLargeNumber((_selectedButton == 1
-                                                                                          ? grid_index == 1
-                                                                                              ? Constants.customers_claims_sectionsList1a_1_1[index].amount
-                                                                                              : grid_index == 0
-                                                                                                  ? Constants.customers_claims_sectionsList1a_1_2[index].amount
-                                                                                                  : grid_index == 2
-                                                                                                      ? Constants.customers_claims_sectionsList1a_1_3[index].amount
-                                                                                                      : Constants.customers_claims_sectionsList1a_1_4[index].amount
-                                                                                          : _selectedButton == 2
-                                                                                              ? grid_index == 1
-                                                                                                  ? Constants.customers_claims_sectionsList2a_1_1[index].amount
-                                                                                                  : grid_index == 0
-                                                                                                      ? Constants.customers_claims_sectionsList2a_1_2[index].amount
-                                                                                                      : grid_index == 2
-                                                                                                          ? Constants.customers_claims_sectionsList2a_1_3[index].amount
-                                                                                                          : Constants.customers_claims_sectionsList2a_1_4[index].amount
-                                                                                              : _selectedButton == 3
-                                                                                                  ? grid_index == 1
-                                                                                                      ? Constants.customers_claims_sectionsList3a_1_1[index].amount
-                                                                                                      : grid_index == 0
-                                                                                                          ? Constants.customers_claims_sectionsList3a_1_2[index].amount
-                                                                                                          : grid_index == 2
-                                                                                                              ? Constants.customers_claims_sectionsList3a_1_3[index].amount
-                                                                                                              : Constants.customers_claims_sectionsList3a_1_4[index].amount
-                                                                                                  : 0)
-                                                                                      .toString()),
+                                                                                  formatLargeNumber(item.amount.toString()),
                                                                                   style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
                                                                                   textAlign: TextAlign.center,
                                                                                   maxLines: 2,
@@ -1253,13 +1400,7 @@ class _CustomersReportState extends State<CustomersReport>
                                                                                 child: Padding(
                                                                               padding: const EdgeInsets.all(8.0),
                                                                               child: Text(
-                                                                                _selectedButton == 1
-                                                                                    ? Constants.customers_claims_sectionsList1a_1_1[index].id
-                                                                                    : _selectedButton == 2
-                                                                                        ? Constants.customers_claims_sectionsList2a_1_1[index].id
-                                                                                        : _selectedButton == 3
-                                                                                            ? Constants.customers_claims_sectionsList3a_1_1[index].id
-                                                                                            : "",
+                                                                                item.id,
                                                                                 style: TextStyle(fontSize: 12.5),
                                                                                 textAlign: TextAlign.center,
                                                                                 maxLines: 1,
@@ -1417,389 +1558,19 @@ class _CustomersReportState extends State<CustomersReport>
                                         child: Text(
                                             "Demographics on Gender (${Constants.sales_formattedStartDate} to ${Constants.sales_formattedEndDate})"),
                                       ),
-                            (_selectedButton == 1 &&
-                                        isCustomerDataLoading1a == true ||
-                                    _selectedButton == 2 &&
-                                        isCustomerDataLoading2a == true ||
-                                    _selectedButton == 3 &&
-                                        isCustomerDataLoading3a == true)
-                                ? Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 12.0,
-                                        top: 12,
-                                        right: 16,
-                                        bottom: 12),
-                                    child: CustomCard(
-                                        elevation: 6,
-                                        surfaceTintColor: Colors.white,
-                                        color: Colors.white,
-                                        child: Container(
-                                            height: 300,
-                                            child: Center(
-                                                child: Center(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Container(
-                                                  width: 18,
-                                                  height: 18,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    color:
-                                                        Constants.ctaColorLight,
-                                                    strokeWidth: 1.8,
-                                                  ),
-                                                ),
-                                              ),
-                                            )))),
-                                  )
-                                : Container(
-                                    height: 300,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 12.0,
-                                          top: 8,
-                                          right: 16,
-                                          bottom: 12),
-                                      child: CustomCard(
-                                        surfaceTintColor: Colors.white,
-                                        color: Colors.white,
-                                        elevation: 6,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12)),
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                              height: 24,
-                                            ),
-                                            Row(
-                                              children: [
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                bottom: 2.0),
-                                                        child: Text(
-                                                          target_index == 0
-                                                              ? ((getCustomerPercentage(
-                                                                              "male")) *
-                                                                          100)
-                                                                      .toStringAsFixed(
-                                                                          1) +
-                                                                  "%"
-                                                              : ((getCustomerClaimsPercentage(
-                                                                              "male")) *
-                                                                          100)
-                                                                      .toStringAsFixed(
-                                                                          1) +
-                                                                  "%",
-                                                          style: TextStyle(
-                                                              fontSize: 18,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500),
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                right: 0.0),
-                                                        child: Center(
-                                                          child: Text(
-                                                            "Male",
-                                                            style: TextStyle(
-                                                                fontSize: 11,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        margin: EdgeInsets.only(
-                                                            left: 8,
-                                                            right: 8,
-                                                            top: 4,
-                                                            bottom: 4),
-                                                        height: 1,
-                                                        color: Colors.lightBlue,
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                right: 0.0),
-                                                        child: Text(
-                                                          target_index == 0
-                                                              ? getCustomerCount(
-                                                                          "male")
-                                                                      .toString() +
-                                                                  " lives"
-                                                              : getCustomerClaimCount(
-                                                                          "male")
-                                                                      .toString() +
-                                                                  " lives",
-                                                          style: TextStyle(
-                                                              fontSize: 11),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: Container(
-                                                    width: 200,
-                                                    height: 230,
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        SizedBox(height: 15),
-                                                        Container(
-                                                          height: 30,
-                                                          width: 30,
-                                                          margin:
-                                                              EdgeInsets.only(
-                                                                  bottom: 3),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors.grey
-                                                                .withOpacity(
-                                                                    0.6),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        360),
-                                                          ),
-                                                        ),
-                                                        Center(
-                                                          child: Stack(
-                                                            alignment: Alignment
-                                                                .centerRight,
-                                                            children: [
-                                                              SvgPicture.asset(
-                                                                'assets/icons/man-toilet-color-icon.svg',
-                                                                width: 200,
-                                                                height: 170,
-                                                                color: Colors
-                                                                    .grey
-                                                                    .withOpacity(
-                                                                        0.6),
-                                                                fit: BoxFit
-                                                                    .contain,
-                                                              ),
-                                                              ClipPath(
-                                                                clipper:
-                                                                    CustomClipPath(
-                                                                  percentage: double.parse(target_index ==
-                                                                          0
-                                                                      ? getCustomerPercentage(
-                                                                              "male")
-                                                                          .toStringAsFixed(
-                                                                              3)
-                                                                      : getCustomerClaimsPercentage(
-                                                                              "male")
-                                                                          .toStringAsFixed(
-                                                                              3)),
-                                                                ),
-                                                                child:
-                                                                    SvgPicture
-                                                                        .asset(
-                                                                  'assets/icons/man-toilet-color-icon.svg',
-                                                                  color: Colors
-                                                                      .lightBlue,
-                                                                  width: 200,
-                                                                  height: 170,
-                                                                  fit: BoxFit
-                                                                      .contain,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width: 10,
-                                                ),
-                                                Expanded(
-                                                  child: Container(
-                                                    width: 200,
-                                                    height: 230,
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        SizedBox(height: 17),
-                                                        Container(
-                                                          height: 30,
-                                                          width: 30,
-                                                          margin:
-                                                              EdgeInsets.only(
-                                                                  bottom: 3),
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: Colors.grey
-                                                                .withOpacity(
-                                                                    0.6),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        360),
-                                                          ),
-                                                        ),
-                                                        Center(
-                                                          child: Stack(
-                                                            alignment: Alignment
-                                                                .centerRight,
-                                                            children: [
-                                                              SvgPicture.asset(
-                                                                'assets/icons/women-toilet-color-icon.svg',
-                                                                width: 200,
-                                                                height: 170,
-                                                                color: Colors
-                                                                    .grey
-                                                                    .withOpacity(
-                                                                        0.6),
-                                                                fit: BoxFit
-                                                                    .contain,
-                                                              ),
-                                                              ClipPath(
-                                                                clipper:
-                                                                    CustomClipPath(
-                                                                  percentage: double.parse(target_index ==
-                                                                          0
-                                                                      ? getCustomerPercentage(
-                                                                              "female")
-                                                                          .toStringAsFixed(
-                                                                              3)
-                                                                      : getCustomerClaimsPercentage(
-                                                                              "female")
-                                                                          .toStringAsFixed(
-                                                                              3)),
-                                                                ),
-                                                                child:
-                                                                    SvgPicture
-                                                                        .asset(
-                                                                  'assets/icons/women-toilet-color-icon.svg',
-                                                                  color: Colors
-                                                                      .green,
-                                                                  width: 200,
-                                                                  height: 170,
-                                                                  fit: BoxFit
-                                                                      .contain,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                bottom: 2.0),
-                                                        child: Text(
-                                                          target_index == 0
-                                                              ? (getCustomerPercentage(
-                                                                              "female") *
-                                                                          100)
-                                                                      .toStringAsFixed(
-                                                                          1) +
-                                                                  "%"
-                                                              : (getCustomerClaimsPercentage(
-                                                                              "female") *
-                                                                          100)
-                                                                      .toStringAsFixed(
-                                                                          1) +
-                                                                  "%",
-                                                          style: TextStyle(
-                                                              fontSize: 18,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500),
-                                                        ),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                right: 0.0),
-                                                        child: Center(
-                                                          child: Text(
-                                                            "Female",
-                                                            style: TextStyle(
-                                                                fontSize: 11,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        margin: EdgeInsets.only(
-                                                            left: 8,
-                                                            right: 8,
-                                                            top: 4,
-                                                            bottom: 4),
-                                                        height: 1,
-                                                        color: Colors.green,
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                right: 0.0),
-                                                        child: Text(
-                                                          "${target_index == 0 ? formatLargeNumber((getCustomerCount("female")).toStringAsFixed(1)) : formatLargeNumber((getCustomerClaimCount("female")).toStringAsFixed(1))} lives",
-                                                          style: TextStyle(
-                                                              fontSize: 11),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              height: 16,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                            DemographicsGenderWidget(
+                              customerProfile: Constants.currentCustomerProfile,
+                              selectedButton: _selectedButton,
+                              targetIndex: target_index,
+                              gridIndex: grid_index,
+                              isLoading: (_selectedButton == 1 &&
+                                      isCustomerDataLoading) ||
+                                  (_selectedButton == 2 &&
+                                      isCustomerDataLoading) ||
+                                  (_selectedButton == 3 &&
+                                      isCustomerDataLoading),
+                              dateRange: "Jan 2024 - Dec 2024",
+                            ),
                             SizedBox(
                               height: 20,
                             ),
@@ -1849,13 +1620,14 @@ class _CustomersReportState extends State<CustomersReport>
                                         child: Text(
                                             "Age Distribution By Gender(${Constants.sales_formattedStartDate} to ${Constants.sales_formattedEndDate})"),
                                       ),
-                            bc.SalesBellCurveChart(
-                              customersIndex:
-                                  customers_index, // 0=total, 1=enforced, 2=not_enforced
-                              selectedButton:
-                                  _selectedButton, // 1=MTD, 2=12months, 3=custom
+                            DemographicsBarChartWidget(
+                              customerProfile: Constants.currentCustomerProfile,
+                              selectedButton: _selectedButton,
+                              targetIndex: target_index,
+                              customersIndex: customers_index,
+                              gridIndex: grid_index,
                               daysDifference: days_difference,
-                              targetIndex7: target_index_7, // 0=line, 1=bar
+                              isLoading: false,
                             ),
                             SizedBox(
                               height: 20,
@@ -2238,11 +2010,11 @@ class _CustomersReportState extends State<CustomersReport>
                               ),
                             ),
                             (_selectedButton == 1 &&
-                                        isCustomerDataLoading1a == true ||
+                                        isCustomerDataLoading == true ||
                                     _selectedButton == 2 &&
-                                        isCustomerDataLoading2a == true ||
+                                        isCustomerDataLoading == true ||
                                     _selectedButton == 3 &&
-                                        isCustomerDataLoading3a == true)
+                                        isCustomerDataLoading == true)
                                 ? Padding(
                                     padding: const EdgeInsets.only(
                                         left: 12.0,
@@ -3273,820 +3045,6 @@ class CustomDotPainter extends FlDotPainter {
   }
 }
 
-int getCustomerCount(type) {
-  if (type == "male") {
-    if (_selectedButton == 1) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_maleCount1a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_maleCount1a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_maleCount1a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_maleCount1a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_maleCount1a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_maleCount1a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_maleCount1a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_maleCount1a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_maleCount1a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_maleCount1a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_maleCount1a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_maleCount1a_3_4;
-        }
-      }
-    } else if (_selectedButton == 2) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_maleCount2a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_maleCount2a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_maleCount2a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_maleCount2a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_maleCount2a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_maleCount2a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_maleCount2a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_maleCount2a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_maleCount2a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_maleCount2a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_maleCount2a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_maleCount2a_3_4;
-        }
-      }
-    } else if (_selectedButton == 3) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_maleCount3a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_maleCount3a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_maleCount3a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_maleCount3a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_maleCount3a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_maleCount3a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_maleCount3a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_maleCount3a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_maleCount3a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_maleCount3a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_maleCount3a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_maleCount3a_3_4;
-        }
-      }
-    }
-  }
-  if (type == "female") {
-    if (_selectedButton == 1) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_femaleCount1a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femaleCount1a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femaleCount1a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femaleCount1a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_femaleCount1a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femaleCount1a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femaleCount1a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femaleCount1a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_femaleCount1a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femaleCount1a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femaleCount1a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femaleCount1a_3_4;
-        }
-      }
-    } else if (_selectedButton == 2) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_femaleCount2a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femaleCount2a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femaleCount2a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femaleCount2a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_femaleCount2a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femaleCount2a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femaleCount2a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femaleCount2a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_femaleCount2a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femaleCount2a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femaleCount2a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femaleCount2a_3_4;
-        }
-      }
-    } else if (_selectedButton == 3) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_femaleCount3a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femaleCount3a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femaleCount3a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femaleCount3a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_femaleCount3a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femaleCount3a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femaleCount3a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femaleCount3a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_femaleCount3a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femaleCount3a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femaleCount3a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femaleCount3a_3_4;
-        }
-      }
-    }
-  }
-  if (kDebugMode) {
-    print(
-        "_selected_button ${_selectedButton} ${customers_index} ${grid_index}");
-  }
-
-  return 0;
-}
-
-int getCustomerClaimCount(type) {
-  if (type == "male") {
-    if (_selectedButton == 1) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_maleCount1a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_maleCount1a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_maleCount1a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_maleCount1a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_maleCount1a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_maleCount1a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_maleCount1a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_maleCount1a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_maleCount1a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_maleCount1a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_maleCount1a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_maleCount1a_3_4;
-        }
-      }
-    } else if (_selectedButton == 2) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_maleCount2a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_maleCount2a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_maleCount2a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_maleCount2a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_maleCount2a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_maleCount2a_2_2;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_maleCount2a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_maleCount2a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_maleCount2a_3_2;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_maleCount2a_3_4;
-        }
-      }
-    } else if (_selectedButton == 3) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_maleCount3a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_maleCount3a_1_2;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_maleCount3a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_maleCount3a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_maleCount3a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_maleCount3a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_maleCount3a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_maleCount3a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_maleCount3a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_maleCount3a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_maleCount3a_3_4;
-        }
-      }
-    }
-  }
-  if (type == "female") {
-    if (_selectedButton == 1) {
-      if (customers_index == 0) {
-        if (grid_index == 0) {
-          return Constants.customers_claims_femaleCount1a_1_1;
-        } else if (grid_index == 1) {
-          return Constants.customers_claims_femaleCount1a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femaleCount1a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femaleCount1a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femaleCount1a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femaleCount1a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femaleCount1a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femaleCount1a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femaleCount1a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femaleCount1a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femaleCount1a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femaleCount1a_3_4;
-        }
-      }
-    } else if (_selectedButton == 2) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femaleCount2a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femaleCount2a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femaleCount2a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femaleCount2a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femaleCount2a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femaleCount2a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femaleCount2a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femaleCount2a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femaleCount2a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femaleCount2a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femaleCount2a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femaleCount2a_3_4;
-        }
-      }
-    } else if (_selectedButton == 3) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femaleCount3a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femaleCount3a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femaleCount3a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femaleCount3a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femaleCount3a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femaleCount3a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femaleCount3a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femaleCount3a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femaleCount3a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femaleCount3a_3_2;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femaleCount3a_3_4;
-        }
-      }
-    }
-  }
-  // print("_selected_button ${_selectedButton} ${customers_index} ${grid_index}");
-
-  return 0;
-}
-
-double getCustomerPercentage(type) {
-  if (type == "male") {
-    if (_selectedButton == 1) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_malePercentage1a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_malePercentage1a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_malePercentage1a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_malePercentage1a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_malePercentage1a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_malePercentage1a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_malePercentage1a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_malePercentage1a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_malePercentage1a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_malePercentage1a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_malePercentage1a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_malePercentage1a_3_4;
-        }
-      }
-    } else if (_selectedButton == 2) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_malePercentage2a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_malePercentage2a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_malePercentage2a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_malePercentage2a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_malePercentage2a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_malePercentage2a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_malePercentage2a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_malePercentage2a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_malePercentage2a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_malePercentage2a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_malePercentage2a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_malePercentage2a_3_4;
-        }
-      }
-    } else if (_selectedButton == 3) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_malePercentage3a_1_1;
-        } else if (grid_index == 0) {
-          print("sddg2 # ${Constants.customers_malePercentage3a_1_2}");
-          return Constants.customers_malePercentage3a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_malePercentage3a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_malePercentage3a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_malePercentage3a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_malePercentage3a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_malePercentage3a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_malePercentage3a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_malePercentage3a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_malePercentage3a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_malePercentage3a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_malePercentage3a_3_4;
-        }
-      }
-    }
-  }
-  if (type == "female") {
-    if (_selectedButton == 1) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_femalePercentage1a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femalePercentage1a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femalePercentage1a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femalePercentage1a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_femalePercentage1a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femalePercentage1a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femalePercentage1a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femalePercentage1a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_femalePercentage1a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femalePercentage1a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femalePercentage1a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femalePercentage1a_3_4;
-        }
-      }
-    } else if (_selectedButton == 2) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_femalePercentage2a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femalePercentage2a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femalePercentage2a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femalePercentage2a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_femalePercentage2a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femalePercentage2a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femalePercentage2a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femalePercentage2a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_femalePercentage2a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femalePercentage2a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femalePercentage2a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femalePercentage2a_3_4;
-        }
-      }
-    } else if (_selectedButton == 3) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_femalePercentage3a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femalePercentage3a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femalePercentage3a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femalePercentage3a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_femalePercentage3a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femalePercentage3a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femalePercentage3a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femalePercentage3a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_femalePercentage3a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_femalePercentage3a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_femalePercentage3a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_femalePercentage3a_3_4;
-        }
-      }
-    }
-  }
-  print("_selected_button ${_selectedButton} ${customers_index} ${grid_index}");
-
-  return 0;
-}
-
-double getCustomerClaimsPercentage(type) {
-  if (type == "male") {
-    if (_selectedButton == 1) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          //print("sddg_claims1a_1_1 # ${Constants.customers_claims_malePercentage1a_1_1}");
-          return Constants.customers_claims_malePercentage1a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_malePercentage1a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_malePercentage1a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_malePercentage1a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_malePercentage1a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_malePercentage1a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_malePercentage1a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_malePercentage1a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_malePercentage1a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_malePercentage1a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_malePercentage1a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_malePercentage1a_3_4;
-        }
-      }
-    } else if (_selectedButton == 2) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_malePercentage2a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_malePercentage2a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_malePercentage2a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_malePercentage2a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_malePercentage2a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_malePercentage2a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_malePercentage2a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_malePercentage2a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_malePercentage2a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_malePercentage2a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_malePercentage2a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_malePercentage2a_3_4;
-        }
-      }
-    } else if (_selectedButton == 3) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_malePercentage3a_1_1;
-        } else if (grid_index == 0) {
-          //print("sddg2 # ${Constants.customers_claims_malePercentage3a_1_2}");
-          return Constants.customers_claims_malePercentage3a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_malePercentage3a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_malePercentage3a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_malePercentage3a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_malePercentage3a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_malePercentage3a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_malePercentage3a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_malePercentage3a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_malePercentage3a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_malePercentage3a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_malePercentage3a_3_4;
-        }
-      }
-    }
-  }
-  if (type == "female") {
-    if (_selectedButton == 1) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femalePercentage1a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femalePercentage1a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femalePercentage1a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femalePercentage1a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femalePercentage1a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femalePercentage1a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femalePercentage1a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femalePercentage1a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femalePercentage1a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femalePercentage1a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femalePercentage1a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femalePercentage1a_3_4;
-        }
-      }
-    } else if (_selectedButton == 2) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femalePercentage2a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femalePercentage2a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femalePercentage2a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femalePercentage2a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femalePercentage2a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femalePercentage2a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femalePercentage2a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femalePercentage2a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femalePercentage2a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femalePercentage2a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femalePercentage2a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femalePercentage2a_3_4;
-        }
-      }
-    } else if (_selectedButton == 3) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femalePercentage3a_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femalePercentage3a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femalePercentage3a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femalePercentage3a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femalePercentage3a_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femalePercentage3a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femalePercentage3a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femalePercentage3a_2_3;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_femalePercentage3a_3_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_femalePercentage3a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_femalePercentage3a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_femalePercentage3a_3_4;
-        }
-      }
-    }
-  }
-  //print("_selected_button ${_selectedButton} ${customers_index} ${grid_index}");
-
-  return 0;
-}
-
 List<BarChartGroupData>? getBarGroupData(String type, int _selectedButton,
     int customers_index, int grid_index, int days_difference) {
   if (kDebugMode) {
@@ -4305,437 +3263,6 @@ List<BarChartGroupData>? getBarGroupData(String type, int _selectedButton,
   }
 
   return null;
-}
-
-List<BarChartGroupData>? getBarGroupClaimsData(String type, int _selectedButton,
-    int customers_index, int grid_index, int days_difference) {
-  if (type == "male") {
-    if (_selectedButton == 1) {
-      if (customers_index == 0) {
-        if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups1a_1_1;
-        } else if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups1a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups1a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups1a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups1a_2_1;
-        } else if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups1a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups1a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups1a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups1a_3_1;
-        } else if (grid_index == 1) {
-          // print("hgghg12 ${Constants.customers_age_barGroups1a_3_2}");
-          // print("hgghg12 ${Constants.customers_age_barGroups1a_3_2.length}");
-          return Constants.customers_claims_age_barGroups1a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups1a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups1a_3_4;
-        }
-      }
-    } else if (_selectedButton == 2) {
-      if (customers_index == 0) {
-        if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups2a_1_1;
-        } else if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups2a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups2a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups2a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups2a_2_1;
-        } else if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups2a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups2a_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups2a_2_3;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups2a_3_1;
-        } else if (grid_index == 1) {
-          // print("hgghg12 ${Constants.customers_age_barGroups2a_3_2}");
-          //print("hgghg12 ${Constants.customers_age_barGroups2a_3_2.length}");
-          return Constants.customers_claims_age_barGroups1a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups2a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups2a_3_4;
-        }
-      }
-    } else if (_selectedButton == 3) {
-      if (customers_index == 0) {
-        if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups3a_1_1;
-        } else if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups3a_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups3a_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups3a_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups3a_2_1;
-        } else if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups3a_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups3a_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups3a_3_1;
-        } else if (grid_index == 1) {
-          // print("hgghkjg12kj ${Constants.customers_age_barGroups1a_3_2}");
-          // print("hghkjghg12 ${Constants.customers_age_barGroups1a_3_2.length}");
-          return Constants.customers_claims_age_barGroups3a_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups3a_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups3a_3_4;
-        }
-      }
-    }
-  } else if (type == "female") {
-    if (_selectedButton == 1) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups1b_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups1b_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups1b_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups1b_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          print("hgghg12 ${Constants.customers_claims_age_barGroups1b_2_1}");
-          return Constants.customers_claims_age_barGroups1b_2_1;
-        } else if (grid_index == 0) {
-          print("hgghg12 ${Constants.customers_claims_age_barGroups1b_2_2}");
-          return Constants.customers_claims_age_barGroups1b_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups1b_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups1b_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups1b_3_1;
-        } else if (grid_index == 0) {
-          //print("hgghg12 ${Constants.customers_age_barGroups1b_3_2}");
-          // print("hgghg12 ${Constants.customers_age_barGroups1b_3_2.length}");
-          return Constants.customers_claims_age_barGroups1b_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups1b_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups1b_3_4;
-        }
-      }
-    } else if (_selectedButton == 2) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups2b_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups2b_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups2b_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups2b_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups2b_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups2b_2_2;
-        } else {
-          return Constants.customers_claims_age_barGroups2a_2_3;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups2b_3_1;
-        } else if (grid_index == 0) {
-          //print("hgghg12 ${Constants.customers_age_barGroups1a_3_2}");
-          // print("hgghg12 ${Constants.customers_age_barGroups1a_3_2.length}");
-          return Constants.customers_claims_age_barGroups2b_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups2b_3_4;
-        }
-      }
-    } else if (_selectedButton == 3) {
-      if (customers_index == 0) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups3b_1_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups3b_1_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups3b_1_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups3b_1_4;
-        }
-      } else if (customers_index == 1) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups3b_2_1;
-        } else if (grid_index == 0) {
-          return Constants.customers_claims_age_barGroups3b_2_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups3b_2_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups3b_2_4;
-        }
-      } else if (customers_index == 2) {
-        if (grid_index == 1) {
-          return Constants.customers_claims_age_barGroups3b_3_1;
-        } else if (grid_index == 0) {
-          // print("hgghkjg12kj ${Constants.customers_age_barGroups1a_3_2}");
-          // print("hghkjghg12 ${Constants.customers_age_barGroups1a_3_2.length}");
-          return Constants.customers_claims_age_barGroups3b_3_2;
-        } else if (grid_index == 2) {
-          return Constants.customers_claims_age_barGroups3b_3_3;
-        } else if (grid_index == 3) {
-          return Constants.customers_claims_age_barGroups3b_3_4;
-        }
-      }
-    }
-  }
-
-  return null; // Or some default List<BarChartGroupData> value
-}
-
-double getBarMaxData(String type, int _selectedButton, int customers_index,
-    int grid_index, int days_difference) {
-  if (_selectedButton == 1) {
-    if (customers_index == 0) {
-      if (grid_index == 1) {
-        //print("hhghhj8 ${Constants.customers_maxPercentage1a_1_1}");
-        return Constants.customers_maxPercentage1a_1_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_maxPercentage1a_1_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_maxPercentage1a_1_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_maxPercentage1a_1_4;
-      }
-    } else if (customers_index == 1) {
-      if (grid_index == 1) {
-        return Constants.customers_maxPercentage1a_2_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_maxPercentage1a_2_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_maxPercentage1a_2_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_maxPercentage1a_2_3;
-      }
-    } else if (customers_index == 2) {
-      if (grid_index == 1) {
-        return Constants.customers_maxPercentage1a_3_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_maxPercentage1a_3_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_maxPercentage1a_3_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_maxPercentage1a_3_4;
-      }
-    }
-  } else if (_selectedButton == 2) {
-    print("hhghhj9hgh ${customers_index} ${grid_index}");
-    if (customers_index == 0) {
-      if (grid_index == 1) {
-        return Constants.customers_maxPercentage2a_1_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_maxPercentage2a_1_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_maxPercentage2a_1_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_maxPercentage2a_1_4;
-      }
-    } else if (customers_index == 1) {
-      if (grid_index == 1) {
-        return Constants.customers_maxPercentage2a_2_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_maxPercentage2a_2_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_maxPercentage2a_2_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_maxPercentage2a_2_4;
-      }
-    } else if (customers_index == 2) {
-      if (grid_index == 1) {
-        return Constants.customers_maxPercentage2a_3_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_maxPercentage2a_3_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_maxPercentage2a_3_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_maxPercentage2a_3_4;
-      }
-    }
-  } else if (_selectedButton == 3) {
-    if (customers_index == 0) {
-      if (grid_index == 1) {
-        //  print("hhghhj3a_1_1 ${Constants.customers_maxPercentage3a_1_1}");
-        return Constants.customers_maxPercentage3a_1_1;
-      } else if (grid_index == 0) {
-        // print("hhghhj_3a_1_2 ${Constants.customers_maxPercentage3a_1_1}");
-        return Constants.customers_maxPercentage3a_1_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_maxPercentage3a_1_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_maxPercentage3a_1_4;
-      }
-    } else if (customers_index == 1) {
-      if (grid_index == 1) {
-        return Constants.customers_maxPercentage3a_2_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_maxPercentage3a_2_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_maxPercentage3a_2_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_maxPercentage3a_2_4;
-      }
-    } else if (customers_index == 2) {
-      if (grid_index == 1) {
-        return Constants.customers_maxPercentage3a_3_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_maxPercentage3a_3_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_maxPercentage3a_3_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_maxPercentage3a_3_4;
-      }
-    }
-  }
-
-  print(
-      "hhghhj _selected_button $type ${_selectedButton} ${customers_index} ${grid_index}");
-
-  return 0; // Or some default List<BarChartGroupData> value
-}
-
-double getBarMaxClaimsData(String type, int _selectedButton,
-    int customers_index, int grid_index, int days_difference) {
-  if (_selectedButton == 1) {
-    if (customers_index == 0) {
-      if (grid_index == 1) {
-        print("hhghhj8fgf ${Constants.customers_claims_maxPercentage1a_1_1}");
-        return Constants.customers_claims_maxPercentage1a_1_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_claims_maxPercentage1a_1_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_claims_maxPercentage1a_1_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_claims_maxPercentage1a_1_4;
-      }
-    } else if (customers_index == 1) {
-      if (grid_index == 1) {
-        return Constants.customers_claims_maxPercentage1a_2_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_claims_maxPercentage1a_2_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_claims_maxPercentage1a_2_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_claims_maxPercentage1a_2_4;
-      }
-    } else if (customers_index == 2) {
-      if (grid_index == 1) {
-        return Constants.customers_claims_maxPercentage1a_3_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_claims_maxPercentage1a_3_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_claims_maxPercentage1a_3_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_claims_maxPercentage1a_3_4;
-      }
-    }
-  } else if (_selectedButton == 2) {
-    if (customers_index == 0) {
-      if (grid_index == 1) {
-        // print("hhghhj9 ${Constants.customers_maxPercentage1a_1_1}");
-        return Constants.customers_claims_maxPercentage2a_1_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_claims_maxPercentage2a_1_2;
-      } else if (grid_index == 2) {
-        //ddhjh
-        return Constants.customers_claims_maxPercentage2a_1_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_claims_maxPercentage2a_1_4;
-      }
-    } else if (customers_index == 1) {
-      if (grid_index == 1) {
-        return Constants.customers_claims_maxPercentage2a_2_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_claims_maxPercentage2a_2_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_claims_maxPercentage2a_2_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_claims_maxPercentage2a_2_4;
-      }
-    } else if (customers_index == 2) {
-      if (grid_index == 1) {
-        return Constants.customers_claims_maxPercentage2a_3_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_claims_maxPercentage2a_3_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_claims_maxPercentage2a_3_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_claims_maxPercentage2a_3_4;
-      }
-    }
-  } else if (_selectedButton == 3) {
-    if (customers_index == 0) {
-      if (grid_index == 1) {
-        // print("hhghhj3a_1_1 ${Constants.customers_maxPercentage3a_1_1}");
-        return Constants.customers_claims_maxPercentage3a_1_1;
-      } else if (grid_index == 0) {
-        //print("hhghhj_3a_1_2 ${Constants.customers_mclaims_axPercentage3a_1_1}");
-        return Constants.customers_claims_maxPercentage3a_1_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_claims_maxPercentage3a_1_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_claims_maxPercentage3a_1_4;
-      }
-    } else if (customers_index == 1) {
-      if (grid_index == 1) {
-        return Constants.customers_claims_maxPercentage3a_2_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_claims_maxPercentage3a_2_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_claims_maxPercentage3a_2_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_claims_maxPercentage3a_2_4;
-      }
-    } else if (customers_index == 2) {
-      if (grid_index == 1) {
-        return Constants.customers_claims_maxPercentage3a_3_1;
-      } else if (grid_index == 0) {
-        return Constants.customers_claims_maxPercentage3a_3_2;
-      } else if (grid_index == 2) {
-        return Constants.customers_claims_maxPercentage3a_3_3;
-      } else if (grid_index == 3) {
-        return Constants.customers_claims_maxPercentage3a_3_4;
-      }
-    }
-  }
-
-  // print("hhghhj _selected_button $type ${_selectedButton} ${customers_index} ${grid_index}");
-
-  return 0; // Or some default List<BarChartGroupData> value
 }
 
 String extractFirstAndLastName(String fullName) {
@@ -6671,4 +5198,786 @@ class ClaimsBellCurveChart extends StatelessWidget {
         return Colors.green; // Default case for unexpected types
     }
   }
+}
+
+List<BarChartGroupData>? getBarGroupClaimsData(String type, int _selectedButton,
+    int customers_index, int grid_index, int days_difference) {
+  // Check if customer profile has data
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return null;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  // Get claims gender distribution data
+  GenderDistribution claimsGenderDistribution =
+      profile.claimsData.genderDistribution;
+
+  // Convert claims gender distribution to bar chart data
+  return _convertClaimsGenderDistributionToBarChart(claimsGenderDistribution,
+      type, _selectedButton, customers_index, grid_index);
+}
+
+List<BarChartGroupData> _convertClaimsGenderDistributionToBarChart(
+    GenderDistribution genderDistribution,
+    String type,
+    int selectedButton,
+    int customersIndex,
+    int gridIndex) {
+  List<BarChartGroupData> barGroups = [];
+
+  // Define age group order for consistent display
+  List<String> ageGroupOrder = [
+    '0-17',
+    '18-25',
+    '26-35',
+    '36-45',
+    '46-55',
+    '56-65',
+    '66+'
+  ];
+
+  int index = 0;
+
+  for (String ageGroup in ageGroupOrder) {
+    if (genderDistribution.ageGroups.containsKey(ageGroup)) {
+      final ageGenderData = genderDistribution.ageGroups[ageGroup]!;
+
+      double value = 0;
+      if (type == "male") {
+        value = ageGenderData.male.toDouble();
+      } else if (type == "female") {
+        value = ageGenderData.female.toDouble();
+      }
+
+      barGroups.add(
+        BarChartGroupData(
+          x: index,
+          barRods: [
+            BarChartRodData(
+              toY: value,
+              color: type == "male"
+                  ? Colors.blue.withOpacity(0.8)
+                  : Colors.pink.withOpacity(0.8),
+              width: 20,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Add empty bar for missing age groups
+      barGroups.add(
+        BarChartGroupData(
+          x: index,
+          barRods: [
+            BarChartRodData(
+              toY: 0,
+              color: type == "male"
+                  ? Colors.blue.withOpacity(0.8)
+                  : Colors.pink.withOpacity(0.8),
+              width: 20,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ],
+        ),
+      );
+    }
+
+    index++;
+  }
+
+  return barGroups;
+}
+
+double getBarMaxData(String type, int _selectedButton, int customers_index,
+    int grid_index, int days_difference) {
+  // Check if customer profile has data
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return 0;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  // Calculate max value from customer gender distribution
+  return _calculateMaxValueFromGenderDistribution(
+      profile.genderDistribution, type);
+}
+
+double getBarMaxClaimsData(String type, int _selectedButton,
+    int customers_index, int grid_index, int days_difference) {
+  // Check if customer profile has data
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return 0;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  // Calculate max value from claims gender distribution
+  return _calculateMaxValueFromGenderDistribution(
+      profile.claimsData.genderDistribution, type);
+}
+
+double _calculateMaxValueFromGenderDistribution(
+    GenderDistribution genderDistribution, String type) {
+  double maxValue = 0;
+
+  for (var ageGroup in genderDistribution.ageGroups.values) {
+    double value = 0;
+    if (type == "male") {
+      value = ageGroup.male.toDouble();
+    } else if (type == "female") {
+      value = ageGroup.female.toDouble();
+    } else {
+      // If type is not specified, get the maximum of both genders
+      value = math.max(ageGroup.male.toDouble(), ageGroup.female.toDouble());
+    }
+
+    if (value > maxValue) {
+      maxValue = value;
+    }
+  }
+
+  // Add some padding (10%) to the max value for better chart display
+  return maxValue * 1.1;
+}
+
+// Enhanced version that considers different data types based on selection
+List<BarChartGroupData>? getEnhancedBarGroupClaimsData(
+    String type,
+    int _selectedButton,
+    int customers_index,
+    int grid_index,
+    int days_difference) {
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return null;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  // Use different claims data based on selection
+  switch (_selectedButton) {
+    case 1: // Claims age distribution
+      return _getClaimsAgeDistributionBarData(profile, type);
+    case 2: // Claims member type distribution
+      return _getClaimsMemberTypeBarData(profile, type);
+    case 3: // Claims enforcement status
+      return _getClaimsEnforcementBarData(profile, type);
+    default:
+      return _getClaimsAgeDistributionBarData(profile, type);
+  }
+}
+
+List<BarChartGroupData> _getClaimsAgeDistributionBarData(
+    CustomerProfile profile, String type) {
+  GenderDistribution claimsGenderDistribution =
+      profile.claimsData.genderDistribution;
+  return _convertClaimsGenderDistributionToBarChart(
+      claimsGenderDistribution, type, 1, 0, 0);
+}
+
+List<BarChartGroupData> _getClaimsMemberTypeBarData(
+    CustomerProfile profile, String type) {
+  MembersCountsData claimsMembers = profile.claimsData.membersCountsData;
+
+  List<BarChartGroupData> barGroups = [];
+
+  // Define member types and their data
+  List<MapEntry<String, MemberTypeCount>> memberTypes = [
+    MapEntry('Main Member', claimsMembers.mainMember),
+    MapEntry('Partner', claimsMembers.partner),
+    MapEntry('Child', claimsMembers.child),
+    MapEntry('Adult Child', claimsMembers.adultChild),
+    MapEntry('Beneficiary', claimsMembers.beneficiary),
+    MapEntry('Extended Family', claimsMembers.extendedFamily),
+  ];
+
+  for (int i = 0; i < memberTypes.length; i++) {
+    final memberType = memberTypes[i];
+    final memberTypeCount = memberType.value;
+
+    double value = 0;
+    if (type == "male") {
+      value = memberTypeCount.genders.male.total.toDouble();
+    } else if (type == "female") {
+      value = memberTypeCount.genders.female.total.toDouble();
+    }
+
+    barGroups.add(
+      BarChartGroupData(
+        x: i,
+        barRods: [
+          BarChartRodData(
+            toY: value,
+            color: type == "male"
+                ? Colors.blue.withOpacity(0.8)
+                : Colors.pink.withOpacity(0.8),
+            width: 20,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ],
+      ),
+    );
+  }
+
+  return barGroups;
+}
+
+List<BarChartGroupData> _getClaimsEnforcementBarData(
+    CustomerProfile profile, String type) {
+  MembersCountsData claimsMembers = profile.claimsData.membersCountsData;
+
+  List<BarChartGroupData> barGroups = [];
+
+  // Show enforced vs not enforced claims by member type
+  List<MapEntry<String, MemberTypeCount>> memberTypes = [
+    MapEntry('Main Member', claimsMembers.mainMember),
+    MapEntry('Partner', claimsMembers.partner),
+    MapEntry('Child', claimsMembers.child),
+    MapEntry('Adult Child', claimsMembers.adultChild),
+    MapEntry('Beneficiary', claimsMembers.beneficiary),
+    MapEntry('Extended Family', claimsMembers.extendedFamily),
+  ];
+
+  for (int i = 0; i < memberTypes.length; i++) {
+    final memberType = memberTypes[i];
+    final memberTypeCount = memberType.value;
+
+    double enforcedValue = 0;
+    double notEnforcedValue = 0;
+
+    if (type == "male") {
+      enforcedValue = memberTypeCount.genders.male.enforced.toDouble();
+      notEnforcedValue = memberTypeCount.genders.male.notEnforced.toDouble();
+    } else if (type == "female") {
+      enforcedValue = memberTypeCount.genders.female.enforced.toDouble();
+      notEnforcedValue = memberTypeCount.genders.female.notEnforced.toDouble();
+    }
+
+    barGroups.add(
+      BarChartGroupData(
+        x: i,
+        barRods: [
+          BarChartRodData(
+            toY: enforcedValue,
+            color: Colors.green.withOpacity(0.8),
+            width: 8,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          BarChartRodData(
+            toY: notEnforcedValue,
+            color: Colors.red.withOpacity(0.8),
+            width: 8,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ],
+      ),
+    );
+  }
+
+  return barGroups;
+}
+
+// Enhanced max value calculation that considers different data types
+double getEnhancedBarMaxData(String type, int _selectedButton,
+    int customers_index, int grid_index, int days_difference) {
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return 0;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  switch (_selectedButton) {
+    case 1: // Age distribution
+      return _calculateMaxValueFromGenderDistribution(
+          profile.genderDistribution, type);
+    case 2: // Member type distribution
+      return _calculateMaxValueFromMemberTypes(profile.membersCountsData, type);
+    case 3: // Enforcement status
+      return _calculateMaxValueFromEnforcement(profile.membersCountsData, type);
+    default:
+      return _calculateMaxValueFromGenderDistribution(
+          profile.genderDistribution, type);
+  }
+}
+
+double getEnhancedBarMaxClaimsData(String type, int _selectedButton,
+    int customers_index, int grid_index, int days_difference) {
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return 0;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  switch (_selectedButton) {
+    case 1: // Claims age distribution
+      return _calculateMaxValueFromGenderDistribution(
+          profile.claimsData.genderDistribution, type);
+    case 2: // Claims member type distribution
+      return _calculateMaxValueFromMemberTypes(
+          profile.claimsData.membersCountsData, type);
+    case 3: // Claims enforcement status
+      return _calculateMaxValueFromEnforcement(
+          profile.claimsData.membersCountsData, type);
+    default:
+      return _calculateMaxValueFromGenderDistribution(
+          profile.claimsData.genderDistribution, type);
+  }
+}
+
+double _calculateMaxValueFromMemberTypes(
+    MembersCountsData membersData, String type) {
+  double maxValue = 0;
+
+  List<MemberTypeCount> memberTypes = [
+    membersData.mainMember,
+    membersData.partner,
+    membersData.child,
+    membersData.adultChild,
+    membersData.beneficiary,
+    membersData.extendedFamily,
+  ];
+
+  for (var memberType in memberTypes) {
+    double value = 0;
+    if (type == "male") {
+      value = memberType.genders.male.total.toDouble();
+    } else if (type == "female") {
+      value = memberType.genders.female.total.toDouble();
+    } else {
+      value = math.max(memberType.genders.male.total.toDouble(),
+          memberType.genders.female.total.toDouble());
+    }
+
+    if (value > maxValue) {
+      maxValue = value;
+    }
+  }
+
+  return maxValue * 1.1; // Add 10% padding
+}
+
+double _calculateMaxValueFromEnforcement(
+    MembersCountsData membersData, String type) {
+  double maxValue = 0;
+
+  List<MemberTypeCount> memberTypes = [
+    membersData.mainMember,
+    membersData.partner,
+    membersData.child,
+    membersData.adultChild,
+    membersData.beneficiary,
+    membersData.extendedFamily,
+  ];
+
+  for (var memberType in memberTypes) {
+    double enforcedValue = 0;
+    double notEnforcedValue = 0;
+
+    if (type == "male") {
+      enforcedValue = memberType.genders.male.enforced.toDouble();
+      notEnforcedValue = memberType.genders.male.notEnforced.toDouble();
+    } else if (type == "female") {
+      enforcedValue = memberType.genders.female.enforced.toDouble();
+      notEnforcedValue = memberType.genders.female.notEnforced.toDouble();
+    } else {
+      enforcedValue = math.max(memberType.genders.male.enforced.toDouble(),
+          memberType.genders.female.enforced.toDouble());
+      notEnforcedValue = math.max(
+          memberType.genders.male.notEnforced.toDouble(),
+          memberType.genders.female.notEnforced.toDouble());
+    }
+
+    double totalValue = enforcedValue + notEnforcedValue;
+    if (totalValue > maxValue) {
+      maxValue = totalValue;
+    }
+  }
+
+  return maxValue * 1.1; // Add 10% padding
+}
+
+int getCustomerCount(String type) {
+  // Check if customer profile has data
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return 0;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  // Get total gender counts from customer data
+  final genderTotals = profile.customerGenderTotals;
+
+  if (type == "male") {
+    return genderTotals.totalMale;
+  } else if (type == "female") {
+    return genderTotals.totalFemale;
+  }
+
+  if (kDebugMode) {
+    print(
+        "_selected_button ${_selectedButton} ${customers_index} ${grid_index}");
+  }
+
+  return 0;
+}
+
+int getCustomerClaimCount(String type) {
+  // Check if customer profile has data
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return 0;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  // Get total gender counts from claims data
+  final claimsGenderTotals = profile.claimsGenderTotals;
+
+  if (type == "male") {
+    return claimsGenderTotals.totalMale;
+  } else if (type == "female") {
+    return claimsGenderTotals.totalFemale;
+  }
+
+  return 0;
+}
+
+double getCustomerPercentage(String type) {
+  // Check if customer profile has data
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return 0.0;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  // Get gender percentages from customer data
+  final genderTotals = profile.customerGenderTotals;
+
+  if (type == "male") {
+    return genderTotals.malePercentage * 100; // Convert to percentage
+  } else if (type == "female") {
+    return genderTotals.femalePercentage * 100; // Convert to percentage
+  }
+
+  if (kDebugMode) {
+    print(
+        "_selected_button ${_selectedButton} ${customers_index} ${grid_index}");
+  }
+
+  return 0.0;
+}
+
+double getCustomerClaimsPercentage(String type) {
+  // Check if customer profile has data
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return 0.0;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  // Get gender percentages from claims data
+  final claimsGenderTotals = profile.claimsGenderTotals;
+
+  if (type == "male") {
+    return claimsGenderTotals.malePercentage * 100; // Convert to percentage
+  } else if (type == "female") {
+    return claimsGenderTotals.femalePercentage * 100; // Convert to percentage
+  }
+
+  return 0.0;
+}
+
+// Enhanced versions that consider different data types based on selection
+int getEnhancedCustomerCount(
+    String type, int selectedButton, int customersIndex, int gridIndex) {
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return 0;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  switch (selectedButton) {
+    case 1: // Age distribution
+      return _getAgeDistributionCount(profile, type, false);
+    case 2: // Member type distribution
+      return _getMemberTypeCount(profile, type, customersIndex, false);
+    case 3: // Enforcement status
+      return _getEnforcementCount(profile, type, customersIndex, false);
+    default:
+      return _getAgeDistributionCount(profile, type, false);
+  }
+}
+
+int getEnhancedCustomerClaimCount(
+    String type, int selectedButton, int customersIndex, int gridIndex) {
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return 0;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  switch (selectedButton) {
+    case 1: // Claims age distribution
+      return _getAgeDistributionCount(profile, type, true);
+    case 2: // Claims member type distribution
+      return _getMemberTypeCount(profile, type, customersIndex, true);
+    case 3: // Claims enforcement status
+      return _getEnforcementCount(profile, type, customersIndex, true);
+    default:
+      return _getAgeDistributionCount(profile, type, true);
+  }
+}
+
+double getEnhancedCustomerPercentage(
+    String type, int selectedButton, int customersIndex, int gridIndex) {
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return 0.0;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  switch (selectedButton) {
+    case 1: // Age distribution
+      return _getAgeDistributionPercentage(profile, type, false);
+    case 2: // Member type distribution
+      return _getMemberTypePercentage(profile, type, customersIndex, false);
+    case 3: // Enforcement status
+      return _getEnforcementPercentage(profile, type, customersIndex, false);
+    default:
+      return _getAgeDistributionPercentage(profile, type, false);
+  }
+}
+
+double getEnhancedCustomerClaimsPercentage(
+    String type, int selectedButton, int customersIndex, int gridIndex) {
+  if (Constants.currentCustomerProfile.isEmpty) {
+    return 0.0;
+  }
+
+  final profile = Constants.currentCustomerProfile;
+
+  switch (selectedButton) {
+    case 1: // Claims age distribution
+      return _getAgeDistributionPercentage(profile, type, true);
+    case 2: // Claims member type distribution
+      return _getMemberTypePercentage(profile, type, customersIndex, true);
+    case 3: // Claims enforcement status
+      return _getEnforcementPercentage(profile, type, customersIndex, true);
+    default:
+      return _getAgeDistributionPercentage(profile, type, true);
+  }
+}
+
+// Helper functions for different data types
+
+int _getAgeDistributionCount(
+    CustomerProfile profile, String type, bool isClaims) {
+  final genderDistribution = isClaims
+      ? profile.claimsData.genderDistribution
+      : profile.genderDistribution;
+
+  int totalCount = 0;
+
+  for (var ageGroup in genderDistribution.ageGroups.values) {
+    if (type == "male") {
+      totalCount += ageGroup.male;
+    } else if (type == "female") {
+      totalCount += ageGroup.female;
+    }
+  }
+
+  return totalCount;
+}
+
+int _getMemberTypeCount(
+    CustomerProfile profile, String type, int customersIndex, bool isClaims) {
+  final membersData = isClaims
+      ? profile.claimsData.membersCountsData
+      : profile.membersCountsData;
+
+  // Map customers_index to member types
+  List<MemberTypeCount> memberTypes = [
+    membersData.mainMember, // index 0
+    membersData.partner, // index 1
+    membersData.child, // index 2
+    membersData.adultChild, // index 3
+    membersData.beneficiary, // index 4
+    membersData.extendedFamily, // index 5
+  ];
+
+  if (customersIndex >= 0 && customersIndex < memberTypes.length) {
+    final memberType = memberTypes[customersIndex];
+
+    if (type == "male") {
+      return memberType.genders.male.total;
+    } else if (type == "female") {
+      return memberType.genders.female.total;
+    }
+  }
+
+  return 0;
+}
+
+int _getEnforcementCount(
+    CustomerProfile profile, String type, int customersIndex, bool isClaims) {
+  final membersData = isClaims
+      ? profile.claimsData.membersCountsData
+      : profile.membersCountsData;
+
+  // Map customers_index to member types
+  List<MemberTypeCount> memberTypes = [
+    membersData.mainMember,
+    membersData.partner,
+    membersData.child,
+    membersData.adultChild,
+    membersData.beneficiary,
+    membersData.extendedFamily,
+  ];
+
+  if (customersIndex >= 0 && customersIndex < memberTypes.length) {
+    final memberType = memberTypes[customersIndex];
+
+    if (type == "male") {
+      return memberType.genders.male.enforced; // or notEnforced based on needs
+    } else if (type == "female") {
+      return memberType
+          .genders.female.enforced; // or notEnforced based on needs
+    }
+  }
+
+  return 0;
+}
+
+double _getAgeDistributionPercentage(
+    CustomerProfile profile, String type, bool isClaims) {
+  final genderTotals =
+      isClaims ? profile.claimsGenderTotals : profile.customerGenderTotals;
+
+  if (type == "male") {
+    return genderTotals.malePercentage * 100;
+  } else if (type == "female") {
+    return genderTotals.femalePercentage * 100;
+  }
+
+  return 0.0;
+}
+
+double _getMemberTypePercentage(
+    CustomerProfile profile, String type, int customersIndex, bool isClaims) {
+  final membersData = isClaims
+      ? profile.claimsData.membersCountsData
+      : profile.membersCountsData;
+
+  // Get total members for percentage calculation
+  final totalMembers =
+      isClaims ? profile.claimsData.totalMembers : profile.totalMembers;
+
+  if (totalMembers == 0) return 0.0;
+
+  // Map customers_index to member types
+  List<MemberTypeCount> memberTypes = [
+    membersData.mainMember,
+    membersData.partner,
+    membersData.child,
+    membersData.adultChild,
+    membersData.beneficiary,
+    membersData.extendedFamily,
+  ];
+
+  if (customersIndex >= 0 && customersIndex < memberTypes.length) {
+    final memberType = memberTypes[customersIndex];
+
+    int count = 0;
+    if (type == "male") {
+      count = memberType.genders.male.total;
+    } else if (type == "female") {
+      count = memberType.genders.female.total;
+    }
+
+    return (count / totalMembers) * 100;
+  }
+
+  return 0.0;
+}
+
+double _getEnforcementPercentage(
+    CustomerProfile profile, String type, int customersIndex, bool isClaims) {
+  final membersData = isClaims
+      ? profile.claimsData.membersCountsData
+      : profile.membersCountsData;
+
+  // Map customers_index to member types
+  List<MemberTypeCount> memberTypes = [
+    membersData.mainMember,
+    membersData.partner,
+    membersData.child,
+    membersData.adultChild,
+    membersData.beneficiary,
+    membersData.extendedFamily,
+  ];
+
+  if (customersIndex >= 0 && customersIndex < memberTypes.length) {
+    final memberType = memberTypes[customersIndex];
+
+    if (type == "male") {
+      return memberType.genders.male.enforcedPercentage;
+    } else if (type == "female") {
+      return memberType.genders.female.enforcedPercentage;
+    }
+  }
+
+  return 0.0;
+}
+
+// Utility functions for specific member type queries
+
+int getMainMemberCount(String type, bool isClaims) {
+  if (Constants.currentCustomerProfile.isEmpty) return 0;
+
+  final profile = Constants.currentCustomerProfile;
+  final membersData = isClaims
+      ? profile.claimsData.membersCountsData
+      : profile.membersCountsData;
+
+  if (type == "male") {
+    return membersData.mainMember.genders.male.total;
+  } else if (type == "female") {
+    return membersData.mainMember.genders.female.total;
+  }
+
+  return 0;
+}
+
+int getPartnerCount(String type, bool isClaims) {
+  if (Constants.currentCustomerProfile.isEmpty) return 0;
+
+  final profile = Constants.currentCustomerProfile;
+  final membersData = isClaims
+      ? profile.claimsData.membersCountsData
+      : profile.membersCountsData;
+
+  if (type == "male") {
+    return membersData.partner.genders.male.total;
+  } else if (type == "female") {
+    return membersData.partner.genders.female.total;
+  }
+
+  return 0;
+}
+
+int getChildCount(String type, bool isClaims) {
+  if (Constants.currentCustomerProfile.isEmpty) return 0;
+
+  final profile = Constants.currentCustomerProfile;
+  final membersData = isClaims
+      ? profile.claimsData.membersCountsData
+      : profile.membersCountsData;
+
+  if (type == "male") {
+    return membersData.child.genders.male.total;
+  } else if (type == "female") {
+    return membersData.child.genders.female.total;
+  }
+
+  return 0;
 }

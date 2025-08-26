@@ -33,8 +33,7 @@ Future<void> getExecutiveCustomersReport(String dateFrom, String dateTo,
 
 // API Request handling
 Future<http.Response> _makeApiRequest(String dateFrom, String dateTo) async {
-  String baseUrl =
-      '${Constants.analitixAppBaseUrl}sales/view_normalized_customers_data/';
+  String baseUrl = '${Constants.analitixAppBaseUrl}sales/get_customers_data/';
   if (hasTemporaryTesterRole(Constants.myUserRoles)) {
     baseUrl = '${Constants.analitixAppBaseUrl}sales/get_customers_data_test/';
   }
@@ -56,16 +55,16 @@ Future<http.Response> _makeApiRequest(String dateFrom, String dateTo) async {
 void _setLoadingState(int selectedButton, int daysDifference, bool isLoading) {
   switch (selectedButton) {
     case 1:
-      isCustomerDataLoading1a = isLoading;
+      isCustomerDataLoading = isLoading;
       break;
     case 2:
-      isCustomerDataLoading2a = isLoading;
+      isCustomerDataLoading = isLoading;
       break;
     case 3:
       if (daysDifference <= 31) {
-        isCustomerDataLoading3a = isLoading;
+        isCustomerDataLoading = isLoading;
       } else {
-        isCustomerDataLoading3b = isLoading;
+        isCustomerDataLoading = isLoading;
       }
       break;
   }
@@ -133,21 +132,7 @@ void _resetSectionsList3b() {
 Future<void> _processApiResponse(Map<String, dynamic> jsonResponse,
     int selectedButton, int daysDifference) async {
   _setLoadingState(selectedButton, daysDifference, false);
-
-  switch (selectedButton) {
-    case 1:
-      await _processButton1Response(jsonResponse);
-      break;
-    case 2:
-      await _processButton2Response(jsonResponse);
-      break;
-    case 3:
-      await _processButton3Response(jsonResponse);
-      break;
-    default:
-      await _processButton4Response(jsonResponse);
-      break;
-  }
+  Constants.currentCustomerProfile = CustomerProfile.fromJson(jsonResponse);
 
   customersReportValue.value++;
 }

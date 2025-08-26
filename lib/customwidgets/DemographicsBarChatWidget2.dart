@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../models/CustomerProfile.dart';
 import 'CustomCard.dart';
 
-class DemographicsBarChartWidget extends StatelessWidget {
+class DemographicsBarChartWidget2 extends StatelessWidget {
   final CustomerProfile customerProfile;
   final int selectedButton;
   final int targetIndex;
@@ -13,7 +13,7 @@ class DemographicsBarChartWidget extends StatelessWidget {
   final int gridIndex;
   final int daysDifference;
 
-  const DemographicsBarChartWidget({
+  const DemographicsBarChartWidget2({
     Key? key,
     required this.customerProfile,
     required this.selectedButton,
@@ -35,7 +35,7 @@ class DemographicsBarChartWidget extends StatelessWidget {
           color: Colors.white,
           elevation: 6,
           child: Padding(
-            padding: const EdgeInsets.only(left: 36.0, right: 0, top: 12),
+            padding: const EdgeInsets.only(left: 36.0, right: 36.0, top: 12),
             child: _hasBarChartData()
                 ? Row(
                     children: [
@@ -385,42 +385,8 @@ class DemographicsBarChartWidget extends StatelessWidget {
   }
 
   GenderDistribution _getGenderDistributionByCategory(bool isClaims) {
-    // Use the age_distribution_by_gender_and_type data from JSON
-    final sourceData = isClaims
-        ? customerProfile.claimsData.genderDistribution.ageGroups
-        : customerProfile.genderDistribution.ageGroups;
-
-    // Create filtered gender distribution based on gridIndex
-    Map<String, AgeGenderData> filteredAgeGroups = {};
-
-    // Get the member type data based on grid selection
-    final membersData = isClaims
-        ? customerProfile.claimsData.membersCountsData
-        : customerProfile.membersCountsData;
-
-    switch (gridIndex) {
-      case 0: // Main Members only
-        //filteredAgeGroups = _filterByMemberType(sourceData, ['main_member']);
-        break;
-
-      case 1: // All Lives - sum all member types
-        filteredAgeGroups = sourceData; // Use all data
-        break;
-
-      case 2: // Dependents - Children + Adult Children + Beneficiaries
-        // filteredAgeGroups = _filterByMemberType(sourceData, ['child', 'adult_child', 'beneficiary']);
-        break;
-
-      case 3: // Spouse/Partners only
-        //filteredAgeGroups = _filterByMemberType(sourceData, ['partner']);
-        break;
-
-      default:
-        filteredAgeGroups = sourceData;
-        break;
-    }
-
-    return GenderDistribution(ageGroups: filteredAgeGroups);
+    // Use the proper implementation that handles all member types
+    return _getGenderDistributionByCategory2(isClaims);
   }
 
   GenderDistribution _getGenderDistributionByCategory2(bool isClaims) {
@@ -543,34 +509,34 @@ class DemographicsBarChartWidget extends StatelessWidget {
     int memberTypeTotal = 0;
     switch (memberType) {
       case 'main_member':
-        memberTypeTotal = gender == 'male'
+        memberTypeTotal = (gender == 'male'
             ? membersData.mainMember.genders.male.total
-            : membersData.mainMember.genders.female.total;
+            : membersData.mainMember.genders.female.total) as int;
         break;
       case 'child':
-        memberTypeTotal = gender == 'male'
+        memberTypeTotal = (gender == 'male'
             ? membersData.child.genders.male.total
-            : membersData.child.genders.female.total;
+            : membersData.child.genders.female.total) as int;
         break;
       case 'beneficiary':
-        memberTypeTotal = gender == 'male'
+        memberTypeTotal = (gender == 'male'
             ? membersData.beneficiary.genders.male.total
-            : membersData.beneficiary.genders.female.total;
+            : membersData.beneficiary.genders.female.total) as int;
         break;
       case 'adult_child':
-        memberTypeTotal = gender == 'male'
+        memberTypeTotal = (gender == 'male'
             ? membersData.adultChild.genders.male.total
-            : membersData.adultChild.genders.female.total;
+            : membersData.adultChild.genders.female.total) as int;
         break;
       case 'partner':
-        memberTypeTotal = gender == 'male'
+        memberTypeTotal = (gender == 'male'
             ? membersData.partner.genders.male.total
-            : membersData.partner.genders.female.total;
+            : membersData.partner.genders.female.total) as int;
         break;
       case 'extended_family':
-        memberTypeTotal = gender == 'male'
+        memberTypeTotal = (gender == 'male'
             ? membersData.extendedFamily.genders.male.total
-            : membersData.extendedFamily.genders.female.total;
+            : membersData.extendedFamily.genders.female.total) as int;
         break;
       default:
         return 0;
@@ -620,14 +586,10 @@ class DemographicsBarChartWidget extends StatelessWidget {
       '111-120'
     ];
 
-    // Calculate total for percentage calculation
-    int totalGenderCount = 0;
+    // Calculate total population (male + female combined) for percentage calculation
+    int totalPopulation = 0;
     for (var ageGroup in genderDistribution.ageGroups.values) {
-      if (type == "male") {
-        totalGenderCount += ageGroup.male;
-      } else if (type == "female") {
-        totalGenderCount += ageGroup.female;
-      }
+      totalPopulation += ageGroup.male + ageGroup.female;
     }
 
     int index = 0;
@@ -645,9 +607,9 @@ class DemographicsBarChartWidget extends StatelessWidget {
           count = ageGenderData.female;
         }
 
-        // Convert to percentage (0-100 scale)
-        if (totalGenderCount > 0) {
-          percentageValue = (count / totalGenderCount) * 100;
+        // Convert to percentage (0-100 scale) relative to total population
+        if (totalPopulation > 0) {
+          percentageValue = (count / totalPopulation) * 100;
         }
       }
 

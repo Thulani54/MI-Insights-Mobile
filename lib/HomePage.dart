@@ -13,6 +13,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_insights/Login.dart';
 import 'package:mi_insights/constants/Constants.dart';
+import 'package:mi_insights/screens/Reports/Executive/ExecutiveMicroLearnReport.dart';
 import 'package:motion_toast/motion_toast.dart';
 import 'package:mi_insights/screens/ComingSoon.dart';
 import 'package:mi_insights/screens/PolicyInformation.dart';
@@ -86,7 +87,7 @@ Map<String, List<sectionmodel>> m1 = {
         "assets/icons/reprint_logo.svg"),
     sectionmodel("Morale Index", null, "morale_index",
         "assets/icons/people_matters.svg"), // Requires password
-    sectionmodel("Micro-Learn", VaLuetainmenthome(), "marketing",
+    sectionmodel("Micro-Learn", ExecutiveMicroLearnReport(), "marketing",
         "assets/icons/micro_l.svg"),
   ],
   "insurer": [
@@ -114,7 +115,7 @@ Map<String, List<sectionmodel>> m1 = {
         "assets/icons/reprint_logo.svg"),
     sectionmodel("Morale Index", null, "morale_index",
         "assets/icons/people_matters.svg"), // Requires password
-    sectionmodel("Micro-Learn", VaLuetainmenthome(), "marketing",
+    sectionmodel("Micro-Learn", ExecutiveMicroLearnReport(), "marketing",
         "assets/icons/micro_l.svg"),
   ],
   "temporary_tester": [
@@ -142,7 +143,7 @@ Map<String, List<sectionmodel>> m1 = {
         "assets/icons/reprint_logo.svg"),
     sectionmodel("Morale Index", null, "morale_index",
         "assets/icons/people_matters.svg"), // Requires password
-    sectionmodel("Micro-Learn", VaLuetainmenthome(), "marketing",
+    sectionmodel("Micro-Learn", ExecutiveMicroLearnReport(), "marketing",
         "assets/icons/micro_l.svg"),
   ],
   "sales": [
@@ -154,7 +155,7 @@ Map<String, List<sectionmodel>> m1 = {
         "assets/icons/commission_logo.svg"), // Requires password
     sectionmodel(
         "My Chats", myChats(), "attendance", "assets/icons/my_chats.svg"),
-    sectionmodel("Micro-Learn", VaLuetainmenthome(), "marketing",
+    sectionmodel("Micro-Learn", ExecutiveMicroLearnReport(), "marketing",
         "assets/icons/micro_l.svg"),
   ]
 };
@@ -1259,7 +1260,7 @@ class _MyHomePageState extends State<MyHomePage> with InactivityLogoutMixin {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              VaLuetainmenthome()));
+                                              ExecutiveMicroLearnReport()));
                                 } else if (index == 10) {
                                   _showPasswordDialog();
                                 } else if (sectionsList[index].id ==
