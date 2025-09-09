@@ -2025,7 +2025,7 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                                             targetValue: Constants
                                                                 .currentSalesDataResponse
                                                                 .salesInfo
-                                                                .targetSet
+                                                                .target
                                                                 .toDouble()))),
                                           ],
                                         ),
@@ -2061,7 +2061,12 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                       Text("Sales Overview (12 Months View)"),
                                 ),
                       SalesOverviewChart(
-                        isLoading: false, // Set based on your loading state
+                        isLoading: (((_selectedButton == 1 &&
+                                isSalesDataLoading1a == true) ||
+                            (_selectedButton == 2 &&
+                                isSalesDataLoading2a == true) ||
+                            (_selectedButton == 3 &&
+                                isSalesDataLoading3a == true))),
                         selectedButton: _selectedButton,
                         daysDifference: days_difference,
                         salesIndex: sales_index,
@@ -2258,7 +2263,12 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                         gridIndex: grid_index,
                         salesIndex: sales_index,
                         salesDataResponse: Constants.currentSalesDataResponse,
-                        isLoading: false,
+                        isLoading: (((_selectedButton == 1 &&
+                                isSalesDataLoading1a == true) ||
+                            (_selectedButton == 2 &&
+                                isSalesDataLoading2a == true) ||
+                            (_selectedButton == 3 &&
+                                isSalesDataLoading3a == true))),
                       ),
 
                       _selectedButton == 1
@@ -2287,7 +2297,12 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                         daysDifference: days_difference,
                         salesIndex: sales_index, // 0, 1, or 2
                         salesDataResponse: Constants.currentSalesDataResponse,
-                        isLoading: false,
+                        isLoading: (((_selectedButton == 1 &&
+                                isSalesDataLoading1a == true) ||
+                            (_selectedButton == 2 &&
+                                isSalesDataLoading2a == true) ||
+                            (_selectedButton == 3 &&
+                                isSalesDataLoading3a == true))),
                       ),
 
                       /*      Padding(
@@ -6205,10 +6220,10 @@ class ChartWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ChartWidget> createState() => _ChartWidgetState();
+  State<ChartWidget> createState() => _NtuChartWidgetState();
 }
 
-class _ChartWidgetState extends State<ChartWidget> {
+class _NtuChartWidgetState extends State<ChartWidget> {
   int ntu_lapse_index = 0;
   double _sliderPosition3 = 0;
   bool isSalesDataLoading2a = false;
@@ -6593,13 +6608,15 @@ class _ChartWidgetState extends State<ChartWidget> {
 
   // Get month abbreviation from x value
   String _getMonthAbbreviationFromX(double x) {
-    // Get the 12-month data source
+    // Get the full x-axis range (not the hidden data)
     List<MonthlyRateData> sourceData = ntu_lapse_index == 0
-        ? (widget.salesDataResponse?.ntuResultList12Months ?? [])
-        : (widget.salesDataResponse?.lapseResultList12Months ?? []);
+        ? _getLast12MonthsForXAxis(
+            widget.salesDataResponse?.ntuResultList12Months ?? [])
+        : _getLast12MonthsForXAxis(
+            widget.salesDataResponse?.lapseResultList12Months ?? []);
 
     try {
-      // Use array index to find the matching month
+      // Use array index to find the matching month (x is now index-based 0-11)
       int index = x.toInt();
       if (index >= 0 && index < sourceData.length) {
         String dateStr = sourceData[index].date;
@@ -6689,18 +6706,97 @@ class _ChartWidgetState extends State<ChartWidget> {
     return widget.salesDataResponse?.lapseResultList12Months ?? [];
   }
 
+  // Helper method to find last month with data (non-zero or has activity)
+  int _findLastMonthWithData(List<MonthlyRateData> data) {
+    for (int i = data.length - 1; i >= 0; i--) {
+      // Consider a month has data if it has non-zero rate or has total_sales/total_inforced
+      if (data[i].rate > 0.0 ||
+          (data[i].totalSales != null && data[i].totalSales! > 0) ||
+          (data[i].totalInforced != null && data[i].totalInforced! > 0)) {
+        return i;
+      }
+    }
+    return data.isNotEmpty ? data.length - 1 : 0;
+  }
+
+  // Helper method to find the last non-zero point index
+  int _findLastNonZeroIndex(List<MonthlyRateData> data) {
+    for (int i = data.length - 1; i >= 0; i--) {
+      if (data[i].rate > 0.0 ||
+          (data[i].totalSales != null && data[i].totalSales! > 0) ||
+          (data[i].totalInforced != null && data[i].totalInforced! > 0)) {
+        return i;
+      }
+    }
+    return data.isNotEmpty ? data.length - 1 : -1;
+  }
+
+  // Helper method to get last 12 months for x-axis (always full range)
+  List<MonthlyRateData> _getLast12MonthsForXAxis(List<MonthlyRateData> data) {
+    if (data.isEmpty) return [];
+
+    // Always use the last month in the data for x-axis range
+    int lastDataIndex = data.length - 1;
+    int startIndex = (lastDataIndex + 1 - 12).clamp(0, data.length);
+    int endIndex = lastDataIndex + 1;
+
+    return data.sublist(startIndex, endIndex);
+  }
+
+  // Helper method to get data points with hidden trailing non-zero points
+  List<MonthlyRateData> _getLast12MonthsFromLastData(
+      List<MonthlyRateData> data) {
+    if (data.isEmpty) return [];
+
+    // Get the full 12-month range for x-axis consistency
+    List<MonthlyRateData> full12Months = _getLast12MonthsForXAxis(data);
+
+    // Find the original last non-zero index in the full data
+    int lastNonZeroIndex = _findLastNonZeroIndex(data);
+
+    // If we found a last non-zero point, hide some trailing non-zero points
+    if (lastNonZeroIndex >= 0 && lastNonZeroIndex < data.length - 1) {
+      // Calculate how many months to hide (hide last 1-2 non-zero months)
+      int monthsToHide = 2; // Adjust this value as needed
+      int cutoffIndex =
+          (lastNonZeroIndex - monthsToHide + 1).clamp(0, lastNonZeroIndex);
+
+      // Map the cutoff to the 12-month range
+      int dataStartIndex = data.length - full12Months.length;
+      int relativeCutoff = cutoffIndex - dataStartIndex;
+
+      if (relativeCutoff > 0 && relativeCutoff < full12Months.length) {
+        // Create modified data with zero values for hidden months
+        List<MonthlyRateData> modifiedData = List.from(full12Months);
+        for (int i = relativeCutoff; i < modifiedData.length; i++) {
+          // Set rate to 0 but keep the month structure for x-axis
+          modifiedData[i] = MonthlyRateData(
+            x: modifiedData[i].x,
+            rate: 0.0,
+            count: 0,
+            totalSales: 0,
+            totalInforced: 0,
+            date: modifiedData[i].date,
+          );
+        }
+        return modifiedData;
+      }
+    }
+
+    return full12Months;
+  }
+
   // Helper method to convert MonthlyRateData to FlSpot
   List<FlSpot> _convertMonthlyRateToFlSpot(
       List<MonthlyRateData> monthlyRateList) {
-    // Only take the last 12 months if there are more than 12 entries
-    List<MonthlyRateData> last12Months = monthlyRateList.length > 12
-        ? monthlyRateList.sublist(monthlyRateList.length - 12)
-        : monthlyRateList;
+    // Get last 12 months ending with the last month that has data
+    List<MonthlyRateData> last12Months =
+        _getLast12MonthsFromLastData(monthlyRateList);
 
     return last12Months.asMap().entries.map((entry) {
       int index = entry.key;
       MonthlyRateData monthlyRate = entry.value;
-      // Use index as x-coordinate for consistent spacing (0-11 for 12 months)
+      // Use index as x-coordinate for consistent 12-month spacing (0-11)
       return FlSpot(index.toDouble(), monthlyRate.rate);
     }).toList();
   }
@@ -6708,14 +6804,16 @@ class _ChartWidgetState extends State<ChartWidget> {
   // Chart bounds methods
   double _getMinX() {
     List<FlSpot> data = _getChartData();
-    return data.isEmpty ? 0 : 0; // Always start from 0 for consistent view
+    return data.isEmpty
+        ? 0
+        : 0; // Always start from 0 for consistent 12-month view
   }
 
   double _getMaxX() {
     List<FlSpot> data = _getChartData();
     return data.isEmpty
         ? 11
-        : (data.length - 1).toDouble(); // 0-11 for 12 months
+        : (data.length - 1).toDouble(); // 0-11 for up to 12 months
   }
 
   // Get maximum Y value for chart scaling
@@ -6759,7 +6857,7 @@ String formatLargeNumber3c(String number) {
 }
 
 // Extension methods for utility functions
-extension ChartUtils on _ChartWidgetState {
+extension ChartUtils on _NtuChartWidgetState {
   String getMonthAbbreviation(int month) {
     const months = [
       '',
@@ -7395,32 +7493,70 @@ class _AgentDataWidgetState extends State<AgentDataWidget> {
   }
 
   Widget _buildEmployeeInfoCard(EmployeeRate employee) {
-    return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      surfaceTintColor: Colors.white,
-      color: Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, left: 4),
-              child: Text(employee.employeeName),
-            ),
-            SizedBox(height: 6),
-            Text(' • Total Sales: ${employee.totalSales}',
-                style: TextStyle(fontSize: 11)),
-            Text(
-                ' • Total Collected: R ${formatLargeNumber(employee.totalCollected.toStringAsFixed(1))}',
-                style: TextStyle(fontSize: 11)),
-            Text(' • NTU Rate: ${employee.ntuRate.toStringAsFixed(1)}%',
-                style: TextStyle(fontSize: 11)),
-            Text(' • Lapse Rate: ${employee.lapseRate.toStringAsFixed(1)}%',
-                style: TextStyle(fontSize: 11)),
-            SizedBox(height: 16),
-          ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: CustomCard(
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        surfaceTintColor: Colors.white,
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0, left: 4),
+                child: Text(employee.employeeName,
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600)),
+              ),
+              SizedBox(height: 6),
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0, left: 4),
+                child: Text("Collection Summary",
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500)),
+              ),
+              SizedBox(height: 6),
+              Text(' • Total Sales: ${employee.totalSales}',
+                  style: TextStyle(fontSize: 11)),
+              SizedBox(height: 6),
+              Text(
+                  ' • Total Collected: R ${formatLargeNumber(employee.totalCollected.toStringAsFixed(1))}',
+                  style: TextStyle(fontSize: 11)),
+              SizedBox(height: 6),
+              Text(' • NTU Rate: ${employee.ntuRate.toStringAsFixed(1)}%',
+                  style: TextStyle(fontSize: 11)),
+              SizedBox(height: 4),
+              Text(' • Lapse Rate: ${employee.lapseRate.toStringAsFixed(1)}%',
+                  style: TextStyle(fontSize: 11)),
+              SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0, left: 4),
+                child: Text("Collections by Colection type",
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500)),
+              ),
+              _buildCollectionBreakdownRow('• Cash:',
+                  'R ${formatLargeNumber(employee.cashCollected.toStringAsFixed(0))}'),
+              _buildCollectionBreakdownRow('• Debit Order:',
+                  'R ${formatLargeNumber(employee.debitOrderCollected.toStringAsFixed(0))}'),
+              _buildCollectionBreakdownRow('• EFT:',
+                  'R ${formatLargeNumber(employee.eftCollected.toStringAsFixed(0))}'),
+              _buildCollectionBreakdownRow('• Persal:',
+                  'R ${formatLargeNumber(employee.persalCollected.toStringAsFixed(0))}'),
+              _buildCollectionBreakdownRow('• Salary Deduction:',
+                  'R ${formatLargeNumber(employee.salaryDeductionCollected.toStringAsFixed(0))}'),
+              SizedBox(height: 8),
+            ],
+          ),
         ),
       ),
     );
@@ -7508,6 +7644,28 @@ class _AgentDataWidgetState extends State<AgentDataWidget> {
   String formatLargeNumber2(String number) {
     // Implement your number formatting logic
     return number;
+  }
+
+  Widget _buildCollectionBreakdownRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        right: 12.0,
+        bottom: 4.0,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+          ),
+          Text(
+            value,
+            style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+          ),
+        ],
+      ),
+    );
   }
 }
 

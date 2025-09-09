@@ -1,8 +1,3 @@
-// Add other necessary imports from your project here
-// ...
-
-// --- Environment Configuration Start ---
-
 /// Defines the available runtime environments.
 enum EnvironmentType { dev, uat, prod }
 

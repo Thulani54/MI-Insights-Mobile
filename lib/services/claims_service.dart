@@ -15,9 +15,14 @@ import '../models/OrdinalSales.dart';
 import '../screens/Reports/ClaimsReport.dart';
 
 Map claims_by_category1a = {};
-Future<void> getClaimsReport(String date_from, String date_to,
-    int selectedButton1, BuildContext context) async {
+Future<void> getClaimsReport(
+  String date_from,
+  String date_to,
+  int selectedButton1,
+  BuildContext context,
+) async {
   String baseUrl = "${Constants.analitixAppBaseUrl}sales/get_claims_data/";
+
   if (Constants.myUserRoleLevel.toLowerCase() == "tester") {
     baseUrl = "${Constants.analitixAppBaseUrl}sales/get_claims_data_test/";
   }
@@ -26,8 +31,8 @@ Future<void> getClaimsReport(String date_from, String date_to,
     Map<String, String>? payload = {
       "client_id": Constants.cec_client_id.toString(),
       // "client_id": Constants.cec_client_id.toString(),
-      "start_date": date_from,
-      "end_date": date_to
+      "start_date": "2025-08-01",
+      "end_date": date_to,
     };
     if (kDebugMode) {
       print("baseUrl_claims $baseUrl ${selectedButton1}");
@@ -49,14 +54,7 @@ Future<void> getClaimsReport(String date_from, String date_to,
     double totalDeclinedCount = 0;
     claimsValue.value++;
 
-    await http
-        .post(
-      Uri.parse(
-        baseUrl,
-      ),
-      body: payload,
-    )
-        .then((value) {
+    await http.post(Uri.parse(baseUrl), body: payload).then((value) {
       http.Response response = value;
       if (kDebugMode) {
         //print(response.bodyBytes);
@@ -78,10 +76,7 @@ Future<void> getClaimsReport(String date_from, String date_to,
             claims_sections_gridmodel("Within 24 Hours", "0"),
             claims_sections_gridmodel("Within 2 Days", "0"),
             claims_sections_gridmodel("Within 5 Days", "0"),
-            claims_sections_gridmodel(
-              "After 5 Days",
-              "0",
-            )
+            claims_sections_gridmodel("After 5 Days", "0"),
           ];
           Constants.claims_sectionsList1a = [
             claims_sections_gridmodel("Within 5 Hours", "0%"),
@@ -93,57 +88,21 @@ Future<void> getClaimsReport(String date_from, String date_to,
           ];
 
           Constants.claims_sectionsList1b = [
-            claims_sections_gridmodel(
-              "Within 5 Hours",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 12 Hours",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 24 Hours",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 2 Days",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 5 Days",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "After 5 Days",
-              "0",
-            ),
+            claims_sections_gridmodel("Within 5 Hours", "0"),
+            claims_sections_gridmodel("Within 12 Hours", "0"),
+            claims_sections_gridmodel("Within 24 Hours", "0"),
+            claims_sections_gridmodel("Within 2 Days", "0"),
+            claims_sections_gridmodel("Within 5 Days", "0"),
+            claims_sections_gridmodel("After 5 Days", "0"),
           ];
 
           Constants.claims_sectionsList1b_1 = [
-            claims_sections_gridmodel(
-              "Within 5 Hours",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 12 Hours",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 24 Hours",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 2 Days",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 5 Days",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "After 5 Days",
-              "0",
-            ),
+            claims_sections_gridmodel("Within 5 Hours", "0"),
+            claims_sections_gridmodel("Within 12 Hours", "0"),
+            claims_sections_gridmodel("Within 24 Hours", "0"),
+            claims_sections_gridmodel("Within 2 Days", "0"),
+            claims_sections_gridmodel("Within 5 Days", "0"),
+            claims_sections_gridmodel("After 5 Days", "0"),
           ];
 
           Constants.claims_sectionsList2c = [
@@ -174,10 +133,7 @@ Future<void> getClaimsReport(String date_from, String date_to,
             claims_sections_gridmodel("Within 24 Hours", "0"),
             claims_sections_gridmodel("Within 2 Days", "0"),
             claims_sections_gridmodel("Within 5 Days", "0"),
-            claims_sections_gridmodel(
-              "After 5 Days",
-              "0",
-            )
+            claims_sections_gridmodel("After 5 Days", "0"),
           ];
           Constants.claims_sectionsList2a = [
             claims_sections_gridmodel("Within 5 Hours", "0%"),
@@ -189,57 +145,21 @@ Future<void> getClaimsReport(String date_from, String date_to,
           ];
 
           Constants.claims_sectionsList2b = [
-            claims_sections_gridmodel(
-              "Within 5 Hours",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 12 Hours",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 24 Hours",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 2 Days",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 5 Days",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "After 5 Days",
-              "0",
-            ),
+            claims_sections_gridmodel("Within 5 Hours", "0"),
+            claims_sections_gridmodel("Within 12 Hours", "0"),
+            claims_sections_gridmodel("Within 24 Hours", "0"),
+            claims_sections_gridmodel("Within 2 Days", "0"),
+            claims_sections_gridmodel("Within 5 Days", "0"),
+            claims_sections_gridmodel("After 5 Days", "0"),
           ];
 
           Constants.claims_sectionsList2b_1 = [
-            claims_sections_gridmodel(
-              "Within 5 Hours",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 12 Hours",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 24 Hours",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 2 Days",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "Within 5 Days",
-              "0",
-            ),
-            claims_sections_gridmodel(
-              "After 5 Days",
-              "0",
-            ),
+            claims_sections_gridmodel("Within 5 Hours", "0"),
+            claims_sections_gridmodel("Within 12 Hours", "0"),
+            claims_sections_gridmodel("Within 24 Hours", "0"),
+            claims_sections_gridmodel("Within 2 Days", "0"),
+            claims_sections_gridmodel("Within 5 Days", "0"),
+            claims_sections_gridmodel("After 5 Days", "0"),
           ];
 
           Constants.claims_sectionsList2c = [
@@ -266,8 +186,9 @@ Future<void> getClaimsReport(String date_from, String date_to,
           Constants.claims_maxY5a = 0;
           Constants.claims_details1a = [];
           Constants.claims_deceased_ages_list1a = [];
-          Constants.claims_deceased_ages_list1a =
-              List<int>.from(jsonResponse["deceased_ages_list"] ?? []);
+          Constants.claims_deceased_ages_list1a = List<int>.from(
+            jsonResponse["deceased_ages_list"] ?? [],
+          );
 
           Constants.claims_section_list1a = jsonResponse;
 
@@ -275,20 +196,22 @@ Future<void> getClaimsReport(String date_from, String date_to,
           for (var value in claims_details1a) {
             Map m = value as Map;
             // print("dfgffg1 ${m["policy_number"]} ${m["amount"]} $m");
-            Constants.claims_details1a.add(Claims_Details(
-              m["claim_reference"] ?? "",
-              m["policy_num"] ?? "",
-              m["claim_first_name"] ?? "",
-              m["claim_last_name"] ?? "",
-              m["claim_cell_number"] ?? "",
-              double.parse((m["claim_amount"] ?? 0).toString()),
-              m["policy_status"] ?? "",
-              m["policy_reference"] ?? "",
-              m["policy_life"] ?? "",
-              m["claim_id_num"] ?? "",
-              m["claim_date"] ?? "",
-              m["claim_status_description"] ?? "",
-            ));
+            Constants.claims_details1a.add(
+              Claims_Details(
+                m["claim_reference"] ?? "",
+                m["policy_num"] ?? "",
+                m["claim_first_name"] ?? "",
+                m["claim_last_name"] ?? "",
+                m["claim_cell_number"] ?? "",
+                double.parse((m["claim_amount"] ?? 0).toString()),
+                m["policy_status"] ?? "",
+                m["policy_reference"] ?? "",
+                m["policy_life"] ?? "",
+                m["claim_id_num"] ?? "",
+                m["claim_date"] ?? "",
+                m["claim_status_description"] ?? "",
+              ),
+            );
           }
           isLoadingClaimsData = false;
           claimsValue.value++;
@@ -299,26 +222,29 @@ Future<void> getClaimsReport(String date_from, String date_to,
           Constants.claims_details2a = [];
           Constants.claims_maxY5b = 0;
           Constants.claims_deceased_ages_list2a = [];
-          Constants.claims_deceased_ages_list2a =
-              List<int>.from(jsonResponse["deceased_ages_list"] ?? []);
+          Constants.claims_deceased_ages_list2a = List<int>.from(
+            jsonResponse["deceased_ages_list"] ?? [],
+          );
           Constants.claims_section_list2a = jsonResponse;
           List claims_details2a = jsonResponse["claims_list"] ?? [];
           for (var value in claims_details2a) {
             Map m = value as Map;
-            Constants.claims_details2a.add(Claims_Details(
-              m["claim_reference"] ?? "",
-              m["policy_num"] ?? "",
-              m["claim_first_name"] ?? "",
-              m["claim_last_name"] ?? "",
-              m["claim_cell_number"] ?? "",
-              double.parse((m["claim_amount"] ?? 0).toString()),
-              m["policy_status"] ?? "",
-              m["policy_reference"] ?? "",
-              m["policy_life"] ?? "",
-              m["claim_id_num"] ?? "",
-              m["claim_date"] ?? "",
-              m["claim_status_description"] ?? "",
-            ));
+            Constants.claims_details2a.add(
+              Claims_Details(
+                m["claim_reference"] ?? "",
+                m["policy_num"] ?? "",
+                m["claim_first_name"] ?? "",
+                m["claim_last_name"] ?? "",
+                m["claim_cell_number"] ?? "",
+                double.parse((m["claim_amount"] ?? 0).toString()),
+                m["policy_status"] ?? "",
+                m["policy_reference"] ?? "",
+                m["policy_life"] ?? "",
+                m["claim_id_num"] ?? "",
+                m["claim_date"] ?? "",
+                m["claim_status_description"] ?? "",
+              ),
+            );
           }
           isLoadingClaimsData2 = false;
           claimsValue.value++;
@@ -328,26 +254,29 @@ Future<void> getClaimsReport(String date_from, String date_to,
           Constants.claims_details3a = [];
           Constants.claims_maxY5c = 0;
           Constants.claims_deceased_ages_list3a = [];
-          Constants.claims_deceased_ages_list3a =
-              List<int>.from(jsonResponse["deceased_ages_list"] ?? []);
+          Constants.claims_deceased_ages_list3a = List<int>.from(
+            jsonResponse["deceased_ages_list"] ?? [],
+          );
           Constants.claims_section_list3a = jsonResponse;
           List claims_details3a = jsonResponse["claims_list"] ?? [];
           for (var value in claims_details3a) {
             Map m = value as Map;
-            Constants.claims_details3a.add(Claims_Details(
-              m["claim_reference"] ?? "",
-              m["policy_num"] ?? "",
-              m["claim_first_name"] ?? "",
-              m["claim_last_name"] ?? "",
-              m["claim_cell_number"] ?? "",
-              double.parse((m["claim_amount"] ?? 0).toString()),
-              m["policy_status"] ?? "",
-              m["policy_reference"] ?? "",
-              m["policy_life"] ?? "",
-              m["claim_id_num"] ?? "",
-              m["claim_date"] ?? "",
-              m["claim_status_description"] ?? "",
-            ));
+            Constants.claims_details3a.add(
+              Claims_Details(
+                m["claim_reference"] ?? "",
+                m["policy_num"] ?? "",
+                m["claim_first_name"] ?? "",
+                m["claim_last_name"] ?? "",
+                m["claim_cell_number"] ?? "",
+                double.parse((m["claim_amount"] ?? 0).toString()),
+                m["policy_status"] ?? "",
+                m["policy_reference"] ?? "",
+                m["policy_life"] ?? "",
+                m["claim_id_num"] ?? "",
+                m["claim_date"] ?? "",
+                m["claim_status_description"] ?? "",
+              ),
+            );
           }
           claimsValue.value++;
         } else {
@@ -356,27 +285,30 @@ Future<void> getClaimsReport(String date_from, String date_to,
           Constants.claims_details3a = [];
           Constants.claims_maxY5d = 0;
           Constants.claims_deceased_ages_list3b = [];
-          Constants.claims_deceased_ages_list3b =
-              List<int>.from(jsonResponse["deceased_ages_list"] ?? []);
+          Constants.claims_deceased_ages_list3b = List<int>.from(
+            jsonResponse["deceased_ages_list"] ?? [],
+          );
           Constants.claims_section_list3a = jsonResponse;
 
           List claims_details3a = jsonResponse["claims_list"] ?? [];
           for (var value in claims_details3a) {
             Map m = value as Map;
-            Constants.claims_details3a.add(Claims_Details(
-              m["claim_reference"] ?? "",
-              m["policy_num"] ?? "",
-              m["claim_first_name"] ?? "",
-              m["claim_last_name"] ?? "",
-              m["claim_cell_number"] ?? "",
-              double.parse((m["claim_amount"] ?? 0).toString()),
-              m["policy_status"] ?? "",
-              m["policy_reference"] ?? "",
-              m["policy_life"] ?? "",
-              m["claim_id_num"] ?? "",
-              m["claim_date"] ?? "",
-              m["claim_status_description"] ?? "",
-            ));
+            Constants.claims_details3a.add(
+              Claims_Details(
+                m["claim_reference"] ?? "",
+                m["policy_num"] ?? "",
+                m["claim_first_name"] ?? "",
+                m["claim_last_name"] ?? "",
+                m["claim_cell_number"] ?? "",
+                double.parse((m["claim_amount"] ?? 0).toString()),
+                m["policy_status"] ?? "",
+                m["policy_reference"] ?? "",
+                m["policy_life"] ?? "",
+                m["claim_id_num"] ?? "",
+                m["claim_date"] ?? "",
+                m["claim_status_description"] ?? "",
+              ),
+            );
           }
           claimsValue.value++;
         }
@@ -418,6 +350,9 @@ Future<void> getClaimsReport(String date_from, String date_to,
             };
 
             Constants.claims_sum_paid1a = jsonResponse["sum_paid"] ?? 0.0;
+            Constants.myClaimsSumOfPremiums1 = double.parse(
+              (jsonResponse["sum_of_premiums"] ?? 0.0).toString(),
+            );
             /* Map<String, dynamic> completedClaims =
                 jsonResponse['claims_amounts']['complete'];
             totalCompleted = 0;
@@ -471,11 +406,13 @@ Future<void> getClaimsReport(String date_from, String date_to,
             Constants.claims_count_declined1a = totalDeclinedCount;
             Constants.claims_count_ongoing1a = totalOngoingCount;*/
 
-            Map<String, int> claimsByCategory =
-                Map<String, int>.from(jsonResponse["claims_by_category"]);
+            Map<String, int> claimsByCategory = Map<String, int>.from(
+              jsonResponse["claims_by_category"],
+            );
 
-            claims_by_category1a_processed =
-                preprocessClaimsData(claimsByCategory);
+            claims_by_category1a_processed = preprocessClaimsData(
+              claimsByCategory,
+            );
 
             claimsByCategory.forEach((key, value) {
               if (predefinedCategories.containsKey(key)) {
@@ -513,22 +450,27 @@ Future<void> getClaimsReport(String date_from, String date_to,
             Constants.claims_maxY5a = 0;
             if (jsonResponse["claims_ratio_dict"] != null) {
               if (jsonResponse["claims_ratio_dict"][formattedDate] != null) {
-                Constants.claims_ratio1a = double.parse(
-                        (jsonResponse["claims_ratio_dict"][formattedDate])
-                            .toStringAsFixed(2)) *
+                Constants.claims_ratio1a =
+                    double.parse(
+                      (jsonResponse["claims_ratio_dict"][formattedDate])
+                          .toStringAsFixed(2),
+                    ) *
                     100;
               }
             } else {
               Constants.claims_ratio1a = 0;
             }
 
-            Constants.claims_paid_claims_amount1a =
-                double.parse((jsonResponse["sum_paid"] ?? "0").toString());
+            Constants.claims_paid_claims_amount1a = double.parse(
+              (jsonResponse["sum_paid"] ?? "0").toString(),
+            );
             Constants.claims_outstanding_claims_amount1a = double.parse(
-                (jsonResponse["sum_outstanding"] ?? "0").toString());
+              (jsonResponse["sum_outstanding"] ?? "0").toString(),
+            );
 
-            Constants.claims_repudiated_claims_amount1a =
-                double.parse((jsonResponse["sum_declined"] ?? "0").toString());
+            Constants.claims_repudiated_claims_amount1a = double.parse(
+              (jsonResponse["sum_declined"] ?? "0").toString(),
+            );
             // Constants.claims_sectionsList1a_1 = [
             //   claims_sections_gridmodel("Within 5 Hours",
             //       (m2["complete"]?["Within 5 Hours"] ?? "0").toString()),
@@ -604,25 +546,41 @@ Future<void> getClaimsReport(String date_from, String date_to,
             //   claims_sections_gridmodel("After 12 Hours", ("0").toString()),
             // ];
 
-            Constants.claims_ordinary_sales1a
-                .add(OrdinalSales("All", totalClaims));
-            Constants.claims_ordinary_sales1a.add(OrdinalSales(
-                "Logged", jsonResponse["claims_by_category"]["Logged"] ?? 0));
-            Constants.claims_ordinary_sales1a.add(OrdinalSales("Processed",
-                jsonResponse["claims_by_category"]["Processed"] ?? 0));
-            Constants.claims_ordinary_sales1a.add(OrdinalSales("Finalised",
-                jsonResponse["claims_by_category"]["deceased Finalised"] ?? 0));
+            Constants.claims_ordinary_sales1a.add(
+              OrdinalSales("All", totalClaims),
+            );
+            Constants.claims_ordinary_sales1a.add(
+              OrdinalSales(
+                "Logged",
+                jsonResponse["claims_by_category"]["Logged"] ?? 0,
+              ),
+            );
+            Constants.claims_ordinary_sales1a.add(
+              OrdinalSales(
+                "Processed",
+                jsonResponse["claims_by_category"]["Processed"] ?? 0,
+              ),
+            );
+            Constants.claims_ordinary_sales1a.add(
+              OrdinalSales(
+                "Finalised",
+                jsonResponse["claims_by_category"]["deceased Finalised"] ?? 0,
+              ),
+            );
 
-            Constants.claims_bardata5a.add(charts.Series<OrdinalSales, String>(
-              id: 'BranchSales',
-              domainFn: (OrdinalSales sale, _) => sale.branch,
-              measureFn: (OrdinalSales sale, _) => sale.sales,
-              data: Constants.claims_ordinary_sales1a,
-              labelAccessorFn: (OrdinalSales sale, _) => '${sale.sales}',
-            ));
+            Constants.claims_bardata5a.add(
+              charts.Series<OrdinalSales, String>(
+                id: 'BranchSales',
+                domainFn: (OrdinalSales sale, _) => sale.branch,
+                measureFn: (OrdinalSales sale, _) => sale.sales,
+                data: Constants.claims_ordinary_sales1a,
+                labelAccessorFn: (OrdinalSales sale, _) => '${sale.sales}',
+              ),
+            );
             print("fgjgghhgghgh4 $jsonResponse");
             Constants.claims_droupedChartData1 = processDataForClaimsGroups1(
-                jsonResponse["claims_by_type"] ?? []);
+              jsonResponse["claims_by_type"] ?? [],
+            );
             claimsValue.value++;
           }
           if (selectedButton1 == 2) {
@@ -660,18 +618,20 @@ Future<void> getClaimsReport(String date_from, String date_to,
               }
             });
 
-// Calculate the average claims ratio if count is not zero to avoid division by zero
+            // Calculate the average claims ratio if count is not zero to avoid division by zero
             double averageClaimsRatio = count > 0 ? (sum / count) : 0;
 
-// Convert average to percentage and format
+            // Convert average to percentage and format
             Constants.claims_ratio2a =
                 double.parse(averageClaimsRatio.toStringAsFixed(2)) * 100;
 
-            Map<String, int> claimsByCategory =
-                Map<String, int>.from(jsonResponse["claims_by_category"]);
+            Map<String, int> claimsByCategory = Map<String, int>.from(
+              jsonResponse["claims_by_category"],
+            );
             print("ffggffg ${claimsByCategory}");
-            claims_by_category1a_processed =
-                preprocessClaimsData(claimsByCategory);
+            claims_by_category1a_processed = preprocessClaimsData(
+              claimsByCategory,
+            );
             claimsByCategory.forEach((key, value) {
               if (predefinedCategories.containsKey(key)) {
                 predefinedCategories[key] = value;
@@ -682,7 +642,8 @@ Future<void> getClaimsReport(String date_from, String date_to,
 
             int indexbar1 = 0;
             predefinedCategories.forEach((category, value) {
-              final color = categoryColors[category] ??
+              final color =
+                  categoryColors[category] ??
                   Colors.lightBlueAccent; // Fallback color
               final barGroup = BarChartGroupData(
                 x: indexbar1,
@@ -728,124 +689,205 @@ Future<void> getClaimsReport(String date_from, String date_to,
             Constants.claims_maxY5a = 0;
             /* Constants.claims_paid_claims_amount2a =
                 double.parse((jsonResponse["sum_paid"] ?? "0").toString());*/
-            Constants.claims_paid_claims_amount2a =
-                double.parse((jsonResponse["sum_paid"] ?? "0").toString());
+            Constants.claims_paid_claims_amount2a = double.parse(
+              (jsonResponse["sum_paid"] ?? "0").toString(),
+            );
+            Constants.myClaimsSumOfPremiums2 = double.parse(
+              (jsonResponse["sum_of_premiums"] ?? 0.0).toString(),
+            );
 
             Constants.claims_outstanding_claims_amount1b = double.parse(
-                (jsonResponse["sum_outstanding"] ?? "0").toString());
+              (jsonResponse["sum_outstanding"] ?? "0").toString(),
+            );
             print("dgfgg ${jsonResponse["sum_outstanding"]}");
 
-            Constants.claims_repudiated_claims_amount1b =
-                double.parse((jsonResponse["sum_declined"] ?? "0").toString());
+            Constants.claims_repudiated_claims_amount1b = double.parse(
+              (jsonResponse["sum_declined"] ?? "0").toString(),
+            );
 
             Constants.claims_sectionsList2a_1 = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m2["complete"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m2["complete"]?["Within 12 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 24 Hours",
-                  (m2["complete"]?["Within 24 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 2 Days",
-                  (m2["complete"]?["Within 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 5 Days",
-                  (m2["complete"]?["After 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("After 5 Days",
-                  (m2["complete"]?["After 5 Days"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m2["complete"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m2["complete"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 24 Hours",
+                (m2["complete"]?["Within 24 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 2 Days",
+                (m2["complete"]?["Within 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 5 Days",
+                (m2["complete"]?["After 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "After 5 Days",
+                (m2["complete"]?["After 5 Days"] ?? "0").toString(),
+              ),
             ];
             Constants.claims_sectionsList2a = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m1["complete"]?["Within 5 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m1["complete"]?["Within 12 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("Within 24 Hours",
-                  (m1["complete"]?["Within 24 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("Within 2 Days",
-                  (m1["complete"]?["Within 48 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("Within 5 Days",
-                  (m1["complete"]?["After 48 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("After 5 Days",
-                  (m1["complete"]?["After 5 Days"] ?? "0%").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m1["complete"]?["Within 5 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m1["complete"]?["Within 12 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 24 Hours",
+                (m1["complete"]?["Within 24 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 2 Days",
+                (m1["complete"]?["Within 48 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 5 Days",
+                (m1["complete"]?["After 48 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "After 5 Days",
+                (m1["complete"]?["After 5 Days"] ?? "0%").toString(),
+              ),
             ];
 
             Constants.claims_sectionsList2b = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m1["ongoing"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m1["ongoing"]?["Within 12 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 24 Hours",
-                  (m1["ongoing"]?["Within 24 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 2 Days",
-                  (m1["ongoing"]?["Within 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 5 Days",
-                  (m1["ongoing"]?["After 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("After 5 Days",
-                  (m1["ongoing"]?["After 5 Days"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m1["ongoing"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m1["ongoing"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 24 Hours",
+                (m1["ongoing"]?["Within 24 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 2 Days",
+                (m1["ongoing"]?["Within 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 5 Days",
+                (m1["ongoing"]?["After 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "After 5 Days",
+                (m1["ongoing"]?["After 5 Days"] ?? "0").toString(),
+              ),
             ];
 
             Constants.claims_sectionsList2b_1 = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m2["ongoing"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m2["ongoing"]?["Within 12 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 24 Hours",
-                  (m2["ongoing"]?["Within 24 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 2 Days",
-                  (m2["ongoing"]?["Within 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 5 Days",
-                  (m2["ongoing"]?["After 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("After 5 Days",
-                  (m2["ongoing"]?["After 5 Days"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m2["ongoing"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m2["ongoing"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 24 Hours",
+                (m2["ongoing"]?["Within 24 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 2 Days",
+                (m2["ongoing"]?["Within 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 5 Days",
+                (m2["ongoing"]?["After 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "After 5 Days",
+                (m2["ongoing"]?["After 5 Days"] ?? "0").toString(),
+              ),
             ];
 
             Constants.claims_sectionsList2c = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m1["declined"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m1["declined"]?["Within 12 Hours"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m1["declined"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m1["declined"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
               claims_sections_gridmodel("After 12 Hours", ("0").toString()),
             ];
 
             Constants.claims_sectionsList2c_1 = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m2["declined"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m2["declined"]?["Within 12 Hours"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m2["declined"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m2["declined"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
               claims_sections_gridmodel("After 12 Hours", ("0").toString()),
             ];
             Constants.claims_droupedChartData2 = processDataForClaimsGroups1(
-                jsonResponse["claims_by_type"] ?? []);
+              jsonResponse["claims_by_type"] ?? [],
+            );
             print("dgjhsd2 ${Constants.claims_droupedChartData2}");
             claimsValue.value++;
 
             if (kDebugMode) {
               print(
-                  "Constants.claims_sectionsList1a ${Constants.claims_sectionsList2a}");
+                "Constants.claims_sectionsList1a ${Constants.claims_sectionsList2a}",
+              );
             }
 
-            Constants.claims_ordinary_sales2a
-                .add(OrdinalSales("All", totalClaims));
-            Constants.claims_ordinary_sales2a.add(OrdinalSales("Logged",
-                jsonResponse["claims_by_category"]["intimation"] ?? 0));
-            Constants.claims_ordinary_sales2a.add(OrdinalSales("Processed",
-                jsonResponse["claims_by_category"]["complete"] ?? 0));
-            Constants.claims_ordinary_sales2a.add(OrdinalSales(
+            Constants.claims_ordinary_sales2a.add(
+              OrdinalSales("All", totalClaims),
+            );
+            Constants.claims_ordinary_sales2a.add(
+              OrdinalSales(
+                "Logged",
+                jsonResponse["claims_by_category"]["intimation"] ?? 0,
+              ),
+            );
+            Constants.claims_ordinary_sales2a.add(
+              OrdinalSales(
+                "Processed",
+                jsonResponse["claims_by_category"]["complete"] ?? 0,
+              ),
+            );
+            Constants.claims_ordinary_sales2a.add(
+              OrdinalSales(
                 "Finalised",
-                jsonResponse["claims_by_category"]["deceased collection"] ??
-                    0));
+                jsonResponse["claims_by_category"]["deceased collection"] ?? 0,
+              ),
+            );
 
-            Constants.claims_bardata5b.add(charts.Series<OrdinalSales, String>(
-              id: 'BranchSales',
-              domainFn: (OrdinalSales sale, _) => sale.branch,
-              measureFn: (OrdinalSales sale, _) => sale.sales,
-              data: Constants.claims_ordinary_sales2a,
-              labelAccessorFn: (OrdinalSales sale, _) => '${sale.sales}',
-            ));
+            Constants.claims_bardata5b.add(
+              charts.Series<OrdinalSales, String>(
+                id: 'BranchSales',
+                domainFn: (OrdinalSales sale, _) => sale.branch,
+                measureFn: (OrdinalSales sale, _) => sale.sales,
+                data: Constants.claims_ordinary_sales2a,
+                labelAccessorFn: (OrdinalSales sale, _) => '${sale.sales}',
+              ),
+            );
             Constants.claims_droupedChartData2 = processDataForClaimsGroups1(
-                jsonResponse["claims_by_type"] ?? []);
+              jsonResponse["claims_by_type"] ?? [],
+            );
             // print("dgjhsd2 ${Constants.claims_droupedChartData2}");
           }
           if (selectedButton1 == 3 && days_difference1 <= 31) {
             Constants.claims_sum_paid3a = jsonResponse["sum_paid"];
+            Constants.myClaimsSumOfPremiums3 = double.parse(
+              (jsonResponse["sum_of_premiums"] ?? 0.0).toString(),
+            );
             Constants.claims_by_category3a =
                 jsonResponse["claims_by_category"] ?? {};
             Constants.claims_sum_by_category3a =
@@ -863,9 +905,11 @@ Future<void> getClaimsReport(String date_from, String date_to,
             String formattedDate =
                 "${thisMonth.year}-${thisMonth.month.toString().padLeft(2, '0')}-01";
 
-            Constants.claims_ratio3a = double.parse(
-                    (jsonResponse["claims_ratio_dict"][formattedDate])
-                        .toStringAsFixed(2)) *
+            Constants.claims_ratio3a =
+                double.parse(
+                  (jsonResponse["claims_ratio_dict"][formattedDate])
+                      .toStringAsFixed(2),
+                ) *
                 100;
 
             Map<String, int> predefinedCategories = {
@@ -874,11 +918,13 @@ Future<void> getClaimsReport(String date_from, String date_to,
               "Finalised": 0,
             };
 
-            Map<String, int> claimsByCategory =
-                Map<String, int>.from(jsonResponse["claims_by_category"]);
+            Map<String, int> claimsByCategory = Map<String, int>.from(
+              jsonResponse["claims_by_category"],
+            );
             print("ffggffg ${claimsByCategory}");
-            claims_by_category1a_processed =
-                preprocessClaimsData(claimsByCategory);
+            claims_by_category1a_processed = preprocessClaimsData(
+              claimsByCategory,
+            );
             claimsByCategory.forEach((key, value) {
               if (predefinedCategories.containsKey(key)) {
                 predefinedCategories[key] = value;
@@ -889,7 +935,8 @@ Future<void> getClaimsReport(String date_from, String date_to,
 
             int indexbar1 = 0;
             predefinedCategories.forEach((category, value) {
-              final color = categoryColors[category] ??
+              final color =
+                  categoryColors[category] ??
                   Colors.lightBlueAccent; // Fallback color
               final barGroup = BarChartGroupData(
                 x: indexbar1,
@@ -909,89 +956,149 @@ Future<void> getClaimsReport(String date_from, String date_to,
 
             Constants.claims_barChartData3 = barChartData;
 
-            Constants.claims_paid_claims_amount1c =
-                double.parse((jsonResponse["sum_paid"] ?? "0").toString());
+            Constants.claims_paid_claims_amount1c = double.parse(
+              (jsonResponse["sum_paid"] ?? "0").toString(),
+            );
             Constants.claims_outstanding_claims_amount1c = double.parse(
-                (jsonResponse["sum_outstanding"] ?? "0").toString());
+              (jsonResponse["sum_outstanding"] ?? "0").toString(),
+            );
 
-            Constants.claims_repudiated_claims_amount1c =
-                double.parse((jsonResponse["sum_declined"] ?? "0").toString());
+            Constants.claims_repudiated_claims_amount1c = double.parse(
+              (jsonResponse["sum_declined"] ?? "0").toString(),
+            );
             Constants.claims_sectionsList3a_1 = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m2["complete"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m2["complete"]?["Within 12 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 24 Hours",
-                  (m2["complete"]?["Within 24 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 2 Days",
-                  (m2["complete"]?["Within 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 5 Days",
-                  (m2["complete"]?["After 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("After 5 Days",
-                  (m2["complete"]?["After 5 Days"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m2["complete"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m2["complete"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 24 Hours",
+                (m2["complete"]?["Within 24 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 2 Days",
+                (m2["complete"]?["Within 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 5 Days",
+                (m2["complete"]?["After 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "After 5 Days",
+                (m2["complete"]?["After 5 Days"] ?? "0").toString(),
+              ),
             ];
             Constants.claims_sectionsList3a = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m1["complete"]?["Within 5 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m1["complete"]?["Within 12 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("Within 24 Hours",
-                  (m1["complete"]?["Within 24 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("Within 2 Days",
-                  (m1["complete"]?["Within 48 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("Within 5 Days",
-                  (m1["complete"]?["After 48 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("After 5 Days",
-                  (m1["complete"]?["After 5 Days"] ?? "0%").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m1["complete"]?["Within 5 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m1["complete"]?["Within 12 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 24 Hours",
+                (m1["complete"]?["Within 24 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 2 Days",
+                (m1["complete"]?["Within 48 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 5 Days",
+                (m1["complete"]?["After 48 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "After 5 Days",
+                (m1["complete"]?["After 5 Days"] ?? "0%").toString(),
+              ),
             ];
 
             Constants.claims_sectionsList3b = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m1["ongoing"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m1["ongoing"]?["Within 12 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 24 Hours",
-                  (m1["ongoing"]?["Within 24 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 2 Days",
-                  (m1["ongoing"]?["Within 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 5 Days",
-                  (m1["ongoing"]?["After 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("After 5 Days",
-                  (m1["ongoing"]?["After 5 Days"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m1["ongoing"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m1["ongoing"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 24 Hours",
+                (m1["ongoing"]?["Within 24 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 2 Days",
+                (m1["ongoing"]?["Within 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 5 Days",
+                (m1["ongoing"]?["After 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "After 5 Days",
+                (m1["ongoing"]?["After 5 Days"] ?? "0").toString(),
+              ),
             ];
 
             Constants.claims_sectionsList3b_1 = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m2["ongoing"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m2["ongoing"]?["Within 12 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 24 Hours",
-                  (m2["ongoing"]?["Within 24 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 2 Days",
-                  (m2["ongoing"]?["Within 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 5 Days",
-                  (m2["ongoing"]?["After 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("After 5 Days",
-                  (m2["ongoing"]?["After 5 Days"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m2["ongoing"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m2["ongoing"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 24 Hours",
+                (m2["ongoing"]?["Within 24 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 2 Days",
+                (m2["ongoing"]?["Within 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 5 Days",
+                (m2["ongoing"]?["After 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "After 5 Days",
+                (m2["ongoing"]?["After 5 Days"] ?? "0").toString(),
+              ),
             ];
 
             Constants.claims_sectionsList3c = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m1["declined"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m1["declined"]?["Within 12 Hours"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m1["declined"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m1["declined"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
               claims_sections_gridmodel("After 12 Hours", ("0").toString()),
             ];
 
             Constants.claims_sectionsList3c_1 = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m2["declined"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m2["declined"]?["Within 12 Hours"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m2["declined"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m2["declined"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
               claims_sections_gridmodel("After 12 Hours", ("0").toString()),
             ];
-            Constants.claims_droupedChartData3 =
-                processDataForClaimsGroups1(jsonResponse["claims_by_type"]);
+            Constants.claims_droupedChartData3 = processDataForClaimsGroups1(
+              jsonResponse["claims_by_type"],
+            );
             claimsValue.value++;
             isLoadingClaimsData = false;
             claimsValue.value++;
@@ -1020,10 +1127,10 @@ Future<void> getClaimsReport(String date_from, String date_to,
               }
             });
 
-// Calculate the average claims ratio if count is not zero to avoid division by zero
+            // Calculate the average claims ratio if count is not zero to avoid division by zero
             double averageClaimsRatio = count > 0 ? (sum / count) : 0;
 
-// Convert average to percentage and format
+            // Convert average to percentage and format
             Constants.claims_ratio3b =
                 double.parse(averageClaimsRatio.toStringAsFixed(2)) * 100;
 
@@ -1033,11 +1140,13 @@ Future<void> getClaimsReport(String date_from, String date_to,
               "Finalised": 0,
             };
 
-            Map<String, int> claimsByCategory =
-                Map<String, int>.from(jsonResponse["claims_by_category"]);
+            Map<String, int> claimsByCategory = Map<String, int>.from(
+              jsonResponse["claims_by_category"],
+            );
             print("ffggffg ${claimsByCategory}");
-            claims_by_category1a_processed =
-                preprocessClaimsData(claimsByCategory);
+            claims_by_category1a_processed = preprocessClaimsData(
+              claimsByCategory,
+            );
             claimsByCategory.forEach((key, value) {
               if (predefinedCategories.containsKey(key)) {
                 predefinedCategories[key] = value;
@@ -1048,7 +1157,8 @@ Future<void> getClaimsReport(String date_from, String date_to,
 
             int indexbar1 = 0;
             predefinedCategories.forEach((category, value) {
-              final color = categoryColors[category] ??
+              final color =
+                  categoryColors[category] ??
                   Colors.lightBlueAccent; // Fallback color
               final barGroup = BarChartGroupData(
                 x: indexbar1,
@@ -1068,109 +1178,186 @@ Future<void> getClaimsReport(String date_from, String date_to,
 
             Constants.claims_barChartData4 = barChartData;
 
-            Constants.claims_paid_claims_amount1d =
-                double.parse((jsonResponse["sum_paid"] ?? "0").toString());
+            Constants.claims_paid_claims_amount1d = double.parse(
+              (jsonResponse["sum_paid"] ?? "0").toString(),
+            );
+            Constants.myClaimsSumOfPremiums3 = double.parse(
+              (jsonResponse["sum_of_premiums"] ?? 0.0).toString(),
+            );
             Constants.claims_outstanding_claims_amount1d = double.parse(
-                (jsonResponse["sum_outstanding"] ?? "0").toString());
+              (jsonResponse["sum_outstanding"] ?? "0").toString(),
+            );
 
-            Constants.claims_repudiated_claims_amount1d =
-                double.parse((jsonResponse["sum_declined"] ?? "0").toString());
+            Constants.claims_repudiated_claims_amount1d = double.parse(
+              (jsonResponse["sum_declined"] ?? "0").toString(),
+            );
             Constants.claims_maxY5d = 0;
             Constants.claims_sectionsList3a_1 = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m2["complete"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m2["complete"]?["Within 12 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 24 Hours",
-                  (m2["complete"]?["Within 24 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 2 Days",
-                  (m2["complete"]?["Within 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 5 Days",
-                  (m2["complete"]?["After 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("After 5 Days",
-                  (m2["complete"]?["After 5 Days"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m2["complete"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m2["complete"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 24 Hours",
+                (m2["complete"]?["Within 24 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 2 Days",
+                (m2["complete"]?["Within 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 5 Days",
+                (m2["complete"]?["After 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "After 5 Days",
+                (m2["complete"]?["After 5 Days"] ?? "0").toString(),
+              ),
             ];
             Constants.claims_sectionsList3a = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m1["complete"]?["Within 5 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m1["complete"]?["Within 12 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("Within 24 Hours",
-                  (m1["complete"]?["Within 24 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("Within 2 Days",
-                  (m1["complete"]?["Within 48 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("Within 5 Days",
-                  (m1["complete"]?["After 48 Hours"] ?? "0%").toString()),
-              claims_sections_gridmodel("After 5 Days",
-                  (m1["complete"]?["After 5 Days"] ?? "0%").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m1["complete"]?["Within 5 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m1["complete"]?["Within 12 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 24 Hours",
+                (m1["complete"]?["Within 24 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 2 Days",
+                (m1["complete"]?["Within 48 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 5 Days",
+                (m1["complete"]?["After 48 Hours"] ?? "0%").toString(),
+              ),
+              claims_sections_gridmodel(
+                "After 5 Days",
+                (m1["complete"]?["After 5 Days"] ?? "0%").toString(),
+              ),
             ];
 
             Constants.claims_sectionsList3b = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m1["ongoing"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m1["ongoing"]?["Within 12 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 24 Hours",
-                  (m1["ongoing"]?["Within 24 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 2 Days",
-                  (m1["ongoing"]?["Within 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 5 Days",
-                  (m1["ongoing"]?["After 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("After 5 Days",
-                  (m1["ongoing"]?["After 5 Days"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m1["ongoing"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m1["ongoing"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 24 Hours",
+                (m1["ongoing"]?["Within 24 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 2 Days",
+                (m1["ongoing"]?["Within 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 5 Days",
+                (m1["ongoing"]?["After 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "After 5 Days",
+                (m1["ongoing"]?["After 5 Days"] ?? "0").toString(),
+              ),
             ];
 
             Constants.claims_sectionsList3b_1 = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m2["ongoing"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m2["ongoing"]?["Within 12 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 24 Hours",
-                  (m2["ongoing"]?["Within 24 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 2 Days",
-                  (m2["ongoing"]?["Within 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 5 Days",
-                  (m2["ongoing"]?["After 48 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("After 5 Days",
-                  (m2["ongoing"]?["After 5 Days"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m2["ongoing"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m2["ongoing"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 24 Hours",
+                (m2["ongoing"]?["Within 24 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 2 Days",
+                (m2["ongoing"]?["Within 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 5 Days",
+                (m2["ongoing"]?["After 48 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "After 5 Days",
+                (m2["ongoing"]?["After 5 Days"] ?? "0").toString(),
+              ),
             ];
-            Constants.claims_droupedChartData4 =
-                processDataForClaimsGroups1(jsonResponse["claims_by_type"]);
+            Constants.claims_droupedChartData4 = processDataForClaimsGroups1(
+              jsonResponse["claims_by_type"],
+            );
             claimsValue.value++;
 
             Constants.claims_sectionsList3c = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m1["declined"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m1["declined"]?["Within 12 Hours"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m1["declined"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m1["declined"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
               claims_sections_gridmodel("After 12 Hours", ("0").toString()),
             ];
 
             Constants.claims_sectionsList3c_1 = [
-              claims_sections_gridmodel("Within 5 Hours",
-                  (m2["declined"]?["Within 5 Hours"] ?? "0").toString()),
-              claims_sections_gridmodel("Within 12 Hours",
-                  (m2["declined"]?["Within 12 Hours"] ?? "0").toString()),
+              claims_sections_gridmodel(
+                "Within 5 Hours",
+                (m2["declined"]?["Within 5 Hours"] ?? "0").toString(),
+              ),
+              claims_sections_gridmodel(
+                "Within 12 Hours",
+                (m2["declined"]?["Within 12 Hours"] ?? "0").toString(),
+              ),
               claims_sections_gridmodel("After 12 Hours", ("0").toString()),
             ];
 
-            Constants.claims_ordinary_sales3b
-                .add(OrdinalSales("All", totalClaims));
-            Constants.claims_ordinary_sales3b.add(OrdinalSales("Logged",
-                jsonResponse["claims_by_category"]["intimation"] ?? 0));
-            Constants.claims_ordinary_sales3b.add(OrdinalSales("Processed",
-                jsonResponse["claims_by_category"]["complete"] ?? 0));
-            Constants.claims_ordinary_sales3b.add(OrdinalSales(
+            Constants.claims_ordinary_sales3b.add(
+              OrdinalSales("All", totalClaims),
+            );
+            Constants.claims_ordinary_sales3b.add(
+              OrdinalSales(
+                "Logged",
+                jsonResponse["claims_by_category"]["intimation"] ?? 0,
+              ),
+            );
+            Constants.claims_ordinary_sales3b.add(
+              OrdinalSales(
+                "Processed",
+                jsonResponse["claims_by_category"]["complete"] ?? 0,
+              ),
+            );
+            Constants.claims_ordinary_sales3b.add(
+              OrdinalSales(
                 "Finalised",
-                jsonResponse["claims_by_category"]["deceased collection"] ??
-                    0));
-            Constants.claims_bardata5d.add(charts.Series<OrdinalSales, String>(
+                jsonResponse["claims_by_category"]["deceased collection"] ?? 0,
+              ),
+            );
+            Constants.claims_bardata5d.add(
+              charts.Series<OrdinalSales, String>(
                 id: 'BranchSales',
                 domainFn: (OrdinalSales sale, _) => sale.branch,
                 measureFn: (OrdinalSales sale, _) => sale.sales,
                 data: Constants.claims_ordinary_sales3b,
                 // Set a label accessor to control the text of the bar label.
-                labelAccessorFn: (OrdinalSales sale, _) => '${sale.sales}'));
+                labelAccessorFn: (OrdinalSales sale, _) => '${sale.sales}',
+              ),
+            );
             isLoadingClaimsData = false;
             claimsValue.value++;
           }
@@ -1187,9 +1374,7 @@ Future<void> getClaimsReport(String date_from, String date_to,
   }
 }
 
-String getEmployeeById(
-  int cec_employeeid,
-) {
+String getEmployeeById(int cec_employeeid) {
   String result = "";
   for (var employee in Constants.cec_employees) {
     if (employee['cec_employeeid'].toString() == cec_employeeid.toString()) {
@@ -1204,9 +1389,7 @@ String getEmployeeById(
     return result;
 }
 
-String getBranchById(
-  int branch_id,
-) {
+String getBranchById(int branch_id) {
   String result = "";
   for (var branch in Constants.all_branches) {
     if (branch['cec_organo_branches_id'].toString() == branch_id.toString()) {
@@ -1244,15 +1427,16 @@ Map<String, Color> categoryColors = {
 };
 
 List<ClaimStageCategory> processDataForClaimsGroups1(
-    Map<String, dynamic> claims_by_type2) {
+  Map<String, dynamic> claims_by_type2,
+) {
   Map<String, dynamic> claims_by_type = {};
   if (claims_by_type2.isEmpty) {
     claims_by_type = {
       "claims_by_type": {
         "assessing": 0,
         "complete": 0,
-        "deceased collection": 0
-      }
+        "deceased collection": 0,
+      },
     };
   } else {
     claims_by_type = claims_by_type2;
@@ -1280,28 +1464,32 @@ List<ClaimStageCategory> processDataForClaimsGroups1(
 
   Map<String, Map<String, int>> reorganized = {
     "Processing": {
-      for (var k in status_to_main_cat.keys
-          .where((k) => status_to_main_cat[k] == "Processing"))
-        k: 0
+      for (var k in status_to_main_cat.keys.where(
+        (k) => status_to_main_cat[k] == "Processing",
+      ))
+        k: 0,
     },
     "Lodging": {
-      for (var k in status_to_main_cat.keys
-          .where((k) => status_to_main_cat[k] == "Lodging"))
-        k: 0
+      for (var k in status_to_main_cat.keys.where(
+        (k) => status_to_main_cat[k] == "Lodging",
+      ))
+        k: 0,
     },
     "Closed": {
-      for (var k in status_to_main_cat.keys
-          .where((k) => status_to_main_cat[k] == "Closed"))
-        k: 0
+      for (var k in status_to_main_cat.keys.where(
+        (k) => status_to_main_cat[k] == "Closed",
+      ))
+        k: 0,
     },
-    "Other": {}
+    "Other": {},
   };
 
   claims_by_type.forEach((type, count) {
     String mainCat = status_to_main_cat[type] ?? "Other";
     // Ensure count is treated as an int
-    int countAsInt =
-        (count is int) ? count : int.tryParse(count.toString()) ?? 0;
+    int countAsInt = (count is int)
+        ? count
+        : int.tryParse(count.toString()) ?? 0;
     reorganized[mainCat]![type] = countAsInt;
   });
 
@@ -1309,14 +1497,19 @@ List<ClaimStageCategory> processDataForClaimsGroups1(
 
   reorganized.forEach((categoryName, categoryItems) {
     List<ClaimStageCategoryItem> items = categoryItems.entries
-        .map((entry) => ClaimStageCategoryItem(
-            title: capitalizeWords(entry.key), count: entry.value))
+        .map(
+          (entry) => ClaimStageCategoryItem(
+            title: capitalizeWords(entry.key),
+            count: entry.value,
+          ),
+        )
         .toList();
 
     items.sort((a, b) => b.count.compareTo(a.count));
 
     categories.add(
-        ClaimStageCategory(name: capitalizeWords(categoryName), items: items));
+      ClaimStageCategory(name: capitalizeWords(categoryName), items: items),
+    );
   });
 
   return categories;

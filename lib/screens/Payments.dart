@@ -1,10 +1,18 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:community_charts_flutter/community_charts_flutter.dart' as charts;
+import 'package:community_charts_flutter/community_charts_flutter.dart'
+    as charts;
 import 'package:intl/intl.dart';
+import 'package:mi_insights/customwidgets/CustomCard.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../constants/Constants.dart';
+import 'RegisterPayment.dart';
 
 UniqueKey keyrr1 = UniqueKey();
 
@@ -35,9 +43,9 @@ class PayoverBarChart2 extends StatefulWidget {
 class _PayoverBarChart2State extends State<PayoverBarChart2> {
   List<SalesData1>? _salesData;
   DateTime? _selectedDate;
-  String? _selectedMonth; // Add this to track the current selection
-  bool _isLoading = false; // Add loading state
-  bool _hasError = false; // Add error state
+  String? _selectedMonth;
+  bool _isLoading = false;
+  bool _hasError = false;
   Map<DateTime, double>? _allData; // Store all data for filtering
   double totalCollectionSum = 0.0; // Total collection sum
   final List<String> _last12Months = List.generate(12, (index) {
@@ -58,6 +66,9 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
       _isLoading = true;
       _hasError = false;
     });
+    if (kDebugMode) {
+      print("Fetching sales data from URL: ${widget.dataUrl}");
+    }
 
     fetchPaymentsData(widget.dataUrl).then((data) {
       setState(() {
@@ -79,23 +90,35 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
 
   // Add method to refresh data when dropdown changes
   void _refreshDataForSelectedMonth(String selectedMonth) {
-    if (_allData != null && !_hasError) {
-      // Use cached data if available and no error
-      setState(() {
-        _isLoading = true;
-      });
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
 
-      List<SalesData1> newData =
-          createWindowDataForMonth(_allData!, selectedMonth);
+    // Generate new URL for the selected month
+    String newDataUrl = getPayoverUrl(selectedMonth);
 
-      setState(() {
-        _salesData = newData;
-        _isLoading = false;
-      });
-    } else {
-      // Re-fetch data if not cached or had error
-      _loadInitialData();
+    if (kDebugMode) {
+      print("Fetching new data for month: $selectedMonth");
+      print("New URL: $newDataUrl");
     }
+
+    // Make fresh API request for the selected month
+    fetchPaymentsData(newDataUrl).then((data) {
+      setState(() {
+        _salesData = data;
+        _isLoading = false;
+        _hasError = false;
+      });
+    }).catchError((error) {
+      print("Error fetching sales data for month $selectedMonth: $error");
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+        _salesData = [];
+        totalCollectionSum = 0.0;
+      });
+    });
   }
 
   DateTime shiftMonths(DateTime dt, int months) {
@@ -318,103 +341,115 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Container(
-        height: 200,
+        height: 260,
         width: 400,
-        child: Row(
+        child: Column(
           children: [
             Expanded(
-              flex: 2,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
+              child: Row(
                 children: [
-                  // Dropdown - always visible and functional
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4.0),
-                    child: Container(
-                      height: 35,
-                      decoration: BoxDecoration(
-                          color: Constants.ctaColorLight,
-                          borderRadius: BorderRadius.circular(360)),
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 24.0, top: 0),
-                          child: DropdownButton<String>(
-                            isExpanded: true,
-                            value: _selectedMonth,
-                            onChanged: (String? newValue) {
-                              if (newValue != null &&
-                                  newValue != _selectedMonth) {
-                                setState(() {
-                                  _selectedMonth = newValue;
-                                  print(
-                                      "Selected month changed to: $_selectedMonth");
-                                });
-
-                                // Refresh data for the new selected month
-                                _refreshDataForSelectedMonth(newValue);
-
-                                // Update key for refresh
-                                keyrr1 = UniqueKey();
-                              }
-                            },
-                            selectedItemBuilder: (BuildContext ctxt) {
-                              return _last12Months.map<Widget>((item) {
-                                return DropdownMenuItem(
-                                    child: Center(
-                                      child: Text("${item}",
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                    ),
-                                    value: item);
-                              }).toList();
-                            },
-                            items: _last12Months.map<DropdownMenuItem<String>>(
-                                (String monthName) {
-                              return DropdownMenuItem<String>(
-                                value: monthName,
-                                child: Center(
-                                  child: Text(
-                                    monthName,
-                                    overflow: TextOverflow.ellipsis,
-                                    softWrap: false,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 14,
-                                      color: Colors
-                                          .black, // Dropdown items text color
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                            underline:
-                                Container(), // Removes underline if not needed
-                            dropdownColor:
-                                Colors.white, // Dropdown background color
-                            style: TextStyle(
-                              color: Colors
-                                  .white, // This sets the selected item text color
-                            ),
-                            iconEnabledColor:
-                                Colors.white, // Changes the dropdown icon color
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 8),
-
-                  // Total Collection Sum Display - always visible
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
+                  Expanded(
+                    flex: 3,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Center(
+                          child: Text("Month Collected",
+                              style: TextStyle(
+                                  fontSize: 13, fontWeight: FontWeight.w600)),
+                        ),
+                        // Dropdown - always visible and functional
+
+                        SizedBox(
+                          height: 12,
+                        ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 8.0, right: 8),
+                          padding: const EdgeInsets.only(left: 4.0),
+                          child: Container(
+                            height: 33,
+                            decoration: BoxDecoration(
+                                color: Constants.ctaColorLight,
+                                borderRadius: BorderRadius.circular(360)),
+                            child: Center(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 24.0, top: 0),
+                                child: DropdownButton<String>(
+                                  isExpanded: true,
+                                  value: _selectedMonth,
+                                  onChanged: (String? newValue) {
+                                    if (newValue != null &&
+                                        newValue != _selectedMonth) {
+                                      setState(() {
+                                        _selectedMonth = newValue;
+                                        print(
+                                            "Selected month changed to: $_selectedMonth");
+                                      });
+
+                                      // Refresh data for the new selected month
+                                      _refreshDataForSelectedMonth(newValue);
+
+                                      // Update key for refresh
+                                      keyrr1 = UniqueKey();
+                                    }
+                                  },
+                                  selectedItemBuilder: (BuildContext ctxt) {
+                                    return _last12Months.map<Widget>((item) {
+                                      return DropdownMenuItem(
+                                          child: Center(
+                                            child: Text("${item}",
+                                                style: TextStyle(
+                                                    color: Colors.white)),
+                                          ),
+                                          value: item);
+                                    }).toList();
+                                  },
+                                  items: _last12Months
+                                      .map<DropdownMenuItem<String>>(
+                                          (String monthName) {
+                                    return DropdownMenuItem<String>(
+                                      value: monthName,
+                                      child: Center(
+                                        child: Text(
+                                          monthName,
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: false,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 14,
+                                            color: Colors
+                                                .black, // Dropdown items text color
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  underline:
+                                      Container(), // Removes underline if not needed
+                                  dropdownColor:
+                                      Colors.white, // Dropdown background color
+                                  style: TextStyle(
+                                    color: Colors
+                                        .white, // This sets the selected item text color
+                                  ),
+                                  iconEnabledColor: Colors
+                                      .white, // Changes the dropdown icon color
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: 8),
+
+                        // Total Collection Sum Display - always visible
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 8.0, right: 8, left: 8),
                           child: Container(
                             height: 110,
                             child: Container(
@@ -464,18 +499,105 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
                             ),
                           ),
                         ),
+                        SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 35,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    generateBordereaux();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Constants.ctaColorLight,
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 8, horizontal: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(25),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Generate Bordereaux',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12),
+                      ],
+                    ),
+                  ),
+
+                  // Chart Display - conditional based on loading/error state
+                  Expanded(
+                    flex: 4,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Center(
+                          child: Text("Month Allocated",
+                              style: TextStyle(
+                                  fontSize: 13, fontWeight: FontWeight.w600)),
+                        ),
+                        Expanded(child: Container(child: _buildChartSection())),
+                        SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 35,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16.0, right: 16),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              RegisterPayment(),
+                                        ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Constants.ctaColorLight,
+                                      foregroundColor: Colors.white,
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 8, horizontal: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'Register Payment',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-
-            // Chart Display - conditional based on loading/error state
-            Expanded(
-              flex: 3,
-              child: _buildChartSection(),
-            ),
+            SizedBox(height: 0),
           ],
         ),
       ),
@@ -503,17 +625,22 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(height: 16),
             Icon(
               Icons.error_outline,
               color: Colors.grey[400],
               size: 32,
             ),
             SizedBox(height: 8),
-            Text(
-              "Failed to load data",
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 12,
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                "No load data available for the month selected",
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 11,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           ],
@@ -648,11 +775,130 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
 
     return '${formatWithCommas(newValue)}${suffixes[index]}';
   }
+
+  // Method to generate and download CSV bordereaux
+  Future<void> generateBordereaux() async {
+    try {
+      // Show loading
+      Fluttertoast.showToast(
+        msg: "Generating bordereaux...",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.blue,
+        textColor: Colors.white,
+      );
+
+      // Generate CSV URL for bordereaux
+      String csvUrl = generateBordereauxUrl(_selectedMonth ?? widget.selectedMonth);
+      
+      if (kDebugMode) {
+        print("Downloading bordereaux from: $csvUrl");
+      }
+
+      // Download CSV data
+      final response = await http.get(Uri.parse(csvUrl));
+      
+      if (response.statusCode == 200) {
+        // Request storage permission
+        bool hasPermission = await requestStoragePermission();
+        
+        if (!hasPermission) {
+          Fluttertoast.showToast(
+            msg: "Storage permission denied",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+          );
+          return;
+        }
+
+        // Let user select directory
+        String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+        
+        if (selectedDirectory != null) {
+          // Create filename with timestamp
+          String fileName = 'bordereaux_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.csv';
+          String filePath = '$selectedDirectory/$fileName';
+          
+          // Save file
+          File file = File(filePath);
+          await file.writeAsString(response.body);
+          
+          // Show success message
+          Fluttertoast.showToast(
+            msg: "Bordereaux saved to: $fileName",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+          );
+          
+          if (kDebugMode) {
+            print("File saved to: $filePath");
+          }
+        } else {
+          Fluttertoast.showToast(
+            msg: "Download cancelled",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.orange,
+            textColor: Colors.white,
+          );
+        }
+      } else {
+        throw Exception('Failed to download bordereaux: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Error generating bordereaux: $e");
+      Fluttertoast.showToast(
+        msg: "Failed to generate bordereaux",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
+  }
+
+  // Request storage permission
+  Future<bool> requestStoragePermission() async {
+    if (Platform.isAndroid) {
+      final androidVersion = await getAndroidVersion();
+      if (androidVersion >= 30) {
+        // Android 11 and above
+        final status = await Permission.manageExternalStorage.request();
+        return status == PermissionStatus.granted;
+      } else {
+        // Below Android 11
+        final status = await Permission.storage.request();
+        return status == PermissionStatus.granted;
+      }
+    } else if (Platform.isIOS) {
+      // iOS doesn't need storage permission for saving files
+      return true;
+    }
+    return false;
+  }
+
+  // Get Android version
+  Future<int> getAndroidVersion() async {
+    if (Platform.isAndroid) {
+      try {
+        final String version = Platform.operatingSystemVersion;
+        final int sdkInt = int.parse(version.split(' ').last.replaceAll(')', ''));
+        return sdkInt;
+      } catch (e) {
+        return 29; // Default to Android 10
+      }
+    }
+    return 0;
+  }
 }
 
 // Helper function to generate URL for payover data (same structure as your getOneMonthUrl)
 String getOneMonthUrl(String selectedMonth) {
-  int clientId = 140; // Replace with Constants.cec_client_id if available
+  int clientId = Constants.cec_client_id;
 
   // Parse the selected month string using the format "MMM yyyy".
   // If parsing fails, fallback to the current month.
@@ -687,10 +933,8 @@ String getOneMonthUrl(String selectedMonth) {
   String formattedStartDate = DateFormat('yyyy-MM-dd').format(startDate);
   String formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
 
-  // Build the URL - use the new JSON endpoint for better performance
-  String url = "https://miinsightsapps.net/files/get_payover_chart_data?"
-      "client_id=$clientId&start_date=$formattedStartDate&end_date=$formattedEndDate"
-      "&with_underwriter_only=1&underwriter=1";
+  String url =
+      "${Constants.analitixAppBaseUrl}sales/get_payover_chart_data/?client_id=$clientId&start_date=$formattedStartDate&end_date=$formattedEndDate&with_underwriter_only=1&underwriter=1";
 
   print("Final URL 0000: $url");
   return url;
@@ -701,21 +945,55 @@ String getPayoverUrl(String selectedMonth, {int? clientId}) {
   return getOneMonthUrl(selectedMonth);
 }
 
-// Usage example:
-class PayoverChartExample extends StatelessWidget {
+// Generate URL for bordereaux CSV download
+String generateBordereauxUrl(String selectedMonth) {
+  int clientId = Constants.cec_client_id;
+  
+  DateTime selectedDate;
+  try {
+    selectedDate = DateFormat("MMM yyyy").parse(selectedMonth);
+  } catch (e) {
+    print("Error parsing date: $e");
+    selectedDate = DateTime.now();
+  }
+  
+  DateTime startDate = DateTime(
+    selectedDate.year,
+    selectedDate.month,
+    1,
+  );
+  
+  DateTime endDate = DateTime(
+    selectedDate.year,
+    selectedDate.month + 1,
+    0,
+  );
+  
+  String formattedStartDate = DateFormat('yyyy-MM-dd').format(startDate);
+  String formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
+  
+  // CSV export endpoint
+  String url = "${Constants.analitixAppBaseUrl}sales/export_bordereaux_csv/?client_id=$clientId&start_date=$formattedStartDate&end_date=$formattedEndDate&with_underwriter_only=1&underwriter=1";
+  
+  print("Bordereaux CSV URL: $url");
+  return url;
+}
+
+class PayoverChartView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    String selectedMonth = "Apr 2025"; // Example month
+    String selectedMonth = DateFormat("MMM yyyy").format(DateTime.now());
     String dataUrl = getPayoverUrl(selectedMonth, clientId: 140);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Payover Chart - $selectedMonth'),
-      ),
-      body: Center(
-        child: PayoverBarChart2(
-          dataUrl: dataUrl,
-          selectedMonth: selectedMonth,
+    return Container(
+      child: Center(
+        child: Column(
+          children: [
+            PayoverBarChart2(
+              dataUrl: dataUrl,
+              selectedMonth: selectedMonth,
+            ),
+          ],
         ),
       ),
     );

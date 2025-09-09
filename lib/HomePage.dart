@@ -62,12 +62,44 @@ import 'widgets/role_based_drawer.dart';
 ];*/
 
 Map<String, List<sectionmodel>> m1 = {
+  "administrator": [
+    sectionmodel("Prospects", MarketingReport(), "marketing",
+        "assets/icons/prospects.svg"),
+    sectionmodel("Sales", ExecutivesSalesReport(), "sales",
+        "assets/icons/sales_logo.svg"),
+    sectionmodel("Collections", ExecutiveCollectionsReport(), "collections",
+        "assets/icons/collections_logo.svg"),
+    sectionmodel("Payments", ExecutivePaymentReport(), "payments",
+        "assets/icons/collections_logo.svg"),
+    sectionmodel(
+        "Claims", ClaimsReport(), "claims", "assets/icons/claims_logo.svg"),
+    sectionmodel("Cust. Profile", CustomersReport(), "customer_profile",
+        "assets/icons/customers.svg"),
+    sectionmodel("Fulfillment", CommsReport(), "fulfillment",
+        "assets/icons/communications_logo.svg"),
+    sectionmodel("Commission", ExecutiveCommisionsReport(), "commission",
+        "assets/icons/commission_logo.svg"),
+    sectionmodel("Maintenance", MaintenanceReport(), "maintenance",
+        "assets/icons/maintanence_report.svg"),
+    sectionmodel("Attendance", AttendanceReport(), "attendance",
+        "assets/icons/attendance.svg"),
+    sectionmodel("Pol. Search", PolicyInformation(), "policy_search",
+        "assets/icons/policy_search.svg"),
+    sectionmodel("Reprints", ReprintsAndCancellationsReport(), "reprints",
+        "assets/icons/reprint_logo.svg"),
+    sectionmodel("Morale Index", null, "morale_index",
+        "assets/icons/people_matters.svg"), // Requires password
+    sectionmodel("Micro-Learn", ExecutiveMicroLearnReport(), "marketing",
+        "assets/icons/micro_l.svg"),
+  ],
   "executive": [
     sectionmodel("Prospects", MarketingReport(), "marketing",
         "assets/icons/prospects.svg"),
     sectionmodel("Sales", ExecutivesSalesReport(), "sales",
         "assets/icons/sales_logo.svg"),
     sectionmodel("Collections", ExecutiveCollectionsReport(), "collections",
+        "assets/icons/collections_logo.svg"),
+    sectionmodel("Payments", ExecutivePaymentReport(), "payments",
         "assets/icons/collections_logo.svg"),
     sectionmodel(
         "Claims", ClaimsReport(), "claims", "assets/icons/claims_logo.svg"),
@@ -96,6 +128,8 @@ Map<String, List<sectionmodel>> m1 = {
     sectionmodel("Sales", ExecutivesSalesReport(), "sales",
         "assets/icons/sales_logo.svg"),
     sectionmodel("Collections", ExecutiveCollectionsReport(), "collections",
+        "assets/icons/collections_logo.svg"),
+    sectionmodel("Payments", ExecutivePaymentReport(), "payments",
         "assets/icons/collections_logo.svg"),
     sectionmodel(
         "Claims", ClaimsReport(), "claims", "assets/icons/claims_logo.svg"),
@@ -1412,6 +1446,7 @@ class _MyHomePageState extends State<MyHomePage> with InactivityLogoutMixin {
   @override
   void initState() {
     super.initState();
+    Constants.selectedClientName = "";
 
     // Check if lead form has been completed
     _checkLeadFormCompletion();

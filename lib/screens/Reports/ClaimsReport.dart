@@ -1773,7 +1773,7 @@ class _ClaimsReportState extends State<ClaimsReport>
                                                                         top:
                                                                             12),
                                                                 child: Text(
-                                                                  "MTD Allocated Premium = R ${formatLargeNumber((Constants.jsonMonthlyClaimsPremiumData1?[DateFormat('yyyy-MM').format(DateTime.now())] ?? 0).toString())}",
+                                                                  "MTD Allocated Premium = R ${formatLargeNumber((Constants.myClaimsSumOfPremiums1).toString())}",
                                                                   style: TextStyle(
                                                                       fontWeight:
                                                                           FontWeight
@@ -1790,7 +1790,7 @@ class _ClaimsReportState extends State<ClaimsReport>
                                                                             16.0,
                                                                         top: 0),
                                                                 child: Text(
-                                                                  "MTD Paid Claims = R ${formatLargeNumber((Constants.claims_sum_paid1a).toString())}",
+                                                                  "MTD Paid Claims = R ${formatLargeNumber((Constants.myClaimsSumOfPremiums1).toString())}",
                                                                   style: TextStyle(
                                                                       fontWeight:
                                                                           FontWeight
@@ -1818,9 +1818,9 @@ class _ClaimsReportState extends State<ClaimsReport>
                                                                     ),
                                                                     Text(
                                                                       "R " +
-                                                                          formatLargeNumber(((Constants.jsonMonthlyClaimsPremiumData1?[DateFormat('yyyy-MM').format(DateTime.now())] ?? 0) // Default to 0 if the value is null
+                                                                          formatLargeNumber(((Constants.myClaimsSumOfPremiums1 ?? 0) // Default to 0 if the value is null
                                                                                           -
-                                                                                          (Constants.claims_sum_paid1a))
+                                                                                          (Constants.myClaimsSumOfPremiums1))
                                                                                       .toString() // Default to 0 if the value is null
                                                                                   )
                                                                               .toString(),
@@ -1846,9 +1846,9 @@ class _ClaimsReportState extends State<ClaimsReport>
                                                                               ),
                                                                             ),
                                                                           )
-                                                                        : ((Constants.jsonMonthlyClaimsPremiumData1?[DateFormat('yyyy-MM').format(DateTime.now())] ?? 0) // Default to 0 if the value is null
+                                                                        : ((Constants.myClaimsSumOfPremiums1 ?? 0) // Default to 0 if the value is null
                                                                                     -
-                                                                                    (Constants.claims_sum_paid1a)) <
+                                                                                    (Constants.myClaimsSumOfPremiums1)) <
                                                                                 0
                                                                             ? Padding(
                                                                                 padding: const EdgeInsets.only(left: 2.0),

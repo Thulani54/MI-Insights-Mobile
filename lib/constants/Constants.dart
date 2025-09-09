@@ -864,6 +864,10 @@ class Constants {
   static double claims_sum_declined3a = 0;
   static double claims_sum_declined3b = 0;
 
+  static double myClaimsSumOfPremiums1 = 0.0;
+  static double myClaimsSumOfPremiums2 = 0.0;
+  static double myClaimsSumOfPremiums3 = 0.0;
+
   static double claims_count_paid1a = 0;
   static double claims_count_paid2a = 0;
   static double claims_count_paid3a = 0;
@@ -1271,10 +1275,26 @@ class Constants {
   static List<cllc.gridmodel1> reprints_sectionsList3a_1 = [];
   static List<cllc.gridmodel1> reprints_sectionsList3b_1 = [];
 
-  static List<cllc.gridmodel1> cancellations_sectionsList1a = [];
-  static List<cllc.gridmodel1> cancellations_sectionsList2a = [];
-  static List<cllc.gridmodel1> cancellations_sectionsList3a = [];
-  static List<cllc.gridmodel1> cancellations_sectionsList3b = [];
+  static List<cllc.gridmodel1> cancellations_sectionsList1a = [
+    cllc.gridmodel1("Approved", 0, 0),
+    cllc.gridmodel1("Exp. & Decl.", 0, 0),
+    cllc.gridmodel1("Pending", 0, 0),
+  ];
+  static List<cllc.gridmodel1> cancellations_sectionsList2a = [
+    cllc.gridmodel1("Approved", 0, 0),
+    cllc.gridmodel1("Exp. & Decl.", 0, 0),
+    cllc.gridmodel1("Pending", 0, 0),
+  ];
+  static List<cllc.gridmodel1> cancellations_sectionsList3a = [
+    cllc.gridmodel1("Approved", 0, 0),
+    cllc.gridmodel1("Exp. & Decl.", 0, 0),
+    cllc.gridmodel1("Pending", 0, 0),
+  ];
+  static List<cllc.gridmodel1> cancellations_sectionsList3b = [
+    cllc.gridmodel1("Approved", 0, 0),
+    cllc.gridmodel1("Exp. & Decl.", 0, 0),
+    cllc.gridmodel1("Pending", 0, 0),
+  ];
 
   static List<cllc.gridmodel1> cancellations_sectionsList1a_1 = [];
   static List<cllc.gridmodel1> cancellations_sectionsList2a_1 = [];

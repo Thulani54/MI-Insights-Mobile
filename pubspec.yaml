@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.40+40 #Change this for logs as well
+version: 1.0.51+51 #Change this for logs as well
 
 environment:
   sdk: '>=3.0.6 <4.0.0'
@@ -116,20 +116,20 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/logos/MI AnalytiX Logo.png"
+  image_path: "assets/logos/play_store_512.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
   web:
     generate: true
-    image_path: "assets/logos/MI AnalytiX Logo.png"
+    image_path: "assets/logos/play_store_512.png"
     background_color: "#hexcode"
     theme_color: "#hexcode"
   windows:
     generate: true
-    image_path: "assets/logos/MI AnalytiX Logo.png"
+    image_path: "assets/logos/play_store_512.png"
     icon_size: 48 # min:48, max:256, default: 48
   macos:
     generate: true
-    image_path: "assets/logos/MI AnalytiX Logo.png"
+    image_path: "assets/logos/play_store_512.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -250,8 +250,7 @@ flutter:
     - assets/static_logo_transparent (1).png
     - assets/icons/prospects.svg
     - assets/logos/MI AnalytiX 2 Tone.png
-    - assets/logos/New MI Icon.png
-    - assets/logos/MI AnalytiX Logo.png
+    - assets/logos/play_store_512.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

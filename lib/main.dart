@@ -134,6 +134,7 @@ class _MyAppState extends State<MyApp> {
     //https:insights.dedicated.co.za:4335
 
     Constants.account_type = "sales_agent";
+
     Constants.myContext = context;
     getVersionNumber();
     secureScreen();

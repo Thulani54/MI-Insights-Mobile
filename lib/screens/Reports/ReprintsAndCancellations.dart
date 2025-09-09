@@ -729,54 +729,61 @@ class _ReprintsAndCancellationsReportState
                                                                       left: 0,
                                                                       bottom:
                                                                           4),
-                                                              child: Column(
-                                                                children: [
-                                                                  SizedBox(
-                                                                    height: 16,
-                                                                  ),
-                                                                  Center(
-                                                                      child:
-                                                                          Padding(
-                                                                    padding: const EdgeInsets
-                                                                        .only(
-                                                                        left:
-                                                                            8.0,
-                                                                        right:
-                                                                            8),
-                                                                    child: Text(
-                                                                      "R" +
-                                                                          formatLargeNumber((_selectedButton == 1
-                                                                                  ? Constants.cancellations_sectionsList1a[index].amount
-                                                                                  : _selectedButton == 2
-                                                                                      ? Constants.cancellations_sectionsList2a[index].amount
-                                                                                      : _selectedButton == 3 && days_difference <= 31
-                                                                                          ? Constants.cancellations_sectionsList3a[index].amount
-                                                                                          : Constants.cancellations_sectionsList3b[index].amount)
-                                                                              .toString()),
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              16.5,
-                                                                          fontWeight:
-                                                                              FontWeight.w600),
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .center,
-                                                                      maxLines:
-                                                                          2,
-                                                                    ),
-                                                                  )),
-                                                                  Center(
-                                                                    child: Padding(
-                                                                        padding: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
-                                                                        child: Text(
-                                                                          formatLargeNumber((_selectedButton == 1
-                                                                                  ? Constants.cancellations_sectionsList1a[index].count
-                                                                                  : _selectedButton == 2
-                                                                                      ? Constants.cancellations_sectionsList2a[index].count
-                                                                                      : _selectedButton == 3 && days_difference <= 31
-                                                                                          ? Constants.cancellations_sectionsList3a[index].count
-                                                                                          : Constants.cancellations_sectionsList3b[index].count)
-                                                                              .toString()),
+                                                              child: isLoading
+                                                                  ? Center(
+                                                                      child: CircularProgressIndicator(
+                                                                        color: Constants.ftaColorLight,
+                                                                        strokeWidth: 2,
+                                                                      ),
+                                                                    )
+                                                                  : Column(
+                                                                      children: [
+                                                                        SizedBox(
+                                                                          height: 16,
+                                                                        ),
+                                                                        Center(
+                                                                            child:
+                                                                                Padding(
+                                                                          padding: const EdgeInsets
+                                                                              .only(
+                                                                              left:
+                                                                                  8.0,
+                                                                              right:
+                                                                                  8),
+                                                                          child: Text(
+                                                                            "R" +
+                                                                                formatLargeNumber((_selectedButton == 1
+                                                                                        ? Constants.cancellations_sectionsList1a[index].amount
+                                                                                        : _selectedButton == 2
+                                                                                            ? Constants.cancellations_sectionsList2a[index].amount
+                                                                                            : _selectedButton == 3 && days_difference <= 31
+                                                                                                ? Constants.cancellations_sectionsList3a[index].amount
+                                                                                                : Constants.cancellations_sectionsList3b[index].amount)
+                                                                                    .toString()),
+                                                                            style: TextStyle(
+                                                                                fontSize:
+                                                                                    16.5,
+                                                                                fontWeight:
+                                                                                    FontWeight.w600),
+                                                                            textAlign:
+                                                                                TextAlign
+                                                                                    .center,
+                                                                            maxLines:
+                                                                                2,
+                                                                          ),
+                                                                        )),
+                                                                        Center(
+                                                                          child: Padding(
+                                                                              padding: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
+                                                                              child: Text(
+                                                                                formatLargeNumber((_selectedButton == 1
+                                                                                        ? Constants.cancellations_sectionsList1a[index].count
+                                                                                        : _selectedButton == 2
+                                                                                            ? Constants.cancellations_sectionsList2a[index].count
+                                                                                            : _selectedButton == 3 && days_difference <= 31
+                                                                                                ? Constants.cancellations_sectionsList3a[index].count
+                                                                                                : Constants.cancellations_sectionsList3b[index].count)
+                                                                                    .toString()),
                                                                           style: TextStyle(
                                                                               fontSize: 12.5,
                                                                               fontWeight: FontWeight.normal),
@@ -915,10 +922,13 @@ class _ReprintsAndCancellationsReportState
                                     )),
                       if (target_index == 0)
                         Padding(
-                          padding: const EdgeInsets.only(left: 6.0, right: 6),
+                          padding: const EdgeInsets.only(
+                            left: 6.0,
+                            right: 6,
+                          ),
                           child: LinearPercentIndicator(
                             width: MediaQuery.of(context).size.width - 12,
-                            animation: true,
+                            animation: false,
                             lineHeight: 20.0,
                             animationDuration: 500,
                             percent: _selectedButton == 1
@@ -942,22 +952,25 @@ class _ReprintsAndCancellationsReportState
                           ),
                         ),
 
-                      if (target_index == 0) SizedBox(height: 24),
+                      SizedBox(height: 8),
                       if (target_index == 0)
                         _selectedButton == 1
                             ? Padding(
-                                padding: const EdgeInsets.only(left: 16.0),
+                                padding:
+                                    const EdgeInsets.only(left: 16.0, top: 8),
                                 child: Text(
                                     "Payment Cancellation Requests (MTD - ${getMonthAbbreviation(DateTime.now().month)})"),
                               )
                             : _selectedButton == 2
                                 ? Padding(
-                                    padding: const EdgeInsets.only(left: 16.0),
+                                    padding: const EdgeInsets.only(
+                                        left: 16.0, top: 8),
                                     child: Text(
                                         "Payment Cancellation Requests (12 Months View)"),
                                   )
                                 : Padding(
-                                    padding: const EdgeInsets.only(left: 16.0),
+                                    padding: const EdgeInsets.only(
+                                        left: 16.0, top: 8),
                                     child: Text(
                                         "Payment Cancellation Requests (${Constants.reprints_formattedStartDate} to ${Constants.reprints_formattedEndDate})"),
                                   ),
@@ -1763,45 +1776,59 @@ class _ReprintsAndCancellationsReportState
                                                       ),
                                                     )
                                                   : Container()
-                                  : Center(
-                                      child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                          width: 18,
-                                          height: 18,
-                                          child: CircularProgressIndicator(
-                                            color: Constants.ctaColorLight,
-                                            strokeWidth: 1.8,
-                                          ),
-                                        ),
-                                      ),
-                                    ))),
+                                  : Container(
+                                      padding: const EdgeInsets.only(
+                                          top: 8.0, left: 8, right: 10),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          color: Colors.grey.withOpacity(0.00)),
+                                      height: 250,
+                                      child: CustomCard(
+                                          elevation: 6,
+                                          surfaceTintColor: Colors.white,
+                                          color: Colors.white,
+                                          child: Center(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Container(
+                                                width: 18,
+                                                height: 18,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color:
+                                                      Constants.ctaColorLight,
+                                                  strokeWidth: 1.8,
+                                                ),
+                                              ),
+                                            ),
+                                          )))),
                         ),
                       if (target_index == 0)
                         Padding(
                           padding: const EdgeInsets.only(
-                              left: 16.0, right: 8, bottom: 4, top: 12),
+                              left: 16.0, right: 8, bottom: 4, top: 20),
                           child: SalesOverviewTypeGrid(),
                         ),
                       if (target_index == 0)
                         _selectedButton == 1
                             ? Padding(
                                 padding: const EdgeInsets.only(
-                                    left: 16.0, top: 24, bottom: 4),
+                                    left: 16.0, top: 20, bottom: 4),
                                 child: Text(
                                     "Cancellations - Top 10 Requesters (MTD- ${getMonthAbbreviation(DateTime.now().month)})"),
                               )
                             : _selectedButton == 2
                                 ? Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 16.0, top: 24, bottom: 4),
+                                        left: 16.0, top: 20, bottom: 4),
                                     child: Text(
                                         "Cancellations - Top 10 Requesters (12 Months View)"),
                                   )
                                 : Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 16.0, top: 24, bottom: 4),
+                                        left: 16.0, top: 20, bottom: 4),
                                     child: Text(
                                         "Cancellations - Top 10 Requesters (${Constants.reprints_formattedStartDate} to ${Constants.reprints_formattedEndDate})"),
                                   ),
@@ -2210,7 +2237,7 @@ class _ReprintsAndCancellationsReportState
                       if (target_index == 1)
                         Padding(
                           padding: const EdgeInsets.only(
-                              left: 10, right: 4.0, top: 8, bottom: 8),
+                              left: 10, right: 4.0, top: 0, bottom: 8),
                           child: GridView.builder(
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
@@ -2340,63 +2367,70 @@ class _ReprintsAndCancellationsReportState
                                                                       left: 0,
                                                                       bottom:
                                                                           4),
-                                                              child: Column(
-                                                                children: [
-                                                                  SizedBox(
-                                                                    height: 16,
-                                                                  ),
-                                                                  Center(
-                                                                      child:
-                                                                          Padding(
-                                                                    padding: const EdgeInsets
-                                                                        .only(
-                                                                        left:
-                                                                            8.0,
-                                                                        right:
-                                                                            8),
-                                                                    child: Text(
-                                                                      "R" +
-                                                                          formatLargeNumber((_selectedButton == 1
-                                                                                  ? Constants.reprints_sectionsList1a[index].amount
-                                                                                  : _selectedButton == 2
-                                                                                      ? Constants.reprints_sectionsList2a[index].amount
-                                                                                      : _selectedButton == 3 && days_difference <= 31
-                                                                                          ? Constants.reprints_sectionsList3a[index].amount
-                                                                                          : Constants.reprints_sectionsList3b[index].amount)
-                                                                              .toString()),
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              16.5,
-                                                                          fontWeight:
-                                                                              FontWeight.w500),
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .center,
-                                                                      maxLines:
-                                                                          2,
-                                                                    ),
-                                                                  )),
-                                                                  Center(
-                                                                    child: Padding(
-                                                                        padding: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
-                                                                        child: Text(
-                                                                          formatLargeNumber((_selectedButton == 1
-                                                                                  ? Constants.reprints_sectionsList1a[index].count
-                                                                                  : _selectedButton == 2
-                                                                                      ? Constants.reprints_sectionsList2a[index].count
-                                                                                      : _selectedButton == 3 && days_difference <= 31
-                                                                                          ? Constants.reprints_sectionsList3a[index].count
-                                                                                          : Constants.reprints_sectionsList3b[index].count)
-                                                                              .toString()),
-                                                                          style: TextStyle(
-                                                                              fontSize: 12.5,
-                                                                              fontWeight: FontWeight.normal),
-                                                                          textAlign:
-                                                                              TextAlign.center,
-                                                                          maxLines:
-                                                                              2,
+                                                              child: isLoading
+                                                                  ? Center(
+                                                                      child: CircularProgressIndicator(
+                                                                        color: Constants.ftaColorLight,
+                                                                        strokeWidth: 2,
+                                                                      ),
+                                                                    )
+                                                                  : Column(
+                                                                      children: [
+                                                                        SizedBox(
+                                                                          height: 16,
+                                                                        ),
+                                                                        Center(
+                                                                            child:
+                                                                                Padding(
+                                                                          padding: const EdgeInsets
+                                                                              .only(
+                                                                              left:
+                                                                                  8.0,
+                                                                              right:
+                                                                                  8),
+                                                                          child: Text(
+                                                                            "R" +
+                                                                                formatLargeNumber((_selectedButton == 1
+                                                                                        ? Constants.reprints_sectionsList1a[index].amount
+                                                                                        : _selectedButton == 2
+                                                                                            ? Constants.reprints_sectionsList2a[index].amount
+                                                                                            : _selectedButton == 3 && days_difference <= 31
+                                                                                                ? Constants.reprints_sectionsList3a[index].amount
+                                                                                                : Constants.reprints_sectionsList3b[index].amount)
+                                                                                    .toString()),
+                                                                            style: TextStyle(
+                                                                                fontSize:
+                                                                                    16.5,
+                                                                                fontWeight:
+                                                                                    FontWeight.w500),
+                                                                            textAlign:
+                                                                                TextAlign
+                                                                                    .center,
+                                                                            maxLines:
+                                                                                2,
+                                                                          ),
                                                                         )),
-                                                                  ),
+                                                                        Center(
+                                                                          child: Padding(
+                                                                              padding: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
+                                                                              child: Text(
+                                                                                formatLargeNumber((_selectedButton == 1
+                                                                                        ? Constants.reprints_sectionsList1a[index].count
+                                                                                        : _selectedButton == 2
+                                                                                            ? Constants.reprints_sectionsList2a[index].count
+                                                                                            : _selectedButton == 3 && days_difference <= 31
+                                                                                                ? Constants.reprints_sectionsList3a[index].count
+                                                                                                : Constants.reprints_sectionsList3b[index].count)
+                                                                                    .toString()),
+                                                                                style: TextStyle(
+                                                                                    fontSize: 12.5,
+                                                                                    fontWeight: FontWeight.normal),
+                                                                                textAlign:
+                                                                                    TextAlign.center,
+                                                                                maxLines:
+                                                                                    2,
+                                                                              )),
+                                                                        ),
                                                                   Center(
                                                                       child:
                                                                           Padding(
@@ -2519,10 +2553,11 @@ class _ReprintsAndCancellationsReportState
                                     )),
                       if (target_index == 1)
                         Padding(
-                          padding: const EdgeInsets.only(left: 6.0, right: 6),
+                          padding: const EdgeInsets.only(
+                              left: 6.0, right: 6, top: 12),
                           child: LinearPercentIndicator(
                             width: MediaQuery.of(context).size.width - 12,
-                            animation: true,
+                            animation: false,
                             lineHeight: 20.0,
                             animationDuration: 500,
                             percent: _selectedButton == 1
@@ -2547,20 +2582,20 @@ class _ReprintsAndCancellationsReportState
                         _selectedButton == 1
                             ? Padding(
                                 padding:
-                                    const EdgeInsets.only(left: 16.0, top: 24),
+                                    const EdgeInsets.only(left: 16.0, top: 16),
                                 child: Text(
                                     "Slip Reprint Requests (MTD - ${getMonthAbbreviation(DateTime.now().month)})"),
                               )
                             : _selectedButton == 2
                                 ? Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 16.0, top: 24),
+                                        left: 16.0, top: 16),
                                     child: Text(
                                         "Slip Reprint Requests (12 Months View)"),
                                   )
                                 : Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 16.0, top: 24),
+                                        left: 16.0, top: 16),
                                     child: Text(
                                         "Slip Reprint Requests (${Constants.reprints_formattedStartDate} to ${Constants.reprints_formattedEndDate})"),
                                   ),
@@ -3401,27 +3436,28 @@ class _ReprintsAndCancellationsReportState
                         ),
                       if (target_index == 1)
                         Padding(
-                          padding: const EdgeInsets.only(left: 16.0, right: 8),
+                          padding: const EdgeInsets.only(
+                              left: 16.0, right: 8, top: 8),
                           child: SalesOverviewTypeGrid(),
                         ),
                       if (target_index == 1)
                         _selectedButton == 1
                             ? Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 16.0, top: 20),
+                                padding: const EdgeInsets.only(
+                                    left: 16.0, top: 24, bottom: 6),
                                 child: Text(
                                     "Reprints - Top 10 Requesters (MTD- ${getMonthAbbreviation(DateTime.now().month)})"),
                               )
                             : _selectedButton == 2
                                 ? Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 16.0, top: 20),
+                                        left: 16.0, top: 24, bottom: 6),
                                     child: Text(
                                         "Reprints - Top 10 Requesters (12 Months View)"),
                                   )
                                 : Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 16.0, top: 20),
+                                        left: 16.0, top: 24, bottom: 6),
                                     child: Text(
                                         "Reprints - Top 10 Requesters (${Constants.reprints_formattedStartDate} to ${Constants.reprints_formattedEndDate})"),
                                   ),

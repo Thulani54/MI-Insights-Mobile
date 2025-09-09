@@ -462,7 +462,7 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
           surfaceTintColor: Colors.white,
           shadowColor: Colors.black.withOpacity(0.6),
           title: const Text(
-            "Collections Report",
+            "Executive Payments Report",
             style: TextStyle(
               color: Colors.black,
               fontSize: 18,
@@ -6806,16 +6806,11 @@ class SalesCollectionAgentWidget extends StatelessWidget {
           ),
           title: Row(
             children: [
-              Icon(
-                Icons.person,
-                color: Constants.ctaColorLight,
-                size: 20,
-              ),
-              SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Collections Mix',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.center,
                 ),
               ),
               InkWell(
@@ -6827,9 +6822,9 @@ class SalesCollectionAgentWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Icon(
-                    CupertinoIcons.clear,
+                    Icons.close,
                     color: Colors.grey[600],
-                    size: 16,
+                    size: 18,
                   ),
                 ),
               ),
@@ -6839,7 +6834,7 @@ class SalesCollectionAgentWidget extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildAgentDetailsCard(agent),
+                _buildCollectionBreakdownCard(agent),
                 SizedBox(height: 16),
                 _buildPieChart(agent, context),
                 SizedBox(height: 16),
@@ -6854,6 +6849,98 @@ class SalesCollectionAgentWidget extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildCollectionBreakdownCard(EmployeeRate employee) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: CustomCard(
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        surfaceTintColor: Colors.white,
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0, left: 4),
+                child: Text(employee.employeeName,
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600)),
+              ),
+              SizedBox(height: 6),
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0, left: 4),
+                child: Text("Collection Summary",
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500)),
+              ),
+              SizedBox(height: 6),
+              Text(' • Total Sales: ${employee.totalSales}',
+                  style: TextStyle(fontSize: 11)),
+              SizedBox(height: 6),
+              Text(
+                  ' • Total Collected: R ${formatLargeNumber(employee.totalCollected.toStringAsFixed(1))}',
+                  style: TextStyle(fontSize: 11)),
+              SizedBox(height: 6),
+              Text(' • NTU Rate: ${employee.ntuRate.toStringAsFixed(1)}%',
+                  style: TextStyle(fontSize: 11)),
+              SizedBox(height: 4),
+              Text(' • Lapse Rate: ${employee.lapseRate.toStringAsFixed(1)}%',
+                  style: TextStyle(fontSize: 11)),
+              SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0, left: 4),
+                child: Text("Collections by Colection type",
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500)),
+              ),
+              _buildCollectionBreakdownRow('• Cash:',
+                  'R ${formatLargeNumber(employee.cashCollected.toStringAsFixed(0))}'),
+              _buildCollectionBreakdownRow('• Debit Order:',
+                  'R ${formatLargeNumber(employee.debitOrderCollected.toStringAsFixed(0))}'),
+              _buildCollectionBreakdownRow('• EFT:',
+                  'R ${formatLargeNumber(employee.eftCollected.toStringAsFixed(0))}'),
+              _buildCollectionBreakdownRow('• Persal:',
+                  'R ${formatLargeNumber(employee.persalCollected.toStringAsFixed(0))}'),
+              _buildCollectionBreakdownRow('• Salary Deduction:',
+                  'R ${formatLargeNumber(employee.salaryDeductionCollected.toStringAsFixed(0))}'),
+              SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCollectionBreakdownRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        right: 12.0,
+        bottom: 4.0,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+          ),
+          Text(
+            value,
+            style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+          ),
+        ],
+      ),
     );
   }
 
@@ -8301,7 +8388,7 @@ Map<String, Color> typeToColor = {
   'Other': Colors.grey,
 };
 
-class AgentPersistencyWidget extends StatelessWidget {
+class AgentPersistencyWidget extends StatefulWidget {
   final int selectedButton;
   final int daysDifference;
   final bool isLoading;
@@ -8313,6 +8400,11 @@ class AgentPersistencyWidget extends StatelessWidget {
     this.isLoading = false,
   }) : super(key: key);
 
+  @override
+  State<AgentPersistencyWidget> createState() => _AgentPersistencyWidgetState();
+}
+
+class _AgentPersistencyWidgetState extends State<AgentPersistencyWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -8525,6 +8617,9 @@ class AgentPersistencyWidget extends StatelessWidget {
         return AlertDialog(
           surfaceTintColor: Colors.white,
           backgroundColor: Colors.white,
+          insetPadding: EdgeInsets.symmetric(horizontal: 16.0),
+          contentPadding: EdgeInsets.only(bottom: 16.0, left: 12, right: 12),
+          iconPadding: EdgeInsets.symmetric(horizontal: 0.0),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           title: Center(
             child: Row(
@@ -8549,7 +8644,8 @@ class AgentPersistencyWidget extends StatelessWidget {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                _buildAgentCard(agent),
+                _buildCollectionBreakdownCard(agent),
+                // _buildAgentCard(agent),
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
                   child: Container(
@@ -8620,74 +8716,147 @@ class AgentPersistencyWidget extends StatelessWidget {
     );
   }
 
-  List<PieChartSectionData> _buildPieChartSections(EmployeeRate agent) {
+  List<PieChartSectionData> _buildPieChartSections(EmployeeRate employee) {
     List<PieChartSectionData> sections = [];
 
-    if (agent.percentageDebitOrderClients > 0) {
+    if (employee.percentageDebitOrderClients > 0) {
       sections.add(PieChartSectionData(
         color: Colors.orange,
-        value: agent.percentageDebitOrderClients,
-        title: '${agent.percentageDebitOrderClients.toStringAsFixed(1)}%',
-        radius: agent.percentageDebitOrderClients < 10
-            ? (agent.percentageDebitOrderClients + 40)
-            : 45 + agent.percentageDebitOrderClients.roundToDouble(),
+        value: employee.percentageDebitOrderClients,
+        title: '${employee.percentageDebitOrderClients.toStringAsFixed(1)}%',
+        radius: (MediaQuery.of(context).size.width / 2) - 92,
         titleStyle: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          color: Color(0xffffffff),
-        ),
+            fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
       ));
     }
 
-    if (agent.percentageCashClients > 0) {
+    if (employee.percentageCashClients > 0) {
       sections.add(PieChartSectionData(
         color: Colors.blue,
-        value: agent.percentageCashClients,
-        title: '${agent.percentageCashClients.toStringAsFixed(1)}%',
-        radius: agent.percentageCashClients < 10
-            ? (agent.percentageCashClients + 40)
-            : 45 + agent.percentageCashClients.roundToDouble(),
+        value: employee.percentageCashClients,
+        title: '${employee.percentageCashClients.toStringAsFixed(1)}%',
+        radius: (MediaQuery.of(context).size.width / 2) - 92,
         titleStyle: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          color: Color(0xffffffff),
-        ),
+            fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
       ));
     }
 
-    if (agent.percentageSalaryDeductionClients > 0) {
+    if (employee.percentageSalaryDeductionClients > 0) {
       sections.add(PieChartSectionData(
         color: Colors.yellow,
-        value: agent.percentageSalaryDeductionClients,
-        title: '${agent.percentageSalaryDeductionClients.toStringAsFixed(1)}%',
-        radius: agent.percentageSalaryDeductionClients < 10
-            ? (agent.percentageSalaryDeductionClients + 40)
-            : 45 + agent.percentageSalaryDeductionClients.roundToDouble(),
+        value: employee.percentageSalaryDeductionClients,
+        title:
+            '${employee.percentageSalaryDeductionClients.toStringAsFixed(1)}%',
+        radius: (MediaQuery.of(context).size.width / 2) - 92,
         titleStyle: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          color: Color(0xffffffff),
-        ),
+            fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
       ));
     }
 
-    if (agent.percentagePersalClients > 0) {
+    if (employee.percentagePersalClients > 0) {
       sections.add(PieChartSectionData(
         color: Colors.grey,
-        value: agent.percentagePersalClients,
-        title: '${agent.percentagePersalClients.toStringAsFixed(1)}%',
-        radius: agent.percentagePersalClients < 10
-            ? (agent.percentagePersalClients + 40)
-            : 45 + agent.percentagePersalClients.roundToDouble(),
+        value: employee.percentagePersalClients,
+        title: '${employee.percentagePersalClients.toStringAsFixed(1)}%',
+        radius: (MediaQuery.of(context).size.width / 2) - 92,
         titleStyle: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          color: Color(0xffffffff),
-        ),
+            fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
       ));
     }
 
     return sections;
+  }
+
+  Widget _buildCollectionBreakdownCard(EmployeeRate employee) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: CustomCard(
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        surfaceTintColor: Colors.white,
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0, left: 4),
+                child: Text(employee.employeeName,
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600)),
+              ),
+              SizedBox(height: 6),
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0, left: 4),
+                child: Text("Collection Summary",
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500)),
+              ),
+              SizedBox(height: 6),
+              Text(' • Total Sales: ${employee.totalSales}',
+                  style: TextStyle(fontSize: 11)),
+              SizedBox(height: 6),
+              Text(
+                  ' • Total Collected: R ${formatLargeNumber(employee.totalCollected.toStringAsFixed(1))}',
+                  style: TextStyle(fontSize: 11)),
+              SizedBox(height: 6),
+              Text(' • NTU Rate: ${employee.ntuRate.toStringAsFixed(1)}%',
+                  style: TextStyle(fontSize: 11)),
+              SizedBox(height: 4),
+              Text(' • Lapse Rate: ${employee.lapseRate.toStringAsFixed(1)}%',
+                  style: TextStyle(fontSize: 11)),
+              SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0, left: 4),
+                child: Text("Collections by Colection type",
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500)),
+              ),
+              _buildCollectionBreakdownRow('• Cash:',
+                  'R ${formatLargeNumber(employee.cashCollected.toStringAsFixed(0))}'),
+              _buildCollectionBreakdownRow('• Debit Order:',
+                  'R ${formatLargeNumber(employee.debitOrderCollected.toStringAsFixed(0))}'),
+              _buildCollectionBreakdownRow('• EFT:',
+                  'R ${formatLargeNumber(employee.eftCollected.toStringAsFixed(0))}'),
+              _buildCollectionBreakdownRow('• Persal:',
+                  'R ${formatLargeNumber(employee.persalCollected.toStringAsFixed(0))}'),
+              _buildCollectionBreakdownRow('• Salary Deduction:',
+                  'R ${formatLargeNumber(employee.salaryDeductionCollected.toStringAsFixed(0))}'),
+              SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCollectionBreakdownRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        right: 12.0,
+        bottom: 4.0,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+          ),
+          Text(
+            value,
+            style: TextStyle(fontSize: 11, color: Colors.grey[700]),
+          ),
+        ],
+      ),
+    );
   }
 }
 

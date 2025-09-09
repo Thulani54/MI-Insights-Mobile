@@ -96,6 +96,7 @@ int expected_count_of_premiums = 0;
 int count_of_premiums = 0;
 int count_of_premiums2 = 0;
 int variance_count_of_premiums = 0;
+String lead_to_sale_ratio = "";
 List<QuotesByAgent> topquotesbyagent = [];
 List<QuotesByClient> topquotesbyclient = [];
 List<QuotesByAgent> topquotesbyagent1 = [];
@@ -1489,6 +1490,22 @@ class _MarketingReportState extends State<MarketingReport>
                                               ? Colors.red
                                               : Colors.green,
                                     ),
+                                  ),
+                                  SizedBox(height: 16),
+                                  Row(
+                                    children: [
+                                      Spacer(),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 20.0),
+                                        child: Text(
+                                          "Lead to Sale Ratio ${lead_to_sale_ratio}",
+                                          style: TextStyle(
+                                              fontSize: 9.5,
+                                              color: Colors.black),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                   SizedBox(height: 24),
                                   _selectedButton == 1
@@ -4343,6 +4360,22 @@ class _MarketingReportState extends State<MarketingReport>
                                             : Colors.green,
                                       ),
                                     ),
+                                    SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        Spacer(),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 20.0),
+                                          child: Text(
+                                            "Lead to Sale Ratio ${lead_to_sale_ratio}",
+                                            style: TextStyle(
+                                                fontSize: 9.5,
+                                                color: Colors.black),
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                     SizedBox(height: 24),
                                     _selectedButton == 1
                                         ? Padding(
@@ -7195,7 +7228,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                               : Constants.leads_spots3b);
                                                                                       if (allSpots.isEmpty) return 10.0;
                                                                                       double maxYValue = allSpots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b).toDouble();
-                                                                                      return maxYValue * 1.1; // Add 10% padding
+                                                                                      return maxYValue * 1.2; // Add 10% padding
                                                                                     }(),
                                                                                     borderData: FlBorderData(
                                                                                       show: true,
@@ -7485,7 +7518,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                           allSpots.addAll(Constants.d_leads_spots1b);
                                                                                           if (allSpots.isEmpty) return 10.0;
                                                                                           double maxYValue = allSpots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b).toDouble();
-                                                                                          return maxYValue * 1.1; // Add 10% padding
+                                                                                          return maxYValue * 1.2; // Add 10% padding
                                                                                         }(),
                                                                                         borderData: FlBorderData(
                                                                                           show: true,
@@ -7735,7 +7768,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                               allSpots.addAll(Constants.d_leads_spots3b);
                                                                                               if (allSpots.isEmpty) return 10.0;
                                                                                               double maxYValue = allSpots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b).toDouble();
-                                                                                              return maxYValue * 1.1; // Add 10% padding
+                                                                                              return maxYValue * 1.2; // Add 10% padding
                                                                                             }(),
                                                                                             borderData: FlBorderData(
                                                                                               show: true,
@@ -7984,7 +8017,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                               allSpots.addAll(Constants.d_leads_spots3b);
                                                                                               if (allSpots.isEmpty) return 10.0;
                                                                                               double maxYValue = allSpots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b).toDouble();
-                                                                                              return maxYValue * 1.1; // Add 10% padding
+                                                                                              return maxYValue * 1.2;
                                                                                             }(),
                                                                                             borderData: FlBorderData(
                                                                                               show: true,
@@ -9822,6 +9855,13 @@ class HourlyLeadsOverviewTypeGrid extends StatelessWidget {
       padding: const EdgeInsets.only(left: 12.0, right: 12),
       child: Column(
         children: [
+          Text(
+            "Hours of the day",
+            style: TextStyle(fontSize: 9),
+          ),
+          SizedBox(
+            height: 5,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -9846,13 +9886,6 @@ class HourlyLeadsOverviewTypeGrid extends StatelessWidget {
                   ),
                 )
             ],
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Text(
-            "Hours of the day",
-            style: TextStyle(fontSize: 9),
           ),
         ],
       ),

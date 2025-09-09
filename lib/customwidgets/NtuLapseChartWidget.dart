@@ -396,13 +396,13 @@ class _NtuLapseChartWidgetState extends State<NtuLapseChartWidget> {
 
   // Get month abbreviation from x value
   String _getMonthAbbreviationFromX(double x) {
-    // Get the 12-month data source
+    // Get the full x-axis range (not the hidden data)
     List<MonthlyRateData> sourceData = ntu_lapse_index == 0
-        ? (widget.salesDataResponse?.ntuResultList12Months ?? [])
-        : (widget.salesDataResponse?.lapseResultList12Months ?? []);
+        ? _getLast12MonthsForXAxis(widget.salesDataResponse?.ntuResultList12Months ?? [])
+        : _getLast12MonthsForXAxis(widget.salesDataResponse?.lapseResultList12Months ?? []);
 
     try {
-      // Use array index to find the matching month
+      // Use array index to find the matching month (x is now index-based 0-11)
       int index = x.toInt();
       if (index >= 0 && index < sourceData.length) {
         String dateStr = sourceData[index].date;
@@ -441,11 +441,9 @@ class _NtuLapseChartWidgetState extends State<NtuLapseChartWidget> {
 
   // Get appropriate Y-axis interval based on data range
   double _getYAxisInterval() {
-    double maxY = _getMaxY();
-    if (maxY <= 20) return 5;
-    if (maxY <= 50) return 10;
-    if (maxY <= 100) return 20;
-    return 25;
+    // Since maxY is always 100, use a fixed interval of 20
+    // This will show: 0%, 20%, 40%, 60%, 80%, 100%
+    return 20;
   }
 
   // Border data configuration
@@ -493,17 +491,94 @@ class _NtuLapseChartWidgetState extends State<NtuLapseChartWidget> {
     return Constants.currentSalesDataResponse.lapseResultList12Months ?? [];
   }
 
+  // Helper method to find last month with data (non-zero or has activity)
+  int _findLastMonthWithData(List<MonthlyRateData> data) {
+    for (int i = data.length - 1; i >= 0; i--) {
+      // Consider a month has data if it has non-zero rate or has total_sales/total_inforced
+      if (data[i].rate > 0.0 || 
+          (data[i].totalSales != null && data[i].totalSales! > 0) ||
+          (data[i].totalInforced != null && data[i].totalInforced! > 0)) {
+        return i;
+      }
+    }
+    return data.isNotEmpty ? data.length - 1 : 0;
+  }
+
+  // Helper method to find the last non-zero point index
+  int _findLastNonZeroIndex(List<MonthlyRateData> data) {
+    for (int i = data.length - 1; i >= 0; i--) {
+      if (data[i].rate > 0.0 || 
+          (data[i].totalSales != null && data[i].totalSales! > 0) ||
+          (data[i].totalInforced != null && data[i].totalInforced! > 0)) {
+        return i;
+      }
+    }
+    return data.isNotEmpty ? data.length - 1 : -1;
+  }
+
+  // Helper method to get last 12 months for x-axis (always full range)
+  List<MonthlyRateData> _getLast12MonthsForXAxis(List<MonthlyRateData> data) {
+    if (data.isEmpty) return [];
+    
+    // Always use the last month in the data for x-axis range
+    int lastDataIndex = data.length - 1;
+    int startIndex = (lastDataIndex + 1 - 12).clamp(0, data.length);
+    int endIndex = lastDataIndex + 1;
+
+    return data.sublist(startIndex, endIndex);
+  }
+
+  // Helper method to get data points with hidden trailing non-zero points
+  List<MonthlyRateData> _getLast12MonthsFromLastData(List<MonthlyRateData> data) {
+    if (data.isEmpty) return [];
+
+    // Get the full 12-month range for x-axis consistency
+    List<MonthlyRateData> full12Months = _getLast12MonthsForXAxis(data);
+    
+    // Find the original last non-zero index in the full data
+    int lastNonZeroIndex = _findLastNonZeroIndex(data);
+    
+    // If we found a last non-zero point, hide some trailing non-zero points
+    if (lastNonZeroIndex >= 0 && lastNonZeroIndex < data.length - 1) {
+      // Calculate how many months to hide (hide last 1-2 non-zero months)
+      int monthsToHide = 2; // Adjust this value as needed
+      int cutoffIndex = (lastNonZeroIndex - monthsToHide + 1).clamp(0, lastNonZeroIndex);
+      
+      // Map the cutoff to the 12-month range
+      int dataStartIndex = data.length - full12Months.length;
+      int relativeCutoff = cutoffIndex - dataStartIndex;
+      
+      if (relativeCutoff > 0 && relativeCutoff < full12Months.length) {
+        // Create modified data with zero values for hidden months
+        List<MonthlyRateData> modifiedData = List.from(full12Months);
+        for (int i = relativeCutoff; i < modifiedData.length; i++) {
+          // Set rate to 0 but keep the month structure for x-axis
+          modifiedData[i] = MonthlyRateData(
+            x: modifiedData[i].x,
+            rate: 0.0,
+            count: 0,
+            totalSales: 0,
+            totalInforced: 0,
+            date: modifiedData[i].date,
+          );
+        }
+        return modifiedData;
+      }
+    }
+
+    return full12Months;
+  }
+
   // Helper method to convert MonthlyRateData to FlSpot
-  List<FlSpot> _convertMonthlyRateToFlSpot(List<MonthlyRateData> monthlyRateList) {
-    // Only take the last 12 months if there are more than 12 entries
-    List<MonthlyRateData> last12Months = monthlyRateList.length > 12
-        ? monthlyRateList.sublist(monthlyRateList.length - 12)
-        : monthlyRateList;
+  List<FlSpot> _convertMonthlyRateToFlSpot(
+      List<MonthlyRateData> monthlyRateList) {
+    // Get last 12 months ending with the last month that has data
+    List<MonthlyRateData> last12Months = _getLast12MonthsFromLastData(monthlyRateList);
 
     return last12Months.asMap().entries.map((entry) {
       int index = entry.key;
       MonthlyRateData monthlyRate = entry.value;
-      // Use index as x-coordinate for consistent spacing (0-11 for 12 months)
+      // Use index as x-coordinate for consistent 12-month spacing (0-11)
       return FlSpot(index.toDouble(), monthlyRate.rate);
     }).toList();
   }
@@ -511,33 +586,18 @@ class _NtuLapseChartWidgetState extends State<NtuLapseChartWidget> {
   // Chart bounds methods
   double _getMinX() {
     List<FlSpot> data = _getChartData();
-    return data.isEmpty ? 0 : 0; // Always start from 0 for consistent view
+    return data.isEmpty ? 0 : 0; // Always start from 0 for consistent 12-month view
   }
 
   double _getMaxX() {
     List<FlSpot> data = _getChartData();
-    return data.isEmpty
-        ? 11
-        : (data.length - 1).toDouble(); // 0-11 for 12 months
+    return data.isEmpty ? 11 : (data.length - 1).toDouble(); // 0-11 for up to 12 months
   }
 
-  // FIXED: Get maximum Y value for chart scaling - no longer always 100%
+  // Get maximum Y value for chart scaling - always 100%
   double _getMaxY() {
-    List<FlSpot> data = _getChartData();
-    if (data.isEmpty) return 100;
-
-    double maxDataValue =
-        data.map((spot) => spot.y).reduce((a, b) => a > b ? a : b);
-
-    // Get target value for comparison
-    double targetValue = ntu_lapse_index == 0 ? 30.0 : 49.0;
-
-    // Take the maximum of data value and target value
-    double maxValue = maxDataValue > targetValue ? maxDataValue : targetValue;
-
-    // Add some padding (20%) and round up to nearest 10
-    double paddedMax = maxValue * 1.2;
-    return (paddedMax / 10).ceil() * 10;
+    // Always return 100 to ensure the graph ends at 100% for both NTU and Lapse
+    return 100;
   }
 
   // Animation method

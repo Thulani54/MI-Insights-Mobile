@@ -1,4 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
+import 'package:mi_insights/services/longPrint.dart';
 
 import '../screens/Reports/Executive/ExecutiveSalesReport.dart';
 
@@ -98,7 +99,7 @@ class SalesDataResponse {
   });
 
   factory SalesDataResponse.fromJson(Map<String, dynamic> json) {
-    print("fgfghg $json");
+    logLongString("fgfghg $json");
     return SalesDataResponse(
       percentageWithExtPolicy:
           (json['percentage_with_ext_policy'] ?? 0).toDouble(),
@@ -923,6 +924,7 @@ class EmployeeRate {
   });
 
   factory EmployeeRate.fromJson(Map<String, dynamic> json) {
+    print("Employee Rate JSONb: $json");
     return EmployeeRate(
       employeeId: _parseToInt(json['employee_id']),
       employeeName: json['employee_name'] ?? '',
