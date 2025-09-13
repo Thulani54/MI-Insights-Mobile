@@ -592,7 +592,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
 
   // Add a new print request
   Future<bool> addPrintRequest(Map<String, dynamic> requestData) async {
-    String baseUrl = "https://miinsightsapps.net/files";
+    String baseUrl = "${Constants.insightsBackendBaseUrl}files";
     final response = await http.post(
       Uri.parse('$baseUrl/add-print-request'),
       body: jsonEncode(requestData),
@@ -613,7 +613,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
   // Update a print request
   Future<bool> updatePrintRequest(
       String policyNumber, Map<String, dynamic> updateData) async {
-    String baseUrl = "https://miinsightsapps.net/files";
+    String baseUrl = "${Constants.insightsBackendBaseUrl}files";
     final response = await http.put(
       Uri.parse('$baseUrl/update-print-request/$policyNumber'),
       body: jsonEncode(updateData),
@@ -633,7 +633,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
 
   // Delete a print request
   Future<bool> deletePrintRequest(String policyNumber) async {
-    String baseUrl = "https://miinsightsapps.net/files";
+    String baseUrl = "${Constants.insightsBackendBaseUrl}files";
     final response = await http.delete(
       Uri.parse('$baseUrl/delete-print-request/$policyNumber'),
       headers: {

@@ -56,11 +56,11 @@ class EmployeeDetails {
 class Lead {
   final LeadObject leadObject;
   final List<AdditionalMember> additionalMembers;
-  final Employer? employer;
+   Employer? employer;
   final Replacement? replacement;
   final MipLogin? login;
-  final Addresses? addresses;
-  final BeneficiaryAddress? beneficiaryAddress;
+  Addresses? addresses;
+  BeneficiaryAddress? beneficiaryAddress;
   final List<Policy> policies;
   final String? documentPath;
 
@@ -809,7 +809,7 @@ class AdditionalMember {
   String relationship;
   String mipCover;
   String mipStatus;
-  String updatedBy;
+  int updatedBy;
   String memberQueryType;
   String memberQueryTypeOldNew;
   String memberQueryTypeOldAutoNumber;
@@ -852,9 +852,43 @@ class AdditionalMember {
     required this.lastUpdate,
   });
 
+  factory AdditionalMember.empty() {
+    return AdditionalMember(
+      memberType: "",
+      autoNumber: 0,
+      id: "",
+      contact: "",
+      dob: "",
+      gender: "",
+      name: "",
+      surname: "",
+      title: "",
+      onololeadid: 0,
+      altContact: "",
+      email: "",
+      percentage: 0,
+      maritalStatus: "",
+      relationship: "",
+      mipCover: "",
+      mipStatus: "",
+      updatedBy: 0,
+      memberQueryType: "",
+      memberQueryTypeOldNew: "",
+      memberQueryTypeOldAutoNumber: "",
+      membersAutoNumber: "",
+      sourceOfIncome: "",
+      sourceOfWealth: "",
+      otherUnknownIncome: "",
+      otherUnknownWealth: "",
+      timestamp: "",
+      lastUpdate: "",
+    );
+  }
+
   factory AdditionalMember.fromJson(Map<String, dynamic> json) {
     return AdditionalMember(
-      memberType: json['member_type'] ?? '',
+      memberType: json['member_type'] ??
+          'default', // Add default since it's missing in JSON
       autoNumber: json['auto_number'] ?? 0,
       id: json['id'] ?? '',
       contact: json['contact'] ?? '',
@@ -864,24 +898,25 @@ class AdditionalMember {
       surname: json['surname'] ?? '',
       title: json['title'] ?? '',
       onololeadid: json['onololeadid'] ?? 0,
-      altContact: json['altContact'] ?? '',
+      altContact: json['alt_contact'] ?? '', // Fixed key name
       email: json['email'] ?? '',
       percentage: json['percentage'] ?? 0,
       maritalStatus: json['maritalStatus'] ?? '',
       relationship: json['relationship'] ?? '',
-      mipCover: json['mipCover'] ?? '',
-      mipStatus: json['mipStatus'] ?? '',
-      updatedBy: json['updatedBy'] ?? '',
-      memberQueryType: json['memberQueryType'] ?? '',
-      memberQueryTypeOldNew: json['memberQueryTypeOldNew'] ?? '',
-      memberQueryTypeOldAutoNumber: json['memberQueryTypeOldAutoNumber'] ?? '',
-      membersAutoNumber: json['membersAutoNumber'] ?? '',
-      sourceOfIncome: json['sourceOfIncome'] ?? '',
-      sourceOfWealth: json['sourceOfWealth'] ?? '',
-      otherUnknownIncome: json['otherUnknownIncome'] ?? '',
-      otherUnknownWealth: json['otherUnknownWealth'] ?? '',
+      mipCover: json['mip_cover'] ?? '',
+      mipStatus: json['mip_status'] ?? '',
+      updatedBy: json['updated_by'] ?? 0,
+      memberQueryType: json['member_query_type'] ?? '',
+      memberQueryTypeOldNew: json['member_query_type_old_new'] ?? '',
+      memberQueryTypeOldAutoNumber:
+          json['member_query_type_old_auto_number'] ?? '',
+      membersAutoNumber: json['members_auto_number'] ?? '',
+      sourceOfIncome: json['source_of_income'] ?? '',
+      sourceOfWealth: json['source_of_wealth'] ?? '',
+      otherUnknownIncome: json['other_unknown_income'] ?? '',
+      otherUnknownWealth: json['other_unknown_wealth'] ?? '',
       timestamp: json['timestamp'] ?? '',
-      lastUpdate: json['lastUpdate'] ?? '',
+      lastUpdate: json['last_update'] ?? '', // Fixed key name
     );
   }
 
@@ -1879,14 +1914,57 @@ class Member {
     this.empId,
   );
 
-  /// Converts a JSON map into a Member object
+  /// Factory method to create an empty Member.
+  factory Member.empty() {
+    return Member(
+      0,
+      // autoNumber
+      "",
+      // timestamp
+      "",
+      // lastUpdate
+      "",
+      // reference
+      0,
+      // additionalMemberId
+      0.0,
+      // premium
+      0.0,
+      // cover
+      "",
+      // type
+      0,
+      // percentage
+      "",
+      // coverMembersCol
+      "",
+      // benRelationship
+      "",
+      // memberStatus
+      "",
+      // terminationDate
+      -1,
+      // updatedBy
+      "",
+      // memberQueryType
+      "",
+      // memberQueryTypeOldNew
+      "",
+      // memberQueryTypeOldAutoNumber
+      -1,
+      // cecClientId
+      -1, // empId
+    );
+  }
+
+  /// Converts a JSON map into a Member object.
   factory Member.fromJson(Map<String, dynamic> json) {
     return Member(
       json['auto_number'] ?? 0,
       json['timestamp'] ?? "",
       json['last_update'] ?? "",
-      json['reference'],
-      json['additional_member_id'],
+      json['reference'] ?? "",
+      json['additional_member_id'] ?? 0,
       json['premium'] != null ? json['premium'].toDouble() : null,
       json['cover'] != null ? json['cover'].toDouble() : null,
       json['type'] ?? "",
@@ -1904,28 +1982,28 @@ class Member {
     );
   }
 
-  /// Converts the Member object into a JSON map
+  /// Converts the Member object into a JSON map.
   Map<String, dynamic> toJson() {
     return {
-      'autoNumber': autoNumber,
+      'auto_number': autoNumber,
       'timestamp': timestamp,
-      'lastUpdate': lastUpdate,
+      'last_update': lastUpdate,
       'reference': reference,
-      'additionalMemberId': additionalMemberId,
+      'additional_member_id': additionalMemberId,
       'premium': premium,
       'cover': cover,
       'type': type,
       'percentage': percentage,
-      'coverMembersCol': coverMembersCol,
-      'benRelationship': benRelationship,
-      'memberStatus': memberStatus,
-      'terminationDate': terminationDate,
-      'updatedBy': updatedBy,
-      'memberQueryType': memberQueryType,
-      'memberQueryTypeOldNew': memberQueryTypeOldNew,
-      'memberQueryTypeOldAutoNumber': memberQueryTypeOldAutoNumber,
-      'cecClientId': cecClientId,
-      'empId': empId,
+      'cover_memberscol': coverMembersCol,
+      'ben_relationship': benRelationship,
+      'member_status': memberStatus,
+      'termination_date': terminationDate,
+      'updated_by': updatedBy,
+      'member_query_type': memberQueryType,
+      'member_query_type_old_new': memberQueryTypeOldNew,
+      'member_query_type_old_auto_number': memberQueryTypeOldAutoNumber,
+      'cec_client_id': cecClientId,
+      'empid': empId,
     };
   }
 }

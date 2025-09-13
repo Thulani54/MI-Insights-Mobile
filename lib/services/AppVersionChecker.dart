@@ -5,8 +5,8 @@ import 'package:mi_insights/constants/Constants.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class AppVersionChecker {
-  static String _baseUrl =
-      '${Constants.InsightsReportsbaseUrl}/api/check_app_version/';
+  static final String _baseUrl =
+      '${Constants.InsightsReportsbaseUrl}api/check_app_version/';
 
   Future<void> checkAppVersion(String platform) async {
     try {

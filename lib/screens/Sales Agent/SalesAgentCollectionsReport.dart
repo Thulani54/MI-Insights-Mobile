@@ -2116,7 +2116,7 @@ class _SalesAgentCollectionsReportState
       isLoadingCollections = true;
     });
     String baseUrl =
-        "https://miinsightsapps.net/files/get_collection_data_by_agent/";
+        "${Constants.insightsBaseUrl}files/get_collection_data_by_agent/";
     try {
       Map<String, String>? payload = {
         "client_id": "${Constants.cec_client_id}",

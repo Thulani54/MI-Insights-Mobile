@@ -957,27 +957,46 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                                                     const EdgeInsets
                                                                         .all(
                                                                         8.0),
-                                                                child: Text(
-                                                                  formatLargeNumber((index ==
-                                                                              0
-                                                                          ? Constants
-                                                                              .currentSalesDataResponse
-                                                                              .totalSaleCounts
-                                                                          : index == 1
-                                                                              ? Constants.currentSalesDataResponse.totalInforcedCounts
-                                                                              : Constants.currentSalesDataResponse.totalNotInforcedCounts)
-                                                                      .toString()),
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          16.5,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500),
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .center,
-                                                                  maxLines: 2,
-                                                                ),
+                                                                child: (isSalesDataLoading1a ||
+                                                                        isSalesDataLoading2a ||
+                                                                        isSalesDataLoading3a)
+                                                                    ? Center(
+                                                                        child:
+                                                                            Padding(
+                                                                          padding: const EdgeInsets
+                                                                              .all(
+                                                                              8.0),
+                                                                          child:
+                                                                              Container(
+                                                                            width:
+                                                                                18,
+                                                                            height:
+                                                                                18,
+                                                                            child:
+                                                                                CircularProgressIndicator(
+                                                                              color: Constants.ctaColorLight,
+                                                                              strokeWidth: 1.8,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      )
+                                                                    : Text(
+                                                                        formatLargeNumber((index == 0
+                                                                                ? Constants.currentSalesDataResponse.totalSaleCounts
+                                                                                : index == 1
+                                                                                    ? Constants.currentSalesDataResponse.totalInforcedCounts
+                                                                                    : Constants.currentSalesDataResponse.totalNotInforcedCounts)
+                                                                            .toString()),
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                16.5,
+                                                                            fontWeight:
+                                                                                FontWeight.w500),
+                                                                        textAlign:
+                                                                            TextAlign.center,
+                                                                        maxLines:
+                                                                            2,
+                                                                      ),
                                                               )),
                                                             ),
                                                             Center(
@@ -1086,17 +1105,21 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                         padding: const EdgeInsets.only(left: 6.0, right: 6),
                         child: LinearPercentIndicator(
                           width: MediaQuery.of(context).size.width - 12,
-                          animation: true,
+                          animation: false,
                           lineHeight: 20.0,
                           animationDuration: 500,
-                          percent: (Constants.currentSalesDataResponse
-                                          .percentageWithExtPolicy >
-                                      0
-                                  ? Constants.currentSalesDataResponse
-                                          .percentageWithExtPolicy /
-                                      100
-                                  : 0.0)
-                              .clamp(0.0, 1.0), // Clamp between 0.0 and 1.0
+                          percent: (isSalesDataLoading1a ||
+                                  isSalesDataLoading2a ||
+                                  isSalesDataLoading3a)
+                              ? 0.0
+                              : (Constants.currentSalesDataResponse
+                                              .percentageWithExtPolicy >
+                                          0
+                                      ? Constants.currentSalesDataResponse
+                                              .percentageWithExtPolicy /
+                                          100
+                                      : 0.0)
+                                  .clamp(0.0, 1.0), // Clamp between 0.0 and 1.0
                           center: Text(
                               "${Constants.currentSalesDataResponse.percentageWithExtPolicy.toStringAsFixed(1)}%"),
                           barRadius: ui.Radius.circular(12),
@@ -2090,10 +2113,13 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                   child: Text("Persistency (12 Months View)"),
                                 ),
 
-                      ChartWidget(
+                      NtuChartWidget(
                         selectedButton: _selectedButton,
                         days: days_difference,
                         salesDataResponse: Constants.currentSalesDataResponse,
+                        isLoading: (isSalesDataLoading1a ||
+                            isSalesDataLoading2a ||
+                            isSalesDataLoading3a),
                       ),
 
                       SizedBox(
@@ -5744,6 +5770,7 @@ class SalesChartWidget2 extends StatelessWidget {
         // MTD and Custom Range use same graph structure
         switch (salesIndex) {
           case 0:
+            // print("Fetching data for salesIndex 0 ${Constants.currentSalesDataResponse?.resultLista}");
             return Constants.currentSalesDataResponse?.resultLista
                     ?.map((data) => data.toFlSpot())
                     .toList() ??
@@ -6190,7 +6217,8 @@ class SalesChartWidget2 extends StatelessWidget {
             child: _buildLineChart(_getChartKey()),
           ),
         ),
-        if (selectedButton == 1 || selectedButton == 3) ...[
+        if (selectedButton == 1 ||
+            (selectedButton == 3 && daysDifference < 31)) ...[
           SizedBox(height: 6),
           Text(
             "Weekend Sales are Added to / Accounted For On The Next Monday",
@@ -6207,23 +6235,25 @@ class SalesChartWidget2 extends StatelessWidget {
   }
 }
 
-class ChartWidget extends StatefulWidget {
+class NtuChartWidget extends StatefulWidget {
   final int selectedButton;
   final int days;
   final SalesDataResponse? salesDataResponse;
-
-  const ChartWidget({
+  final bool isLoading;
+//h
+  const NtuChartWidget({
     Key? key,
     required this.selectedButton,
     required this.days,
     this.salesDataResponse,
+    this.isLoading = false,
   }) : super(key: key);
 
   @override
-  State<ChartWidget> createState() => _NtuChartWidgetState();
+  State<NtuChartWidget> createState() => _NtuChartWidgetState();
 }
 
-class _NtuChartWidgetState extends State<ChartWidget> {
+class _NtuChartWidgetState extends State<NtuChartWidget> {
   int ntu_lapse_index = 0;
   double _sliderPosition3 = 0;
   bool isSalesDataLoading2a = false;
@@ -6362,7 +6392,7 @@ class _NtuChartWidgetState extends State<ChartWidget> {
 
   // Chart content with loading and data states
   Widget _buildChartContent() {
-    if (isSalesDataLoading2a) {
+    if (widget.isLoading || isSalesDataLoading2a) {
       return _buildLoadingIndicator();
     }
 
@@ -6609,11 +6639,8 @@ class _NtuChartWidgetState extends State<ChartWidget> {
   // Get month abbreviation from x value
   String _getMonthAbbreviationFromX(double x) {
     // Get the full x-axis range (not the hidden data)
-    List<MonthlyRateData> sourceData = ntu_lapse_index == 0
-        ? _getLast12MonthsForXAxis(
-            widget.salesDataResponse?.ntuResultList12Months ?? [])
-        : _getLast12MonthsForXAxis(
-            widget.salesDataResponse?.lapseResultList12Months ?? []);
+    List<MonthlyRateData> sourceData = _getLast12MonthsForXAxis(
+        widget.salesDataResponse?.lapseResultList12Months ?? []);
 
     try {
       // Use array index to find the matching month (x is now index-based 0-11)
@@ -6681,7 +6708,10 @@ class _NtuChartWidgetState extends State<ChartWidget> {
     List<MonthlyRateData> sourceData =
         ntu_lapse_index == 0 ? _get12MonthsNTUData() : _get12MonthsLapseData();
 
-    return _convertMonthlyRateToFlSpot(sourceData);
+    List<FlSpot> allSpots = _convertMonthlyRateToFlSpot(sourceData);
+    
+    // Trim trailing zero spots while keeping the x-axis domain the same
+    return _trimTrailingZeroSpots(allSpots);
   }
 
   List<FlSpot> _getTargetData() {
@@ -6801,6 +6831,26 @@ class _NtuChartWidgetState extends State<ChartWidget> {
     }).toList();
   }
 
+  // Helper method to trim trailing zero spots while keeping x-axis domain
+  List<FlSpot> _trimTrailingZeroSpots(List<FlSpot> spots) {
+    if (spots.isEmpty) return spots;
+    
+    // Find the last non-zero spot
+    int lastNonZeroIndex = -1;
+    for (int i = spots.length - 1; i >= 0; i--) {
+      if (spots[i].y > 0) {
+        lastNonZeroIndex = i;
+        break;
+      }
+    }
+    
+    // If no non-zero spots found, return original list
+    if (lastNonZeroIndex == -1) return spots;
+    
+    // Return only up to the last non-zero spot
+    return spots.sublist(0, lastNonZeroIndex + 1);
+  }
+
   // Chart bounds methods
   double _getMinX() {
     List<FlSpot> data = _getChartData();
@@ -6810,10 +6860,9 @@ class _NtuChartWidgetState extends State<ChartWidget> {
   }
 
   double _getMaxX() {
-    List<FlSpot> data = _getChartData();
-    return data.isEmpty
-        ? 11
-        : (data.length - 1).toDouble(); // 0-11 for up to 12 months
+    // Always return 11 to maintain 12-month x-axis domain (0-11)
+    // regardless of trimmed data points
+    return 11;
   }
 
   // Get maximum Y value for chart scaling
@@ -6860,7 +6909,6 @@ String formatLargeNumber3c(String number) {
 extension ChartUtils on _NtuChartWidgetState {
   String getMonthAbbreviation(int month) {
     const months = [
-      '',
       'Jan',
       'Feb',
       'Mar',
@@ -6874,7 +6922,13 @@ extension ChartUtils on _NtuChartWidgetState {
       'Nov',
       'Dec'
     ];
-    return months[month];
+
+    // Check if the month number is valid (1-12)
+    if (month < 1 || month > 12) {
+      return "-";
+    }
+
+    return months[month - 1]; // Convert to 0-indexed
   }
 
   String formatLargeNumber3(String number) {
@@ -6897,10 +6951,11 @@ class _ParentWidgetState extends State<ParentWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ChartWidget(
+      body: NtuChartWidget(
         selectedButton: selectedButton,
         days: days,
         salesDataResponse: salesDataResponse,
+        isLoading: false,
       ),
     );
   }
@@ -8691,11 +8746,14 @@ class SalesOverviewChart extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 6),
-        const Text(
-          "Weekend Sales are Added to / Accounted For On The Next Monday",
-          style: TextStyle(fontSize: 9),
-        )
+        if (selectedButton == 1 ||
+            (selectedButton == 3 && daysDifference < 31)) ...[
+          const SizedBox(height: 6),
+          const Text(
+            "Weekend Sales are Added to / Accounted For On The Next Monday",
+            style: TextStyle(fontSize: 9),
+          ),
+        ]
       ],
     );
   }

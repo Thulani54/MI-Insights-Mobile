@@ -28,6 +28,7 @@ import '../../models/BusinessInfo.dart';
 import '../../screens/Sales Agent/SalesAgentCollectionsReport.dart';
 import '../../screens/Sales Agent/SalesAgentCommisionsReport.dart';
 import '../../screens/Sales Agent/SalesAgentSalesReport.dart';
+import '../../utils/image_utils.dart';
 import '../../screens/Valuetainment/Valuetainment.dart';
 
 // Define a class to model the quote data
@@ -793,13 +794,17 @@ class _SalesAgentHomePageState extends State<SalesAgentHomePage>
                                                   ? Image.asset(
                                                       item,
                                                       fit: BoxFit.cover,
-                                                      errorBuilder: (context, error, stackTrace) {
+                                                      errorBuilder: (context,
+                                                          error, stackTrace) {
                                                         return Container(
-                                                          color: Colors.grey[300],
+                                                          color:
+                                                              Colors.grey[300],
                                                           child: Center(
                                                             child: Icon(
-                                                              Icons.image_not_supported,
-                                                              color: Colors.grey[600],
+                                                              Icons
+                                                                  .image_not_supported,
+                                                              color: Colors
+                                                                  .grey[600],
                                                               size: 40,
                                                             ),
                                                           ),
@@ -809,25 +814,37 @@ class _SalesAgentHomePageState extends State<SalesAgentHomePage>
                                                   : Image.network(
                                                       item,
                                                       fit: BoxFit.cover,
-                                                      errorBuilder: (context, error, stackTrace) {
+                                                      errorBuilder: (context,
+                                                          error, stackTrace) {
                                                         return Container(
-                                                          color: Colors.grey[300],
+                                                          color:
+                                                              Colors.grey[300],
                                                           child: Center(
                                                             child: Icon(
-                                                              Icons.image_not_supported,
-                                                              color: Colors.grey[600],
+                                                              Icons
+                                                                  .image_not_supported,
+                                                              color: Colors
+                                                                  .grey[600],
                                                               size: 40,
                                                             ),
                                                           ),
                                                         );
                                                       },
-                                                      loadingBuilder: (context, child, loadingProgress) {
-                                                        if (loadingProgress == null) return child;
+                                                      loadingBuilder: (context,
+                                                          child,
+                                                          loadingProgress) {
+                                                        if (loadingProgress ==
+                                                            null) return child;
                                                         return Center(
-                                                          child: CircularProgressIndicator(
-                                                            value: loadingProgress.expectedTotalBytes != null
-                                                                ? loadingProgress.cumulativeBytesLoaded /
-                                                                    loadingProgress.expectedTotalBytes!
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            value: loadingProgress
+                                                                        .expectedTotalBytes !=
+                                                                    null
+                                                                ? loadingProgress
+                                                                        .cumulativeBytesLoaded /
+                                                                    loadingProgress
+                                                                        .expectedTotalBytes!
                                                                 : null,
                                                           ),
                                                         );
@@ -872,13 +889,19 @@ class _SalesAgentHomePageState extends State<SalesAgentHomePage>
                                                       ? Image.asset(
                                                           item,
                                                           fit: BoxFit.cover,
-                                                          errorBuilder: (context, error, stackTrace) {
+                                                          errorBuilder:
+                                                              (context, error,
+                                                                  stackTrace) {
                                                             return Container(
-                                                              color: Colors.grey[300],
+                                                              color: Colors
+                                                                  .grey[300],
                                                               child: Center(
                                                                 child: Icon(
-                                                                  Icons.image_not_supported,
-                                                                  color: Colors.grey[600],
+                                                                  Icons
+                                                                      .image_not_supported,
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      600],
                                                                   size: 40,
                                                                 ),
                                                               ),
@@ -888,25 +911,40 @@ class _SalesAgentHomePageState extends State<SalesAgentHomePage>
                                                       : Image.network(
                                                           item,
                                                           fit: BoxFit.cover,
-                                                          errorBuilder: (context, error, stackTrace) {
+                                                          errorBuilder:
+                                                              (context, error,
+                                                                  stackTrace) {
                                                             return Container(
-                                                              color: Colors.grey[300],
+                                                              color: Colors
+                                                                  .grey[300],
                                                               child: Center(
                                                                 child: Icon(
-                                                                  Icons.image_not_supported,
-                                                                  color: Colors.grey[600],
+                                                                  Icons
+                                                                      .image_not_supported,
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      600],
                                                                   size: 40,
                                                                 ),
                                                               ),
                                                             );
                                                           },
-                                                          loadingBuilder: (context, child, loadingProgress) {
-                                                            if (loadingProgress == null) return child;
+                                                          loadingBuilder: (context,
+                                                              child,
+                                                              loadingProgress) {
+                                                            if (loadingProgress ==
+                                                                null)
+                                                              return child;
                                                             return Center(
-                                                              child: CircularProgressIndicator(
-                                                                value: loadingProgress.expectedTotalBytes != null
-                                                                    ? loadingProgress.cumulativeBytesLoaded /
-                                                                        loadingProgress.expectedTotalBytes!
+                                                              child:
+                                                                  CircularProgressIndicator(
+                                                                value: loadingProgress
+                                                                            .expectedTotalBytes !=
+                                                                        null
+                                                                    ? loadingProgress
+                                                                            .cumulativeBytesLoaded /
+                                                                        loadingProgress
+                                                                            .expectedTotalBytes!
                                                                     : null,
                                                               ),
                                                             );
@@ -931,17 +969,21 @@ class _SalesAgentHomePageState extends State<SalesAgentHomePage>
                                             horizontal: 5.0),
                                         child: _isAssetPath(item)
                                             ? ClipRRect(
-                                                borderRadius: BorderRadius.circular(8),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
                                                 child: Image.asset(
                                                   item,
                                                   fit: BoxFit.cover,
-                                                  errorBuilder: (context, error, stackTrace) {
+                                                  errorBuilder: (context, error,
+                                                      stackTrace) {
                                                     return Container(
                                                       color: Colors.grey[300],
                                                       child: Center(
                                                         child: Icon(
-                                                          Icons.image_not_supported,
-                                                          color: Colors.grey[600],
+                                                          Icons
+                                                              .image_not_supported,
+                                                          color:
+                                                              Colors.grey[600],
                                                           size: 40,
                                                         ),
                                                       ),
@@ -949,23 +991,10 @@ class _SalesAgentHomePageState extends State<SalesAgentHomePage>
                                                   },
                                                 ),
                                               )
-                                            : CachedNetworkImage(
+                                            : ImageUtils.buildCachedImage(
                                                 imageUrl: item,
+                                                baseUrl: Constants.insightsBackendBaseUrl,
                                                 fit: BoxFit.cover,
-                                                placeholder: (context, url) => Center(
-                                                    child:
-                                                        CircularProgressIndicator()),
-                                                errorWidget: (context, url, error) =>
-                                                    Container(
-                                                      color: Colors.grey[300],
-                                                      child: Center(
-                                                        child: Icon(
-                                                          Icons.image_not_supported,
-                                                          color: Colors.grey[600],
-                                                          size: 40,
-                                                        ),
-                                                      ),
-                                                    ),
                                               ),
                                       );
                                     },
@@ -1615,9 +1644,11 @@ class _SalesAgentHomePageState extends State<SalesAgentHomePage>
 
   // Helper function to determine if a path is an asset path
   bool _isAssetPath(String path) {
-    return path.startsWith('assets/') || 
-           path.startsWith('asset/') || 
-           (!path.startsWith('http://') && !path.startsWith('https://') && !path.contains('://'));
+    return path.startsWith('assets/') ||
+        path.startsWith('asset/') ||
+        (!path.startsWith('http://') &&
+            !path.startsWith('https://') &&
+            !path.contains('://'));
   }
 }
 
@@ -1761,7 +1792,7 @@ class Quote {
 
 Future<Quote> fetchRandomQuote(String type) async {
   final url = Uri.parse(
-      'https://miinsightsapps.net/backend_api/api/admin/getQuotes?type=$type');
+      '${Constants.insightsBackendBaseUrl}admin/getQuotes?type=$type');
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
@@ -1789,8 +1820,8 @@ Future<void> setMoodLogin({
   required int clientId,
   required String userMood,
 }) async {
-  final url = Uri.parse(
-      'https://miinsightsapps.net/backend_api/api/admin/setMoodLogin');
+  final url =
+      Uri.parse('${Constants.insightsBackendBaseUrl}admin/setMoodLogin');
   final response = await http.post(
     url,
     headers: {

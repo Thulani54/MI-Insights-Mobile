@@ -18,7 +18,7 @@ Future<void> getSalesAgentSalesReport(String date_from, String date_to,
     }
 
     String baseUrl =
-        "https://miinsightsapps.net/files/get_sales_data_by_agent/";
+        "${Constants.insightsBaseUrl}files/get_sales_data_by_agent/";
     if (selectedButton1 == 1) {
       isSalesDataLoading1a = true;
     } else if (selectedButton1 == 2) {
@@ -274,7 +274,7 @@ Future<void> getSalesAgentSalesReport(String date_from, String date_to,
             salesValue.value++;
           }
         } else if (selectedButton1 == 3 && days_difference <= 31) {
-          print("fggffg $jsonResponse");
+          print("fggffgdffggf $jsonResponse");
           Constants.sales_sectionsList3a_sales_agent[0].amount = 0;
           Constants.sales_sectionsList3a_sales_agent[1].amount = 0;
           Constants.sales_sectionsList3a_sales_agent[2].amount = 0;
@@ -484,25 +484,26 @@ Future<void> getSalesAgentSalesReport(String date_from, String date_to,
   }
 }
 
-Future<void> getSalesAgentLeadsReportOld(String date_from, String date_to,
+Future<void> getSalesAgentLeadsReport(String date_from, String date_to,
     int selectedButton2, int days_difference, BuildContext context) async {
   String baseUrl =
-      "https://miinsightsapps.net/fieldV6/getLeadss?empId=${Constants.cec_employeeid}&searchKey=&status=my&cec_client_id=${Constants.cec_client_id}&type=field&startDate=${date_from}date%20range&endDate=${date_to}";
-  print("dshdsgds5 ${baseUrl}");
+      "${Constants.insightsBackendBaseUrl}fieldV6/getLeadss?empId=${Constants.cec_employeeid}&searchKey=&status=my&cec_client_id=${Constants.cec_client_id}&type=field&startDate=${date_from}date%20range&endDate=${date_to}";
+  if (kDebugMode) {
+    print("dshdsgds5 ${baseUrl}");
+  }
 
   try {
     if (kDebugMode) {
       //print("baseUrl $baseUrl");
     }
 
-    await http.get(
-        Uri.parse(
-          baseUrl,
-        ),
-        headers: {
-          "Cookie":
-              "userid=expiry=2021-04-25&client_modules=1001#1002#1003#1004#1005#1006#1007#1008#1009#1010#1011#1012#1013#1014#1015#1017#1018#1020#1021#1022#1024#1025#1026#1027#1028#1029#1030#1031#1032#1033#1034#1035&clientid=&empid=3&empfirstname=Mncedisi&emplastname=Khumalo&email=mncedisi@athandwe.co.za&username=mncedisi@athandwe.co.za&dob=8/28/1985 12:00:00 AM&fullname=Mncedisi Khumalo&userRole=5&userImage=mncedisi@athandwe.co.za.jpg&employedAt=branch&role=leader&branchid=6&branchname=Boulders&jobtitle=Administrative Assistant&dialing_strategy=Campaign Manager&clientname=Test 1 Funeral Parlour&foldername=maafrica&client_abbr=AS&pbx_account=pbx1051ef0a&soft_phone_ip=&agent_type=branch&mip_username=mnces@mip.co.za&agent_email=Mr Mncedisi Khumalo&ViciDial_phone_login=&ViciDial_phone_password=&ViciDial_agent_user=99&ViciDial_agent_password=&device_id=dC7JwXFwwdI:APA91bF0gTbuXlfT6wIcGMLY57Xo7VxUMrMH-MuFYL5PnjUVI0G5X1d3d90FNRb8-XmcjI40L1XqDH-KAc1KWnPpxNg8Z8SK4Ty0xonbz4L3sbKz3Rlr4hyBqePWx9ZfEp53vWwkZ3tx&servername=http://localhost:55661"
-        }).then((value) async {
+    await http
+        .get(
+      Uri.parse(
+        baseUrl,
+      ),
+    )
+        .then((value) async {
       http.Response response = value;
       if (kDebugMode) {
         print("fghghjjh0f " + response.body);
@@ -550,6 +551,7 @@ Future<void> getSalesAgentLeadsReportOld(String date_from, String date_to,
                   m1["hang_up_desc2"] != null))) {
             // print("tfgghgdfhg");
             Constants.leads_sectionsList1a[2].amount++;
+
             Constants.leadsByAgentSales1c.add(SalesByAgentLead(
               m1["onololeadid"] ?? "", // Provide a default empty string if null
               m1["title"] ?? "",
@@ -869,6 +871,8 @@ Future<void> getSalesAgentLeadsReportOld(String date_from, String date_to,
               "fghgjh3 $selectedButton2 ${Constants.leadsByAgentSales1a.length} ${jsonResponse.length}");
         }
       }
+      // Trigger UI update
+      salesValue.value++;
     });
   } catch (exception) {
     //Exception exc = exception as Exception;
@@ -878,13 +882,13 @@ Future<void> getSalesAgentLeadsReportOld(String date_from, String date_to,
   }
 }
 
-Future<void> getSalesAgentLeadsReport(String date_from, String date_to,
+Future<void> getSalesAgentLeadsReport2(String date_from, String date_to,
     int selectedButton2, int days_difference, BuildContext context) async {
   /*String baseUrl =
-      "https://miinsightsapps.net/fieldV6/getLeadss?empId=${Constants.cec_employeeid}&searchKey=&status=my&cec_client_id=${Constants.cec_client_id}&type=field&startDate=${date_from}date%20range&endDate=${date_to}"
+      "${Constants.insightsBackendBaseUrl}fieldV6/getLeadss?empId=${Constants.cec_employeeid}&searchKey=&status=my&cec_client_id=${Constants.cec_client_id}&type=field&startDate=${date_from}date%20range&endDate=${date_to}"
       ""
       "";*/
-  String baseUrl = "https://miinsightsapps.net/files/get_leads_data_by_agent/";
+  String baseUrl = "${Constants.insightsBaseUrl}files/get_leads_data_by_agent/";
   print("dshdsgds5 ${baseUrl}");
 
   try {
@@ -899,22 +903,21 @@ Future<void> getSalesAgentLeadsReport(String date_from, String date_to,
     };
     // print(payload);
 
-    await http.post(
-        Uri.parse(
-          baseUrl,
-        ),
-        body: payload,
-        headers: {
-          "Cookie":
-              "userid=expiry=2021-04-25&client_modules=1001#1002#1003#1004#1005#1006#1007#1008#1009#1010#1011#1012#1013#1014#1015#1017#1018#1020#1021#1022#1024#1025#1026#1027#1028#1029#1030#1031#1032#1033#1034#1035&clientid=&empid=3&empfirstname=Mncedisi&emplastname=Khumalo&email=mncedisi@athandwe.co.za&username=mncedisi@athandwe.co.za&dob=8/28/1985 12:00:00 AM&fullname=Mncedisi Khumalo&userRole=5&userImage=mncedisi@athandwe.co.za.jpg&employedAt=branch&role=leader&branchid=6&branchname=Boulders&jobtitle=Administrative Assistant&dialing_strategy=Campaign Manager&clientname=Test 1 Funeral Parlour&foldername=maafrica&client_abbr=AS&pbx_account=pbx1051ef0a&soft_phone_ip=&agent_type=branch&mip_username=mnces@mip.co.za&agent_email=Mr Mncedisi Khumalo&ViciDial_phone_login=&ViciDial_phone_password=&ViciDial_agent_user=99&ViciDial_agent_password=&device_id=dC7JwXFwwdI:APA91bF0gTbuXlfT6wIcGMLY57Xo7VxUMrMH-MuFYL5PnjUVI0G5X1d3d90FNRb8-XmcjI40L1XqDH-KAc1KWnPpxNg8Z8SK4Ty0xonbz4L3sbKz3Rlr4hyBqePWx9ZfEp53vWwkZ3tx&servername=http://localhost:55661"
-        }).then((value) async {
+    await http
+        .post(
+      Uri.parse(
+        baseUrl,
+      ),
+      body: payload,
+    )
+        .then((value) async {
       http.Response response = value;
       if (kDebugMode) {
-        // print("fghghjjh5 " + response.body);
+        print("fghghjjh5 " + response.body);
         //print(response.statusCode);
       }
       List<Map> jsonResponse =
-          List<Map>.from(jsonDecode(response.body)["all_leads_list"]);
+          List<Map>.from(jsonDecode(response.body)["sales_list"]);
       if (selectedButton2 == 1) {
         Constants.leads_sectionsList1a[0].amount = 0;
         Constants.leads_sectionsList1a[1].amount = 0;
@@ -1315,7 +1318,7 @@ Future<void> getSalesAgentLeads(String date_from, String date_to,
     }
 
     String baseUrl =
-        "https://miinsightsapps.net/files/get_leads_data_by_agent/";
+        "${Constants.insightsBackendBaseUrl}files/get_leads_data_by_agent/";
     if (selectedButton1 == 1) {
       isSalesDataLoading1a = true;
     } else if (selectedButton1 == 2) {

@@ -14,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:mi_insights/Login.dart';
 import 'package:mi_insights/constants/Constants.dart';
 import 'package:mi_insights/screens/Reports/Executive/ExecutiveMicroLearnReport.dart';
+import 'package:mi_insights/services/sales_service.dart';
 import 'package:motion_toast/motion_toast.dart';
 import 'package:mi_insights/screens/ComingSoon.dart';
 import 'package:mi_insights/screens/PolicyInformation.dart';
@@ -43,6 +44,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'admin/ClientSearchPage.dart';
 import 'models/BusinessInfo.dart';
+import 'utils/image_utils.dart';
 import 'widgets/role_based_drawer.dart';
 
 /*List<sectionmodel> sectionsList = [
@@ -181,6 +183,18 @@ Map<String, List<sectionmodel>> m1 = {
         "assets/icons/micro_l.svg"),
   ],
   "sales": [
+    sectionmodel(
+        "My Sales", SalesAgentReport(), "sales", "assets/icons/sales_logo.svg"),
+    sectionmodel("My Collect", SalesAgentCollectionsReport(), "collections",
+        "assets/icons/collections_logo.svg"),
+    sectionmodel("My Comm", null, "commission",
+        "assets/icons/commission_logo.svg"), // Requires password
+    sectionmodel(
+        "My Chats", myChats(), "attendance", "assets/icons/my_chats.svg"),
+    sectionmodel("Micro-Learn", ExecutiveMicroLearnReport(), "marketing",
+        "assets/icons/micro_l.svg"),
+  ],
+  "specialist": [
     sectionmodel(
         "My Sales", SalesAgentReport(), "sales", "assets/icons/sales_logo.svg"),
     sectionmodel("My Collect", SalesAgentCollectionsReport(), "collections",
@@ -762,10 +776,6 @@ class _MyHomePageState extends State<MyHomePage> with InactivityLogoutMixin {
     );
   }
 
-  final carousel_slider.CarouselSliderController _controller =
-      carousel_slider.CarouselSliderController();
-  int _current = 0;
-
   void _incrementCounter() {
     setState(() {
       _counter++;
@@ -887,196 +897,13 @@ class _MyHomePageState extends State<MyHomePage> with InactivityLogoutMixin {
             ),
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                child: carousel_slider.CarouselSlider(
-                  disableGesture: true,
-                  carouselController: _controller,
-                  options: carousel_slider.CarouselOptions(
-                      autoPlay: true,
-                      viewportFraction: 1.0,
-                      clipBehavior: Clip.antiAlias,
-                      padEnds: false,
-                      aspectRatio: 16 / 9.5,
-                      enlargeStrategy:
-                          carousel_slider.CenterPageEnlargeStrategy.height,
-                      enlargeCenterPage: false,
-                      onPageChanged: (index, reason) {
-                        setState(() {
-                          _current = index;
-                        });
-                      }),
-                  items: syncedImages == false
-                      ? imgList
-                          .map((item) => Builder(
-                                builder: (BuildContext context) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(0.0),
-                                    child: Card(
-                                      elevation: 6,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16)),
-                                      surfaceTintColor: Colors.white,
-                                      color: Colors.white,
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 0.0),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              bottom: 1.0),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            child: Container(
-                                              child: _isAssetPath(item)
-                                                  ? Image.asset(
-                                                      item,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder: (context,
-                                                          error, stackTrace) {
-                                                        return Container(
-                                                          color:
-                                                              Colors.grey[300],
-                                                          child: Center(
-                                                            child: Icon(
-                                                              Icons
-                                                                  .image_not_supported,
-                                                              color: Colors
-                                                                  .grey[600],
-                                                              size: 40,
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
-                                                    )
-                                                  : Image.network(
-                                                      item,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder: (context,
-                                                          error, stackTrace) {
-                                                        return Container(
-                                                          color:
-                                                              Colors.grey[300],
-                                                          child: Center(
-                                                            child: Icon(
-                                                              Icons
-                                                                  .image_not_supported,
-                                                              color: Colors
-                                                                  .grey[600],
-                                                              size: 40,
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
-                                                      loadingBuilder: (context,
-                                                          child,
-                                                          loadingProgress) {
-                                                        if (loadingProgress ==
-                                                            null) return child;
-                                                        return Center(
-                                                          child:
-                                                              CircularProgressIndicator(
-                                                            value: loadingProgress
-                                                                        .expectedTotalBytes !=
-                                                                    null
-                                                                ? loadingProgress
-                                                                        .cumulativeBytesLoaded /
-                                                                    loadingProgress
-                                                                        .expectedTotalBytes!
-                                                                : null,
-                                                          ),
-                                                        );
-                                                      },
-                                                    ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ))
-                          .toList()
-                      : imgList
-                          .map((item) => Builder(
-                                builder: (BuildContext context) {
-                                  return Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    margin:
-                                        EdgeInsets.symmetric(horizontal: 5.0),
-                                    child: _isAssetPath(item)
-                                        ? ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            child: Image.asset(
-                                              item,
-                                              fit: BoxFit.cover,
-                                              errorBuilder:
-                                                  (context, error, stackTrace) {
-                                                return Container(
-                                                  color: Colors.grey[300],
-                                                  child: Center(
-                                                    child: Icon(
-                                                      Icons.image_not_supported,
-                                                      color: Colors.grey[600],
-                                                      size: 40,
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          )
-                                        : CachedNetworkImage(
-                                            imageUrl: item,
-                                            fit: BoxFit.cover,
-                                            placeholder: (context, url) => Center(
-                                                child:
-                                                    CircularProgressIndicator()),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    Container(
-                                              color: Colors.grey[300],
-                                              child: Center(
-                                                child: Icon(
-                                                  Icons.image_not_supported,
-                                                  color: Colors.grey[600],
-                                                  size: 40,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                  );
-                                },
-                              ))
-                          .toList(),
-                ),
+              child: ImageUtils.buildNetworkImageWithFallback(
+                imageUrls: imgList,
+                baseUrl: Constants.insightsBackendBaseUrl,
+                height: MediaQuery.of(context).size.width / (16 / 9.5),
+                showFallbackWhenAllFail: true,
               ),
             ),
-            if (imgList.isNotEmpty)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: imgList.asMap().entries.map((entry) {
-                  return GestureDetector(
-                    onTap: () => _controller.animateToPage(entry.key),
-                    child: Container(
-                      width: 8.0,
-                      height: 8.0,
-                      margin:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: (Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black)
-                              .withOpacity(_current == entry.key ? 0.9 : 0.4)),
-                    ),
-                  );
-                }).toList(),
-              ),
             // Text(Constants.latestNotification.toJson().toString()),
             if (Constants.latestNotification.title.isNotEmpty &&
                 Constants.account_type != "executive")
@@ -1295,6 +1122,13 @@ class _MyHomePageState extends State<MyHomePage> with InactivityLogoutMixin {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               ExecutiveMicroLearnReport()));
+                                } else if (sectionsList[index].id ==
+                                    "My Sales") {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              SalesAgentReport()));
                                 } else if (index == 10) {
                                   _showPasswordDialog();
                                 } else if (sectionsList[index].id ==
@@ -1505,6 +1339,7 @@ class _MyHomePageState extends State<MyHomePage> with InactivityLogoutMixin {
 
     getBusinessDetails();
     startInactivityTimer();
+    refreshScripConfig();
     getAllUsers(
         Constants.cec_client_id.toString(), Constants.cec_client_id.toString());
     getAllBranches(context, Constants.cec_client_id.toString(),
@@ -1549,6 +1384,29 @@ class _MyHomePageState extends State<MyHomePage> with InactivityLogoutMixin {
             );
           },
         );
+      }
+    });
+  }
+
+  void refreshScripConfig() {
+    SalesService salesService = SalesService();
+    salesService.fetchScriptConfig().then((val) {
+      //Constants.currentConfigAvailable = val;
+
+      if (kDebugMode) {
+        print("gghhghg ${val.paragraphs.length}");
+      }
+      //filterPageData();
+
+      setState(() {});
+    });
+    salesService.fetchParlourConfig(Constants.cec_client_id).then((val) {
+      if (val != null) {
+        if (kDebugMode) {
+          // if (val.mainRates.isNotEmpty)
+          // print("Parlour config main rate: ${val.mainRates[0].amount}");
+        }
+        Constants.currentParlourConfig = val;
       }
     });
   }

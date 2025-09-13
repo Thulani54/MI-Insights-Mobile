@@ -275,7 +275,7 @@ class _SalesAgentChatScreenState extends State<SalesAgentChatScreen>
 
   getAllMessages() async {
     String baseUrl =
-        "https://miinsightsapps.net/admin/getMyNotificationsReload?cec_employeid=${Constants.cec_employeeid}";
+        "${Constants.insightsBackendBaseUrl}admin/getMyNotificationsReload?cec_employeid=${Constants.cec_employeeid}";
 
     try {
       isLoadingChatData = true;
@@ -361,7 +361,7 @@ class _SalesAgentChatScreenState extends State<SalesAgentChatScreen>
     print("ghgghg  " + notification.toString());
 
     String baseUrl =
-        "https://miinsightsapps.net/backend_api/api/admin/sendNotification/";
+        "${Constants.insightsBackendBaseUrl}admin/sendNotification/";
 
     try {
       final response = await http.post(

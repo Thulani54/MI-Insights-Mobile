@@ -6525,7 +6525,7 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
       // processApiResponse(response);
 
       String baseUrl =
-          "https://miinsightsapps.net/files/get_api_data_by_date_range/";
+          "${Constants.insightsBaseUrl}files/get_api_data_by_date_range/";
       Map<String, String>? payload = {
         "client_id": "${Constants.cec_client_id}",
         "start_date": formattedStartDate,

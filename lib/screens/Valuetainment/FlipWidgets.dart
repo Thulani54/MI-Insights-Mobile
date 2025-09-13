@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../constants/Constants.dart';
 import '../../models/ValutainmentModels.dart';
 import '../../services/MyNoyifier.dart';
+import '../../utils/image_utils.dart';
 import 'Compliance.dart';
 
 final compliancepage1Value = ValueNotifier<int>(0);
@@ -106,15 +107,10 @@ class _page1State extends State<page1> {
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.all(4.0),
-                                              child: CachedNetworkImage(
+                                              child: ImageUtils.buildCachedImage(
                                                 imageUrl: Constants.logoUrl,
+                                                baseUrl: Constants.insightsBackendBaseUrl,
                                                 fit: BoxFit.contain,
-                                                placeholder: (context, url) =>
-                                                    Container(
-                                                        height: 50,
-                                                        width: 50,
-                                                        child: Container()),
-                                                // errorWidget: (context, url, error) => Icon(Icons.error),
                                               ),
                                             ),
                                           )
@@ -368,11 +364,12 @@ class _genericpageState extends State<genericpage> {
                   child: Container(
                     height: 55,
                     width: 55,
-                    child: CachedNetworkImage(
+                    child: ImageUtils.buildCachedImage(
                       imageUrl: Constants.logoUrl,
+                      baseUrl: Constants.insightsBackendBaseUrl,
                       fit: BoxFit.fitHeight,
-                      placeholder: (context, url) =>
-                          SizedBox(height: 50, width: 50, child: Container()),
+                      width: 55,
+                      height: 55,
                     ),
                   ),
                 ),

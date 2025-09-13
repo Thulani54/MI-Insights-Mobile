@@ -108,7 +108,10 @@ class _NeedAnalysisState extends State<NeedAnalysis> {
                     ),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => NewMemberDialog(),
+                        builder: (context) => NewMemberDialog2(
+                          current_member_index: 0,
+                          canAddMember: false,
+                        ),
                       ));
                     },
                   ),
@@ -163,7 +166,10 @@ class _NeedAnalysisState extends State<NeedAnalysis> {
                     ),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => NewMemberDialog(),
+                        builder: (context) => NewMemberDialog2(
+                          current_member_index: 0,
+                          canAddMember: false,
+                        ),
                       ));
                       setState(() {});
                     },
@@ -455,7 +461,7 @@ class _AdvancedMemberCard2State extends State<AdvancedMemberCard2> {
                                         ),
                                       ],
                                     ),
-                                    child: NewMemberDialog(
+                                    child: NewMemberDialog2(
                                       isEditMode: true,
                                       relationship: widget.member.relationship,
                                       title: widget.member.title,
@@ -470,6 +476,8 @@ class _AdvancedMemberCard2State extends State<AdvancedMemberCard2> {
                                       sourceOfWealth:
                                           widget.member.sourceOfWealth,
                                       autoNumber: widget.member.autoNumber,
+                                      current_member_index: 0,
+                                      canAddMember: true,
                                     ),
                                   ),
                                 ),
@@ -599,8 +607,7 @@ class _DeleteMemberDialogState extends State<DeleteMemberDialog> {
   }
 
   Future<void> removeMember(BuildContext context, String memberId) async {
-    String baseUrl =
-        "https://miinsightsapps.net/backend_api/api//fieldV6/removeMember/";
+    String baseUrl = "${Constants.insightsBackendBaseUrl}fieldV6/removeMember/";
 
     try {
       // Prepare the payload

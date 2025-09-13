@@ -80,6 +80,35 @@ TextEditingController _searchContoller = TextEditingController();
 
 class _SalesAgentReportState extends State<SalesAgentReport>
     with InactivityLogoutMixin {
+  void _setCurrentMonthDateRange() {
+    // Set loading state to true before starting data fetch
+    isSalesDataLoading1a = true;
+    setState(() {});
+    
+    DateTime now = DateTime.now();
+    DateTime firstDayOfMonth = DateTime(now.year, now.month, 1);
+    DateTime lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
+    
+    Constants.sales_formattedStartDate = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+    Constants.sales_formattedEndDate = DateFormat('yyyy-MM-dd').format(lastDayOfMonth);
+    
+    // Calculate days difference for the current month
+    days_difference = lastDayOfMonth.difference(firstDayOfMonth).inDays;
+    
+    setState(() {});
+    print("Current month range: ${Constants.sales_formattedStartDate} to ${Constants.sales_formattedEndDate}");
+    print("Days difference: $days_difference");
+    
+    getSalesAgentSalesReport(Constants.sales_formattedStartDate,
+            Constants.sales_formattedEndDate, 1, days_difference, context)
+        .then((value) {
+      kyrt = UniqueKey();
+      setState(() {});
+    });
+    getSalesAgentLeadsReport(Constants.sales_formattedStartDate,
+        Constants.sales_formattedEndDate, 1, days_difference, context);
+  }
+
   Future<void> _animateButton(int buttonNumber) async {
     restartInactivityTimer();
     DateTime? startDate = DateTime.now();
@@ -95,6 +124,7 @@ class _SalesAgentReportState extends State<SalesAgentReport>
     _selectedButton = buttonNumber;
     if (buttonNumber == 1) {
       _sliderPosition = 0.0;
+      _setCurrentMonthDateRange();
     } else if (buttonNumber == 2) {
       _sliderPosition = (MediaQuery.of(context).size.width / 3) - 18;
     } else if (buttonNumber == 3) {
@@ -165,6 +195,10 @@ class _SalesAgentReportState extends State<SalesAgentReport>
         Constants.sales_formattedEndDate =
             DateFormat('yyyy-MM-dd').format(pickedDate);
 
+        setState(() {});
+
+        // Set loading state to true before starting data fetch
+        isSalesDataLoading2a = true;
         setState(() {});
 
         getSalesAgentSalesReport(Constants.sales_formattedStartDate,
@@ -700,7 +734,7 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                           border: Border(
                                                               bottom: BorderSide(
                                                                   color: Constants
-                                                                      .ctaColorLight,
+                                                                      .ftaColorLight,
                                                                   width: 6))),
                                                       child: Column(
                                                         children: [
@@ -912,7 +946,7 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                           border: Border(
                                                               bottom: BorderSide(
                                                                   color: Constants
-                                                                      .ctaColorLight,
+                                                                      .ftaColorLight,
                                                                   width: 6))),
                                                       child: Column(
                                                         children: [
@@ -1324,7 +1358,8 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                       padding: const EdgeInsets.all(12.0),
                                       child: (_selectedButton == 1 &&
                                               sales_index == 0 &&
-                                              Constants.leadsByAgentSales1a.length ==
+                                              Constants.leadsByAgentSales1a
+                                                      .length ==
                                                   0)
                                           ? Center(
                                               child: Text(
@@ -1338,7 +1373,8 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                             )
                                           : (_selectedButton == 1 &&
                                                   sales_index == 1 &&
-                                                  Constants.leadsByAgentSales1b.length ==
+                                                  Constants.leadsByAgentSales1b
+                                                          .length ==
                                                       0)
                                               ? Center(
                                                   child: Text(
@@ -1369,19 +1405,12 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                       ),
                                                     )
                                                   : ListView.builder(
-                                                      itemCount: (_selectedButton ==
-                                                              1)
+                                                      itemCount: (_selectedButton == 1)
                                                           ? (sales_index == 0
-                                                              ? Constants
-                                                                  .leadsByAgentSales1a
-                                                                  .length
+                                                              ? Constants.leadsByAgentSales1a.length
                                                               : sales_index == 1
-                                                                  ? Constants
-                                                                      .leadsByAgentSales1b
-                                                                      .length
-                                                                  : Constants
-                                                                      .leadsByAgentSales1c
-                                                                      .length)
+                                                                  ? Constants.leadsByAgentSales1b.length
+                                                                  : Constants.leadsByAgentSales1c.length)
                                                           : (_selectedButton == 2)
                                                               ? (sales_index == 0
                                                                   ? Constants.leadsByAgentSales2a.length
@@ -1402,6 +1431,60 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                       shrinkWrap: true,
                                                       physics: NeverScrollableScrollPhysics(),
                                                       itemBuilder: (BuildContext context, int index) {
+                                                        // Safety check for empty lists during data refresh
+                                                        final currentList = (_selectedButton ==
+                                                                1)
+                                                            ? (sales_index == 0
+                                                                ? Constants
+                                                                    .leadsByAgentSales1a
+                                                                : sales_index ==
+                                                                        1
+                                                                    ? Constants
+                                                                        .leadsByAgentSales1b
+                                                                    : Constants
+                                                                        .leadsByAgentSales1c)
+                                                            : (_selectedButton ==
+                                                                    2)
+                                                                ? (sales_index ==
+                                                                        0
+                                                                    ? Constants
+                                                                        .leadsByAgentSales2a
+                                                                    : sales_index ==
+                                                                            1
+                                                                        ? Constants
+                                                                            .leadsByAgentSales2b
+                                                                        : Constants
+                                                                            .leadsByAgentSales2c)
+                                                                : (_selectedButton ==
+                                                                            3 &&
+                                                                        days_difference <=
+                                                                            31)
+                                                                    ? (sales_index ==
+                                                                            0
+                                                                        ? Constants
+                                                                            .leadsByAgentSales3a
+                                                                        : sales_index ==
+                                                                                1
+                                                                            ? Constants
+                                                                                .leadsByAgentSales3b
+                                                                            : Constants
+                                                                                .leadsByAgentSales3c)
+                                                                    : (sales_index ==
+                                                                            0
+                                                                        ? Constants
+                                                                            .leadsByAgentSales4a
+                                                                        : sales_index ==
+                                                                                1
+                                                                            ? Constants.leadsByAgentSales4b
+                                                                            : Constants.leadsByAgentSales4c);
+
+                                                        if (index >=
+                                                            currentList
+                                                                .length) {
+                                                          return SizedBox
+                                                              .shrink(); // Return empty widget if index is out of bounds
+                                                        }
+
                                                         return Padding(
                                                           padding:
                                                               const EdgeInsets
@@ -1417,26 +1500,9 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                                 builder:
                                                                     (context) =>
                                                                         SingleLeadOverview(
-                                                                  sale: _selectedButton ==
-                                                                          1
-                                                                      ? sales_index ==
-                                                                              0
-                                                                          ? Constants
-                                                                              .leadsByAgentSales1a[index]
-                                                                          : sales_index == 1
-                                                                              ? Constants.leadsByAgentSales1b[index]
-                                                                              : Constants.leadsByAgentSales1c[index]
-                                                                      : _selectedButton == 2
-                                                                          ? sales_index == 0
-                                                                              ? Constants.leadsByAgentSales2a[index]
-                                                                              : sales_index == 1
-                                                                                  ? Constants.leadsByAgentSales2b[index]
-                                                                                  : Constants.leadsByAgentSales2c[index]
-                                                                          : sales_index == 0
-                                                                              ? Constants.leadsByAgentSales3a[index]
-                                                                              : sales_index == 1
-                                                                                  ? Constants.leadsByAgentSales3b[index]
-                                                                                  : Constants.leadsByAgentSales3c[index],
+                                                                  sale:
+                                                                      currentList[
+                                                                          index],
                                                                 ),
                                                               );
                                                             },
@@ -1461,7 +1527,7 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                                           flex:
                                                                               4,
                                                                           child:
-                                                                              Text("${(_selectedButton == 1) ? (sales_index == 0 ? (Constants.leadsByAgentSales1a[index].title + " " + Constants.leadsByAgentSales1a[index].first_name + " " + Constants.leadsByAgentSales1a[index].last_name) : sales_index == 1 ? (Constants.leadsByAgentSales1b[index].title + " " + Constants.leadsByAgentSales1b[index].first_name + " " + Constants.leadsByAgentSales1b[index].last_name) : (Constants.leadsByAgentSales1c[index].title + " " + Constants.leadsByAgentSales1c[index].first_name + " " + Constants.leadsByAgentSales1c[index].last_name)) : (_selectedButton == 2) ? (sales_index == 0 ? (Constants.leadsByAgentSales2a[index].title + " " + Constants.leadsByAgentSales2a[index].first_name + " " + Constants.leadsByAgentSales2a[index].last_name) : sales_index == 1 ? (Constants.leadsByAgentSales2b[index].title + " " + Constants.leadsByAgentSales2b[index].first_name + " " + Constants.leadsByAgentSales2b[index].last_name) : (Constants.leadsByAgentSales2b[index].title + " " + Constants.leadsByAgentSales2b[index].first_name + " " + Constants.leadsByAgentSales2b[index].last_name)) : (_selectedButton == 3 && days_difference <= 31) ? (sales_index == 0 ? (Constants.leadsByAgentSales3a[index].title + " " + Constants.leadsByAgentSales3a[index].first_name + " " + Constants.leadsByAgentSales3a[index].last_name) : sales_index == 1 ? (Constants.leadsByAgentSales3b[index].title + " " + Constants.leadsByAgentSales3b[index].first_name + " " + Constants.leadsByAgentSales3b[index].last_name) : (Constants.leadsByAgentSales3c[index].title + " " + Constants.leadsByAgentSales3c[index].first_name + " " + Constants.leadsByAgentSales3c[index].last_name)) : (sales_index == 0 ? (Constants.leadsByAgentSales4a[index].title + " " + Constants.leadsByAgentSales4a[index].first_name + " " + Constants.leadsByAgentSales4a[index].last_name) : sales_index == 1 ? (Constants.leadsByAgentSales4b[index].title + " " + Constants.leadsByAgentSales4b[index].first_name + " " + Constants.leadsByAgentSales4b[index].last_name) : (Constants.leadsByAgentSales4c[index].title + " " + Constants.leadsByAgentSales4c[index].first_name + " " + Constants.leadsByAgentSales4c[index].last_name))}")),
+                                                                              Text("${currentList[index].title} ${currentList[index].first_name} ${currentList[index].last_name}")),
                                                                       Expanded(
                                                                         child:
                                                                             Container(
@@ -1629,7 +1695,9 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                 )
                                               : (_selectedButton == 1 &&
                                                       sales_index == 2 &&
-                                                      Constants.salesByAgentSales1c.length ==
+                                                      Constants
+                                                              .salesByAgentSales1c
+                                                              .length ==
                                                           0)
                                                   ? Center(
                                                       child: Text(
@@ -1650,27 +1718,14 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                                   .salesByAgentSales1a
                                                                   .length
                                                               : sales_index == 1
-                                                                  ? Constants
-                                                                      .salesByAgentSales1b
-                                                                      .length
-                                                                  : Constants
-                                                                      .salesByAgentSales1c
-                                                                      .length)
-                                                          : (_selectedButton ==
-                                                                  2)
-                                                              ? (sales_index ==
-                                                                      0
-                                                                  ? Constants
-                                                                      .salesByAgentSales2a
-                                                                      .length
-                                                                  : sales_index ==
-                                                                          1
-                                                                      ? Constants
-                                                                          .salesByAgentSales2b
-                                                                          .length
-                                                                      : Constants
-                                                                          .salesByAgentSales2c
-                                                                          .length)
+                                                                  ? Constants.salesByAgentSales1b.length
+                                                                  : Constants.salesByAgentSales1c.length)
+                                                          : (_selectedButton == 2)
+                                                              ? (sales_index == 0
+                                                                  ? Constants.salesByAgentSales2a.length
+                                                                  : sales_index == 1
+                                                                      ? Constants.salesByAgentSales2b.length
+                                                                      : Constants.salesByAgentSales2c.length)
                                                               : (_selectedButton == 3 && days_difference <= 31)
                                                                   ? (sales_index == 0
                                                                       ? Constants.salesByAgentSales3a.length
@@ -1685,6 +1740,80 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                       shrinkWrap: true,
                                                       physics: NeverScrollableScrollPhysics(),
                                                       itemBuilder: (BuildContext context, int index) {
+                                                        // Safety check for empty lists during data refresh
+                                                        final currentList = (_selectedButton ==
+                                                                1)
+                                                            ? (sales_index == 0
+                                                                ? Constants
+                                                                    .salesByAgentSales1a
+                                                                : sales_index ==
+                                                                        1
+                                                                    ? Constants
+                                                                        .salesByAgentSales1b
+                                                                    : Constants
+                                                                        .salesByAgentSales1c)
+                                                            : (_selectedButton ==
+                                                                    2)
+                                                                ? (sales_index ==
+                                                                        0
+                                                                    ? Constants
+                                                                        .salesByAgentSales2a
+                                                                    : sales_index ==
+                                                                            1
+                                                                        ? Constants
+                                                                            .salesByAgentSales2b
+                                                                        : Constants
+                                                                            .salesByAgentSales2c)
+                                                                : (_selectedButton ==
+                                                                            3 &&
+                                                                        days_difference <=
+                                                                            31)
+                                                                    ? (sales_index ==
+                                                                            0
+                                                                        ? Constants
+                                                                            .salesByAgentSales3a
+                                                                        : sales_index ==
+                                                                                1
+                                                                            ? Constants
+                                                                                .salesByAgentSales3b
+                                                                            : Constants
+                                                                                .salesByAgentSales3c)
+                                                                    : (sales_index ==
+                                                                            0
+                                                                        ? Constants
+                                                                            .salesByAgentSales4a
+                                                                        : sales_index ==
+                                                                                1
+                                                                            ? Constants.salesByAgentSales4b
+                                                                            : Constants.salesByAgentSales4c);
+
+                                                        if (index >=
+                                                            currentList
+                                                                .length) {
+                                                          return SizedBox
+                                                              .shrink(); // Return empty widget if index is out of bounds
+                                                        }
+
+                                                        // Get the appropriate status field
+                                                        final currentStatus =
+                                                            (_selectedButton ==
+                                                                            1 &&
+                                                                        sales_index ==
+                                                                            2) ||
+                                                                    (_selectedButton ==
+                                                                            2 &&
+                                                                        sales_index ==
+                                                                            2) ||
+                                                                    (_selectedButton ==
+                                                                            3 &&
+                                                                        sales_index ==
+                                                                            2)
+                                                                ? currentList[
+                                                                        index]
+                                                                    .status
+                                                                : currentList[
+                                                                        index]
+                                                                    .actual_status;
                                                         return Padding(
                                                           padding:
                                                               const EdgeInsets
@@ -1726,31 +1855,9 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                                       Expanded(
                                                                           flex:
                                                                               4,
-                                                                          child: Text((_selectedButton == 1)
-                                                                              ? (sales_index == 0
-                                                                                  ? Constants.salesByAgentSales1a[index].policy_number
-                                                                                  : sales_index == 1
-                                                                                      ? Constants.salesByAgentSales1b[index].policy_number
-                                                                                      : Constants.salesByAgentSales1c[index].policy_number.isEmpty
-                                                                                          ? Constants.salesByAgentSales1c[index].reference
-                                                                                          : Constants.salesByAgentSales1c[index].policy_number)
-                                                                              : (_selectedButton == 2)
-                                                                                  ? (sales_index == 0
-                                                                                      ? Constants.salesByAgentSales2a[index].policy_number
-                                                                                      : sales_index == 1
-                                                                                          ? Constants.salesByAgentSales2b[index].policy_number
-                                                                                          : Constants.salesByAgentSales2c[index].policy_number)
-                                                                                  : (_selectedButton == 3 && days_difference <= 31)
-                                                                                      ? (sales_index == 0
-                                                                                          ? Constants.salesByAgentSales3a[index].policy_number
-                                                                                          : sales_index == 1
-                                                                                              ? Constants.salesByAgentSales3b[index].policy_number
-                                                                                              : Constants.salesByAgentSales3c[index].policy_number)
-                                                                                      : (sales_index == 0
-                                                                                          ? Constants.salesByAgentSales4a[index].policy_number
-                                                                                          : sales_index == 1
-                                                                                              ? Constants.salesByAgentSales4b[index].policy_number
-                                                                                              : Constants.salesByAgentSales4c[index].policy_number))),
+                                                                          child: Text((_selectedButton == 1 && sales_index == 2 && currentList[index].policy_number.isEmpty)
+                                                                              ? currentList[index].reference
+                                                                              : currentList[index].policy_number)),
                                                                       Expanded(
                                                                         child:
                                                                             Row(
@@ -1759,11 +1866,9 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                                               width: 30,
                                                                               height: 30,
                                                                               decoration: BoxDecoration(
-                                                                                  color: ("${(_selectedButton == 1) ? (sales_index == 0 ? Constants.salesByAgentSales1a[index].actual_status : sales_index == 1 ? Constants.salesByAgentSales1b[index].actual_status : Constants.salesByAgentSales1c[index].status) : (_selectedButton == 2) ? (sales_index == 0 ? Constants.salesByAgentSales2a[index].actual_status : sales_index == 1 ? Constants.salesByAgentSales2b[index].actual_status : Constants.salesByAgentSales2c[index].status) : (_selectedButton == 3 && days_difference <= 31) ? (sales_index == 0 ? Constants.salesByAgentSales3a[index].actual_status : sales_index == 1 ? Constants.salesByAgentSales3b[index].actual_status : Constants.salesByAgentSales3c[index].actual_status) : (sales_index == 0 ? Constants.salesByAgentSales4a[index].actual_status : sales_index == 1 ? Constants.salesByAgentSales4b[index].actual_status : Constants.salesByAgentSales4c[index].actual_status)}") ==
-                                                                                          "Inforced"
+                                                                                  color: currentStatus == "Inforced"
                                                                                       ? Colors.green
-                                                                                      : ("${(_selectedButton == 1) ? (sales_index == 0 ? Constants.salesByAgentSales1a[index].actual_status : sales_index == 1 ? Constants.salesByAgentSales1b[index].actual_status : Constants.salesByAgentSales1c[index].status) : (_selectedButton == 2) ? (sales_index == 0 ? Constants.salesByAgentSales2a[index].actual_status : sales_index == 1 ? Constants.salesByAgentSales2b[index].actual_status : Constants.salesByAgentSales2c[index].status) : (_selectedButton == 3 && days_difference <= 31) ? (sales_index == 0 ? Constants.salesByAgentSales3a[index].actual_status : sales_index == 1 ? Constants.salesByAgentSales3b[index].actual_status : Constants.salesByAgentSales3c[index].actual_status) : (sales_index == 0 ? Constants.salesByAgentSales4a[index].actual_status : sales_index == 1 ? Constants.salesByAgentSales4b[index].actual_status : Constants.salesByAgentSales4c[index].actual_status)}") ==
-                                                                                              "Pending Inforce"
+                                                                                      : currentStatus == "Pending Inforce"
                                                                                           ? Colors.orange
                                                                                           : Colors.red,
                                                                                   borderRadius: BorderRadius.circular(360)),
@@ -1771,10 +1876,7 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                                                 padding: const EdgeInsets.all(4.0),
                                                                                 child: Center(
                                                                                   child: Text(
-                                                                                    (("${(_selectedButton == 1) ? (sales_index == 0 ? Constants.salesByAgentSales1a[index].actual_status : sales_index == 1 ? Constants.salesByAgentSales1b[index].actual_status : Constants.salesByAgentSales1c[index].status) : (_selectedButton == 2) ? (sales_index == 0 ? Constants.salesByAgentSales2a[index].actual_status : sales_index == 1 ? Constants.salesByAgentSales2b[index].actual_status : Constants.salesByAgentSales2c[index].actual_status) : (_selectedButton == 3 && days_difference <= 31) ? (sales_index == 0 ? Constants.salesByAgentSales3a[index].actual_status : sales_index == 1 ? Constants.salesByAgentSales3b[index].actual_status : Constants.salesByAgentSales3c[index].status.toString()) : (sales_index == 0 ? Constants.salesByAgentSales4a[index].actual_status : sales_index == 1 ? Constants.salesByAgentSales4b[index].actual_status : Constants.salesByAgentSales4c[index].actual_status)}")
-                                                                                            .substring(0, 1)
-                                                                                            .toUpperCase())
-                                                                                        .toUpperCase(),
+                                                                                    currentStatus.isNotEmpty ? currentStatus[0].toUpperCase() : "",
                                                                                     textAlign: TextAlign.left,
                                                                                     style: TextStyle(color: Colors.white),
                                                                                   ),
@@ -2895,6 +2997,28 @@ class SinglePolicyOverview extends StatefulWidget {
 class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
   @override
   Widget build(BuildContext context) {
+    // Safety check for empty lists during data refresh
+    final currentList = (_selectedButton == 1) 
+        ? (widget.target_index == 0 ? Constants.salesByAgentSales1a 
+           : widget.target_index == 1 ? Constants.salesByAgentSales1b 
+           : Constants.salesByAgentSales1c)
+        : (_selectedButton == 2) 
+            ? (widget.target_index == 0 ? Constants.salesByAgentSales2a 
+               : widget.target_index == 1 ? Constants.salesByAgentSales2b 
+               : Constants.salesByAgentSales2c)
+            : (widget.target_index == 0 ? Constants.salesByAgentSales3a 
+               : widget.target_index == 1 ? Constants.salesByAgentSales3b 
+               : Constants.salesByAgentSales3c);
+    
+    if (widget.index >= currentList.length) {
+      return Dialog(
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: Text("Data not available"),
+        ),
+      );
+    }
+    
     return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Dialog(
@@ -2970,40 +3094,7 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
                             style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                       Expanded(
-                        child: Text(_selectedButton == 1
-                            ? widget.target_index == 0
-                                ? Constants.salesByAgentSales1a[widget.index]
-                                    .policy_number
-                                : widget.target_index == 1
-                                    ? Constants
-                                        .salesByAgentSales1b[widget.index]
-                                        .policy_number
-                                    : Constants
-                                        .salesByAgentSales1c[widget.index]
-                                        .policy_number
-                            : _selectedButton == 2
-                                ? widget.target_index == 0
-                                    ? Constants
-                                        .salesByAgentSales2a[widget.index]
-                                        .policy_number
-                                    : widget.target_index == 1
-                                        ? Constants
-                                            .salesByAgentSales2b[widget.index]
-                                            .policy_number
-                                        : Constants
-                                            .salesByAgentSales2c[widget.index]
-                                            .policy_number
-                                : widget.target_index == 0
-                                    ? Constants
-                                        .salesByAgentSales3a[widget.index]
-                                        .policy_number
-                                    : widget.target_index == 1
-                                        ? Constants
-                                            .salesByAgentSales3b[widget.index]
-                                            .policy_number
-                                        : Constants
-                                            .salesByAgentSales3c[widget.index]
-                                            .policy_number),
+                        child: Text(currentList[widget.index].policy_number),
                       ),
                     ],
                   ),
@@ -3242,40 +3333,7 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
                 SizedBox(
                   height: 12,
                 ),
-                (_selectedButton == 1
-                            ? widget.target_index == 0
-                                ? Constants.salesByAgentSales1a[widget.index]
-                                    .totalAmountPayable
-                                : widget.target_index == 1
-                                    ? Constants
-                                        .salesByAgentSales1b[widget.index]
-                                        .totalAmountPayable
-                                    : Constants
-                                        .salesByAgentSales1c[widget.index]
-                                        .totalAmountPayable
-                            : _selectedButton == 2
-                                ? widget.target_index == 0
-                                    ? Constants
-                                        .salesByAgentSales2a[widget.index]
-                                        .totalAmountPayable
-                                    : widget.target_index == 1
-                                        ? Constants
-                                            .salesByAgentSales2b[widget.index]
-                                            .totalAmountPayable
-                                        : Constants
-                                            .salesByAgentSales2c[widget.index]
-                                            .totalAmountPayable
-                                : widget.target_index == 0
-                                    ? Constants
-                                        .salesByAgentSales3a[widget.index]
-                                        .totalAmountPayable
-                                    : widget.target_index == 1
-                                        ? Constants
-                                            .salesByAgentSales3b[widget.index]
-                                            .totalAmountPayable
-                                        : Constants
-                                            .salesByAgentSales3c[widget.index]
-                                            .totalAmountPayable) ==
+                currentList[widget.index].totalAmountPayable ==
                         0
                     ? Container()
                     : Padding(
@@ -3349,40 +3407,7 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
                           ],
                         ),
                       ),
-                (_selectedButton == 1
-                            ? widget.target_index == 0
-                                ? Constants.salesByAgentSales1a[widget.index]
-                                    .totalAmountPayable
-                                : widget.target_index == 1
-                                    ? Constants
-                                        .salesByAgentSales1b[widget.index]
-                                        .totalAmountPayable
-                                    : Constants
-                                        .salesByAgentSales1c[widget.index]
-                                        .totalAmountPayable
-                            : _selectedButton == 2
-                                ? widget.target_index == 0
-                                    ? Constants
-                                        .salesByAgentSales2a[widget.index]
-                                        .totalAmountPayable
-                                    : widget.target_index == 1
-                                        ? Constants
-                                            .salesByAgentSales2b[widget.index]
-                                            .totalAmountPayable
-                                        : Constants
-                                            .salesByAgentSales2c[widget.index]
-                                            .totalAmountPayable
-                                : widget.target_index == 0
-                                    ? Constants
-                                        .salesByAgentSales3a[widget.index]
-                                        .totalAmountPayable
-                                    : widget.target_index == 1
-                                        ? Constants
-                                            .salesByAgentSales3b[widget.index]
-                                            .totalAmountPayable
-                                        : Constants
-                                            .salesByAgentSales3c[widget.index]
-                                            .totalAmountPayable) ==
+                currentList[widget.index].totalAmountPayable ==
                         0
                     ? Container()
                     : Padding(
@@ -3472,7 +3497,7 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
                       Expanded(
                           child: Text((_selectedButton == 1
                               ? widget.target_index == 0
-                                  ? Constants.salesByAgentSales1a[widget.index]
+                                  ? currentList[widget.index]
                                       .product_type
                                   : widget.target_index == 1
                                       ? Constants
@@ -3530,7 +3555,7 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
                       Expanded(
                           child: Text((_selectedButton == 1
                               ? widget.target_index == 0
-                                  ? Constants.salesByAgentSales1a[widget.index]
+                                  ? currentList[widget.index]
                                       .payment_type
                                   : widget.target_index == 1
                                       ? Constants
@@ -3580,13 +3605,13 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
                             ? Constants
                                 .salesByAgentSales1a[widget.index].description
                             : widget.target_index == 1
-                                ? Constants.salesByAgentSales1b[widget.index]
+                                ? currentList[widget.index]
                                     .description
-                                : Constants.salesByAgentSales1c[widget.index]
+                                : currentList[widget.index]
                                     .description.isNotEmpty
                         : _selectedButton == 2
                             ? widget.target_index == 2
-                                ? Constants.salesByAgentSales2a[widget.index]
+                                ? currentList[widget.index]
                                     .description
                                 : widget.target_index == 1
                                     ? Constants
@@ -3596,7 +3621,7 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
                                         .salesByAgentSales2c[widget.index]
                                         .payment_type
                             : widget.target_index == 0
-                                ? Constants.salesByAgentSales3a[widget.index]
+                                ? currentList[widget.index]
                                     .description
                                 : widget.target_index == 1
                                     ? Constants

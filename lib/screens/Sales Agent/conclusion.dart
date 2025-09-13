@@ -1537,7 +1537,7 @@ class _InforcePolicyDialogState extends State<InforcePolicyDialog> {
     try {
       final response = await http.get(
         Uri.parse(
-          "https://miinsightsapps.net/backend_api/api/onolov6/getPolicyNumbsAndRefs?leadid=952078",
+          "${Constants.insightsBackendBaseUrl}onolov6/getPolicyNumbsAndRefs?leadid=952078",
         ),
       );
       if (response.statusCode == 200) {
@@ -1564,7 +1564,7 @@ class _InforcePolicyDialogState extends State<InforcePolicyDialog> {
     try {
       final response = await http.get(
         Uri.parse(
-          "https://miinsightsapps.net/backend_api/api/fieldV6/policyNumberExists?policyNumber=$policyNumber&reference=$reference&empid=3",
+          "${Constants.insightsBackendBaseUrl}fieldV6/policyNumberExists?policyNumber=$policyNumber&reference=$reference&empid=3",
         ),
       );
       if (kDebugMode) {
@@ -1709,7 +1709,7 @@ class _InforcePolicyDialogState extends State<InforcePolicyDialog> {
                               relationship: '',
                               mipCover: '',
                               mipStatus: '',
-                              updatedBy: '',
+                              updatedBy: 0,
                               memberQueryType: '',
                               memberQueryTypeOldNew: '',
                               memberQueryTypeOldAutoNumber: '',

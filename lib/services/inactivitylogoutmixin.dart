@@ -11,12 +11,11 @@ mixin InactivityLogoutMixin<T extends StatefulWidget> on State<T> {
 
   void startInactivityTimer() {
     Constants.inactivityTimer?.cancel();
-    Constants.inactivityTimer =
-        Timer(const Duration(minutes: 7), () {
-          if (mounted) {
-            _showLogoutDialog();
-          }
-        });
+    Constants.inactivityTimer = Timer(const Duration(minutes: 70), () {
+      if (mounted) {
+        _showLogoutDialog();
+      }
+    });
   }
 
   void restartInactivityTimer() {
@@ -27,10 +26,11 @@ mixin InactivityLogoutMixin<T extends StatefulWidget> on State<T> {
 
   void _showLogoutDialog() {
     if (!mounted) return;
-    
+
     _countdown = 10; // Reset countdown
-    _countdownTimer?.cancel(); // Cancel any existing timer before starting new one
-    
+    _countdownTimer
+        ?.cancel(); // Cancel any existing timer before starting new one
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -41,7 +41,7 @@ mixin InactivityLogoutMixin<T extends StatefulWidget> on State<T> {
             timer.cancel();
             return;
           }
-          
+
           if (_countdown > 0) {
             _countdown--;
             // Force rebuild of dialog
@@ -124,18 +124,18 @@ mixin InactivityLogoutMixin<T extends StatefulWidget> on State<T> {
     // _inactivityTimer?.cancel();
     _countdownTimer?.cancel();
     const additionalTime = Duration(minutes: 1);
-    Constants.inactivityTimer = Timer(
-        const Duration(minutes: 2) + additionalTime, () {
-          if (mounted) {
-            _showLogoutDialog();
-          }
-        });
+    Constants.inactivityTimer =
+        Timer(const Duration(minutes: 2) + additionalTime, () {
+      if (mounted) {
+        _showLogoutDialog();
+      }
+    });
     // startInactivityTimer();
   }
 
   void _signOut() {
     if (!mounted) return;
-    
+
     print("User has been signed out due to inactivity");
     try {
       for (int i = 1; i <= Constants.pageLevel; i++) {

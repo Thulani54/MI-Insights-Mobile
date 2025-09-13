@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:mi_insights/screens/Sales%20Agent/universal_premium_calculator.dart';
 
 import '../../constants/Constants.dart';
 import '../../customwidgets/CustomCard.dart';
@@ -38,8 +39,45 @@ List<CreateLeads> createLeadStepsList = [
   CreateLeads("Summary", "summary"),
 ];
 
+// Validation function to check if user can move forward from needs analysis
+bool canMoveFromNeedsAnalysis() {
+  // Check if we have at least one policy
+  if (Constants.currentleadAvailable!.policies.isEmpty) {
+    print("Validation failed: No policies found");
+    return false;
+  }
+
+  print(
+      "Found ${Constants.currentleadAvailable!.additionalMembers.length} members");
+
+  // Check if at least one additional member is a main member
+  for (var member in Constants.currentleadAvailable!.additionalMembers) {
+    String relationship = member.relationship?.toLowerCase() ?? '';
+    bool isPremiumPayer = false;
+
+    if (relationship.contains('main') ||
+        relationship == 'self' ||
+        isPremiumPayer) {
+      print(
+          "Found main member with relationship: $relationship, isPremiumPayer: $isPremiumPayer");
+      return true;
+    }
+  }
+
+  // Also check the mainMembers global list as backup
+  print("Checking mainMembers list: ${mainMembers.length} members");
+  if (mainMembers.isNotEmpty) {
+    return true;
+  }
+
+  print("Validation failed: No main members found");
+  return false;
+}
+
 class Fieldsalesaffinity extends StatefulWidget {
-  const Fieldsalesaffinity({Key? key}) : super(key: key);
+  final String? sale_type;
+
+  const Fieldsalesaffinity({Key? key, this.sale_type}) : super(key: key);
 
   @override
   State<Fieldsalesaffinity> createState() => _FieldsalesaffinityState();
@@ -56,8 +94,8 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
           centerTitle: true,
           surfaceTintColor: Colors.white,
           shadowColor: Colors.black.withOpacity(0.6),
-          title:
-              const Text("Field Sales", style: TextStyle(color: Colors.black)),
+          title: Text(widget.sale_type.toString(),
+              style: TextStyle(color: Colors.black)),
           elevation: 6,
           leading: InkWell(
             onTap: () => Navigator.of(context).pop(),
@@ -74,96 +112,271 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
               final step = createLeadStepsList[index];
 
               return InkWell(
-                child: Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: index == selectedIndex
-                        ? Constants.ftaColorLight
-                        : Colors.grey.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(35),
-                    boxShadow: [
-                      /* BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
-                      ),*/
-                    ],
-                  ),
-                  child: Theme(
-                    data: Theme.of(context)
-                        .copyWith(dividerColor: Colors.transparent),
-                    child: ExpansionTile(
-                      // The leading small circle with step number
-                      leading: Container(
-                        height: 30,
-                        width: 30,
-                        decoration: BoxDecoration(
-                          color: Constants.ctaColorLight,
-                          borderRadius: BorderRadius.circular(360),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${index + 1}',
-                            style: const TextStyle(color: Colors.white),
+                onTap: null, // ✅ Disable tap on the container
+                child: Padding(
+                  padding:
+                      const EdgeInsets.only(top: 16.0, left: 16, right: 16),
+                  child: Card(
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(36),
+                    ),
+                    color: Colors.white,
+                    child: Theme(
+                      data: Theme.of(context)
+                          .copyWith(dividerColor: Colors.transparent),
+                      child: Column(
+                        children: [
+                          // Header row with step number and title
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            child: Row(
+                              children: [
+                                // The leading small circle with step number
+                                Container(
+                                  height: 30,
+                                  width: 30,
+                                  decoration: BoxDecoration(
+                                    color: Constants.ctaColorLight,
+                                    borderRadius: BorderRadius.circular(360),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      '${index + 1}',
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(width: 16),
+
+                                // The title with the step name
+                                Expanded(
+                                  child: Text(
+                                    step.leadStepName,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: (activeStep != index)
+                                          ? Colors.black54
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
+
+                          // Content that shows when this step is active
+                          if (activeStep == index) ...[
+                            const Divider(thickness: 1, height: 1),
+                            Column(
+                              children: [
+                                // Content widget
+                                if (step.stepNameId == "needs_analysis")
+                                  NeedAnalysis()
+                                else if (step.stepNameId == "basic_information")
+                                  FieldSaleBasicInformation(
+                                      type: widget.sale_type!)
+                                else if (step.stepNameId == "member_details")
+                                  FieldSalesMembersDetails()
+                                else if (step.stepNameId ==
+                                    "premium_calculator")
+                                  Container(
+                                      height: 1300,
+                                      child: UniversalPremiumCalculator())
+                                else if (step.stepNameId ==
+                                    "communication_preferences")
+                                  FieldSalesCommunicationPreference()
+                                else if (step.stepNameId == "call_client")
+                                  FieldSalesCallClientPage()
+                                else if (step.stepNameId == "conclusion")
+                                  Conclusion5a()
+                                else if (step.stepNameId == "client_signature")
+                                  FieldClientSignature()
+                                else if (step.stepNameId == "otp_verification")
+                                  Fiels_Sales_Verify_Otp()
+                                else if (step.stepNameId == "summary")
+                                  FieldSaleSummary()
+                                else
+                                  Container(
+                                    height: 80,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                        "Widget for ${step.leadStepName} not implemented yet."),
+                                  ),
+
+                                // Navigation buttons
+                                const SizedBox(height: 24),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 24.0, vertical: 16.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      // Back button
+                                      index > 0
+                                          ? SizedBox(
+                                              width: 120,
+                                              height: 36,
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    activeStep = index - 1;
+                                                    // ✅ Force ListView to rebuild with new key
+                                                    key1 = UniqueKey();
+                                                  });
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      Colors.grey[400],
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            36),
+                                                  ),
+                                                ),
+                                                child: const Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(Icons.arrow_back,
+                                                        color: Colors.white,
+                                                        size: 18),
+                                                    SizedBox(width: 4),
+                                                    Text(
+                                                      "Back",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                          : const SizedBox(width: 120),
+
+                                      // Next button
+                                      index < createLeadStepsList.length - 1
+                                          ? SizedBox(
+                                              width: 120,
+                                              height: 36,
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  // Check if we're on needs analysis and validate before moving
+                                                  if (step.stepNameId ==
+                                                          "needs_analysis" &&
+                                                      !canMoveFromNeedsAnalysis()) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                          'Please add at least one policy with one main member before proceeding.',
+                                                        ),
+                                                        backgroundColor:
+                                                            Colors.red,
+                                                        duration: Duration(
+                                                            seconds: 3),
+                                                      ),
+                                                    );
+                                                    return;
+                                                  }
+
+                                                  setState(() {
+                                                    activeStep = index + 1;
+                                                    // ✅ Force ListView to rebuild with new key
+                                                    key1 = UniqueKey();
+                                                  });
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      Constants.ftaColorLight,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            36),
+                                                  ),
+                                                ),
+                                                child: const Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      "Next",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 4),
+                                                    Icon(Icons.arrow_forward,
+                                                        color: Colors.white,
+                                                        size: 18),
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                          : SizedBox(
+                                              width: 120,
+                                              height: 36,
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                          'Process completed successfully!'),
+                                                      backgroundColor:
+                                                          Colors.green,
+                                                    ),
+                                                  );
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.green,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            36),
+                                                  ),
+                                                ),
+                                                child: const Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      "Finish",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 4),
+                                                    Icon(Icons.check,
+                                                        color: Colors.white,
+                                                        size: 18),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ],
                       ),
-
-                      // The title with the step name
-                      title: Text(
-                        step.leadStepName,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: (activeStep != index)
-                              ? Colors.black54
-                              : Colors.black,
-                        ),
-                      ),
-
-                      // If `activeStep == index`, show as expanded
-                      initiallyExpanded: activeStep == index,
-
-                      // Callback when user taps to expand/collapse
-                      onExpansionChanged: (bool expanded) {
-                        setState(() {
-                          // If expanded, set activeStep to this index, otherwise set to -1
-                          activeStep = expanded ? index : -1;
-                        });
-                      },
-
-                      // The children: place the widget you want to show when expanded
-                      children: [
-                        // Switch your logic based on step.stepName_id
-                        if (step.stepNameId == "needs_analysis")
-                          NeedAnalysis()
-                        else if (step.stepNameId == "basic_information")
-                          FieldSaleBasicInformation()
-                        else if (step.stepNameId == "member_details")
-                          FieldSalesMembersDetails()
-                        else if (step.stepNameId == "premium_calculator")
-                          FieldPremiumCalculator()
-                        else if (step.stepNameId == "communication_preferences")
-                          FieldSalesCommunicationPreference()
-                        else if (step.stepNameId == "call_client")
-                          FieldSalesCallClientPage()
-                        else if (step.stepNameId == "conclusion")
-                          Conclusion5a()
-                        else if (step.stepNameId == "client_signature")
-                          FieldClientSignature()
-                        else if (step.stepNameId == "otp_verification")
-                          Fiels_Sales_Verify_Otp()
-                        else if (step.stepNameId == "summary")
-                          FieldSaleSummary()
-                        else
-                          Container(
-                            height: 80,
-                            alignment: Alignment.center,
-                            child: Text(
-                                "Widget for ${step.leadStepName} not implemented yet."),
-                          )
-                      ],
                     ),
                   ),
                 ),
@@ -178,6 +391,10 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
   @override
   void initState() {
     super.initState();
+    // Set the first step as active/expanded by default
+    activeStep = 0;
+    updateFieldSections();
+
     myNotifier = MyNotifier(salesFieldAffinityValue, context);
 
     salesFieldAffinityValue.addListener(() {
@@ -186,7 +403,7 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
   }
 
   updateFieldSections() {
-    if (Constants.fieldSaleType == "Field Sale") {
+    if (widget.sale_type.toString() == "Field Sale") {
       createLeadStepsList = [
         CreateLeads("Basic information", "basic_information"),
         CreateLeads("Needs Analysis", "needs_analysis"),

@@ -4557,16 +4557,12 @@ class _MaintenanceReportState extends State<MaintenanceReport>
   }
 
   getMood(String date) async {
-    var headers = {
-      'Cookie':
-          'userid=expiry=2023-12-28&client_modules=1001#1002#1003#1004#1005#1006#1007#1008#1009#1010#1011#1012#1013#1014#1015#1017#1018#1020#1021#1022#1024#1025#1026#1027#1028#1029#1030#1031#1032#1033#1034#1035&clientid=379&empid=9819&empfirstname=Everest&emplastname=Everest&email=Master@everestmpu.com&username=Master@everestmpu.com&dob=7/7/1990 12:00:00 AM&fullname=Everest Everest&userRole=184&userImage=Master@everestmpu.com.jpg&employedAt=head office 1&role=leader&branchid=379&jobtitle=Policy Administrator / Agent&dialing_strategy=&clientname=Everest Financial Services&foldername=&client_abbr=EV&pbx_account=&device_id=&servername=http://localhost:55661'
-    };
     var request = http.Request(
         'GET',
         Uri.parse(
-            'https://miinsightsapps.net/Communication_Engine/GetStatusStats?StartDate=2023-12-11&EndDate=2023-12-11&EventId=0'));
+            '${Constants.insightsBaseUrl}Communication_Engine/GetStatusStats?StartDate=2023-12-11&EndDate=2023-12-11&EventId=0'));
 
-    request.headers.addAll(headers);
+    //request.headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();
 
@@ -4587,7 +4583,7 @@ class _MaintenanceReportState extends State<MaintenanceReport>
       };
       var request = http.get(
           Uri.parse(
-              'https://miinsightsapps.net/hr/countUsersMoods?clientId=379&dateToday=2023-12-11'),
+              '${Constants.insightsBackendBaseUrl}hr/countUsersMoods?clientId=379&dateToday=2023-12-11'),
           headers: headers);
       request.then((response) {
         // print(request);
@@ -6668,7 +6664,8 @@ class _MaintanenceGraph3State extends State<MaintanenceGraph3> {
   Future<void> getMaintenanceGraphData() async {
     // print("gffvalue");
     try {
-      String baseUrl = "https://miinsightsapps.net/files/get_maintenance_data/";
+      String baseUrl =
+          "${Constants.insightsBackendBaseUrl}files/get_maintenance_data/";
       Map<String, String>? payload = {
         "client_id": Constants.cec_client_id.toString(),
         "start_date": Constants.maintenance_formattedStartDate,
@@ -7191,7 +7188,8 @@ class _MaintanenceGraph4State extends State<MaintanenceGraph4> {
 
   Future<void> getMaintanenceGraphData() async {
     try {
-      String baseUrl = "https://miinsightsapps.net/files/get_maintenance_data/";
+      String baseUrl =
+          "${Constants.insightsBackendBaseUrl}files/get_maintenance_data/";
       Map<String, String>? payload = {
         "client_id": Constants.cec_client_id.toString(),
         "start_date": Constants.maintenance_formattedStartDate,

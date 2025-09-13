@@ -7,11 +7,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
+import 'package:mi_insights/screens/Sales%20Agent/universal_premium_calculator.dart';
 
 import '../../../../constants/Constants.dart';
 import '../../../../models/map_class.dart';
 import '../../customwidgets/CustomCard.dart';
+import '../../services/MyNoyifier.dart';
 import 'field_call_lead_dialog.dart';
+import 'newmemberdialog.dart';
 
 final DateFormat formatter = DateFormat('yyyy-MM-dd');
 
@@ -42,8 +45,8 @@ class _FieldPremiumCalculatorState extends State<FieldPremiumCalculator>
   String indexByString = "Need Analysis";
   double? _selectedCover;
   List<String> policiesSelectedMainInsuredDOBs = [];
-  List<String> commencementDates = [];
-
+  List<String?> commencementDates = [];
+  List<String> commencementList = [];
   //List<Member> policiesSelectedPartners = [];
   List<String> policiesSelectedProducts = [];
   List<String> policiesSelectedProdTypes = [];
@@ -101,12 +104,107 @@ class _FieldPremiumCalculatorState extends State<FieldPremiumCalculator>
   void initState() {
     super.initState();
     print("fvgghhgfhdghgdh");
+    getCommencementDates();
+    fetchCommencementDates();
     getCalculateRatesBody();
     getProoductList();
     _tabController = TabController(length: bottomBarList.length, vsync: this);
     obtainMainInsuredForEachPolicy();
 
     calculatePolicyPremiumCal();
+  }
+
+  getCommencementDates() {
+    // Commencement list
+    commencementList = calculateInceptionDateOptions();
+  }
+
+// Helper function to calculate inception date options based on 7-day rule
+  List<String> calculateInceptionDateOptions() {
+    DateTime today = DateTime.now();
+    List<String> options = [];
+
+    // Calculate first day of current month
+    DateTime firstThisMonth = DateTime(today.year, today.month, 1);
+
+    // Calculate first day of next month
+    DateTime firstNextMonth;
+    if (today.month == 12) {
+      firstNextMonth = DateTime(today.year + 1, 1, 1);
+    } else {
+      firstNextMonth = DateTime(today.year, today.month + 1, 1);
+    }
+
+    // Calculate first day of month after next
+    DateTime firstMonthAfterNext;
+    if (today.month == 11) {
+      // November -> January (skip December)
+      firstMonthAfterNext = DateTime(today.year + 1, 1, 1);
+    } else if (today.month == 12) {
+      // December -> February (skip January)
+      firstMonthAfterNext = DateTime(today.year + 1, 2, 1);
+    } else {
+      // All other months
+      firstMonthAfterNext = DateTime(today.year, today.month + 2, 1);
+    }
+
+    // Calculate days remaining in current month
+    int daysInCurrentMonth = DateTime(today.year, today.month + 1, 0).day;
+    int daysRemaining = daysInCurrentMonth - today.day;
+
+    if (daysRemaining >= 7) {
+      // Standard case: current month + next month
+      String thisMonthFormatted = Constants.formatter.format(firstThisMonth);
+      String nextMonthFormatted = Constants.formatter.format(firstNextMonth);
+
+      options.add(thisMonthFormatted);
+      options.add(nextMonthFormatted);
+
+      print(
+          "Standard inception dates: $thisMonthFormatted and $nextMonthFormatted");
+    } else {
+      // Shifted case: next month + month after next
+      String nextMonthFormatted = Constants.formatter.format(firstNextMonth);
+      String monthAfterNextFormatted =
+          Constants.formatter.format(firstMonthAfterNext);
+
+      options.add(nextMonthFormatted);
+      options.add(monthAfterNextFormatted);
+
+      print(
+          "Shifted inception dates (< 7 days remaining): $nextMonthFormatted and $monthAfterNextFormatted");
+    }
+
+    return options;
+  }
+
+  void fetchCommencementDates() {
+    commencementDates.clear();
+
+    for (int i = 0; i < Constants.currentleadAvailable!.policies.length; i++) {
+      var policy = Constants.currentleadAvailable!.policies[i];
+
+      String? commencement = (policy.quote.inceptionDate != null)
+          ? Constants.formatter.format(policy.quote.inceptionDate!)
+          : null;
+
+      // Check if the commencement date exists in the available list
+      // If not, set it to null to show the dropdown as invalid
+      if (commencement != null && commencementList.contains(commencement)) {
+        commencementDates.add(commencement);
+      } else {
+        // Date is not in the list or is null, so add null to make it invalid
+        commencementDates.add(null);
+      }
+    }
+
+    // Ensure the commencementDates list has enough elements
+    while (commencementDates.length <= current_member_index) {
+      commencementDates.add(null);
+    }
+
+    // Don't auto-set a default value - force user to select manually
+    // This ensures the dropdown shows as invalid (red border) when no valid selection exists
   }
 
   void getCalculateRatesBody() {
@@ -198,7 +296,7 @@ class _FieldPremiumCalculatorState extends State<FieldPremiumCalculator>
             relationship: "",
             mipCover: "",
             mipStatus: "",
-            updatedBy: "",
+            updatedBy: 0,
             memberQueryType: "",
             memberQueryTypeOldNew: "",
             memberQueryTypeOldAutoNumber: "",
@@ -500,7 +598,7 @@ class _FieldPremiumCalculatorState extends State<FieldPremiumCalculator>
     print("Sending array of requests to server => $requestBodies");
 
     final url = Uri.parse(
-      'https://miinsightsapps.net/parlour_config/parlour-config/calculate-rates/',
+      '${Constants.insightsBaseUrl}parlour_config/parlour-config/calculate-rates/',
     );
 
     try {
@@ -934,6 +1032,10 @@ class _FieldPremiumCalculatorState extends State<FieldPremiumCalculator>
                                 print("dgfgfgf $current_member_index");
                                 setState(() {});
                               },
+                              otherUnknownIncome:
+                                  mainMembers[index].otherUnknownIncome,
+                              otherUnknownWealth:
+                                  mainMembers[index].otherUnknownWealth,
                             ),
                           ),
                         ],
@@ -4996,6 +5098,8 @@ class _FieldPremiumCalculatorState extends State<FieldPremiumCalculator>
             isSelected: current_member_index == index,
             noOfMembers: 0,
             onSingleTap: () {},
+            otherUnknownIncome: member.otherUnknownIncome,
+            otherUnknownWealth: member.otherUnknownWealth,
           ),
         );
       },
@@ -5059,6 +5163,8 @@ class _FieldPremiumCalculatorState extends State<FieldPremiumCalculator>
             isSelected: current_member_index == index,
             noOfMembers: 0,
             onSingleTap: () {},
+            otherUnknownIncome: member.otherUnknownIncome,
+            otherUnknownWealth: member.otherUnknownWealth,
           ),
         );
       },
@@ -5328,11 +5434,24 @@ class AdvancedMemberCard extends StatefulWidget {
   final String contact;
   final String sourceOfIncome;
   final String sourceOfWealth;
+  final String otherUnknownIncome;
+  final String otherUnknownWealth;
   final int autoNumber;
   final VoidCallback? onDoubleTap;
   final VoidCallback? onSingleTap;
+  final VoidCallback? onAfterEdit;
   final int? noOfMembers;
+  final int? current_member_index;
   final bool? isSelected;
+  final bool? isEditing;
+  final bool? is_self_or_payer;
+  final double? cover;
+  final double? premium;
+  final double? riderAmount;
+  final bool? allowScaling;
+  final bool? showIndexedDocuments;
+  final bool? showSourceOfIncome;
+  final bool? allowToDeleteMember;
 
   const AdvancedMemberCard({
     Key? key,
@@ -5347,11 +5466,24 @@ class AdvancedMemberCard extends StatefulWidget {
     required this.contact,
     required this.sourceOfIncome,
     required this.sourceOfWealth,
+    required this.otherUnknownIncome,
+    required this.otherUnknownWealth,
     required this.autoNumber,
     this.onDoubleTap,
     this.onSingleTap,
+    this.onAfterEdit,
     this.noOfMembers,
     this.isSelected,
+    this.isEditing,
+    this.riderAmount,
+    this.current_member_index,
+    this.is_self_or_payer,
+    this.cover,
+    this.premium,
+    this.allowScaling,
+    this.showIndexedDocuments,
+    this.showSourceOfIncome,
+    this.allowToDeleteMember,
   }) : super(key: key);
 
   @override
@@ -5360,6 +5492,47 @@ class AdvancedMemberCard extends StatefulWidget {
 
 class _AdvancedMemberCardState extends State<AdvancedMemberCard> {
   bool isHovered = false;
+  int number_of_members = 0;
+  MyNotifier? myNotifier;
+  UniqueKey unique_key1 = UniqueKey();
+
+  @override
+  void initState() {
+    super.initState();
+    recalculateMembersCount();
+
+    myNotifier = MyNotifier(appBarMemberCardNotifier, context);
+    appBarMemberCardNotifier.addListener(() {
+      recalculateMembersCount();
+      setState(() {});
+      print("Number of members jhh : $number_of_members");
+    });
+  }
+
+  void recalculateMembersCount() {
+    if (Constants.currentleadAvailable != null &&
+        Constants.currentleadAvailable!.policies.isNotEmpty) {
+      // Get the member count; if it's less than 1, default to 1.
+      int memberCount = 0;
+      try {
+        memberCount = Constants.currentleadAvailable?.policies
+                ?.elementAtOrNull(widget.current_member_index ?? -1)
+                ?.members
+                ?.length ??
+            0;
+      } catch (e) {
+        print("Error accessing member count: $e");
+        memberCount = 0;
+      }
+
+      // Extension method approach (if you want to add it globally):
+
+      number_of_members = memberCount < 1 ? 1 : memberCount;
+    } else {
+      number_of_members = 1;
+    }
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -5370,169 +5543,252 @@ class _AdvancedMemberCardState extends State<AdvancedMemberCard> {
         onDoubleTap: widget.onDoubleTap,
         onTap: widget.onSingleTap,
         child: AnimatedScale(
-            scale: isHovered ? 1.02 : 1.0, // Smooth scaling on hover
-            duration: const Duration(milliseconds: 200),
-            child: CustomCard(
-              elevation: 8,
-              color: Colors.white,
-              shape: RoundedRectangleBorder(),
-              boderRadius: null,
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                        color: widget.isSelected == true
-                            ? Constants.ftaColorLight.withOpacity(0.95)
-                            : Colors.transparent)),
-                margin:
-                    const EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
-                padding: const EdgeInsets.all(0.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Profile Avatar
-                    Column(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            width: 100,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  bottomLeft: Radius.circular(12),
-                                ),
-                                color: widget.isSelected == true
-                                    ? Constants.ftaColorLight.withOpacity(0.95)
-                                    : Constants.ftaColorLight
-                                        .withOpacity(0.15)),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  radius: 35,
-                                  backgroundColor: widget.isSelected == true
-                                      ? Colors.grey.withOpacity(0.65)
-                                      : Constants.ftaColorLight,
-                                  child: Icon(
-                                    widget.gender.toLowerCase() == "female"
-                                        ? Icons.female
-                                        : Icons.male,
-                                    size: 27,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+          scale: (widget.allowScaling != null || widget.allowScaling == false)
+              ? 1.0
+              : isHovered
+                  ? 1.02
+                  : 1.0,
+          duration: const Duration(milliseconds: 200),
+          child: CustomCard2(
+            elevation: 8,
+            color: Colors.white,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            boderRadius: 12,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: widget.isSelected == true
+                      ? Constants.ftaColorLight.withOpacity(0.95)
+                      : Colors.transparent,
+                ),
+              ),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
+              padding: const EdgeInsets.all(0.0),
+              child: Row(
+                crossAxisAlignment:
+                    CrossAxisAlignment.stretch, // Stretch to tallest child
+                children: [
+                  // Left container with CircleAvatar
+                  Container(
+                    width: 90,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        bottomLeft: Radius.circular(12),
+                      ),
+                      color: widget.isSelected == true
+                          ? Constants.ctaColorLight.withOpacity(0.95)
+                          : Constants.ctaColorLight.withOpacity(0.15),
                     ),
-                    const SizedBox(width: 16.0),
-
-                    // Member Information
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Date of Birth
+                    child: Center(
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundColor: widget.isSelected == true
+                            ? Colors.grey.withOpacity(0.65)
+                            : Constants.ctaColorLight,
+                        child: Icon(
+                          widget.gender.toLowerCase() == "female"
+                              ? Icons.female
+                              : Icons.male,
+                          size: 20,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16.0),
+                  // Member information (flexible middle section)
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          right: 16.0, left: 16, top: 16, bottom: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisSize: MainAxisSize.min, // Minimize height
+                        children: [
+                          if (widget.dob.isNotEmpty)
                             Text(
-                              'Date of Birth: ${(DateFormat('EEE, dd MMM yyyy').format(DateTime.parse(widget.dob)).toString())}',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: 'YuGothic',
-                                  color: Colors.black),
-                            ),
-                            const SizedBox(height: 8.0),
-
-                            // Member Name
-                            Text(
-                              widget.title +
-                                  " " +
-                                  widget.name +
-                                  " " +
-                                  widget.surname,
+                              'DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(widget.dob))}',
                               style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                letterSpacing: 1.2,
+                                fontFamily: 'YuGothic',
+                                color: Colors.black,
                               ),
+                              overflow:
+                                  TextOverflow.ellipsis, // Prevent overflow
                             ),
-
-                            const SizedBox(height: 8.0),
-
-                            // Relationship
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.people_alt,
-                                  color: Colors.black,
-                                  size: 16,
-                                ),
-                                const SizedBox(width: 4.0),
-                                Text(
-                                  '${widget.relationship}',
+                          const SizedBox(height: 8.0),
+                          Text(
+                            '${widget.title} ${widget.name} ${widget.surname}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 1.2,
+                            ),
+                            overflow: TextOverflow.ellipsis, // Prevent overflow
+                          ),
+                          const SizedBox(height: 8.0),
+                          Row(
+                            children: [
+                              const Icon(Icons.people_alt,
+                                  color: Colors.black, size: 16),
+                              const SizedBox(width: 4.0),
+                              Expanded(
+                                child: Text(
+                                  widget.relationship.isNotEmpty
+                                      ? 'Relationship: ${widget.relationship[0].toUpperCase() + widget.relationship.substring(1)}'
+                                      : "",
                                   style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.black,
                                     fontWeight: FontWeight.w400,
                                   ),
+                                  overflow:
+                                      TextOverflow.ellipsis, // Prevent overflow
                                 ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8.0),
+                          if (widget.cover != null)
+                            Text(
+                              'Premium: R${widget.premium ?? 0}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              overflow:
+                                  TextOverflow.ellipsis, // Prevent overflow
+                            ),
+                          const SizedBox(height: 8.0),
+                          Text(
+                            'Cover: R${formatLargeNumber((widget.cover ?? 0).toString())}',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            overflow: TextOverflow.ellipsis, // Prevent overflow
+                          ),
+                          const SizedBox(height: 4.0),
+                          if (widget.riderAmount != null)
+                            Row(
+                              children: [
+                                Text(
+                                  'Total Rider Amount: R${(widget.riderAmount ?? 0).toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  overflow:
+                                      TextOverflow.ellipsis, // Prevent overflow
+                                ),
+                                Spacer(),
                               ],
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    // Edit Button
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          top: 16.0, bottom: 16, right: 16),
-                      child: Column(
-                        children: [
-                          InkWell(
-                            child: Container(
-                              padding: const EdgeInsets.all(0.0),
-                              decoration: BoxDecoration(
-                                color:
-                                    Constants.ftaColorLight.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(360.0),
-                                border: Border.all(
-                                    color: Constants.ftaColorLight, width: 1.5),
-                              ),
-                              child:
-                                  //add a edit and delete icon
-                                  Padding(
-                                padding: const EdgeInsets.all(0.0),
-                                child: Container(
-                                    width: 30,
-                                    height: 30,
-                                    child: Center(
-                                        child: Text((widget.noOfMembers ?? 0)
-                                            .toString()))),
-                              )
-
-                              /*Icon(
-                                            Icons.edit,
-                                            color: Colors.orangeAccent,
-                                            size: 20,
-                                          )*/
-                              ,
-                            ),
-                          ),
-                          Spacer(),
+                          const SizedBox(height: 8.0),
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  // Edit button column
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(top: 16.0, bottom: 16, right: 16),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            if (kDebugMode) {
+                              print("dfgfhg " + widget.relationship);
+                            }
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => StatefulBuilder(
+                                builder: (context, setState) => Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(64),
+                                  ),
+                                  elevation: 0.0,
+                                  backgroundColor: Colors.transparent,
+                                  child: Container(
+                                    constraints: BoxConstraints(
+                                      maxWidth: (Constants
+                                                  .currentleadAvailable!
+                                                  .leadObject
+                                                  .documentsIndexed
+                                                  .isEmpty ||
+                                              widget.showIndexedDocuments ==
+                                                  false)
+                                          ? 750
+                                          : 1200,
+                                    ),
+                                    margin: const EdgeInsets.only(top: 16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.rectangle,
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          blurRadius: 10.0,
+                                          offset: Offset(0.0, 10.0),
+                                        ),
+                                      ],
+                                    ),
+                                    child: NewMemberDialog(
+                                        isEditMode: true,
+                                        autoNumber: widget.autoNumber,
+                                        relationship:
+                                            widget.relationship.isEmpty
+                                                ? "Self/Payer"
+                                                : widget.relationship,
+                                        title: widget.title,
+                                        name: widget.name,
+                                        surname: widget.surname,
+                                        dob: widget.dob,
+                                        phone: widget.contact,
+                                        sourceOfIncome: widget.sourceOfIncome,
+                                        sourceOfWealth: widget.sourceOfWealth,
+                                        idNumber: widget.id,
+                                        is_self_or_payer:
+                                            widget.is_self_or_payer,
+                                        canAddMember: true,
+                                        gender: widget.gender,
+                                        onAfterEdit: widget.onAfterEdit,
+                                        showIndexedDocuments:
+                                            widget.showIndexedDocuments,
+                                        showSourceOfIncome:
+                                            widget.showSourceOfIncome,
+                                        current_member_index: 0),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          child: Icon(
+                            Icons.edit,
+                            color: Constants.ftaColorLight,
+                            size: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            )),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -5857,4 +6113,45 @@ class _RiderCardState extends State<RiderCard> {
       ),
     );
   }
+}
+
+String formatLargeNumber(String valueStr) {
+  const List<String> suffixes = [
+    "",
+    "k",
+    "m",
+    "b",
+    "t"
+  ]; // Add more suffixes as needed
+
+  // Convert string to double and handle invalid inputs
+  double value;
+  try {
+    value = double.parse(valueStr);
+  } catch (e) {
+    return 'Invalid Number';
+  }
+
+  // If the value is less than 1000, return it as a string with commas
+  if (value < 1000) {
+    return formatWithCommas(value);
+  }
+
+  // Determine the correct suffix and scale the number accordingly
+  int suffixIndex = 0;
+  while (value >= 1000 && suffixIndex < suffixes.length - 1) {
+    value /= 1000;
+    suffixIndex++;
+  }
+
+  // Format the number with 1 decimal place if it's not a whole number
+  final formattedValue =
+      (value % 1 == 0) ? value.toInt().toString() : value.toStringAsFixed(1);
+
+  return '$formattedValue${suffixes[suffixIndex]}';
+}
+
+String formatWithCommas(double value) {
+  final format = NumberFormat("#,##0", "en_US");
+  return format.format(value);
 }

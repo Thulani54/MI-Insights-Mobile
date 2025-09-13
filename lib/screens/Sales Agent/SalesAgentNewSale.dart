@@ -24,6 +24,7 @@ import '../../../models/Product.dart';
 import '../../../models/SalesAgentModel.dart';
 import '../../../services/MyNoyifier.dart';
 import '../../models/map_class.dart';
+import '../../models/Lead.dart';
 import 'FieldSalesAffinity.dart';
 import 'manual_dial.dart';
 
@@ -71,6 +72,20 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
   FocusNode surname_focus_node = FocusNode();
   FocusNode sales_agent_focus_node = FocusNode();
   bool isLoading = false;
+
+  // Animated toggle variables for Field Sale / Paperless Sale
+  double _sliderPosition = 0.0;
+  int sale_type_index = 0;
+
+  void _animateSaleTypeButton(int index) {
+    setState(() {
+      sale_type_index = index;
+      _sliderPosition =
+          index == 0 ? 0.0 : (MediaQuery.of(context).size.width / 2) - 16;
+      Constants.fieldSaleType = index == 0 ? "Field Sale" : "Paperless Sale";
+      salesFieldAffinityValue.value++;
+    });
+  }
 
   void _pickAndConvertFiles(bool allowMultiple) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -190,7 +205,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
             children: [
               Padding(
                 padding: const EdgeInsets.only(
-                    left: 18.0, right: 16, top: 24, bottom: 12),
+                    left: 20.0, right: 16, top: 24, bottom: 0),
                 child: Row(
                   children: [
                     Text(
@@ -215,6 +230,8 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                           onSubmitted: (val) {},
                           focusNode: phone_number_focus_node,
                           textInputAction: TextInputAction.next,
+                          integersOnly: true,
+                          maxLines: 10,
                           isPasswordField: false),
                     ),
                   ],
@@ -222,7 +239,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
               ),
               Padding(
                 padding: const EdgeInsets.only(
-                    left: 18.0, right: 16, top: 16, bottom: 12),
+                    left: 20.0, right: 16, top: 20, bottom: 8),
                 child: Row(
                   children: [
                     Text(
@@ -295,7 +312,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
               ),
               Padding(
                 padding: const EdgeInsets.only(
-                    left: 18.0, right: 16, top: 8, bottom: 12),
+                    left: 20.0, right: 16, top: 8, bottom: 8),
                 child: Row(
                   children: [
                     Text(
@@ -378,7 +395,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
               ),
               Padding(
                 padding: const EdgeInsets.only(
-                    left: 18.0, right: 16, top: 24, bottom: 12),
+                    left: 20.0, right: 16, top: 24, bottom: 8),
                 child: Row(
                   children: [
                     Text(
@@ -484,7 +501,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                   )),
               Padding(
                 padding: const EdgeInsets.only(
-                    left: 18.0, right: 16, top: 24, bottom: 12),
+                    left: 20.0, right: 16, top: 24, bottom: 4),
                 child: Row(
                   children: [
                     Text(
@@ -516,7 +533,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
               ),
               Padding(
                 padding: const EdgeInsets.only(
-                    left: 18.0, right: 16, top: 24, bottom: 12),
+                    left: 20.0, right: 16, top: 24, bottom: 4),
                 child: Row(
                   children: [
                     Text(
@@ -548,7 +565,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
               ),
               Padding(
                 padding: const EdgeInsets.only(
-                    left: 18.0, right: 16, top: 24, bottom: 12),
+                    left: 20.0, right: 16, top: 24, bottom: 4),
                 child: Row(
                   children: [
                     Text(
@@ -604,7 +621,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                       ),
                     )
                   : Container(),
-              if (filteredSalesAgents.length > 0)
+              if (filteredSalesAgents.isNotEmpty)
                 Padding(
                   padding:
                       const EdgeInsets.only(left: 16.0, right: 16, top: 12),
@@ -671,259 +688,322 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                     ),
                   ),
                 ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    children: [
-                      Radio<String>(
-                        value: "Field Sale",
-                        groupValue: Constants.fieldSaleType,
-                        activeColor: Constants.ctaColorLight,
-                        onChanged: (value) {
-                          setState(() {
-                            Constants.fieldSaleType = value!;
-                            salesFieldAffinityValue.value++;
-                          });
-                        },
-                      ),
-                      const Text(
-                        "Field Sale",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 20),
-                  Row(
-                    children: [
-                      Radio<String>(
-                        value: "Paperless Sale",
-                        groupValue: Constants.fieldSaleType,
-                        activeColor: Constants.ctaColorLight,
-                        onChanged: (value) {
-                          setState(() {
-                            Constants.fieldSaleType = value!;
-                            salesFieldAffinityValue.value++;
-                          });
-                        },
-                      ),
-                      const Text(
-                        "Paperless Sale",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
               const SizedBox(height: 20),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 18.0, right: 16, top: 16, bottom: 0),
-                  child: Text(
-                    "ATTACH DOCUMENTS",
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                ),
-              ),
-              Container(
-                height: 200, // Adjust the height if necessary
-                child: DefaultTabController(
-                  length: 2,
-                  child: Scaffold(
-                    backgroundColor: Colors.white,
-                    body: Column(
-                      children: [
-                        PreferredSize(
-                          preferredSize: Size.fromHeight(
-                              kToolbarHeight), // Standard AppBar height
-                          child: Material(
-                            color: Colors.white, // AppBar background color
-                            child: TabBar(
-                              indicatorSize: TabBarIndicatorSize.tab,
-                              indicatorPadding:
-                                  const EdgeInsets.only(left: 44, right: 44),
-                              indicator: UnderlineTabIndicator(
-                                  borderSide: BorderSide(
-                                    width: 10.0,
-                                    color: Constants.ctaColorLight,
-                                  ),
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(16),
-                                      topRight: Radius.circular(16)),
-                                  insets:
-                                      EdgeInsets.symmetric(horizontal: 0.0)),
-                              indicatorColor: Constants.ctaColorLight,
-                              indicatorWeight: 8.0,
-                              padding: EdgeInsets.zero,
-                              labelPadding: EdgeInsets.zero,
-                              tabs: const [
-                                Tab(
-                                  iconMargin: EdgeInsets.only(bottom: 0.0),
-                                  child: Padding(
-                                    padding: EdgeInsets.only(top: 8.0),
-                                    child: Text(
-                                      "Single",
-                                      style: TextStyle(
-                                          color: Colors.black, fontSize: 14),
-                                    ),
-                                  ),
-                                ),
-                                Tab(
-                                  iconMargin: EdgeInsets.only(top: 0.0),
-                                  child: Padding(
-                                    padding: EdgeInsets.only(top: 8.0),
-                                    child: Text(
-                                      "Combined",
-                                      style: TextStyle(
-                                          color: Colors.black, fontSize: 14),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: TabBarView(
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, right: 16),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.10),
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.grey.withOpacity(0.10),
+                            borderRadius: BorderRadius.circular(12)),
+                        child: Center(
+                          child: Row(
                             children: [
-                              Column(
-                                children: [
-                                  SizedBox(height: 24),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      startInactivityTimer();
-                                      _pickAndConvertFiles(false);
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Colors.grey
-                                                  .withOpacity(0.75)),
-                                          borderRadius:
-                                              BorderRadius.circular(36)),
-                                      margin: const EdgeInsets.only(
-                                          left: 18.0,
-                                          right: 16,
-                                          top: 0,
-                                          bottom: 0),
-                                      height: 44,
-                                      child: Center(
-                                        child: Text(
-                                          "Attach a Document",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Constants.ctaColorLight),
-                                        ),
-                                      ),
+                              GestureDetector(
+                                onTap: () {
+                                  _animateSaleTypeButton(0);
+                                },
+                                child: Container(
+                                  width:
+                                      (MediaQuery.of(context).size.width / 2) -
+                                          16,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(360)),
+                                  height: 35,
+                                  child: Center(
+                                    child: Text(
+                                      'Field Sale',
+                                      style: TextStyle(color: Colors.black),
                                     ),
                                   ),
-                                  SizedBox(height: 16),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      startInactivityTimer();
-                                      await _captureImageWithCamera();
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color:
-                                                Colors.grey.withOpacity(0.75)),
-                                        borderRadius: BorderRadius.circular(36),
-                                      ),
-                                      margin: const EdgeInsets.only(
-                                          left: 18.0,
-                                          right: 16,
-                                          top: 0,
-                                          bottom: 0),
-                                      height: 44,
-                                      child: Center(
-                                        child: Text(
-                                          "Capture an Image",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Constants.ctaColorLight),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                              Column(
-                                children: [
-                                  SizedBox(height: 24),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      startInactivityTimer();
-                                      _pickAndConvertFiles(true);
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Colors.grey
-                                                  .withOpacity(0.75)),
-                                          borderRadius:
-                                              BorderRadius.circular(36)),
-                                      margin: const EdgeInsets.only(
-                                          left: 18.0,
-                                          right: 16,
-                                          top: 0,
-                                          bottom: 0),
-                                      height: 44,
-                                      child: Center(
-                                        child: Text(
-                                          "Attach Combined Documents",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Constants.ctaColorLight),
-                                        ),
-                                      ),
+                              GestureDetector(
+                                onTap: () {
+                                  _animateSaleTypeButton(1);
+                                },
+                                child: Container(
+                                  width:
+                                      (MediaQuery.of(context).size.width / 2) -
+                                          16,
+                                  height: 35,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(360)),
+                                  child: Center(
+                                    child: Text(
+                                      'Paperless Sale',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 14),
                                     ),
                                   ),
-                                  SizedBox(height: 16),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      startInactivityTimer();
-                                      await _attachCombinedImages2();
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color:
-                                                Colors.grey.withOpacity(0.75)),
-                                        borderRadius: BorderRadius.circular(36),
-                                      ),
-                                      margin: const EdgeInsets.only(
-                                          left: 18.0,
-                                          right: 16,
-                                          top: 0,
-                                          bottom: 0),
-                                      height: 44,
-                                      child: Center(
-                                        child: Text(
-                                          "Capture Combined Images",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              color: Constants.ctaColorLight),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      AnimatedPositioned(
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        left: _sliderPosition,
+                        child: Container(
+                            width: (MediaQuery.of(context).size.width / 2) - 16,
+                            height: 35,
+                            decoration: BoxDecoration(
+                              color: Constants.ctaColorLight,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: sale_type_index == 0
+                                ? Center(
+                                    child: Text(
+                                      'Field Sale',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  )
+                                : Center(
+                                    child: Text(
+                                      'Paperless Sale',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  )),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              if (_files.length > 0)
+              const SizedBox(height: 20),
+              if (Constants.fieldSaleType != "Paperless Sale")
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 18.0, right: 16, top: 16, bottom: 0),
+                    child: Text(
+                      "ATTACH DOCUMENTS",
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              if (Constants.fieldSaleType != "Paperless Sale")
+                Container(
+                  height: 200, // Adjust the height if necessary
+                  child: DefaultTabController(
+                    length: 2,
+                    child: Scaffold(
+                      backgroundColor: Colors.white,
+                      body: Column(
+                        children: [
+                          PreferredSize(
+                            preferredSize: Size.fromHeight(
+                                kToolbarHeight), // Standard AppBar height
+                            child: Material(
+                              color: Colors.white, // AppBar background color
+                              child: TabBar(
+                                indicatorSize: TabBarIndicatorSize.tab,
+                                indicatorPadding:
+                                    const EdgeInsets.only(left: 44, right: 44),
+                                indicator: UnderlineTabIndicator(
+                                    borderSide: BorderSide(
+                                      width: 10.0,
+                                      color: Constants.ctaColorLight,
+                                    ),
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(16),
+                                        topRight: Radius.circular(16)),
+                                    insets:
+                                        EdgeInsets.symmetric(horizontal: 0.0)),
+                                indicatorColor: Constants.ctaColorLight,
+                                indicatorWeight: 8.0,
+                                padding: EdgeInsets.zero,
+                                labelPadding: EdgeInsets.zero,
+                                tabs: const [
+                                  Tab(
+                                    iconMargin: EdgeInsets.only(bottom: 0.0),
+                                    child: Padding(
+                                      padding: EdgeInsets.only(top: 8.0),
+                                      child: Text(
+                                        "Single",
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 14),
+                                      ),
+                                    ),
+                                  ),
+                                  Tab(
+                                    iconMargin: EdgeInsets.only(top: 0.0),
+                                    child: Padding(
+                                      padding: EdgeInsets.only(top: 8.0),
+                                      child: Text(
+                                        "Combined",
+                                        style: TextStyle(
+                                            color: Colors.black, fontSize: 14),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: TabBarView(
+                              children: [
+                                Column(
+                                  children: [
+                                    if (Constants.fieldSaleType !=
+                                        "Paperless Sale") ...[
+                                      SizedBox(height: 24),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          startInactivityTimer();
+                                          _pickAndConvertFiles(false);
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.75)),
+                                              borderRadius:
+                                                  BorderRadius.circular(36)),
+                                          margin: const EdgeInsets.only(
+                                              left: 18.0,
+                                              right: 16,
+                                              top: 0,
+                                              bottom: 0),
+                                          height: 44,
+                                          child: Center(
+                                            child: Text(
+                                              "Attach a Document",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color:
+                                                      Constants.ctaColorLight),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    if (Constants.fieldSaleType !=
+                                        "Paperless Sale") ...[
+                                      SizedBox(height: 16),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          startInactivityTimer();
+                                          await _captureImageWithCamera();
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: Colors.grey
+                                                    .withOpacity(0.75)),
+                                            borderRadius:
+                                                BorderRadius.circular(36),
+                                          ),
+                                          margin: const EdgeInsets.only(
+                                              left: 18.0,
+                                              right: 16,
+                                              top: 0,
+                                              bottom: 0),
+                                          height: 44,
+                                          child: Center(
+                                            child: Text(
+                                              "Capture an Image",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color:
+                                                      Constants.ctaColorLight),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                // Only show attach documents section for Field Sale
+                                if (Constants.fieldSaleType != "Paperless Sale")
+                                  Column(
+                                    children: [
+                                      SizedBox(height: 24),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          startInactivityTimer();
+                                          _pickAndConvertFiles(true);
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Colors.grey
+                                                      .withOpacity(0.75)),
+                                              borderRadius:
+                                                  BorderRadius.circular(36)),
+                                          margin: const EdgeInsets.only(
+                                              left: 18.0,
+                                              right: 16,
+                                              top: 0,
+                                              bottom: 0),
+                                          height: 44,
+                                          child: Center(
+                                            child: Text(
+                                              "Attach Combined Documents",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color:
+                                                      Constants.ctaColorLight),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 16),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          startInactivityTimer();
+                                          await _attachCombinedImages2();
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: Colors.grey
+                                                    .withOpacity(0.75)),
+                                            borderRadius:
+                                                BorderRadius.circular(36),
+                                          ),
+                                          margin: const EdgeInsets.only(
+                                              left: 18.0,
+                                              right: 16,
+                                              top: 0,
+                                              bottom: 0),
+                                          height: 44,
+                                          child: Center(
+                                            child: Text(
+                                              "Capture Combined Images",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color:
+                                                      Constants.ctaColorLight),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              if (_files.length > 0 &&
+                  Constants.fieldSaleType != "Paperless Sale")
                 SizedBox(
                   height: 16,
                 ),
-              if (_files.length > 0)
+              if (_files.length > 0 &&
+                  Constants.fieldSaleType != "Paperless Sale")
                 Row(
                   children: [
                     Spacer(),
@@ -943,7 +1023,8 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
               SizedBox(
                 height: 12,
               ),
-              if (_files.length > 0)
+              if (_files.length > 0 &&
+                  Constants.fieldSaleType != "Paperless Sale")
                 Container(
                   // height: _files.length * 60,
                   child: Padding(
@@ -1048,34 +1129,59 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                 onTap: () {
                   if (name_controller.text.isEmpty) {
                     MotionToast.error(
+                      height: 45,
                       onClose: () {},
-                      description: Text("Please enter a name."),
+                      description: const Text(
+                        "Please enter a name.",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ).show(context);
                   } else if (surname_controller.text.isEmpty) {
                     MotionToast.error(
+                      height: 45,
                       onClose: () {},
-                      description: Text("Please enter a surname."),
+                      description: const Text(
+                        "Please enter a surname.",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ).show(context);
                   } else if (phone_number_controller.text.isEmpty) {
                     MotionToast.error(
+                      height: 45,
                       onClose: () {},
-                      description: Text("Please enter a phone number."),
+                      description: const Text(
+                        "Please enter a phone number.",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ).show(context);
                   } else if (_selectedDisplayedProduct!.product ==
                       "Select Product") {
                     MotionToast.error(
+                      height: 45,
                       onClose: () {},
-                      description: Text("Please select a product"),
+                      description: const Text(
+                        "Please select a product",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ).show(context);
                   } else if (selected_agent == null) {
                     MotionToast.error(
+                      height: 45,
                       onClose: () {},
-                      description: Text("Please select an agent"),
+                      description: const Text(
+                        "Please select an agent",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ).show(context);
-                  } else if (_files.isEmpty) {
+                  } else if (_files.isEmpty &&
+                      Constants.fieldSaleType == "Field Sale") {
                     MotionToast.error(
+                      height: 45,
                       onClose: () {},
-                      description: Text("Please attach images"),
+                      description: const Text(
+                        "Please attach images",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ).show(context);
                   } else {
                     add_new_lead();
@@ -1099,67 +1205,65 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
               ),
               InkWell(
                 onTap: () async {
-                  final lead = await fetchLeadById("743065");
-
-                  if (lead != null) {
-                    Navigator.of(context).pop(); // Close the current dialog
-
-                    if (Constants.manualDialType == "Branch") {
-                      /* Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          BranchSalesHomePage(), // Replace with your actual widget
-                                    ),
-                                  );*/
-                    }
-                    if (Constants.manualDialType == "Field") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              Fieldsalesaffinity(), // Replace with your actual widget
-                        ),
-                      );
-                    }
-                  } else {
-                    showErrorDialog(context,
-                        "Failed to fetch lead details. Please try again.");
-                  }
-                  return;
                   if (name_controller.text.isEmpty) {
                     MotionToast.error(
+                      height: 45,
                       onClose: () {},
-                      description: Text("Please enter a name."),
+                      description: const Text(
+                        "Please enter a name.",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ).show(context);
                   } else if (surname_controller.text.isEmpty) {
                     MotionToast.error(
+                      height: 45,
                       onClose: () {},
-                      description: Text("Please enter a surname."),
+                      description: const Text(
+                        "Please enter a surname.",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ).show(context);
                   } else if (phone_number_controller.text.isEmpty) {
                     MotionToast.error(
+                      height: 45,
                       onClose: () {},
-                      description: Text("Please enter a phone number."),
+                      description: const Text(
+                        "Please enter a phone number.",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ).show(context);
                   } else if (_selectedDisplayedProduct!.product ==
                       "Select Product") {
                     MotionToast.error(
+                      height: 45,
                       onClose: () {},
-                      description: Text("Please select a product"),
+                      description: const Text(
+                        "Please select a product",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ).show(context);
                   } else if (selected_agent == null) {
                     MotionToast.error(
+                      height: 45,
                       onClose: () {},
-                      description: Text("Please select an agent"),
+                      description: const Text(
+                        "Please select an agent",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ).show(context);
-                  } else if (_files.isEmpty) {
+                  } else if (_files.isEmpty &&
+                      Constants.fieldSaleType == "Field Sale") {
                     MotionToast.error(
+                      height: 45,
                       onClose: () {},
-                      description: Text("Please attach images"),
+                      description: const Text(
+                        "Please attach images",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ).show(context);
                   } else {
-                    // add_new_lead();
+                    // First add the new lead
+                    await add_new_lead_and_continue();
                   }
                 },
                 child: Container(
@@ -1217,7 +1321,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
     var request = http.Request(
         'GET',
         Uri.parse(
-            'https://miinsightsapps.net/parlour/getParlourRatesExtras?client_id=${Constants.cec_client_id}'));
+            '${Constants.insightsBackendBaseUrl}parlour/getParlourRatesExtras?client_id=${Constants.cec_client_id}'));
 
     request.headers.addAll(headers);
 
@@ -1275,16 +1379,10 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
 */
 
   Future<void> load_products2() async {
-    var headers = {
-      'Cookie':
-          'userid=expiry=2021-04-25&client_modules=1001#1002#1003#1004#1005#1006#1007#1008#1009#1010#1011#1012#1013#1014#1015#1017#1018#1020#1021#1022#1024#1025#1026#1027#1028#1029#1030#1031#1032#1033#1034#1035&clientid=&empid=3&empfirstname=Mncedisi&emplastname=Khumalo&email=mncedisi@athandwe.co.za&username=mncedisi@athandwe.co.za&dob=8/28/1985 12:00:00 AM&fullname=Mncedisi Khumalo&userRole=5&userImage=mncedisi@athandwe.co.za.jpg&employedAt=branch&role=leader&branchid=6&branchname=Boulders&jobtitle=Administrative Assistant&dialing_strategy=Campaign Manager&clientname=Test 1 Funeral Parlour&foldername=maafrica&client_abbr=AS&pbx_account=pbx1051ef0a&soft_phone_ip=&agent_type=branch&mip_username=mnces@mip.co.za&agent_email=Mr Mncedisi Khumalo&ViciDial_phone_login=&ViciDial_phone_password=&ViciDial_agent_user=99&ViciDial_agent_password=&device_id=dC7JwXFwwdI:APA91bF0gTbuXlfT6wIcGMLY57Xo7VxUMrMH-MuFYL5PnjUVI0G5X1d3d90FNRb8-XmcjI40L1XqDH-KAc1KWnPpxNg8Z8SK4Ty0xonbz4L3sbKz3Rlr4hyBqePWx9ZfEp53vWwkZ3tx&servername=http://localhost:55661'
-    };
-    var request = http.Request(
-        'GET',
-        Uri.parse(
-            'https://miinsightsapps.net/parlour/getParlourRatesExtras?client_id=${Constants.cec_client_id}'));
-
-    request.headers.addAll(headers);
+    String url =
+        '${Constants.parlourConfigBaseUrl}/parlour-config/get-parlour-rates-extras/?client_id=${Constants.cec_client_id}';
+    print(url);
+    var request = http.Request('GET', Uri.parse(url));
 
     http.StreamedResponse response = await request.send();
 
@@ -1296,28 +1394,14 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
       Map<dynamic, dynamic> productList = decodedResponse["product_pitch"];
       print("fgghggfh3" + productList.toString());
 
-      displayed_parlour_rates = [
-        ParlourRatesExtras2a(
-          "Select Product",
-          "",
-        )
-      ];
+      displayed_parlour_rates = [ParlourRatesExtras2a("Select Product", "")];
       productList.forEach((key, value) {
         Map product = value;
         product.forEach((planName, planDetails) {
-          print('Selected ${key} ${planName}');
-          displayed_parlour_rates.add(
-            ParlourRatesExtras2a(
-              key,
-              planName,
-            ),
-          );
-          // if (_selectedDisplayedProduct==null) {
-          //   displayed_parlour_rates =ParlourRatesExtras2(
-          //     key,
-          //     planName,
-          //   );
-          // }
+          if (kDebugMode) {
+            print('Selected ${key} ${planName}');
+          }
+          displayed_parlour_rates.add(ParlourRatesExtras2a(key, planName));
         });
       });
 
@@ -1330,27 +1414,42 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
 
   Future<void> load_all_sales_agents() async {
     var request = http.Request(
-        'GET',
-        Uri.parse(
-            'https://miinsightsapps.net/chat/getAllUserDetails?empId=${Constants.cec_employeeid}&client_id=${Constants.cec_client_id}'));
+      'GET',
+      Uri.parse(
+        '${Constants.insightsBackendUrl}/admin/getFieldEmployeesConsultants?organo_id=&cec_client_id=${Constants.cec_client_id}',
+      ),
+    );
 
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
       String responseBody = await response.stream.bytesToString();
       var decodedResponse = json.decode(responseBody);
+      print("basaxsas0  - $responseBody");
 
       List<dynamic> salesAgentsList = decodedResponse;
-      print("sasaxsas  - ${salesAgentsList.length}");
+      print("basaxsas  - ${salesAgentsList.length}");
 
       for (var agent in salesAgentsList) {
-        print("sasaxsas  -");
+        print("basaxsas  -");
 
-        print("sasaxsas  + ${(agent['employee_status'] ?? "").toString()}");
+        print("sasaxsas  + ${(agent).toString()}");
+
         if (agent['employee_status'] == "active") {
-          all_sales_agents.add(
-            SalesAgentModel.fromJson(agent),
-          );
+          SalesAgentModel agentModel = SalesAgentModel.fromJson(agent);
+          all_sales_agents.add(agentModel);
+
+          // Automatically select the agent with matching cec_empid
+          // Convert to string for comparison to handle different types
+          if (agentModel.cecEmployeeId.toString() ==
+              Constants.cec_empid.toString()) {
+            selected_agent = agentModel;
+            selectedSalesAgent = agentModel;
+            _salesAgentController.text =
+                "${agentModel.employeeName} ${agentModel.employeeSurname}";
+            print(
+                "Auto-selected agent: ${agentModel.employeeName} ${agentModel.employeeSurname}");
+          }
         }
       }
 
@@ -1363,9 +1462,14 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
   }
 
   Future<void> add_new_lead() async {
-    var headers = {
-      'Content-Type': 'application/json',
-    };
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(child: CircularProgressIndicator()),
+    );
+
+    //Constants.isViewingLead = true;
+    var headers = {'Content-Type': 'application/json'};
 
     var body = jsonEncode({
       "LeadGuid": "Field_Lead",
@@ -1385,43 +1489,126 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
       "hang_up_reason": "Transfered",
       "notes": notesController.text,
       "product": _selectedDisplayedProduct!.product,
-      "abbr": _selectedDisplayedProduct!.product.substring(0, 2)
+      "abbr": _selectedDisplayedProduct!.product.substring(0, 2),
+      "type": Constants.fieldSaleType
     });
+
     if (kDebugMode) {
-      print("gfhhggh ${body}");
-      print("gfhhggh2 ${Constants.currentBusinessInfo}");
+      print("Request body: ${body}");
     }
 
-    var request = http.Request(
-        'POST',
-        Uri.parse(
-            'https://miinsightsapps.net/backend_api/api/fieldV6/newLead'));
+    var request = http.Request('POST',
+        Uri.parse('${Constants.insightsBackendBaseUrl}fieldV6/newLead'));
     request.headers.addAll(headers);
     request.body = body;
 
-    http.StreamedResponse response = await request.send();
+    try {
+      http.StreamedResponse response = await request.send();
+      print("Response status code: ${response.statusCode}");
 
-    if (response.statusCode == 200) {
-      String responseBody = await response.stream.bytesToString();
-      var decodedResponse = json.decode(responseBody);
-      if (kDebugMode) {
-        print("fghghghj $decodedResponse");
-      }
+      if (response.statusCode == 200) {
+        String responseBody = await response.stream.bytesToString();
+        print("Response body: $responseBody");
+        var decodedResponse = json.decode(responseBody);
 
-      // Assuming the response directly returns an integer
-      int result = int.tryParse(decodedResponse) ?? 0;
-      if (result > 0) {
-        uploadDocs(result);
+        // Assuming the response directly returns an integer
+        int result = int.tryParse(decodedResponse.toString()) ?? 0;
+        if (result > 0) {
+          await uploadDocs(result);
+        } else {
+          Navigator.of(context).pop();
+          showErrorDialog(context, "Invalid response from server");
+        }
+      } else {
+        Navigator.of(context).pop();
+        String errorBody = await response.stream.bytesToString();
+        print("Error response: $errorBody");
+        showErrorDialog(
+            context, "Failed to create lead: ${response.reasonPhrase}");
       }
-    } else {
-      if (kDebugMode) {
-        print("Failed to add new lead: ${response.reasonPhrase}");
-      }
+    } catch (e) {
+      Navigator.of(context).pop();
+      print("Network error: $e");
+      showErrorDialog(context, "Network error: $e");
     }
   }
   //1414
 
   Future<void> uploadDocs(int result) async {
+    print("Uploading documents for lead ID: ${result}");
+
+    var queryParams = {
+      'documents_indexed': 'Parked',
+      'documents_indexed_by': Constants.cec_employeeid.toString(),
+      'documents_indexed_policy_documents': 'yes',
+      'documents_indexed_terms_and_conditions': 'yes',
+      'documents_indexed_funeral_benefit': 'yes',
+      'documents_indexed_additional_information': 'yes',
+      'documents_indexed_vab_pamphlets': 'yes',
+      'onololeadid': '${result}',
+      'documents_indexed_field_form_uploaded': 'yes',
+      'notes': notesController.text,
+      'created_by': Constants.cec_employeeid.toString(),
+    };
+
+    var uri = Uri.parse('${Constants.insightsBackendBaseUrl}fieldV6/saveIndex');
+    var uriWithParams = Uri(
+      scheme: uri.scheme,
+      host: uri.host,
+      path: uri.path,
+      query: Uri(queryParameters: queryParams).query,
+    );
+
+    var request = http.MultipartRequest('POST', uriWithParams);
+
+    for (var file in _files) {
+      print("Adding file: ${file.name}");
+      if (file.path != null) {
+        try {
+          request.files.add(await http.MultipartFile.fromPath(
+            'images[]',
+            file.path!,
+          ));
+        } catch (e) {
+          print("Error adding file ${file.name}: $e");
+        }
+      }
+    }
+
+    _files = [];
+
+    try {
+      var response = await request.send();
+      print("Upload response status code: ${response.statusCode}");
+      String responseBody = await response.stream.bytesToString();
+      print("Upload response body: $responseBody");
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        print("Files and data uploaded successfully");
+        String trimmedResponseBody = responseBody.replaceAll('"', '');
+
+        Navigator.of(context).pop(); // Close loading dialog
+
+        if (trimmedResponseBody == "Success") {
+          // Fetch lead details by ID before navigating
+          await fetchLeadById2(result.toString());
+        } else {
+          showErrorDialog(
+              context, "Upload completed but received: $responseBody");
+        }
+      } else {
+        Navigator.of(context).pop(); // Close loading dialog
+        showErrorDialog(context, "Upload failed: ${response.reasonPhrase}");
+        print("Failed to upload files and data: ${response.reasonPhrase}");
+      }
+    } catch (e) {
+      Navigator.of(context).pop(); // Close loading dialog
+      print("Upload error: $e");
+      showErrorDialog(context, "Upload error: $e");
+    }
+  }
+
+  Future<void> uploadDocsContinue(int result) async {
     print("sdfgfg ${result}");
     var queryParams = {
       'documents_indexed': 'Parked',
@@ -1437,8 +1624,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
       'created_by': "0",
     };
 
-    var uri = Uri.parse(
-        'https://miinsightsapps.net/backend_api/api/fieldV6/saveIndex');
+    var uri = Uri.parse('${Constants.insightsBackendBaseUrl}fieldV6/saveIndex');
     var uriWithParams = Uri(
       scheme: uri.scheme,
       host: uri.host,
@@ -1469,14 +1655,116 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
       print("Files and data uploaded successfully");
       // Handle success
       String trimmedResponseBody = responseBody.replaceAll('"', '');
+
       if (trimmedResponseBody == "Success") {
-        showSuccessDialog(context);
+        // Fetch lead details by ID before navigating
+        await fetchLeadById2(result.toString());
       } else {
         showErrorDialog(context, responseBody);
       }
     } else {
       showErrorDialog(context, response.reasonPhrase!);
       print("Failed to upload files and data: ${response.reasonPhrase}");
+    }
+  }
+
+  Future<void> fetchLeadById2(String leadId) async {
+    final String fetchUrl =
+        "${Constants.insightsBackendBaseUrl}parlour/getLeadById?onololeadid=$leadId&cec_client_id=${Constants.cec_empid}";
+
+    try {
+      final response = await http.get(Uri.parse(fetchUrl));
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        Constants.currentleadAvailable = Lead.fromJson(responseData[0]);
+
+        // Navigate to FieldSalesAffinity after successful lead fetch
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                Fieldsalesaffinity(sale_type: Constants.fieldSaleType),
+          ),
+        );
+      } else {
+        print("Failed to fetch lead by ID: ${response.statusCode}");
+        showErrorDialog(context, "Failed to fetch lead details");
+      }
+    } catch (error) {
+      print("Error fetching lead by ID: $error");
+      showErrorDialog(context, "Error fetching lead details: $error");
+    }
+  }
+
+  Future<void> add_new_lead_and_continue() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(child: CircularProgressIndicator()),
+    );
+
+    //Constants.isViewingLead = true;
+    var headers = {'Content-Type': 'application/json'};
+
+    var body = jsonEncode({
+      "LeadGuid": "Field_Lead",
+      "cec_client_id": Constants.cec_client_id,
+      "empId": selected_agent!.cecEmployeeId,
+      "cellphone": phone_number_controller.text,
+      "title": title,
+      "name": name_controller.text,
+      "surname": surname_controller.text,
+      "product_type": _selectedDisplayedProduct!.prod_type,
+      "branch_id": Constants.organo_id,
+      "created_by": selected_agent!.cecEmployeeId,
+      "user": selected_agent!.cecEmployeeId,
+      "call_back_date": "",
+      "call_back_time": "",
+      "agent_sale_date": agent_sale_date,
+      "hang_up_reason": "Transfered",
+      "notes": notesController.text,
+      "product": _selectedDisplayedProduct!.product,
+      "abbr": _selectedDisplayedProduct!.product.substring(0, 2),
+      "type": Constants.fieldSaleType
+    });
+
+    if (kDebugMode) {
+      print("Request body: ${body}");
+    }
+
+    var request = http.Request('POST',
+        Uri.parse('${Constants.insightsBackendBaseUrl}fieldV6/newLead'));
+    request.headers.addAll(headers);
+    request.body = body;
+
+    try {
+      http.StreamedResponse response = await request.send();
+      print("Response status code: ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        String responseBody = await response.stream.bytesToString();
+        print("Response body: $responseBody");
+        var decodedResponse = json.decode(responseBody);
+
+        // Assuming the response directly returns an integer
+        int result = int.tryParse(decodedResponse.toString()) ?? 0;
+        if (result > 0) {
+          await uploadDocsContinue(result);
+        } else {
+          Navigator.of(context).pop();
+          showErrorDialog(context, "Invalid response from server");
+        }
+      } else {
+        Navigator.of(context).pop();
+        String errorBody = await response.stream.bytesToString();
+        print("Error response: $errorBody");
+        showErrorDialog(
+            context, "Failed to save lead: ${response.reasonPhrase}");
+      }
+    } catch (e) {
+      Navigator.of(context).pop();
+      print("Network error: $e");
+      showErrorDialog(context, "Network error: $e");
     }
   }
 
@@ -1592,7 +1880,6 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                     notesController.text = "";
                     setState(() {});
 
-                    Navigator.of(context).pop();
                     Navigator.of(context).pop();
                   },
                   child: Text(

@@ -14,7 +14,7 @@ Future<void> getAllUsers(
 ) async {
   https: //uat.miinsightsapps.net/fieldV6/getLeadss?empId=3&searchKey=6&status=all&cec_client_id=1&type=field&startDate=2023-08-01&endDate=2023-08-31
   String baseUrl =
-      "https://miinsightsapps.net/chat/getAllUserDetails?empId=${empId}&client_id=${client_id}";
+      "${Constants.insightsBackendBaseUrl}chat/getAllUserDetails?empId=${empId}&client_id=${client_id}";
   ;
   try {
     if (kDebugMode) {
@@ -82,7 +82,7 @@ Future<void> getAllBranches(
 ) async {
   https: //uat.miinsightsapps.net/fieldV6/getLeadss?empId=3&searchKey=6&status=all&cec_client_id=1&type=field&startDate=2023-08-01&endDate=2023-08-31
   String baseUrl =
-      "https://miinsightsapps.net/reports/getBranches?cec_client_id=${client_id}";
+      "${Constants.insightsBackendBaseUrl}reports/getBranches?cec_client_id=${client_id}";
 
   try {
     if (kDebugMode) {

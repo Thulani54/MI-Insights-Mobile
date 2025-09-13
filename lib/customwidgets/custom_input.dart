@@ -103,7 +103,7 @@ class _CustomInputState extends State<CustomInput> {
                 fontWeight: FontWeight.normal,
               ),
             ),
-            contentPadding: EdgeInsets.only(left: 16, top: 0.0),
+            contentPadding: EdgeInsets.only(left: 16, top: 0.0, bottom: 5),
             suffixIcon: _isPasswordField == true
                 ? IconButton(
                     icon: Padding(
@@ -516,42 +516,6 @@ class CustomInputTransparent4 extends StatefulWidget {
       _CustomInputTransparent4State();
 }
 
-class CustomInputTransparent3 extends StatefulWidget {
-  final bool? allow_editing;
-  final String hintText;
-  final Function(String) onChanged;
-  final Function(String) onSubmitted;
-  final FocusNode focusNode;
-  final TextEditingController? controller;
-  final TextInputAction textInputAction;
-  final bool isPasswordField;
-  final Widget? prefix;
-  Widget? suffix;
-  final int? maxLines;
-  final bool? integersOnly;
-  final bool? isName; // ✅ New property for name validation
-
-  CustomInputTransparent3({
-    required this.hintText,
-    required this.onChanged,
-    required this.onSubmitted,
-    required this.focusNode,
-    required this.textInputAction,
-    required this.isPasswordField,
-    this.controller,
-    this.prefix,
-    this.maxLines,
-    this.suffix,
-    this.integersOnly,
-    this.allow_editing,
-    this.isName = false, // ✅ Default to false
-  });
-
-  @override
-  _CustomInputTransparent3State createState() =>
-      _CustomInputTransparent3State();
-}
-
 class CustomInputTransparentID2 extends StatefulWidget {
   final String hintText;
   final Function(String) onChanged;
@@ -662,6 +626,44 @@ class _CustomInputTransparentID2State extends State<CustomInputTransparentID2> {
   }
 }
 
+class CustomInputTransparent3 extends StatefulWidget {
+  final bool? allow_editing;
+  final String hintText;
+  final Function(String) onChanged;
+  final Function(String) onSubmitted;
+  final FocusNode focusNode;
+  final TextEditingController? controller;
+  final TextInputAction textInputAction;
+  final bool isPasswordField;
+  final Widget? prefix;
+  Widget? suffix;
+  final int? maxLines;
+  final int? maxInputs; // ✅ New optional parameter for maximum input length
+  final bool? integersOnly;
+  final bool? isName; // ✅ New property for name validation
+
+  CustomInputTransparent3({
+    required this.hintText,
+    required this.onChanged,
+    required this.onSubmitted,
+    required this.focusNode,
+    required this.textInputAction,
+    required this.isPasswordField,
+    this.controller,
+    this.prefix,
+    this.maxLines,
+    this.maxInputs, // ✅ Added to constructor
+    this.suffix,
+    this.integersOnly,
+    this.allow_editing,
+    this.isName = false, // ✅ Default to false
+  });
+
+  @override
+  _CustomInputTransparent3State createState() =>
+      _CustomInputTransparent3State();
+}
+
 class _CustomInputTransparent3State extends State<CustomInputTransparent3> {
   bool _isPasswordVisible = false;
 
@@ -679,6 +681,7 @@ class _CustomInputTransparent3State extends State<CustomInputTransparent3> {
         onSubmitted: widget.onSubmitted,
         controller: widget.controller,
         maxLines: 1,
+        maxLength: widget.maxInputs, // ✅ Added maxInputs implementation
         textInputAction: widget.textInputAction,
 
         // ✅ Apply input validation
@@ -688,13 +691,16 @@ class _CustomInputTransparent3State extends State<CustomInputTransparent3> {
               ]
             : widget.integersOnly == true
                 ? <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp(r'^\+?[0-9]*$')),
+                    FilteringTextInputFormatter.allow(RegExp(r'^\+?[0-9]*')),
                   ]
                 : null,
 
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: widget.hintText,
+          counterText: widget.maxInputs != null
+              ? null
+              : "", // ✅ Hide counter if maxInputs is null, show if not null
           prefixIcon: widget.prefix,
           suffixIcon: widget.suffix != null
               ? widget.suffix

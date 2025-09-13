@@ -27,7 +27,7 @@ Future<void> main() async {
       FirebaseAnalyticsObserver(analytics: Constants.analytics_instance!);
   await Constants.analytics_instance!.logAppOpen();
 */
-  AppConfig.setEnvironment(EnvironmentType.prod);
+  AppConfig.setEnvironment(EnvironmentType.uat);
 
   runApp(const MyApp());
 

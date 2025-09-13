@@ -3149,7 +3149,7 @@ class _MoraleIndexReportState extends State<MoraleIndexReport>
     var request = http.Request(
         'GET',
         Uri.parse(
-            'https://miinsightsapps.net/Communication_Engine/GetStatusStats?StartDate=2023-12-11&EndDate=2023-12-11&EventId=0'));
+            '${Constants.insightsBackendBaseUrl}Communication_Engine/GetStatusStats?StartDate=2023-12-11&EndDate=2023-12-11&EventId=0'));
 
     request.headers.addAll(headers);
 
@@ -3172,7 +3172,7 @@ class _MoraleIndexReportState extends State<MoraleIndexReport>
       };
       var request = http.get(
           Uri.parse(
-              'https://miinsightsapps.net/hr/countUsersMoods?clientId=379&dateToday=2023-12-11'),
+              '${Constants.insightsBackendBaseUrl}hr/countUsersMoods?clientId=379&dateToday=2023-12-11'),
           headers: headers);
       request.then((response) {
         print(request);

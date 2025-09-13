@@ -569,7 +569,8 @@ class _ReprintAwaitingActionState extends State<ReprintAwaitingAction> {
       "is_printed": 1,
     });
     var response = await http.post(
-      Uri.parse("https://miinsightsapps.net/files/update_reprint_request/"),
+      Uri.parse(
+          "${Constants.insightsBackendBaseUrl}files/update_reprint_request/"),
       body: body,
       headers: {
         "Content-Type": "application/json",
@@ -581,7 +582,7 @@ class _ReprintAwaitingActionState extends State<ReprintAwaitingAction> {
 
 // Delete a print request
   Future<bool> deletePrintRequest(String policyNumber) async {
-    String baseUrl = "https://miinsightsapps.net/files";
+    String baseUrl = "${Constants.insightsBackendBaseUrl}files";
     final response = await http.delete(
       Uri.parse('$baseUrl/delete-print-request/$policyNumber'),
       headers: {
@@ -628,7 +629,7 @@ class _ReprintAwaitingActionState extends State<ReprintAwaitingAction> {
       print(Constants.user_reference);
       print(Constants.cec_client_id);
     }
-    String baseUrl = "https://miinsightsapps.net/files";
+    String baseUrl = "${Constants.insightsBackendBaseUrl}files";
     String urlPath = "/get_requests_accepted/";
     String apiUrl = baseUrl + urlPath;
     DateTime now = DateTime.now();

@@ -19,9 +19,9 @@ class _AttendanceRegisterScreenState extends State<AttendanceRegisterScreen> {
   Future<List<EmployeeAttendance>> fetchEmployees() async {
     final response = await http.get(
       Uri.parse(
-          'https://miinsightsapps.net/admin/getBranchEmployeesAttendanceWeb?cec_employeeid=3&cec_client_id=1&type=branch'),
+          '${Constants.insightsBackendBaseUrl}admin/getBranchEmployeesAttendanceWeb?cec_employeeid=3&cec_client_id=1&type=branch'),
       /*Uri.parse(
-          'https://miinsightsapps.net/admin/getBranchEmployeesAttendanceByBranch?branch_id=&cec_client_id=1&startDate=2024-08-29&endDate=2024-08-29'),*/
+          '${Constants.insightsBackendBaseUrl}admin/getBranchEmployeesAttendanceByBranch?branch_id=&cec_client_id=1&startDate=2024-08-29&endDate=2024-08-29'),*/
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ class _AttendanceRegisterScreenState extends State<AttendanceRegisterScreen> {
                               radius: 30,
                               backgroundImage: employee.userImage != null
                                   ? NetworkImage(
-                                      'https://miinsightsapps.net/images/${employee.userImage}')
+                                      '${Constants.insightsBackendBaseUrl}images/${employee.userImage}')
                                   : AssetImage(
                                           'assets/img/default-user (1).png')
                                       as ImageProvider,
@@ -241,7 +241,7 @@ class EmployeeDetailScreen extends StatelessWidget {
               radius: 50,
               backgroundImage: employee.userImage != null
                   ? NetworkImage(
-                      'https://miinsightsapps.net/images/${employee.userImage}')
+                      '${Constants.insightsBackendBaseUrl}images/${employee.userImage}')
                   : AssetImage('assets/placeholder.jpg') as ImageProvider,
             ),
             SizedBox(height: 16),
@@ -364,7 +364,7 @@ class _CircularAttendanceWidgetState extends State<CircularAttendanceWidget>
 Future<void> setAttendanceStatus(
     int attendanceRegisterId, String attendanceStatus) async {
   var url = Uri.parse(
-      'https://miinsightsapps.net/admin/setAttendance?cec_attendance_register_id=$attendanceRegisterId&attendance_status=$attendanceStatus&cec_attendance_register_id=$attendanceRegisterId&attendance_status=$attendanceStatus');
+      '${Constants.insightsBackendBaseUrl}admin/setAttendance?cec_attendance_register_id=$attendanceRegisterId&attendance_status=$attendanceStatus&cec_attendance_register_id=$attendanceRegisterId&attendance_status=$attendanceStatus');
 
   var headers = {
     "Cookie":

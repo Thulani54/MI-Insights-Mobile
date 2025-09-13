@@ -1995,7 +1995,8 @@ class _CollectionsReportState extends State<CollectionsReport> {
     setState(() {
       isLoading = true;
     });
-    String baseUrl = "https://miinsightsapps.net/collection/getCollectionItems";
+    String baseUrl =
+        "${Constants.insightsBackendBaseUrl}collection/getCollectionItems";
     try {
       Map<String, String>? payload = {
         "cec_client_id": '["${Constants.cec_client_id}"]',
@@ -2227,9 +2228,9 @@ class _CollectionsReportState extends State<CollectionsReport> {
       isLoading = true; // Start loading
     });
     //https: //uat.miinsightsapps.net/fieldV6/getLeadss?empId=3&searchKey=6&status=all&cec_client_id=1&type=field&startDate=2023-08-01&endDate=2023-08-31
-    //String baseUrl = "https://miinsightsapps.net/parlour/getSalesAll?cec_client_id=${Constants.cec_client_id}&type=field&startDate=${date_from}&endDate=${date_to}";
+    //String baseUrl = "${Constants.insightsBackendBaseUrl}parlour/getSalesAll?cec_client_id=${Constants.cec_client_id}&type=field&startDate=${date_from}&endDate=${date_to}";
     String baseUrl =
-        "https://miinsightsapps.net/collection/getCashUp?cec_client_id=${Constants.cec_client_id}&start_date=${date_from}&end_date=${date_to}";
+        "${Constants.insightsBackendBaseUrl}collection/getCashUp?cec_client_id=${Constants.cec_client_id}&start_date=${date_from}&end_date=${date_to}";
     try {
       if (kDebugMode) {
         print("baseUrl2 $baseUrl");
@@ -2414,7 +2415,8 @@ class _CollectionsReportState extends State<CollectionsReport> {
     setState(() {
       isLoading = true; // Start loading
     });
-    String baseUrl = "https://miinsightsapps.net/collection/getCollectionItems";
+    String baseUrl =
+        "${Constants.insightsBackendBaseUrl}collection/getCollectionItems";
     try {
       Map<String, String>? payload = {
         "cec_client_id": '["${Constants.cec_client_id}"]',

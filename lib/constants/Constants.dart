@@ -19,6 +19,7 @@ import '../models/Lead.dart';
 import '../models/MaintanaceCategory.dart';
 import '../models/MoraleIndexCategory.dart';
 import '../models/OrdinalSales.dart';
+import '../models/Parlour.dart';
 import '../models/PaymentHistoryItem.dart';
 import '../models/PolicyDetails.dart';
 import '../models/PolicyInfoLead.dart';
@@ -41,6 +42,40 @@ class Constants {
   static String sales_formattedEndDate = "";
   static int appBarValue = 0;
   static int tabIndex = 0;
+  static List<String> debitDays =
+      List<String>.generate(31, (index) => (index + 1).toString());
+  static const List<Map<String, String>> banksListWithCountryCodes = [
+    {"id": "632005", "name": "ABSA"},
+    {"id": "430000", "name": "AFRICAN BANK"},
+    {"id": "462005", "name": "Bidvest"},
+    {"id": "470010", "name": "CAPITEC"},
+    {"id": "250655", "name": "FNB"},
+    {"id": "198765", "name": "NEDBANK"},
+    {"id": "460005", "name": "POSTBANK"},
+    {"id": "051001", "name": "STANDARD BANK"},
+    {"id": "431010", "name": "UBANK"},
+    {"id": "678910", "name": "TYMEBANK"},
+    {"id": "584000", "name": "GRAINDROP BANK LIMITED"},
+    {"id": "589000", "name": "FinBond Mutual Bank"},
+    {"id": "754126", "name": "ABSA-ITHALA"},
+    {"id": "462005", "name": "OLD MUTUAL BANK"},
+  ];
+  static const List<String> banksList = [
+    "ABSA",
+    "AFRICAN BANK",
+    "Bidvest",
+    "CAPITEC",
+    "FNB",
+    "NEDBANK",
+    "POSTBANK", // value from <option>, replaces long display label
+    "STANDARD BANK",
+    "UBANK",
+    "TYMEBANK",
+    "GRAINDROP BANK LIMITED",
+    "FinBond Mutual Bank",
+    "ABSA-ITHALA",
+    "OLD MUTUAL BANK",
+  ];
   static int eventScreenValue = 0;
   static bool isIndividualVerified = false;
   static String appBarTitle = "";
@@ -48,6 +83,7 @@ class Constants {
   static int appBarValue2 = 0;
   static int currentStep = 0;
   static int currentLodgeClaimIndex = 0;
+  static bool isPremiumPayerSaved = false;
   static bool IsAuthenticationVerified = false;
   static String logoUrl = "";
   static String querySearchByTitle = "";
@@ -88,6 +124,10 @@ class Constants {
   static String get InsightsReportsbaseUrl =>
       AppConfig.insightsReportsBaseUrl; // Note Cap
   static String get insightsbaseUrl => AppConfig.insightsBaseUrl;
+  static List<String> yesNoOptionsList = [
+    "Yes",
+    "No",
+  ];
 
   static String get insightsbaseBackendUrl => AppConfig
       .insightsBackendBaseUrl; // Mapping to distinct backend URL// Original name
@@ -96,8 +136,9 @@ class Constants {
 
   static String get InsightsApiBusbaseUrl =>
       AppConfig.insightsApiBusBaseUrl; // Note Cap
-  static String get parlourConfigbaseUrl =>
-      AppConfig.parlourConfigBaseUrl; // Note Cap
+  static String get parlourConfigbaseUrl => AppConfig.parlourConfigBaseUrl;
+  static bool currentlyEmployed = false; // Note Cap
+  static bool isEmployerDetailsSaved = false;
 
   // Computed Endpoints (using original names, mapping to AppConfig computed props)
   static String get API_ENDPOINT => AppConfig.cclApiEndpoint;
@@ -133,10 +174,11 @@ class Constants {
   static String queryingEmployee = "";
   static String appUpdatedownloadUrl = "";
   static String myAppVersion = "";
-  static String baseUrl = "https://miinsightsapps.net/apibus/api";
-  static String posAppBaseUrl = "https://miinsightsapps.net/apibus/api";
-  static String baseUrl2 = "https://miinsightsapps.net/";
+  static String baseUrl = "${Constants.insightsBackendBaseUrl}apibus/api";
+  static String posAppBaseUrl = "${Constants.insightsBackendBaseUrl}apibus/api";
+  static String baseUrl2 = "${Constants.insightsBackendBaseUrl}";
   static List<String> myUserRoles = [];
+  static ParlourConfig? currentParlourConfig;
 
   //static String InsightsReportsbaseUrl = "https://insights.dedicated.co.za:808";
   //static FirebaseAnalytics? analytics_instance;
@@ -3106,4 +3148,15 @@ class Constants {
   static double whatsapApiVersion = 19.0;
   static String fbToken =
       "EAANikCZC1uY0BO0GAM2207Ps8DBqJaMGKkW5gOjwYusRiT0ZBnJouqDr9WiNBVW4BXeRduAB8OY11V6PRrVlLk74ZCBcjgzLhXh0bmlFxetqQSLyQz91E8dcxOTZBvNM2IsKqPEsjSuJAlS5TkEOCoJgILdP0A0ExVirojEWQx0i6FP147H7VHQaExtugPA5mSO951NmG6W4eXgH";
+
+  static String currentUserLanguage = "English";
+
+  static List<String> accountTypes = [
+    "ChequeAccount",
+    "SavingsAccount",
+    "CurrentAccount",
+    "BondAccount",
+    "SubscriptionAccount",
+    "TransmissionAccount"
+  ];
 }

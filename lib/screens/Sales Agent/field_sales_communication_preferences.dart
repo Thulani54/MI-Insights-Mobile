@@ -478,7 +478,7 @@ class _FieldSalesCommunicationPreferenceState
   void updateCommunicationPreferencesLeadObjectDetails(
       LeadObject leadObject) async {
     const String endpoint = "fieldV6/updateCommunicationDetails/";
-    final String url = "https://miinsightsapps.net/backend_api/api/" + endpoint;
+    final String url = "${Constants.insightsBackendBaseUrl}" + endpoint;
     print("sjkkwj0 $url ${leadObject.toJson()}");
 
     try {

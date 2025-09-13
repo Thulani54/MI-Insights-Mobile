@@ -4,6 +4,8 @@ import '../../constants/Constants.dart';
 import 'FieldSalesAffinity.dart';
 
 class FieldSaleBasicInformation extends StatefulWidget {
+  final String type;
+  const FieldSaleBasicInformation({super.key, required this.type});
   @override
   _FieldSaleBasicInformationState createState() =>
       _FieldSaleBasicInformationState();
@@ -34,53 +36,6 @@ class _FieldSaleBasicInformationState extends State<FieldSaleBasicInformation> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Sale Type Selection
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                Radio<String>(
-                  value: "Field Sale",
-                  groupValue: Constants.fieldSaleType,
-                  activeColor: Constants.ctaColorLight,
-                  onChanged: (value) {
-                    setState(() {
-                      Constants.fieldSaleType = value!;
-                      salesFieldAffinityValue.value++;
-                    });
-                  },
-                ),
-                const Text(
-                  "Field Sale",
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            const SizedBox(width: 20),
-            Row(
-              children: [
-                Radio<String>(
-                  value: "Paperless Sale",
-                  groupValue: Constants.fieldSaleType,
-                  activeColor: Constants.ctaColorLight,
-                  onChanged: (value) {
-                    setState(() {
-                      Constants.fieldSaleType = value!;
-                      salesFieldAffinityValue.value++;
-                    });
-                  },
-                ),
-                const Text(
-                  "Paperless Sale",
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 20),
 
         // Tips Heading
         Padding(
@@ -117,5 +72,14 @@ class _FieldSaleBasicInformationState extends State<FieldSaleBasicInformation> {
         ),
       ],
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.type.isNotEmpty) {
+      Constants.fieldSaleType = widget.type;
+      setState(() {});
+    }
   }
 }

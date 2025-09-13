@@ -2888,7 +2888,7 @@ class _SalesReport1State extends State<SalesReport1> {
 
   Future<void> getSalesDate() async {
     String baseUrl =
-        "https://miinsightsapps.net/files/get_sales_report?cid=379";
+        "${Constants.insightsBackendBaseUrl}files/get_sales_report?cid=${Constants.cec_client_id}";
     String jsonData = '';
     salesbybranch_mtd = [];
     salesbybranch_ytd = [];

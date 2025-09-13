@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:mi_insights/screens/Sales%20Agent/universal_premium_calculator.dart';
 import 'package:styled_text/tags/styled_text_tag.dart';
 import 'package:styled_text/widgets/styled_text.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -3017,6 +3018,8 @@ class _AdvancedMemberCardState extends State<AdvancedMemberCard> {
                                     sourceOfWealth:
                                         widget.member.sourceOfWealth,
                                     autoNumber: widget.member.autoNumber,
+                                    current_member_index: current_member_index,
+                                    canAddMember: false,
                                   ),
                                 ),
                               ),

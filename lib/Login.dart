@@ -17,6 +17,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:mi_insights/HomePage.dart';
 import 'package:mi_insights/customwidgets/custom_input.dart';
 import 'package:mi_insights/resetPassword.dart';
+import 'package:mi_insights/utils/image_utils.dart';
 import 'package:mi_insights/screens/Admin/NotificationManagement.dart';
 import 'package:mi_insights/screens/HomeGoldenWheel.dart';
 import 'package:mi_insights/screens/Valuetainment/Admin/admin.dart';
@@ -120,24 +121,14 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                     height: 200,
                     width: 200,
                   ),*/
-                        (Constants.logoUrl.isNotEmpty)
-                            ? Container(
-                                height: 130,
-                                width: MediaQuery.of(context).size.width,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(0.0),
-                                  child: CachedNetworkImage(
-                                    imageUrl: Constants.logoUrl,
-                                    fit: BoxFit.contain,
-                                    placeholder: (context, url) => Container(
-                                        height: 50,
-                                        width: 50,
-                                        child: Container()),
-                                    // errorWidget: (context, url, error) => Icon(Icons.error),
-                                  ),
-                                ),
-                              )
-                            : Container(),
+                        ImageUtils.buildAdaptiveImageContainer(
+                          imageUrl: Constants.logoUrl,
+                          baseUrl: Constants.insightsBackendBaseUrl,
+                          fit: BoxFit.contain,
+                          width: MediaQuery.of(context).size.width,
+                          successHeight: 130,
+                          errorHeight: 0,
+                        ),
                         // Container(width: 200, height: 200, child: Placeholder()),
                         // if (Constants.currentBusinessInfo.logo.isEmpty)
                         //   Padding(
@@ -152,41 +143,24 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           height: 16,
                         ),
 
-                        if (Constants.logoUrl.isEmpty)
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "WELCOME TO MI INSIGHTS",
-                              style: GoogleFonts.lato(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 25.0,
-                              ),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            "WELCOME TO MI ANALYTIX",
+                            style: GoogleFonts.lato(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22.0,
                             ),
+                            textAlign: TextAlign.center,
                           ),
-                        if (Constants.logoUrl.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              Constants.account_type == "sales_agent"
-                                  ? "I AM DESTINED FOR SUCCESS"
-                                  : "DRIVE BUSINESS GROWTH",
-                              style: GoogleFonts.lato(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 25.0,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
+                        ),
                         SizedBox(
-                          height: 16,
+                          height: 8,
                         ),
                         if (Constants.logoUrl.isNotEmpty)
                           Text(
-                            Constants.account_type == "sales_agent"
-                                ? "Achieving Greatness In Every Sale"
-                                : "Through Real-time Tracking of KPI's",
+                            "SIGN IN TO CONTINUE",
                             style: GoogleFonts.lato(
                               color: Constants.ctaColorLight,
                               fontWeight: FontWeight.w600,
