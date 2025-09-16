@@ -101,13 +101,7 @@ class _NewMemberDialogState extends State<NewMemberDialog> {
   ];
 
   List<String> coverList = [];
-  List<String> productList = [
-    "Product Athandwe1",
-    "Product Athandwe2",
-    "Product Athandwe3"
-  ];
-  List<String> commencementList = ["2024-07-01", "2024-05-23"];
-  List<String> dateOfBirthList = ["1999-03-11"];
+
   int changeColorIndex = 0;
 
   List<String> genderList = ["male", "female", "other"];
@@ -829,7 +823,7 @@ class _NewMemberDialogState extends State<NewMemberDialog> {
                                                 MainAxisAlignment.start,
                                             children: [
                                               Expanded(
-                                                child: CustomInputTransparent3(
+                                                child: CustomInputTransparent4(
                                                   controller:
                                                       CADPhoneController,
                                                   hintText: "Contact Number",
@@ -840,6 +834,7 @@ class _NewMemberDialogState extends State<NewMemberDialog> {
                                                   textInputAction:
                                                       TextInputAction.next,
                                                   isPasswordField: false,
+                                                  maxInputs: 10,
                                                   integersOnly: true,
                                                 ),
                                               ),
@@ -2307,8 +2302,6 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
 
   List<String> coverList = [];
 
-  List<String> commencementList = ["2024-07-01", "2024-05-23"];
-  List<String> dateOfBirthList = ["1999-03-11"];
   int changeColorIndex = 0;
   int displayIndexedImage = 0;
   String displayIndexedImageFileType = "";
@@ -3277,17 +3270,18 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                                               MainAxisAlignment.start,
                                           children: [
                                             Expanded(
-                                              child: CustomInputTransparent3(
+                                              child: CustomInputTransparent4(
                                                 controller: CADPhoneController,
                                                 hintText: "Contact Number",
                                                 onChanged: (String) {},
                                                 onSubmitted: (String) {},
+
                                                 focusNode: phoneFocusNode,
                                                 //suffix: Icon(CupertinoIcons.person_fill, size: 22, color: Color(0xFFEF601B).withOpacity(0.45),),
                                                 textInputAction:
                                                     TextInputAction.next,
                                                 isPasswordField: false,
-                                                //maxInputs: 10,
+                                                maxInputs: 10,
                                                 integersOnly: true,
                                               ),
                                             ),

@@ -56,7 +56,7 @@ class EmployeeDetails {
 class Lead {
   final LeadObject leadObject;
   final List<AdditionalMember> additionalMembers;
-   Employer? employer;
+  Employer? employer;
   final Replacement? replacement;
   final MipLogin? login;
   Addresses? addresses;
@@ -1090,8 +1090,8 @@ class Addresses {
   String physaddressProvince;
   String latitude;
   String longitude;
-  String validated;
-  String updatedBy;
+  String validated; // Converted to String (even if the JSON value is null)
+  int updatedBy;
   String addressQueryType;
   String addressQueryTypeOldNew;
   String addressQueryTypeOldAutoNumber;
@@ -1130,60 +1130,62 @@ class Addresses {
 
   factory Addresses.fromJson(Map<String, dynamic> json) {
     return Addresses(
-      autoNumber: json['autoNumber'] ?? 0,
+      autoNumber: json['auto_number'] ?? 0,
       onololeadid: json['onololeadid'] ?? 0,
-      postaddressLine1: json['postaddressLine1'] ?? '',
-      postaddressLine2: json['postaddressLine2'] ?? '',
-      postaddressLine3: json['postaddressLine3'] ?? '',
-      postaddressCode: json['postaddressCode'] ?? '',
-      postaddressProvince: json['postaddressProvince'] ?? '',
-      physaddressLine1: json['physaddressLine1'] ?? '',
-      physaddressLine2: json['physaddressLine2'] ?? '',
-      physaddressLine3: json['physaddressLine3'] ?? '',
-      physaddressCode: json['physaddressCode'] ?? '',
-      physaddressProvince: json['physaddressProvince'] ?? '',
+      postaddressLine1: json['postaddress_line1'] ?? '',
+      postaddressLine2: json['postaddress_line2'] ?? '',
+      postaddressLine3: json['postaddress_line3'] ?? '',
+      postaddressCode: json['postaddress_code'] ?? '',
+      postaddressProvince: json['postaddress_province'] ?? '',
+      physaddressLine1: json['physaddress_line1'] ?? '',
+      physaddressLine2: json['physaddress_line2'] ?? '',
+      physaddressLine3: json['physaddress_line3'] ?? '',
+      physaddressCode: json['physaddress_code'] ?? '',
+      physaddressProvince: json['physaddress_province'] ?? '',
       latitude: json['latitude'] ?? '',
       longitude: json['longitude'] ?? '',
-      validated: json['validated'] ?? '',
-      updatedBy: json['updatedBy'] ?? '',
-      addressQueryType: json['addressQueryType'] ?? '',
-      addressQueryTypeOldNew: json['addressQueryTypeOldNew'] ?? '',
+      // Convert null values to empty strings
+      validated: json['validated']?.toString() ?? '',
+      updatedBy: json['updated_by'] ?? 0,
+      addressQueryType: json['address_query_type']?.toString() ?? '',
+      addressQueryTypeOldNew:
+          json['address_query_type_old_new']?.toString() ?? '',
       addressQueryTypeOldAutoNumber:
-          json['addressQueryTypeOldAutoNumber'] ?? '',
-      addressTimestamp: json['addressTimestamp'] ?? '',
-      addressLastUpdate: json['addressLastUpdate'] ?? '',
-      addressAutoNumber: json['addressAutoNumber'] ?? '',
-      physaddressCountry: json['physaddressCountry'] ?? '',
-      postaddressCountry: json['postaddressCountry'] ?? '',
+          json['address_query_type_old_auto_number']?.toString() ?? '',
+      addressTimestamp: json['address_timestamp'] ?? '',
+      addressLastUpdate: json['address_last_update']?.toString() ?? '',
+      addressAutoNumber: json['address_auto_number']?.toString() ?? '',
+      physaddressCountry: json['physaddress_country']?.toString() ?? '',
+      postaddressCountry: json['postaddress_country']?.toString() ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'autoNumber': autoNumber,
+      'auto_number': autoNumber,
       'onololeadid': onololeadid,
-      'postaddressLine1': postaddressLine1,
-      'postaddressLine2': postaddressLine2,
-      'postaddressLine3': postaddressLine3,
-      'postaddressCode': postaddressCode,
-      'postaddressProvince': postaddressProvince,
-      'physaddressLine1': physaddressLine1,
-      'physaddressLine2': physaddressLine2,
-      'physaddressLine3': physaddressLine3,
-      'physaddressCode': physaddressCode,
-      'physaddressProvince': physaddressProvince,
+      'postaddress_line1': postaddressLine1,
+      'postaddress_line2': postaddressLine2,
+      'postaddress_line3': postaddressLine3,
+      'postaddress_code': postaddressCode,
+      'postaddress_province': postaddressProvince,
+      'physaddress_line1': physaddressLine1,
+      'physaddress_line2': physaddressLine2,
+      'physaddress_line3': physaddressLine3,
+      'physaddress_code': physaddressCode,
+      'physaddress_province': physaddressProvince,
       'latitude': latitude,
       'longitude': longitude,
       'validated': validated,
-      'updatedBy': updatedBy,
-      'addressQueryType': addressQueryType,
-      'addressQueryTypeOldNew': addressQueryTypeOldNew,
-      'addressQueryTypeOldAutoNumber': addressQueryTypeOldAutoNumber,
-      'addressTimestamp': addressTimestamp,
-      'addressLastUpdate': addressLastUpdate,
-      'addressAutoNumber': addressAutoNumber,
-      'physaddressCountry': physaddressCountry,
-      'postaddressCountry': postaddressCountry,
+      'updated_by': updatedBy,
+      'address_query_type': addressQueryType,
+      'address_query_type_old_new': addressQueryTypeOldNew,
+      'address_query_type_old_auto_number': addressQueryTypeOldAutoNumber,
+      'address_timestamp': addressTimestamp,
+      'address_last_update': addressLastUpdate,
+      'address_auto_number': addressAutoNumber,
+      'physaddress_country': physaddressCountry,
+      'postaddress_country': postaddressCountry,
     };
   }
 }

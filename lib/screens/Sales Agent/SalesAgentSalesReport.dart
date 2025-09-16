@@ -58,7 +58,8 @@ int touchedIndex = -1;
 double _sliderPosition2 = 0.0;
 
 class SalesAgentReport extends StatefulWidget {
-  const SalesAgentReport({Key? key}) : super(key: key);
+  final bool? refreshOnInit;
+  const SalesAgentReport({Key? key, this.refreshOnInit}) : super(key: key);
 
   @override
   State<SalesAgentReport> createState() => _SalesAgentReportState();
@@ -1989,6 +1990,11 @@ class _SalesAgentReportState extends State<SalesAgentReport>
     // getSalesReport(context, formattedStartDate, formattedEndDate);
     Constants.pageLevel = 2;
     startInactivityTimer();
+
+    // Call init2() if refreshOnInit is true (when returning from finished process)
+    if (widget.refreshOnInit == true) {
+      init2();
+    }
 
     super.initState();
   }

@@ -28,7 +28,11 @@ class _FieldSalesCommunicationPreferenceState
 
   final intl.DateFormat formatter = intl.DateFormat('yyyy-MM-dd');
 
-  List<String> commList = ["SMS", "Email", "Post", "Email"];
+  List<String> commList = [
+    "SMS",
+    "Email",
+    "Post",
+  ];
 
   List<String> preferenceList = [
     "Cellphone",
@@ -360,12 +364,53 @@ class _FieldSalesCommunicationPreferenceState
 
                   //Constants.clientEmail = CADEmailController.text;
                   if (Constants.currentleadAvailable != null) {
-                    if (CADPhoneController.text.isEmpty) {
+                    // Validate based on selected communication preference
+                    String? validationError;
+
+                    // First check if policy schedule communication is selected
+                    if (_selectedComm == null || _selectedComm!.isEmpty) {
+                      validationError =
+                          "Please select a preferred policy schedule communication method.";
+                    }
+                    // Then validate based on the policy schedule communication selection
+                    else if (_selectedComm == "Email") {
+                      if (CADEmailController.text.trim().isEmpty) {
+                        validationError =
+                            "Please enter an email address for policy schedule communication.";
+                      } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                          .hasMatch(CADEmailController.text.trim())) {
+                        validationError = "Please enter a valid email address.";
+                      }
+                    } else if (_selectedComm == "SMS") {
+                      if (CADPhoneController.text.trim().isEmpty) {
+                        validationError =
+                            "Please enter a phone number for SMS communication.";
+                      }
+                    }
+                    // Then check preferred communication method
+                    else if (_selectedPref == "Email") {
+                      if (CADEmailController.text.trim().isEmpty) {
+                        validationError = "Please enter an email address.";
+                      } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                          .hasMatch(CADEmailController.text.trim())) {
+                        validationError = "Please enter a valid email address.";
+                      }
+                    } else if (_selectedPref == "Cellphone" ||
+                        _selectedPref == "SMS") {
+                      if (CADPhoneController.text.trim().isEmpty) {
+                        validationError = "Please enter a phone number.";
+                      }
+                    } else if (_selectedPref == "Telephone") {
+                      if (CADTelephoneController.text.trim().isEmpty) {
+                        validationError = "Please enter a telephone number.";
+                      }
+                    }
+
+                    if (validationError != null) {
                       MotionToast.error(
-                        //   title: Text("Error"),
                         description: Center(
                           child: Text(
-                            "Please enter a phone number.",
+                            validationError,
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
@@ -380,47 +425,10 @@ class _FieldSalesCommunicationPreferenceState
                         height: 55,
                         animationDuration: const Duration(milliseconds: 2500),
                       ).show(context);
-                    } else if (CADTelephoneController.text.isEmpty) {
-                      MotionToast.error(
-                        //   title: Text("Error"),
-                        description: Center(
-                          child: Text(
-                            "Please enter an alternative phone number.",
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'YuGothic',
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        layoutOrientation: TextDirection.ltr,
-                        animationType: AnimationType.fromTop,
-                        width: 350,
-                        height: 55,
-                        animationDuration: const Duration(milliseconds: 2500),
-                      ).show(context);
-                    } else if (CADEmailController.text.isEmpty) {
-                      MotionToast.error(
-                        //   title: Text("Error"),
-                        description: Center(
-                          child: Text(
-                            "Please enter an email.",
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'YuGothic',
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        layoutOrientation: TextDirection.ltr,
-                        animationType: AnimationType.fromTop,
-                        width: 350,
-                        height: 55,
-                        animationDuration: const Duration(milliseconds: 2500),
-                      ).show(context);
+
+                      return; // Exit early if validation fails
                     } else {
+                      // Update all fields and save
                       Constants.currentleadAvailable!.leadObject
                           .communicationPreference = _selectedPref;
                       Constants.currentleadAvailable!.leadObject.cellNumber =
@@ -429,12 +437,16 @@ class _FieldSalesCommunicationPreferenceState
                           CADTelephoneController.text;
                       Constants.currentleadAvailable!.leadObject.clientEmail =
                           CADEmailController.text;
+
+                      // TODO: Save policy schedule communication preference
+                      // If LeadObject has a field for policy schedule communication, uncomment and update:
+                      // Constants.currentleadAvailable!.leadObject.policyScheduleCommMethod = _selectedComm;
+
+                      // Only call the update function once
                       updateCommunicationPreferencesLeadObjectDetails(
                           Constants.currentleadAvailable!.leadObject);
+                      setState(() {});
                     }
-                    updateCommunicationPreferencesLeadObjectDetails(
-                        Constants.currentleadAvailable!.leadObject);
-                    setState(() {});
                   }
                 },
               ),

@@ -123,6 +123,19 @@ class _UniversalPremiumCalculatorState
       print("Policy is inforced: $isPolicyInforced");
     }
 
+    // Set inception date to null for each policy
+    if (Constants.currentleadAvailable != null &&
+        Constants.currentleadAvailable!.policies.isNotEmpty) {
+      for (int i = 0;
+          i < Constants.currentleadAvailable!.policies.length;
+          i++) {
+        if (Constants.currentleadAvailable!.policies[i].quote != null) {
+          Constants.currentleadAvailable!.policies[i].quote.inceptionDate =
+              null;
+        }
+      }
+    }
+
     if (policyPremiums.isEmpty) {
       policyPremiums = List.generate(
           Constants.currentleadAvailable!.policies.length,
@@ -250,18 +263,6 @@ class _UniversalPremiumCalculatorState
       // (Adjust the field name as needed; here we use sumAssuredFamilyCover.)
       double coverAmount = quote.sumAssuredFamilyCover ?? 0.0;
       policiesSelectedCoverAmounts.add(coverAmount);
-
-      // === Update commencement date ===
-      // Use the premium payer’s commencementDate if available.
-      String? commencement = (policy.quote.inceptionDate != null)
-          ? Constants.formatter.format(policy.quote.inceptionDate!)
-          : null;
-      commencementDates.add(commencement);
-      if (commencementList.length >= current_member_index) {
-        if (commencementList[current_member_index].isEmpty) {
-          commencementList[current_member_index] = commencement!;
-        }
-      }
 
       // === Update product and product type ===
       String product = quote.product ?? "";
@@ -1770,6 +1771,7 @@ class _UniversalPremiumCalculatorState
     for (int i = 0; i < Constants.currentleadAvailable!.policies.length; i++) {
       // Get the corresponding policy.
       final policy = Constants.currentleadAvailable!.policies[i];
+      //print("gffhghg ${polilcy.members.l}");
 
       //policyPremiums.clear();
       // Only process if totalAmountPayable exists and > 0.
@@ -1979,6 +1981,8 @@ class _UniversalPremiumCalculatorState
   getCommencementDates() {
     // Commencement list
     commencementList = calculateInceptionDateOptions();
+    // Fetch current commencement dates without setting defaults
+    fetchCommencementDates();
   }
 
   void fetchCommencementDates() {
@@ -2008,48 +2012,6 @@ class _UniversalPremiumCalculatorState
 
     // Don't auto-set a default value - force user to select manually
     // This ensures the dropdown shows as invalid (red border) when no valid selection exists
-  }
-
-  fetchCommencementDatesOld() {
-    commencementDates.clear();
-
-    for (int i = 0; i < Constants.currentleadAvailable!.policies.length; i++) {
-      var policy = Constants.currentleadAvailable!.policies[i];
-
-      String? commencement = (policy.quote.inceptionDate != null)
-          ? Constants.formatter.format(policy.quote.inceptionDate!)
-          : null;
-
-      commencementDates.add(commencement);
-
-      // Fix: Check if the current index exists and handle null values properly
-      if (i == current_member_index) {
-        // If the commencement date is null or empty, try to set a default
-        if (commencement == null || commencement.isEmpty) {
-          // You can set a default date or leave it null
-          // For example, set to the first available commencement date:
-          if (commencementList.isNotEmpty) {
-            commencementDates[current_member_index] = commencementList.first;
-          }
-        }
-      }
-    }
-
-    // Additional safety check: ensure the current_member_index exists in the list
-    while (commencementDates.length <= current_member_index) {
-      // Add null entries for missing indices
-      commencementDates.add(null);
-    }
-
-    // If the current member's commencement date is still null/empty, set a default
-    if (current_member_index < commencementDates.length) {
-      final currentCommencement = commencementDates[current_member_index];
-      if (currentCommencement == null || currentCommencement.isEmpty) {
-        if (commencementList.isNotEmpty) {
-          commencementDates[current_member_index] = commencementList.first;
-        }
-      }
-    }
   }
 
   final ScrollController _scrollController = ScrollController();
@@ -2391,7 +2353,7 @@ class _UniversalPremiumCalculatorState
                               children: [
                                 Expanded(
                                   child: Container(
-                                    width: 400,
+                                    width: MediaQuery.of(context).size.width,
                                     child: AdvancedMemberCard(
                                       key: advancedMemberCardKey1,
                                       id: "",
@@ -2450,66 +2412,52 @@ class _UniversalPremiumCalculatorState
                               int index = entry.key;
                               var member = entry.value;
                               return Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 0, right: 16),
+                                padding: const EdgeInsets.only(
+                                    top: 0, right: 12, left: 12),
                                 child: Container(
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                  72,
-                                              height: 145,
-                                              child: InkWell(
-                                                onTap: () {
-                                                  current_member_index = index;
-                                                  print(
-                                                      "Selected member index: $current_member_index $index");
-                                                  setState(() {});
-                                                },
-                                                onDoubleTap: () {
-                                                  showDoubleTapDialog(
-                                                      context, true);
-                                                },
-                                                child: AdvancedPolicyCard(
-                                                  key: advancedMemberCardKey2,
-                                                  policy_index: index,
-                                                  is_selected:
-                                                      current_member_index ==
-                                                          index,
-                                                  main_insured:
-                                                      "${member.title} ${member.name} ${member.surname}",
-                                                  policy_status: Constants
-                                                          .currentleadAvailable!
-                                                          .policies[index]
-                                                          .quote
-                                                          .status ??
-                                                      "New",
-                                                  total_premium: index >=
-                                                          policyPremiums.length
-                                                      ? 0.0
-                                                      : (policyPremiums[index]
-                                                              .totalPremium ??
-                                                          0 +
-                                                              (policyPremiums[
-                                                                          index]
-                                                                      .selectedRidersTotal ??
-                                                                  0)),
-                                                  selected_product:
-                                                      policiesSelectedProducts[
-                                                          index],
-                                                  selected_cover:
-                                                      policiesSelectedCoverAmounts[
-                                                          index],
-                                                ),
-                                              )),
-                                        ],
-                                      )
-                                    ],
-                                  ),
+                                  child: Container(
+                                      width: MediaQuery.of(context).size.width -
+                                          72,
+                                      height: 145,
+                                      child: InkWell(
+                                        onTap: () {
+                                          current_member_index = index;
+                                          print(
+                                              "Selected member index: $current_member_index $index");
+                                          setState(() {});
+                                        },
+                                        onDoubleTap: () {
+                                          showDoubleTapDialog(context, true);
+                                        },
+                                        child: AdvancedPolicyCard(
+                                          key: advancedMemberCardKey2,
+                                          policy_index: index,
+                                          is_selected:
+                                              current_member_index == index,
+                                          main_insured:
+                                              "${member.title} ${member.name} ${member.surname}",
+                                          policy_status: Constants
+                                                  .currentleadAvailable!
+                                                  .policies[index]
+                                                  .quote
+                                                  .status ??
+                                              "New",
+                                          total_premium: index >=
+                                                  policyPremiums.length
+                                              ? 0.0
+                                              : (policyPremiums[index]
+                                                      .totalPremium ??
+                                                  0 +
+                                                      (policyPremiums[index]
+                                                              .selectedRidersTotal ??
+                                                          0)),
+                                          selected_product:
+                                              policiesSelectedProducts[index],
+                                          selected_cover:
+                                              policiesSelectedCoverAmounts[
+                                                  index],
+                                        ),
+                                      )),
                                 ),
                               );
                             }).toList(),
@@ -2953,7 +2901,7 @@ class _UniversalPremiumCalculatorState
                               context,
                               Constants.currentleadAvailable!.policies.length +
                                   1);
-                                  
+
                         },
                         icon: const Icon(
                           Icons.add,
@@ -3419,11 +3367,9 @@ class _UniversalPremiumCalculatorState
                                                                                 SalesService();
                                                                             salesServivce.updatePolicy(Constants.currentleadAvailable!,
                                                                                 context);
-                                                                            onPolicyUpdated2(context,
-                                                                                false);
+                                                                            // onPolicyUpdated2(context,false);
                                                                           }
-                                                                          myConfirmPremiumClearValues
-                                                                              .value++;
+                                                                          //myConfirmPremiumClearValues .value++;
                                                                         },
                                                             ),
                                                           ),
@@ -3970,7 +3916,7 @@ class _UniversalPremiumCalculatorState
                         SizedBox(
                           height: 24,
                         ),
-                        buildExtendedList(),
+                        Container(child: buildExtendedList()),
                         SizedBox(
                           height: 24,
                         ),
@@ -7337,8 +7283,9 @@ class _UniversalPremiumCalculatorState
         child: MovingLineDialog(
           child: Container(
             width: MediaQuery.of(context).size.width,
+            margin: EdgeInsets.symmetric(horizontal: 16),
             padding: EdgeInsets.all(16),
-            constraints: BoxConstraints(maxWidth: 500, maxHeight: 630),
+            constraints: BoxConstraints(maxWidth: 700, maxHeight: 630),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(36),
@@ -8018,9 +7965,10 @@ class _UniversalPremiumCalculatorState
     // -----------------------------
     // E) Build a grid of extended-member cards with a remove/edit function
     // -----------------------------
-    return ListView.builder(
+    return Container(
+        child: ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
       itemCount: extendedMembersFromPolicy.length,
       itemBuilder: (context, index) {
         final AdditionalMember member = extendedMembersFromPolicy[index];
@@ -8089,386 +8037,472 @@ class _UniversalPremiumCalculatorState
           }
         }
 
-        return CustomCard2(
-          elevation: 8,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          boderRadius: 12,
-          color: Colors.white,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Constants.ftaColorLight.withOpacity(0.95),
-              ),
-            ),
-            margin: EdgeInsets.zero,
-            padding: EdgeInsets.zero,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Left container with CircleAvatar
-                Container(
-                  width: 150,
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      bottomLeft: Radius.circular(12),
-                    ),
-                    color: Constants.ftaColorLight.withOpacity(0.95),
-                  ),
-                  child: Center(
-                    child: CircleAvatar(
-                      radius: 40,
-                      backgroundColor: Colors.grey.withOpacity(0.65),
-                      child: Icon(
-                        member.gender.toLowerCase() == "female"
-                            ? Icons.female
-                            : Icons.male,
-                        size: 30,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16.0),
-                // Member information and dropdown
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        right: 16.0, left: 16, top: 16, bottom: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (member.dob.isNotEmpty)
-                          Text(
-                            'DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'YuGothic',
-                              color: Colors.black,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          '${member.title} ${member.name} ${member.surname}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w500,
-                            letterSpacing: 1.2,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 8.0),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.people_alt,
-                              color: Colors.black,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 4.0),
-                            Expanded(
-                              child: Text(
-                                'Relationship: ${member.relationship[0].toUpperCase() + member.relationship.substring(1)}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8.0),
-                        if (cover1 != null)
-                          Row(
-                            children: [
-                              Text(
-                                'Premium: R${premium.toStringAsFixed(2)}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        const SizedBox(height: 8.0),
-
-                        // Cover Amount Dropdown
-                        Builder(
-                          builder: (context) {
-                            final List<String> coverAmountItems =
-                                (extendedMemberRates.isNotEmpty)
-                                    ? extendedMemberRates
-                                        .map<String>(
-                                            (rate) => rate.amount.toString())
-                                        .toSet()
-                                        .toList()
-                                    : [cover1.toStringAsFixed(2)];
-
-                            // Get the currently selected cover value for this member.
-                            String? selectedCover =
-                                _selectedCoverAmounts[memberKey];
-                            if (selectedCover == null &&
-                                coverAmountItems.isNotEmpty) {
-                              selectedCover = coverAmountItems[0];
-                              _selectedCoverAmounts[memberKey] = selectedCover;
-                            }
-
-                            return Column(
-                              children: [
-                                Row(
-                                  children: [
+        return Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: Container(
+                height: 200,
+                child: Stack(children: [
+                  CustomCard2(
+                    elevation: 8,
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    boderRadius: 12,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 0.0, horizontal: 0.0),
+                      padding: const EdgeInsets.all(0.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Main extended member information.
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  right: 16.0, left: 16, top: 16, bottom: 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (member.dob.isNotEmpty)
                                     Text(
-                                      'Cover: R${selectedCover}',
+                                      'DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
                                       style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.w400,
-                                      ),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: 'YuGothic',
+                                          color: Colors.black),
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    const Spacer(),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                DropdownButtonHideUnderline(
-                                  child: DropdownButton2<String>(
-                                    isExpanded: true,
-                                    alignment: AlignmentDirectional.center,
-                                    hint: Row(
-                                      children: [
-                                        const SizedBox(width: 4),
-                                        Expanded(
-                                          child: Text(
-                                            "Select Cover Amount",
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                              fontFamily: 'YuGothic',
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    items: coverAmountItems.map((String item) {
-                                      return DropdownMenuItem<String>(
-                                        value: item,
+                                  const SizedBox(height: 8.0),
+                                  Text(
+                                    '${member.title} ${member.name} ${member.surname}',
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500,
+                                        letterSpacing: 1.2),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.people_alt,
+                                          color: Colors.black, size: 16),
+                                      const SizedBox(width: 4.0),
+                                      Expanded(
                                         child: Text(
-                                          item,
+                                          'Relationship: ${member.relationship[0].toUpperCase()}${member.relationship.substring(1)}',
                                           style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: 'YuGothic',
-                                            color: Colors.black,
-                                          ),
+                                              fontSize: 14,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w400),
                                           overflow: TextOverflow.ellipsis,
                                         ),
-                                      );
-                                    }).toList(),
-                                    value: selectedCover,
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        if (newValue == null) return;
-                                        // Parse the new cover value.
-                                        double newCover =
-                                            double.tryParse(newValue) ?? cover1;
-                                        cover1 = newCover;
-                                        _selectedCoverAmounts[memberKey] =
-                                            newValue;
-                                        print(
-                                            "Selected cover for member $memberKey: $newValue");
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Premium: R${premium.toStringAsFixed(2)}',
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w400),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const Spacer(),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8.0),
 
-                                        // Update the extended member's cover in the policy.members list.
-                                        final int indexInMembers =
-                                            membersList.indexWhere((m) {
-                                          if (m is Map<String, dynamic>) {
-                                            final int? autoNum =
-                                                m['additional_member_id'] ??
-                                                    m['additional_member_id'];
+                                  // Cover Amount Dropdown
+                                  Builder(
+                                    builder: (context) {
+                                      // Build dropdown items for cover amount.
+                                      List<String> coverAmountItems = [];
 
-                                            final String? typeStr =
-                                                m['type'] as String?;
-                                            print(
-                                                "Selected additional_member_id $autoNum: $typeStr");
-                                            return autoNum == memberKey &&
-                                                (typeStr?.toLowerCase() ==
-                                                    'extended');
-                                          } else if (m is Member) {
-                                            return m.autoNumber == memberKey &&
-                                                (m.type ?? '').toLowerCase() ==
-                                                    'extended';
-                                          }
-                                          return false;
-                                        });
-                                        if (indexInMembers != -1) {
-                                          if (membersList[indexInMembers]
-                                              is Map<String, dynamic>) {
-                                            (membersList[indexInMembers] as Map<
-                                                String,
-                                                dynamic>)['cover'] = newCover;
-                                          } else if (membersList[indexInMembers]
-                                              is Member) {
-                                            (membersList[indexInMembers]
-                                                    as Member)
-                                                .cover = newCover;
-                                          }
-                                          policy.members = membersList;
+                                      // Fixed logic for populating coverAmountItems
+                                      if (extendedMemberRates.isEmpty) {
+                                        // If no extended member rates found, use the current member's cover amount
+                                        String currentCover = cover1 > 0
+                                            ? cover1.toStringAsFixed(2)
+                                            : "0.00";
+                                        coverAmountItems = [currentCover];
+                                      } else {
+                                        // If extended member rates are found, populate from rates
+                                        coverAmountItems = extendedMemberRates
+                                            .map<String>((rate) =>
+                                                rate.amount.toString())
+                                            .toSet() // Remove duplicates
+                                            .toList();
+
+                                        // Always include the current cover amount as an option if it's not already there
+                                        String currentCover =
+                                            cover1.toStringAsFixed(2);
+                                        if (!coverAmountItems
+                                                .contains(currentCover) &&
+                                            cover1 > 0) {
+                                          coverAmountItems.add(currentCover);
                                         }
-                                        cover1 = newCover;
-                                        // Rebuild the list of cover amounts for all extended members in the current policy.
-                                        List<double> updatedCovers =
-                                            membersList.where((m) {
-                                          if (m is Map<String, dynamic>) {
-                                            final typeStr =
-                                                m['type'] as String?;
-                                            return (typeStr?.toLowerCase() ==
-                                                    'extended') &&
-                                                (m['reference'] ==
-                                                    currentReference);
-                                          } else if (m is Member) {
-                                            return (m.type ?? '')
-                                                        .toLowerCase() ==
-                                                    'extended' &&
-                                                m.reference == currentReference;
-                                          }
-                                          return false;
-                                        }).map<double>((m) {
-                                          if (m is Map<String, dynamic>) {
-                                            return (m['cover'] as num?)
-                                                    ?.toDouble() ??
-                                                0.0;
-                                          } else if (m is Member) {
-                                            return m.cover ?? 0.0;
-                                          }
-                                          return 0.0;
-                                        }).toList();
-                                      });
-                                      onPolicyUpdated2(context, true);
+                                      }
+
+                                      // Additional safety check - ensure we always have at least one option
+                                      if (coverAmountItems.isEmpty) {
+                                        coverAmountItems = ["0.00"];
+                                      }
+
+                                      // Sort cover amounts numerically
+                                      coverAmountItems.sort((a, b) =>
+                                          double.parse(a)
+                                              .compareTo(double.parse(b)));
+
+                                      // Get the currently selected cover value for this member.
+                                      String? selectedCover =
+                                          _selectedCoverAmounts[memberKey];
+
+                                      // If no cover selected or selected cover not in options, use first available option
+                                      if (selectedCover == null ||
+                                          !coverAmountItems
+                                              .contains(selectedCover)) {
+                                        selectedCover =
+                                            coverAmountItems.isNotEmpty
+                                                ? coverAmountItems[0]
+                                                : "0.00";
+                                        _selectedCoverAmounts[memberKey] =
+                                            selectedCover;
+                                      }
+
+                                      return Row(
+                                        children: [
+                                          Text(
+                                            'Cover: ',
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w400),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          SizedBox(width: 8),
+                                          Expanded(
+                                            child: DropdownButtonHideUnderline(
+                                              child: DropdownButton2<String>(
+                                                isExpanded: true,
+                                                alignment:
+                                                    AlignmentDirectional.center,
+                                                hint: Row(
+                                                  children: [
+                                                    const SizedBox(width: 4),
+                                                    Expanded(
+                                                      child: Text(
+                                                        "Select Cover Amount",
+                                                        style: const TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontFamily:
+                                                              'YuGothic',
+                                                        ),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                items: coverAmountItems
+                                                    .map((String item) {
+                                                  return DropdownMenuItem<
+                                                      String>(
+                                                    value: item,
+                                                    child: Text(
+                                                      'R${double.parse(item).toStringAsFixed(0)}', // Format as currency
+                                                      style: const TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontFamily: 'YuGothic',
+                                                        color: Colors.black,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  );
+                                                }).toList(),
+                                                value: selectedCover,
+                                                onChanged: (String? newValue) {
+                                                  setState(() {
+                                                    if (newValue == null)
+                                                      return;
+                                                    // Parse the new cover value.
+                                                    double newCover =
+                                                        double.tryParse(
+                                                                newValue) ??
+                                                            cover1;
+                                                    cover1 = newCover;
+                                                    _selectedCoverAmounts[
+                                                        memberKey] = newValue;
+                                                    print(
+                                                        "Selected cover for member $memberKey: $newValue");
+
+                                                    // Update the extended member's cover in the policy.members list.
+                                                    final int indexInMembers =
+                                                        membersList
+                                                            .indexWhere((m) {
+                                                      if (m is Map<String,
+                                                          dynamic>) {
+                                                        final int? autoNum = m[
+                                                                'additional_member_id'] ??
+                                                            m['additional_member_id'];
+
+                                                        final String? typeStr =
+                                                            m['type']
+                                                                as String?;
+                                                        print(
+                                                            "Selected additional_member_id $autoNum: $typeStr");
+                                                        return autoNum ==
+                                                                memberKey &&
+                                                            (typeStr?.toLowerCase() ==
+                                                                'extended');
+                                                      } else if (m is Member) {
+                                                        return m.autoNumber ==
+                                                                memberKey &&
+                                                            (m.type ?? '')
+                                                                    .toLowerCase() ==
+                                                                'extended';
+                                                      }
+                                                      return false;
+                                                    });
+                                                    if (indexInMembers != -1) {
+                                                      if (membersList[
+                                                              indexInMembers]
+                                                          is Map<String,
+                                                              dynamic>) {
+                                                        (membersList[
+                                                                    indexInMembers]
+                                                                as Map<String,
+                                                                    dynamic>)[
+                                                            'cover'] = newCover;
+                                                      } else if (membersList[
+                                                              indexInMembers]
+                                                          is Member) {
+                                                        (membersList[
+                                                                    indexInMembers]
+                                                                as Member)
+                                                            .cover = newCover;
+                                                      }
+                                                      policy.members =
+                                                          membersList;
+                                                    }
+                                                    cover1 = newCover;
+                                                    // Rebuild the list of cover amounts for all extended members in the current policy.
+                                                    List<double> updatedCovers =
+                                                        membersList.where((m) {
+                                                      if (m is Map<String,
+                                                          dynamic>) {
+                                                        final typeStr =
+                                                            m['type']
+                                                                as String?;
+                                                        return (typeStr
+                                                                    ?.toLowerCase() ==
+                                                                'extended') &&
+                                                            (m['reference'] ==
+                                                                currentReference);
+                                                      } else if (m is Member) {
+                                                        return (m.type ?? '')
+                                                                    .toLowerCase() ==
+                                                                'extended' &&
+                                                            m.reference ==
+                                                                currentReference;
+                                                      }
+                                                      return false;
+                                                    }).map<double>((m) {
+                                                      if (m is Map<String,
+                                                          dynamic>) {
+                                                        return (m['cover']
+                                                                    as num?)
+                                                                ?.toDouble() ??
+                                                            0.0;
+                                                      } else if (m is Member) {
+                                                        return m.cover ?? 0.0;
+                                                      }
+                                                      return 0.0;
+                                                    }).toList();
+                                                  });
+                                                  onPolicyUpdated2(
+                                                      context, true);
+                                                },
+                                                buttonStyleData:
+                                                    ButtonStyleData(
+                                                  height: 45,
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 12),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            32),
+                                                    border: Border.all(
+                                                        color: Colors.black26),
+                                                    color: Colors.transparent,
+                                                  ),
+                                                  elevation: 0,
+                                                ),
+                                                iconStyleData:
+                                                    const IconStyleData(
+                                                  icon: Icon(Icons
+                                                      .arrow_forward_ios_outlined),
+                                                  iconSize: 14,
+                                                  iconEnabledColor:
+                                                      Colors.black,
+                                                  iconDisabledColor:
+                                                      Colors.transparent,
+                                                ),
+                                                dropdownStyleData:
+                                                    DropdownStyleData(
+                                                  elevation: 0,
+                                                  maxHeight: 200,
+                                                  width: 200,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            14),
+                                                    color: Colors.white,
+                                                  ),
+                                                  offset: const Offset(-5, 0),
+                                                  scrollbarTheme:
+                                                      ScrollbarThemeData(
+                                                    radius:
+                                                        const Radius.circular(
+                                                            40),
+                                                    thickness:
+                                                        MaterialStateProperty
+                                                            .all(6),
+                                                    thumbVisibility:
+                                                        MaterialStateProperty
+                                                            .all(true),
+                                                  ),
+                                                ),
+                                                menuItemStyleData:
+                                                    MenuItemStyleData(
+                                                  overlayColor: null,
+                                                  height: 40,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 14, right: 14),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      );
                                     },
-                                    buttonStyleData: ButtonStyleData(
-                                      height: 45,
-                                      width: MediaQuery.of(context).size.width,
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 12),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(32),
-                                        border:
-                                            Border.all(color: Colors.black26),
-                                        color: Colors.transparent,
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                ],
+                              ),
+                            ),
+                          ),
+                          // Right column (delete/edit icons)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              top: 16.0,
+                              bottom: 16,
+                              right: 16,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    removeExtendedMember(
+                                        member, currentReference);
+                                    appBarMemberCardNotifier.value++;
+                                    advancedMemberCardKey2 = UniqueKey();
+                                    setState(() {});
+                                  },
+                                  child: Icon(CupertinoIcons.delete),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (context) => StatefulBuilder(
+                                        builder: (context, setState) => Dialog(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(64),
+                                          ),
+                                          elevation: 0.0,
+                                          backgroundColor: Colors.transparent,
+                                          child: Container(
+                                            constraints: BoxConstraints(
+                                              maxWidth: (Constants
+                                                      .currentleadAvailable!
+                                                      .leadObject
+                                                      .documentsIndexed
+                                                      .isEmpty)
+                                                  ? 750
+                                                  : 1200,
+                                            ),
+                                            margin:
+                                                const EdgeInsets.only(top: 16),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              shape: BoxShape.rectangle,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                  color: Colors.black26,
+                                                  blurRadius: 10.0,
+                                                  offset: Offset(0.0, 10.0),
+                                                ),
+                                              ],
+                                            ),
+                                            child: NewMemberDialog2(
+                                              isEditMode: true,
+                                              autoNumber: member.autoNumber,
+                                              relationship: "Extended",
+                                              title: member.title,
+                                              name: member.name,
+                                              surname: member.surname,
+                                              dob: member.dob,
+                                              phone: member.contact,
+                                              idNumber: member.id,
+                                              is_self_or_payer: false,
+                                              gender: member.gender,
+                                              canAddMember: true,
+                                              current_member_index:
+                                                  current_member_index,
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                      elevation: 0,
-                                    ),
-                                    iconStyleData: const IconStyleData(
-                                      icon: Icon(
-                                          Icons.arrow_forward_ios_outlined),
-                                      iconSize: 14,
-                                      iconEnabledColor: Colors.black,
-                                      iconDisabledColor: Colors.transparent,
-                                    ),
-                                    dropdownStyleData: DropdownStyleData(
-                                      elevation: 0,
-                                      maxHeight: 200,
-                                      width: 200,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(14),
-                                        color: Colors.white,
-                                      ),
-                                      offset: const Offset(-5, 0),
-                                      scrollbarTheme: ScrollbarThemeData(
-                                        radius: const Radius.circular(40),
-                                        thickness: MaterialStateProperty.all(6),
-                                        thumbVisibility:
-                                            MaterialStateProperty.all(true),
-                                      ),
-                                    ),
-                                    menuItemStyleData: MenuItemStyleData(
-                                      overlayColor: null,
-                                      height: 40,
-                                      padding: const EdgeInsets.only(
-                                          left: 14, right: 14),
-                                    ),
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: Constants.ftaColorLight,
+                                    size: 20,
                                   ),
                                 ),
                               ],
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Right column (delete/edit icons)
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 16.0,
-                    bottom: 16,
-                    right: 16,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          removeExtendedMember(member, currentReference);
-                          appBarMemberCardNotifier.value++;
-                          advancedMemberCardKey2 = UniqueKey();
-                          setState(() {});
-                        },
-                        child: const Icon(CupertinoIcons.delete,
-                            color: Colors.black),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          // Show an edit dialog
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NewMemberDialog2(
-                                isEditMode: true,
-                                autoNumber: member.autoNumber,
-                                relationship: "Extended",
-                                title: member.title,
-                                name: member.name,
-                                surname: member.surname,
-                                dob: member.dob,
-                                phone: member.contact,
-                                idNumber: member.id,
-                                is_self_or_payer: false,
-                                gender: member.gender,
-                                current_member_index: current_member_index,
-                                canAddMember: true,
-                              ),
                             ),
-                          );
-                        },
-                        child: Icon(
-                          Icons.edit,
-                          color: Constants.ftaColorLight,
-                          size: 20,
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+                    ),
+                  )
+                ])));
       },
-    );
+    ));
   }
 
   void removeExtendedMember(AdditionalMember member, String currentReference) {
@@ -8479,6 +8513,7 @@ class _UniversalPremiumCalculatorState
     membersList.removeWhere((m) {
       String memberType = "";
       int autoNumber = -1;
+
       if (m is Map<String, dynamic>) {
         memberType = (m['type'] ?? "").toLowerCase();
         autoNumber = m['additional_member_id'] as int? ?? -1;
@@ -8496,255 +8531,6 @@ class _UniversalPremiumCalculatorState
     // Recalc premium or refresh UI:
     calculatePolicyPremiumCal(false);
     setState(() {});
-  }
-
-  Widget buildExtendedListOld() {
-    // If no policies are available, return a fallback.
-    if (Constants.currentleadAvailable!.policies.isEmpty) {
-      return const Center(
-        child: Text(
-          "No children available for this policy.",
-          style: TextStyle(fontSize: 14, color: Colors.black54),
-          textAlign: TextAlign.center,
-        ),
-      );
-    }
-
-    // 1) Get the current policy and its reference.
-    final policy =
-        Constants.currentleadAvailable!.policies[current_member_index];
-    final currentReference = policy.reference;
-    print("Current reference: $currentReference");
-
-    // -----------------------------
-    // A) Gather extended members from policy.members.
-    // -----------------------------
-    final List<dynamic> membersList = policy.members ?? [];
-    final extendedAutoNumbersFromPolicy = membersList
-        .where((m) {
-          if (m is Map<String, dynamic>) {
-            return (m['type'] as String?)?.toLowerCase() == 'extended' &&
-                m['reference'] == currentReference;
-          } else if (m is Member) {
-            return (m.type ?? '').toLowerCase() == 'extended' &&
-                m.reference == currentReference;
-          }
-          return false;
-        })
-        .map<int>((m) {
-          if (m is Map<String, dynamic>) {
-            return (m['autoNumber'] ?? -1) as int;
-          } else if (m is Member) {
-            return m.autoNumber ?? -1;
-          }
-          return -1;
-        })
-        .where((num) => num != -1)
-        .toList();
-
-    final List<AdditionalMember> extendedMembersFromPolicy = [];
-    for (int autoNum in extendedAutoNumbersFromPolicy) {
-      try {
-        final foundAM = Constants.currentleadAvailable!.additionalMembers
-            .firstWhere((am) => am.autoNumber == autoNum);
-        extendedMembersFromPolicy.add(foundAM);
-      } catch (e) {
-        // Log or handle not found case if needed.
-        print("Extended member not found for autoNumber: $autoNum");
-      }
-    }
-
-    // -----------------------------
-    // D) Fallback if no extended members found.
-    // -----------------------------
-    if (extendedMembersFromPolicy.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
-            "No extended members available for this policy.",
-            style: TextStyle(fontSize: 14, color: Colors.black54),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
-    }
-
-    // -----------------------------
-    // E) Build a scrollable list of extended members.
-    // -----------------------------
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      // You can wrap the ListView in an Expanded if used inside a Column.
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3, // Number of columns
-          crossAxisSpacing: 16.0, // Space between columns
-          mainAxisSpacing: 16.0, // Space between rows
-          mainAxisExtent: 120, // Height for each grid item
-        ),
-        itemCount: extendedMembersFromPolicy.length,
-        itemBuilder: (context, index) {
-          final member = extendedMembersFromPolicy[index];
-          print(
-              "Processing extended member: ${member.autoNumber} - ${member.name}");
-
-          return Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Container(
-              height: 130,
-              width: MediaQuery.of(context).size.width,
-              child: CustomCard2(
-                elevation: 8,
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                boderRadius: 12,
-
-                //  boderRadius: 12,
-                child: Container(
-                  margin: EdgeInsets.zero,
-                  padding: EdgeInsets.zero,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Profile Avatar
-                      Column(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              width: 100,
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  bottomLeft: Radius.circular(12),
-                                ),
-                                color:
-                                    Constants.ftaColorLight.withOpacity(0.15),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundColor: Constants.ftaColorLight,
-                                    child: Icon(
-                                      member.gender.toLowerCase() == "female"
-                                          ? Icons.female
-                                          : Icons.male,
-                                      size: 20,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: 16.0),
-                      // Member Information
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // DoB
-                              Text(
-                                'DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: 'YuGothic',
-                                  color: Colors.black,
-                                ),
-                              ),
-                              const SizedBox(height: 8.0),
-                              // Member Name
-                              Expanded(
-                                child: Text(
-                                  '${member.title} ${member.name} ${member.surname}',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: 1.2,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 8.0),
-                              // Relationship
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.people_alt,
-                                    color: Colors.black,
-                                    size: 14,
-                                  ),
-                                  const SizedBox(width: 4.0),
-                                  Text(
-                                    '${member.relationship[0].toUpperCase()}${member.relationship.substring(1)}',
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      // Delete Button
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 16.0, bottom: 16, right: 16),
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              // Remove the extended member from the policy.
-                              policy.members.removeWhere((m) {
-                                if (m is Map<String, dynamic>) {
-                                  return (m['autoNumber'] ==
-                                          member.autoNumber) &&
-                                      ((m['type'] as String?)?.toLowerCase() ==
-                                          'extended') &&
-                                      (m['reference'] == currentReference);
-                                } else if (m is Member) {
-                                  return (m.autoNumber == member.autoNumber) &&
-                                      ((m.type ?? '').toLowerCase() ==
-                                          'extended') &&
-                                      (m.reference == currentReference);
-                                }
-                                return false;
-                              });
-                              // Optionally recalc premium.
-                              calculatePolicyPremiumCal(false);
-                              appBarMemberCardNotifier.value++;
-                              advancedMemberCardKey2 = UniqueKey();
-                              setState(() {});
-                            });
-                          },
-                          child: Icon(
-                            CupertinoIcons.delete,
-                            color: Colors.grey,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
   }
 
   /// Removes the given [member] from the current policy identified by [policyReference].
@@ -9002,8 +8788,6 @@ class _UniversalPremiumCalculatorState
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                          color: Constants.ftaColorLight.withOpacity(0.95)),
                     ),
                     margin: const EdgeInsets.symmetric(
                         vertical: 0.0, horizontal: 0.0),
@@ -9011,31 +8795,6 @@ class _UniversalPremiumCalculatorState
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Left container with avatar.
-                        Container(
-                          width: 60,
-                          decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(12),
-                              bottomLeft: Radius.circular(12),
-                            ),
-                            color: Constants.ftaColorLight.withOpacity(0.95),
-                          ),
-                          child: Center(
-                            child: CircleAvatar(
-                              radius: 40,
-                              backgroundColor: Colors.grey.withOpacity(0.65),
-                              child: Icon(
-                                partner.gender.toLowerCase() == "female"
-                                    ? Icons.female
-                                    : Icons.male,
-                                size: 30,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16.0),
                         // Main partner information.
                         Expanded(
                           child: Padding(
@@ -9646,392 +9405,400 @@ class _UniversalPremiumCalculatorState
               .sort((a, b) => double.parse(a).compareTo(double.parse(b)));
 
           // Build the child card.
-          return Container(
-            height: 200,
-            child: Stack(
-              children: [
-                CustomCard2(
-                  elevation: 8,
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  boderRadius: 12,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                          color: Constants.ftaColorLight.withOpacity(0.95)),
-                    ),
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 0.0, horizontal: 0.0),
-                    padding: const EdgeInsets.all(0.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Main child information.
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                right: 16.0, left: 16, top: 16, bottom: 8),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (child.dob.isNotEmpty)
-                                  Text(
-                                    'DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(child.dob))}',
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        fontFamily: 'YuGothic',
-                                        color: Colors.black),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                const SizedBox(height: 8.0),
-                                Text(
-                                  '${child.title} ${child.name} ${child.surname}',
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500,
-                                      letterSpacing: 1.2),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 8.0),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.people_alt,
-                                        color: Colors.black, size: 16),
-                                    const SizedBox(width: 4.0),
-                                    Expanded(
-                                      child: Text(
-                                        'Relationship: ${child.relationship[0].toUpperCase()}${child.relationship.substring(1)}',
-                                        style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w400),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8.0),
-                                Row(
-                                  children: [
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: Container(
+              height: 200,
+              child: Stack(
+                children: [
+                  CustomCard2(
+                    elevation: 8,
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    boderRadius: 12,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 0.0, horizontal: 0.0),
+                      padding: const EdgeInsets.all(0.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Main child information.
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  right: 16.0, left: 16, top: 16, bottom: 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (child.dob.isNotEmpty)
                                     Text(
-                                      'Premium: R${premium.toStringAsFixed(2)}',
+                                      'DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(child.dob))}',
                                       style: const TextStyle(
                                           fontSize: 14,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w400),
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: 'YuGothic',
+                                          color: Colors.black),
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    const Spacer(),
-                                  ],
-                                ),
-                                const SizedBox(height: 8.0),
-                                Builder(
-                                  builder: (context) {
-                                    return Row(
-                                      children: [
-                                        Text(
-                                          'Cover: ',
+                                  const SizedBox(height: 8.0),
+                                  Text(
+                                    '${child.title} ${child.name} ${child.surname}',
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w500,
+                                        letterSpacing: 1.2),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.people_alt,
+                                          color: Colors.black, size: 16),
+                                      const SizedBox(width: 4.0),
+                                      Expanded(
+                                        child: Text(
+                                          'Relationship: ${child.relationship[0].toUpperCase()}${child.relationship.substring(1)}',
                                           style: const TextStyle(
                                               fontSize: 14,
                                               color: Colors.black,
                                               fontWeight: FontWeight.w400),
                                           overflow: TextOverflow.ellipsis,
                                         ),
-                                        SizedBox(width: 8),
-                                        Expanded(
-                                          child: DropdownButtonHideUnderline(
-                                            child: DropdownButton2<String>(
-                                              isExpanded: true,
-                                              alignment:
-                                                  AlignmentDirectional.center,
-                                              hint: Row(
-                                                children: [
-                                                  const SizedBox(width: 4),
-                                                  Expanded(
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Premium: R${premium.toStringAsFixed(2)}',
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w400),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const Spacer(),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  Builder(
+                                    builder: (context) {
+                                      return Row(
+                                        children: [
+                                          Text(
+                                            'Cover: ',
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w400),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          SizedBox(width: 8),
+                                          Expanded(
+                                            child: DropdownButtonHideUnderline(
+                                              child: DropdownButton2<String>(
+                                                isExpanded: true,
+                                                alignment:
+                                                    AlignmentDirectional.center,
+                                                hint: Row(
+                                                  children: [
+                                                    const SizedBox(width: 4),
+                                                    Expanded(
+                                                      child: Text(
+                                                        "Select Cover Amount",
+                                                        style: const TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontFamily:
+                                                              'YuGothic',
+                                                        ),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                items: coverAmountItems
+                                                    .map((String item) {
+                                                  return DropdownMenuItem<
+                                                      String>(
+                                                    value: item,
                                                     child: Text(
-                                                      "Select Cover Amount",
+                                                      'R${double.parse(item).toStringAsFixed(0)}', // Format as currency
                                                       style: const TextStyle(
-                                                        color: Colors.black,
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.w500,
                                                         fontFamily: 'YuGothic',
+                                                        color: Colors.black,
                                                       ),
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              items: coverAmountItems
-                                                  .map((String item) {
-                                                return DropdownMenuItem<String>(
-                                                  value: item,
-                                                  child: Text(
-                                                    'R${double.parse(item).toStringAsFixed(0)}', // Format as currency
-                                                    style: const TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontFamily: 'YuGothic',
-                                                      color: Colors.black,
-                                                    ),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                );
-                                              }).toList(),
-                                              value: selectedCover,
-                                              onChanged: (String? newValue) {
-                                                setState(() {
-                                                  if (newValue == null) return;
+                                                  );
+                                                }).toList(),
+                                                value: selectedCover,
+                                                onChanged: (String? newValue) {
+                                                  setState(() {
+                                                    if (newValue == null)
+                                                      return;
 
-                                                  double newCover =
-                                                      double.tryParse(
-                                                              newValue) ??
-                                                          coverAmount;
-                                                  coverAmount = newCover;
-                                                  _selectedChildCoverAmounts[
-                                                      memberKey] = newValue;
+                                                    double newCover =
+                                                        double.tryParse(
+                                                                newValue) ??
+                                                            coverAmount;
+                                                    coverAmount = newCover;
+                                                    _selectedChildCoverAmounts[
+                                                        memberKey] = newValue;
 
-                                                  print(
-                                                      "Selected cover for child member $memberKey: $newValue");
+                                                    print(
+                                                        "Selected cover for child member $memberKey: $newValue");
 
-                                                  // Update the cover amount for this child in the policy.members list.
-                                                  final int indexInMembers =
-                                                      membersList
-                                                          .indexWhere((m) {
-                                                    if (m is Map<String,
-                                                        dynamic>) {
-                                                      final int? autoNum = m[
-                                                          'additional_member_id'];
-                                                      final String? typeStr =
-                                                          m['type'] as String?;
-                                                      return autoNum ==
-                                                              child
-                                                                  .autoNumber &&
-                                                          (typeStr?.toLowerCase() ==
-                                                              'child');
-                                                    } else if (m is Member) {
-                                                      return m.autoNumber ==
-                                                              child
-                                                                  .autoNumber &&
-                                                          (m.type ?? '')
-                                                                  .toLowerCase() ==
-                                                              'child';
+                                                    // Update the cover amount for this child in the policy.members list.
+                                                    final int indexInMembers =
+                                                        membersList
+                                                            .indexWhere((m) {
+                                                      if (m is Map<String,
+                                                          dynamic>) {
+                                                        final int? autoNum = m[
+                                                            'additional_member_id'];
+                                                        final String? typeStr =
+                                                            m['type']
+                                                                as String?;
+                                                        return autoNum ==
+                                                                child
+                                                                    .autoNumber &&
+                                                            (typeStr?.toLowerCase() ==
+                                                                'child');
+                                                      } else if (m is Member) {
+                                                        return m.autoNumber ==
+                                                                child
+                                                                    .autoNumber &&
+                                                            (m.type ?? '')
+                                                                    .toLowerCase() ==
+                                                                'child';
+                                                      }
+                                                      return false;
+                                                    });
+
+                                                    if (indexInMembers != -1) {
+                                                      if (membersList[
+                                                              indexInMembers]
+                                                          is Map<String,
+                                                              dynamic>) {
+                                                        (membersList[
+                                                                    indexInMembers]
+                                                                as Map<String,
+                                                                    dynamic>)[
+                                                            'cover'] = newCover;
+                                                      } else if (membersList[
+                                                              indexInMembers]
+                                                          is Member) {
+                                                        (membersList[
+                                                                    indexInMembers]
+                                                                as Member)
+                                                            .cover = newCover;
+                                                      }
+                                                      policy.members =
+                                                          membersList;
                                                     }
-                                                    return false;
+
+                                                    onPolicyUpdated2(
+                                                        context, true);
                                                   });
-
-                                                  if (indexInMembers != -1) {
-                                                    if (membersList[
-                                                            indexInMembers]
-                                                        is Map<String,
-                                                            dynamic>) {
-                                                      (membersList[
-                                                                  indexInMembers]
-                                                              as Map<String,
-                                                                  dynamic>)[
-                                                          'cover'] = newCover;
-                                                    } else if (membersList[
-                                                            indexInMembers]
-                                                        is Member) {
-                                                      (membersList[
-                                                                  indexInMembers]
-                                                              as Member)
-                                                          .cover = newCover;
-                                                    }
-                                                    policy.members =
-                                                        membersList;
-                                                  }
-
-                                                  onPolicyUpdated2(
-                                                      context, true);
-                                                });
-                                              },
-                                              buttonStyleData: ButtonStyleData(
-                                                height: 45,
-                                                width: MediaQuery.of(context)
-                                                    .size
-                                                    .width,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 12),
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(32),
-                                                  border: Border.all(
-                                                      color: Colors.black26),
-                                                  color: Colors.transparent,
+                                                },
+                                                buttonStyleData:
+                                                    ButtonStyleData(
+                                                  height: 45,
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 12),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            32),
+                                                    border: Border.all(
+                                                        color: Colors.black26),
+                                                    color: Colors.transparent,
+                                                  ),
+                                                  elevation: 0,
                                                 ),
-                                                elevation: 0,
-                                              ),
-                                              iconStyleData:
-                                                  const IconStyleData(
-                                                icon: Icon(Icons
-                                                    .arrow_forward_ios_outlined),
-                                                iconSize: 14,
-                                                iconEnabledColor: Colors.black,
-                                                iconDisabledColor:
-                                                    Colors.transparent,
-                                              ),
-                                              dropdownStyleData:
-                                                  DropdownStyleData(
-                                                elevation: 0,
-                                                maxHeight: 200,
-                                                width: 200,
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(14),
-                                                  color: Colors.white,
+                                                iconStyleData:
+                                                    const IconStyleData(
+                                                  icon: Icon(Icons
+                                                      .arrow_forward_ios_outlined),
+                                                  iconSize: 14,
+                                                  iconEnabledColor:
+                                                      Colors.black,
+                                                  iconDisabledColor:
+                                                      Colors.transparent,
                                                 ),
-                                                offset: const Offset(-5, 0),
-                                                scrollbarTheme:
-                                                    ScrollbarThemeData(
-                                                  radius:
-                                                      const Radius.circular(40),
-                                                  thickness:
-                                                      MaterialStateProperty.all(
-                                                          6),
-                                                  thumbVisibility:
-                                                      MaterialStateProperty.all(
-                                                          true),
+                                                dropdownStyleData:
+                                                    DropdownStyleData(
+                                                  elevation: 0,
+                                                  maxHeight: 200,
+                                                  width: 200,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            14),
+                                                    color: Colors.white,
+                                                  ),
+                                                  offset: const Offset(-5, 0),
+                                                  scrollbarTheme:
+                                                      ScrollbarThemeData(
+                                                    radius:
+                                                        const Radius.circular(
+                                                            40),
+                                                    thickness:
+                                                        MaterialStateProperty
+                                                            .all(6),
+                                                    thumbVisibility:
+                                                        MaterialStateProperty
+                                                            .all(true),
+                                                  ),
                                                 ),
-                                              ),
-                                              menuItemStyleData:
-                                                  MenuItemStyleData(
-                                                overlayColor: null,
-                                                height: 40,
-                                                padding: const EdgeInsets.only(
-                                                    left: 14, right: 14),
+                                                menuItemStyleData:
+                                                    MenuItemStyleData(
+                                                  overlayColor: null,
+                                                  height: 40,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 14, right: 14),
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                                const SizedBox(height: 8.0),
-                              ],
+                                        ],
+                                      );
+                                    },
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        // Edit/Delete button column
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 16.0, bottom: 16, right: 16),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  removeMemberFromPolicy2(child,
-                                      currentReference, context, "child");
-                                  appBarMemberCardNotifier.value++;
-                                  advancedMemberCardKey2 = UniqueKey();
-                                  setState(() {});
-                                },
-                                child: Icon(CupertinoIcons.delete),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (context) => StatefulBuilder(
-                                      builder: (context, setState) => Dialog(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(64),
-                                        ),
-                                        elevation: 0.0,
-                                        backgroundColor: Colors.transparent,
-                                        child: Container(
-                                          constraints: BoxConstraints(
-                                            maxWidth: (Constants
-                                                    .currentleadAvailable!
-                                                    .leadObject
-                                                    .documentsIndexed
-                                                    .isEmpty)
-                                                ? 750
-                                                : 1200,
-                                          ),
-                                          margin:
-                                              const EdgeInsets.only(top: 16),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.rectangle,
+                          // Edit/Delete button column
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                top: 16.0, bottom: 16, right: 16),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    removeMemberFromPolicy2(child,
+                                        currentReference, context, "child");
+                                    appBarMemberCardNotifier.value++;
+                                    advancedMemberCardKey2 = UniqueKey();
+                                    setState(() {});
+                                  },
+                                  child: Icon(CupertinoIcons.delete),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (context) => StatefulBuilder(
+                                        builder: (context, setState) => Dialog(
+                                          shape: RoundedRectangleBorder(
                                             borderRadius:
-                                                BorderRadius.circular(16),
-                                            boxShadow: const [
-                                              BoxShadow(
-                                                color: Colors.black26,
-                                                blurRadius: 10.0,
-                                                offset: Offset(0.0, 10.0),
-                                              ),
-                                            ],
+                                                BorderRadius.circular(64),
                                           ),
-                                          child: NewMemberDialog2(
-                                            isEditMode: true,
-                                            autoNumber: child.autoNumber,
-                                            relationship: "Child",
-                                            title: child.title,
-                                            name: child.name,
-                                            surname: child.surname,
-                                            dob: child.dob,
-                                            phone: child.contact,
-                                            idNumber: child.id,
-                                            is_self_or_payer: false,
-                                            gender: child.gender,
-                                            canAddMember: true,
-                                            current_member_index:
-                                                current_member_index,
+                                          elevation: 0.0,
+                                          backgroundColor: Colors.transparent,
+                                          child: Container(
+                                            constraints: BoxConstraints(
+                                              maxWidth: (Constants
+                                                      .currentleadAvailable!
+                                                      .leadObject
+                                                      .documentsIndexed
+                                                      .isEmpty)
+                                                  ? 750
+                                                  : 1200,
+                                            ),
+                                            margin:
+                                                const EdgeInsets.only(top: 16),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              shape: BoxShape.rectangle,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              boxShadow: const [
+                                                BoxShadow(
+                                                  color: Colors.black26,
+                                                  blurRadius: 10.0,
+                                                  offset: Offset(0.0, 10.0),
+                                                ),
+                                              ],
+                                            ),
+                                            child: NewMemberDialog2(
+                                              isEditMode: true,
+                                              autoNumber: child.autoNumber,
+                                              relationship: "Child",
+                                              title: child.title,
+                                              name: child.name,
+                                              surname: child.surname,
+                                              dob: child.dob,
+                                              phone: child.contact,
+                                              idNumber: child.id,
+                                              is_self_or_payer: false,
+                                              gender: child.gender,
+                                              canAddMember: true,
+                                              current_member_index:
+                                                  current_member_index,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                },
-                                child: Icon(
-                                  Icons.edit,
-                                  color: Constants.ftaColorLight,
-                                  size: 20,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: Constants.ftaColorLight,
+                                    size: 20,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
 
-                // Overlay for editing restriction
-                if (!(_allowEditingChildren[memberKey] ?? false))
-                  Container(
-                    decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.40),
-                        borderRadius: BorderRadius.circular(12)),
-                    height: 220,
-                    child: Center(
-                      child: InkWell(
-                          onTap: () {
-                            _allowEditingChildren[memberKey] = true;
-                            setState(() {
-                              print(
-                                  "Editing enabled for child member $memberKey: ${_allowEditingChildren[memberKey]}");
-                            });
-                          },
-                          child: Icon(Iconsax.edit)),
+                  // Overlay for editing restriction
+                  if (!(_allowEditingChildren[memberKey] ?? false))
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.40),
+                          borderRadius: BorderRadius.circular(12)),
+                      height: 220,
+                      child: Center(
+                        child: InkWell(
+                            onTap: () {
+                              _allowEditingChildren[memberKey] = true;
+                              setState(() {
+                                print(
+                                    "Editing enabled for child member $memberKey: ${_allowEditingChildren[memberKey]}");
+                              });
+                            },
+                            child: Icon(Iconsax.edit)),
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           );
         },
@@ -13098,27 +12865,29 @@ class _UniversalPremiumCalculatorState
             print(
                 "Rider ${rider.id} isSelected: $isSelected (checking against member_id: $correctMemberId)");
 
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: RiderCard(
-                rider: rider,
-                isSelected: isSelected,
-                onCheck: () {
-                  setState(() {
-                    handleRiderToggle(rider, isSelected, correctMemberId);
-                    // Increment the value notifier to trigger UI updates
-                    mySalesPremiumCalculatorValue.value++;
-                    onPolicyUpdated2(context, false);
-                  });
-                },
-                onAddBenefit: () {
-                  setState(() {
-                    handleRiderToggle(rider, isSelected, correctMemberId);
-                    // Increment both value notifiers to trigger UI updates
-                    mySalesPremiumCalculatorValue2.value++;
-                    onPolicyUpdated2(context, false);
-                  });
-                },
+            return Container(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: RiderCard(
+                  rider: rider,
+                  isSelected: isSelected,
+                  onCheck: () {
+                    setState(() {
+                      handleRiderToggle(rider, isSelected, correctMemberId);
+                      // Increment the value notifier to trigger UI updates
+                      mySalesPremiumCalculatorValue.value++;
+                      onPolicyUpdated2(context, false);
+                    });
+                  },
+                  onAddBenefit: () {
+                    setState(() {
+                      handleRiderToggle(rider, isSelected, correctMemberId);
+                      // Increment both value notifiers to trigger UI updates
+                      mySalesPremiumCalculatorValue2.value++;
+                      onPolicyUpdated2(context, false);
+                    });
+                  },
+                ),
               ),
             );
           },
@@ -13393,6 +13162,11 @@ class _UniversalPremiumCalculatorState
   }
 
   List<DropdownMenuItem<String>> _buildUniqueCommencementItems() {
+    // Ensure commencementList has the default options if it's empty
+    if (commencementList.isEmpty) {
+      commencementList = calculateInceptionDateOptions();
+    }
+
     // Remove duplicates from commencementList to prevent the dropdown error
     final uniqueCommencementList = commencementList.toSet().toList();
 
@@ -13480,177 +13254,182 @@ class _RiderCardState extends State<RiderCard> {
               ),
             ),
             color: Colors.white,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.white,
-              ),
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                children: [
-                  // Circle avatar or icon for the rider
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: widget.isSelected
-                        ? Constants.ftaColorLight
-                        : Colors.grey.shade300,
-                    child: const Icon(
-                      Icons.health_and_safety,
-                      color: Colors.white,
-                      size: 28,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white,
+                ),
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  children: [
+                    // Circle avatar or icon for the rider
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundColor: widget.isSelected
+                          ? Constants.ftaColorLight
+                          : Colors.grey.shade300,
+                      child: const Icon(
+                        Icons.health_and_safety,
+                        color: Colors.white,
+                        size: 28,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  // Rider details in a column
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.rider.riderName,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
+                    const SizedBox(height: 12),
+                    // Rider details in a column
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.rider.riderName,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Linked Product: ${widget.rider.linkedProduct}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
+                        const SizedBox(height: 8),
+                        Text(
+                          'Linked Product: ${widget.rider.linkedProduct}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Price: R${widget.rider.price.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
+                        const SizedBox(height: 4),
+                        Text(
+                          'Price: R${widget.rider.price.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      Text(
-                        'Age Range: ${widget.rider.minAge} - ${widget.rider.maxAge}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
+                        Text(
+                          'Age Range: ${widget.rider.minAge} - ${widget.rider.maxAge}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Type: ${widget.rider.relationship}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black54,
+                        const SizedBox(height: 4),
+                        Text(
+                          'Type: ${widget.rider.relationship}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.black54,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  // "Add Benefit" button area
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      widget.isSelected
-                          ? TextButton.icon(
-                              onPressed: () {
-                                // "Remove" logic
-                                // Ensure that `policyPremiums` and `policiesSelectedCoverAmounts` are valid for the current policy index
-                                if (current_member_index >=
-                                        policyPremiums.length ||
-                                    policyPremiums[current_member_index]
-                                            .totalPremium ==
-                                        0 ||
-                                    current_member_index >=
-                                        policiesSelectedCoverAmounts.length ||
-                                    policiesSelectedCoverAmounts[
-                                            current_member_index] ==
-                                        0) {
-                                  MotionToast.error(
-                                    description: const Center(
-                                      child: Text(
-                                        "Please calculate the premium first.",
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'YuGothic',
-                                          color: Colors.white,
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    // "Add Benefit" button area
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        widget.isSelected
+                            ? TextButton.icon(
+                                onPressed: () {
+                                  // "Remove" logic
+                                  // Ensure that `policyPremiums` and `policiesSelectedCoverAmounts` are valid for the current policy index
+                                  if (current_member_index >=
+                                          policyPremiums.length ||
+                                      policyPremiums[current_member_index]
+                                              .totalPremium ==
+                                          0 ||
+                                      current_member_index >=
+                                          policiesSelectedCoverAmounts.length ||
+                                      policiesSelectedCoverAmounts[
+                                              current_member_index] ==
+                                          0) {
+                                    MotionToast.error(
+                                      description: const Center(
+                                        child: Text(
+                                          "Please calculate the premium first.",
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: 'YuGothic',
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    animationType: AnimationType.fromTop,
-                                    width: 350,
-                                    height: 55,
-                                    animationDuration: const Duration(
-                                      milliseconds: 2500,
-                                    ),
-                                  ).show(context);
-                                  return;
-                                } else {
-                                  if (widget.onCheck != null) {
-                                    print("onCheck clicked");
-                                    widget.onCheck!(); // The same toggle method
+                                      animationType: AnimationType.fromTop,
+                                      width: 350,
+                                      height: 55,
+                                      animationDuration: const Duration(
+                                        milliseconds: 2500,
+                                      ),
+                                    ).show(context);
+                                    return;
+                                  } else {
+                                    if (widget.onCheck != null) {
+                                      print("onCheck clicked");
+                                      widget
+                                          .onCheck!(); // The same toggle method
+                                    }
                                   }
-                                }
-                              },
-                              icon:
-                                  const Icon(Icons.close, color: Colors.white),
-                              label: const Text(
-                                'Remove Benefit',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              style: TextButton.styleFrom(
-                                  backgroundColor: Colors.redAccent),
-                            )
-                          : TextButton.icon(
-                              onPressed: () {
-                                // "Add" logic
-                                // Check if a cover amount has been selected for the current policy
-                                if (current_member_index >=
-                                        policiesSelectedCoverAmounts.length ||
-                                    policiesSelectedCoverAmounts[
-                                            current_member_index] ==
-                                        0) {
-                                  MotionToast.error(
-                                    description: const Center(
-                                      child: Text(
-                                        "Please select a cover amount first before adding benefits.",
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'YuGothic',
-                                          color: Colors.white,
+                                },
+                                icon: const Icon(Icons.close,
+                                    color: Colors.white),
+                                label: const Text(
+                                  'Remove Benefit',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                style: TextButton.styleFrom(
+                                    backgroundColor: Colors.redAccent),
+                              )
+                            : TextButton.icon(
+                                onPressed: () {
+                                  // "Add" logic
+                                  // Check if a cover amount has been selected for the current policy
+                                  if (current_member_index >=
+                                          policiesSelectedCoverAmounts.length ||
+                                      policiesSelectedCoverAmounts[
+                                              current_member_index] ==
+                                          0) {
+                                    MotionToast.error(
+                                      description: const Center(
+                                        child: Text(
+                                          "Please select a cover amount first before adding benefits.",
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: 'YuGothic',
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    animationType: AnimationType.fromTop,
-                                    width: 350,
-                                    height: 55,
-                                    animationDuration: const Duration(
-                                      milliseconds: 2500,
-                                    ),
-                                  ).show(context);
-                                  return;
-                                }
+                                      animationType: AnimationType.fromTop,
+                                      width: 350,
+                                      height: 55,
+                                      animationDuration: const Duration(
+                                        milliseconds: 2500,
+                                      ),
+                                    ).show(context);
+                                    return;
+                                  }
 
-                                if (widget.onAddBenefit != null) {
-                                  widget.onAddBenefit!();
-                                }
-                              },
-                              icon: const Icon(Icons.add, color: Colors.white),
-                              label: const Text('Add Benefit',
-                                  style: TextStyle(color: Colors.white)),
-                              style: TextButton.styleFrom(
-                                  backgroundColor: Constants.ftaColorLight),
-                            )
-                    ],
-                  ),
-                ],
+                                  if (widget.onAddBenefit != null) {
+                                    widget.onAddBenefit!();
+                                  }
+                                },
+                                icon:
+                                    const Icon(Icons.add, color: Colors.white),
+                                label: const Text('Add Benefit',
+                                    style: TextStyle(color: Colors.white)),
+                                style: TextButton.styleFrom(
+                                    backgroundColor: Constants.ftaColorLight),
+                              )
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

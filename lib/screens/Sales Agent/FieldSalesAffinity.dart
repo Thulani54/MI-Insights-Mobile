@@ -21,7 +21,7 @@ import 'conclusion.dart';
 import 'field_client_signature.dart';
 import 'field_premium_calculator.dart';
 import 'field_sale_basic_information.dart';
-import 'field_sale_summary.dart';
+// import 'field_sale_summary.dart'; // Summary section hidden as requested
 import 'field_sales_call_client.dart';
 import 'field_sales_communication_preferences.dart';
 import 'field_sales_members_details.dart';
@@ -35,18 +35,7 @@ double totalAmount = 0;
 List<PolicyDetails1> policydetails = [];
 UniqueKey key1 = UniqueKey();
 int activeStep = -1; // We'll store the currently-expanded index here
-List<CreateLeads> createLeadStepsList = [
-  CreateLeads("Basic information", "basic_information"),
-  CreateLeads("Needs Analysis", "needs_analysis"),
-  CreateLeads("Premium Calculator", "premium_calculator"),
-  CreateLeads("Member Details", "member_details"),
-  CreateLeads("Communication Preferences", "communication_preferences"),
-  // CreateLeads("Call Client", "call_client"),
-  CreateLeads("Conclusion", "conclusion"),
-  CreateLeads("OTP Verification", "otp_verification"),
-  CreateLeads("Client Signature", "client_signature"),
-  CreateLeads("Summary", "summary"),
-];
+List<CreateLeads> createLeadStepsList = [];
 
 // Validation function to check if user can move forward from needs analysis
 bool canMoveFromNeedsAnalysis() {
@@ -127,7 +116,7 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
         body: Padding(
           padding: const EdgeInsets.only(top: 16),
           child: ListView.builder(
-            key: key1,
+            // key: key1, // Removed to prevent rebuild issues
             itemCount: createLeadStepsList.length,
             itemBuilder: (context, index) {
               final step = createLeadStepsList[index];
@@ -224,8 +213,8 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
                                   FieldClientSignature()
                                 else if (step.stepNameId == "otp_verification")
                                   Fiels_Sales_Verify_Otp()
-                                else if (step.stepNameId == "summary")
-                                  FieldSaleSummary()
+                                // else if (step.stepNameId == "summary") // Summary section hidden as requested
+                                //   FieldSaleSummary()
                                 else
                                   Container(
                                     height: 80,
@@ -328,14 +317,13 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
                                               height: 36,
                                               child: ElevatedButton(
                                                 onPressed: () {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text(
-                                                          'Process completed successfully!'),
-                                                      backgroundColor:
-                                                          Colors.green,
+                                                  // Navigate back to SalesAgentReport and refresh data
+                                                  Navigator.pushAndRemoveUntil(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) => SalesAgentReport(refreshOnInit: true),
                                                     ),
+                                                    (route) => false,
                                                   );
                                                 },
                                                 style: ElevatedButton.styleFrom(
@@ -389,9 +377,30 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
   @override
   void initState() {
     super.initState();
+    // Initialize the list directly without setState
+    if (widget.sale_type.toString() == "Field Sale") {
+      createLeadStepsList = [
+        CreateLeads("Basic information", "basic_information"),
+        CreateLeads("Needs Analysis", "needs_analysis"),
+        CreateLeads("Premium Calculator", "premium_calculator"),
+        CreateLeads("Member Details", "member_details"),
+        CreateLeads("Communication Preferences", "communication_preferences"),
+        CreateLeads("Conclusion", "conclusion"),
+      ];
+    } else {
+      createLeadStepsList = [
+        CreateLeads("Basic information", "basic_information"),
+        CreateLeads("Needs Analysis", "needs_analysis"),
+        CreateLeads("Premium Calculator", "premium_calculator"),
+        CreateLeads("Member Details", "member_details"),
+        CreateLeads("Communication Preferences", "communication_preferences"),
+        CreateLeads("Client Signature", "client_signature"),
+        CreateLeads("OTP Verification", "otp_verification"),
+      ];
+    }
+    
     // Set the first step as active/expanded by default
     activeStep = 0;
-    updateFieldSections();
 
     myNotifier = MyNotifier(salesFieldAffinityValue, context);
 
@@ -410,9 +419,8 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
         CreateLeads("Communication Preferences", "communication_preferences"),
         // CreateLeads("Call Client", "call_client"),
         CreateLeads("Conclusion", "conclusion"),
-        CreateLeads("Summary", "summary"),
+        // CreateLeads("Summary", "summary"), // Summary section hidden as requested
       ];
-      setState(() {});
     } else {
       createLeadStepsList = [
         CreateLeads("Basic information", "basic_information"),
@@ -422,10 +430,15 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
         CreateLeads("Communication Preferences", "communication_preferences"),
         CreateLeads("Client Signature", "client_signature"),
         CreateLeads("OTP Verification", "otp_verification"),
-        CreateLeads("Summary", "summary"),
+        // CreateLeads("Summary", "summary"), // Summary section hidden as requested
       ];
-      setState(() {});
     }
+    // Use post frame callback to avoid setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   void onBackStep(int currentIndex) {
@@ -463,7 +476,7 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
     setState(() {
       if (activeStep > 0) {
         activeStep--;
-        key1 = UniqueKey();
+        // key1 = UniqueKey(); // Removed to prevent unnecessary rebuilds
       }
     });
   }
@@ -535,7 +548,7 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
       // If validation passes, move to next step
       if (currentIndex < createLeadStepsList.length - 1) {
         activeStep = currentIndex + 1;
-        key1 = UniqueKey();
+        // key1 = UniqueKey(); // Removed to prevent unnecessary rebuilds
       }
     });
   }
@@ -608,7 +621,10 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
     }
 
     String combinePremium = premiumPayer.combinePremium;
-    if (combinePremium.isEmpty) {
+
+    if (combinePremium.isEmpty &&
+        Constants.currentleadAvailable!.leadObject.paymentType ==
+            "Debit Order") {
       MotionToast.error(
           height: 55,
           description: Text(
@@ -1971,7 +1987,7 @@ class _EndCallDialog2State extends State<EndCallDialog2> {
                   // Close the FieldSalesAffinity screen and go to SalesAgentReport
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => SalesAgentReport()),
+                    MaterialPageRoute(builder: (context) => SalesAgentReport(refreshOnInit: true)),
                     (route) => false,
                   );
                 }

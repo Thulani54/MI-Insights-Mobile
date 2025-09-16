@@ -5549,115 +5549,129 @@ class _AdvancedMemberCardState extends State<AdvancedMemberCard> {
                   ? 1.02
                   : 1.0,
           duration: const Duration(milliseconds: 200),
-          child: CustomCard2(
-            elevation: 8,
-            color: Colors.white,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            boderRadius: 12,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: widget.isSelected == true
-                      ? Constants.ftaColorLight.withOpacity(0.95)
-                      : Colors.transparent,
+          child: Container(
+            height: 150,
+            child: CustomCard2(
+              elevation: 8,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              boderRadius: 12,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: widget.isSelected == true
+                        ? Constants.ftaColorLight.withOpacity(0.95)
+                        : Colors.transparent,
+                  ),
                 ),
-              ),
-              margin:
-                  const EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
-              padding: const EdgeInsets.all(0.0),
-              child: Row(
-                crossAxisAlignment:
-                    CrossAxisAlignment.stretch, // Stretch to tallest child
-                children: [
-                  // Left container with CircleAvatar
-                  Container(
-                    width: 90,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        bottomLeft: Radius.circular(12),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
+                padding: const EdgeInsets.all(0.0),
+                child: Row(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.stretch, // Stretch to tallest child
+                  children: [
+                    // Left container with CircleAvatar
+                    Container(
+                      width: 90,
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          bottomLeft: Radius.circular(12),
+                        ),
+                        color: widget.isSelected == true
+                            ? Constants.ctaColorLight.withOpacity(0.95)
+                            : Constants.ctaColorLight.withOpacity(0.15),
                       ),
-                      color: widget.isSelected == true
-                          ? Constants.ctaColorLight.withOpacity(0.95)
-                          : Constants.ctaColorLight.withOpacity(0.15),
-                    ),
-                    child: Center(
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: widget.isSelected == true
-                            ? Colors.grey.withOpacity(0.65)
-                            : Constants.ctaColorLight,
-                        child: Icon(
-                          widget.gender.toLowerCase() == "female"
-                              ? Icons.female
-                              : Icons.male,
-                          size: 20,
-                          color: Colors.white,
+                      child: Center(
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundColor: widget.isSelected == true
+                              ? Colors.grey.withOpacity(0.65)
+                              : Constants.ctaColorLight,
+                          child: Icon(
+                            widget.gender.toLowerCase() == "female"
+                                ? Icons.female
+                                : Icons.male,
+                            size: 20,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16.0),
-                  // Member information (flexible middle section)
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          right: 16.0, left: 16, top: 16, bottom: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisSize: MainAxisSize.min, // Minimize height
-                        children: [
-                          if (widget.dob.isNotEmpty)
+                    const SizedBox(width: 16.0),
+                    // Member information (flexible middle section)
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            right: 16.0, left: 16, top: 16, bottom: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisSize: MainAxisSize.min, // Minimize height
+                          children: [
+                            if (widget.dob.isNotEmpty)
+                              Text(
+                                'DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(widget.dob))}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'YuGothic',
+                                  color: Colors.black,
+                                ),
+                                overflow:
+                                    TextOverflow.ellipsis, // Prevent overflow
+                              ),
+                            const SizedBox(height: 8.0),
                             Text(
-                              'DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(widget.dob))}',
+                              '${widget.title} ${widget.name} ${widget.surname}',
                               style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'YuGothic',
+                                fontSize: 16,
                                 color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 1.2,
                               ),
                               overflow:
                                   TextOverflow.ellipsis, // Prevent overflow
                             ),
-                          const SizedBox(height: 8.0),
-                          Text(
-                            '${widget.title} ${widget.name} ${widget.surname}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 1.2,
-                            ),
-                            overflow: TextOverflow.ellipsis, // Prevent overflow
-                          ),
-                          const SizedBox(height: 8.0),
-                          Row(
-                            children: [
-                              const Icon(Icons.people_alt,
-                                  color: Colors.black, size: 16),
-                              const SizedBox(width: 4.0),
-                              Expanded(
-                                child: Text(
-                                  widget.relationship.isNotEmpty
-                                      ? 'Relationship: ${widget.relationship[0].toUpperCase() + widget.relationship.substring(1)}'
-                                      : "",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w400,
+                            const SizedBox(height: 8.0),
+                            Row(
+                              children: [
+                                const Icon(Icons.people_alt,
+                                    color: Colors.black, size: 16),
+                                const SizedBox(width: 4.0),
+                                Expanded(
+                                  child: Text(
+                                    widget.relationship.isNotEmpty
+                                        ? 'Relationship: ${widget.relationship[0].toUpperCase() + widget.relationship.substring(1)}'
+                                        : "",
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    overflow: TextOverflow
+                                        .ellipsis, // Prevent overflow
                                   ),
-                                  overflow:
-                                      TextOverflow.ellipsis, // Prevent overflow
                                 ),
+                              ],
+                            ),
+                            const SizedBox(height: 8.0),
+                            if (widget.cover != null)
+                              Text(
+                                'Premium: R${widget.premium ?? 0}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                overflow:
+                                    TextOverflow.ellipsis, // Prevent overflow
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 8.0),
-                          if (widget.cover != null)
+                            const SizedBox(height: 8.0),
                             Text(
-                              'Premium: R${widget.premium ?? 0}',
+                              'Cover: R${formatLargeNumber((widget.cover ?? 0).toString())}',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.black,
@@ -5666,125 +5680,116 @@ class _AdvancedMemberCardState extends State<AdvancedMemberCard> {
                               overflow:
                                   TextOverflow.ellipsis, // Prevent overflow
                             ),
-                          const SizedBox(height: 8.0),
-                          Text(
-                            'Cover: R${formatLargeNumber((widget.cover ?? 0).toString())}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            overflow: TextOverflow.ellipsis, // Prevent overflow
-                          ),
-                          const SizedBox(height: 4.0),
-                          if (widget.riderAmount != null)
-                            Row(
-                              children: [
-                                Text(
-                                  'Total Rider Amount: R${(widget.riderAmount ?? 0).toStringAsFixed(2)}',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w400,
+                            const SizedBox(height: 4.0),
+                            if (widget.riderAmount != null)
+                              Row(
+                                children: [
+                                  Text(
+                                    'Total Rider Amount: R${(widget.riderAmount ?? 0).toStringAsFixed(2)}',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    overflow: TextOverflow
+                                        .ellipsis, // Prevent overflow
                                   ),
-                                  overflow:
-                                      TextOverflow.ellipsis, // Prevent overflow
+                                  Spacer(),
+                                ],
+                              ),
+                            const SizedBox(height: 8.0),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Edit button column
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 16.0, bottom: 16, right: 16),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              if (kDebugMode) {
+                                print("dfgfhg " + widget.relationship);
+                              }
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) => StatefulBuilder(
+                                  builder: (context, setState) => Dialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(64),
+                                    ),
+                                    elevation: 0.0,
+                                    backgroundColor: Colors.transparent,
+                                    child: Container(
+                                      constraints: BoxConstraints(
+                                        maxWidth: (Constants
+                                                    .currentleadAvailable!
+                                                    .leadObject
+                                                    .documentsIndexed
+                                                    .isEmpty ||
+                                                widget.showIndexedDocuments ==
+                                                    false)
+                                            ? 750
+                                            : 1200,
+                                      ),
+                                      margin: const EdgeInsets.only(top: 16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.rectangle,
+                                        borderRadius: BorderRadius.circular(16),
+                                        boxShadow: const [
+                                          BoxShadow(
+                                            color: Colors.black26,
+                                            blurRadius: 10.0,
+                                            offset: Offset(0.0, 10.0),
+                                          ),
+                                        ],
+                                      ),
+                                      child: NewMemberDialog(
+                                          isEditMode: true,
+                                          autoNumber: widget.autoNumber,
+                                          relationship:
+                                              widget.relationship.isEmpty
+                                                  ? "Self/Payer"
+                                                  : widget.relationship,
+                                          title: widget.title,
+                                          name: widget.name,
+                                          surname: widget.surname,
+                                          dob: widget.dob,
+                                          phone: widget.contact,
+                                          sourceOfIncome: widget.sourceOfIncome,
+                                          sourceOfWealth: widget.sourceOfWealth,
+                                          idNumber: widget.id,
+                                          is_self_or_payer:
+                                              widget.is_self_or_payer,
+                                          canAddMember: true,
+                                          gender: widget.gender,
+                                          onAfterEdit: widget.onAfterEdit,
+                                          showIndexedDocuments:
+                                              widget.showIndexedDocuments,
+                                          showSourceOfIncome:
+                                              widget.showSourceOfIncome,
+                                          current_member_index: 0),
+                                    ),
+                                  ),
                                 ),
-                                Spacer(),
-                              ],
+                              );
+                            },
+                            child: Icon(
+                              Icons.edit,
+                              color: Constants.ftaColorLight,
+                              size: 20,
                             ),
-                          const SizedBox(height: 8.0),
+                          ),
                         ],
                       ),
                     ),
-                  ),
-                  // Edit button column
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(top: 16.0, bottom: 16, right: 16),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            if (kDebugMode) {
-                              print("dfgfhg " + widget.relationship);
-                            }
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) => StatefulBuilder(
-                                builder: (context, setState) => Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(64),
-                                  ),
-                                  elevation: 0.0,
-                                  backgroundColor: Colors.transparent,
-                                  child: Container(
-                                    constraints: BoxConstraints(
-                                      maxWidth: (Constants
-                                                  .currentleadAvailable!
-                                                  .leadObject
-                                                  .documentsIndexed
-                                                  .isEmpty ||
-                                              widget.showIndexedDocuments ==
-                                                  false)
-                                          ? 750
-                                          : 1200,
-                                    ),
-                                    margin: const EdgeInsets.only(top: 16),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.rectangle,
-                                      borderRadius: BorderRadius.circular(16),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          blurRadius: 10.0,
-                                          offset: Offset(0.0, 10.0),
-                                        ),
-                                      ],
-                                    ),
-                                    child: NewMemberDialog(
-                                        isEditMode: true,
-                                        autoNumber: widget.autoNumber,
-                                        relationship:
-                                            widget.relationship.isEmpty
-                                                ? "Self/Payer"
-                                                : widget.relationship,
-                                        title: widget.title,
-                                        name: widget.name,
-                                        surname: widget.surname,
-                                        dob: widget.dob,
-                                        phone: widget.contact,
-                                        sourceOfIncome: widget.sourceOfIncome,
-                                        sourceOfWealth: widget.sourceOfWealth,
-                                        idNumber: widget.id,
-                                        is_self_or_payer:
-                                            widget.is_self_or_payer,
-                                        canAddMember: true,
-                                        gender: widget.gender,
-                                        onAfterEdit: widget.onAfterEdit,
-                                        showIndexedDocuments:
-                                            widget.showIndexedDocuments,
-                                        showSourceOfIncome:
-                                            widget.showSourceOfIncome,
-                                        current_member_index: 0),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                          child: Icon(
-                            Icons.edit,
-                            color: Constants.ftaColorLight,
-                            size: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

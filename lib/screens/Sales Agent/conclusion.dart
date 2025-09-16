@@ -2267,13 +2267,13 @@ class _InforcePolicyDialog2State extends State<InforcePolicyDialog2> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Constants.ftaColorLight,
+                    color: Constants.ctaColorLight,
                   ),
                 ),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: isAccepted ? Colors.green : Colors.orange,
+                    color: isAccepted ? Constants.ctaColorLight : Colors.orange,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -2363,7 +2363,7 @@ class _InforcePolicyDialog2State extends State<InforcePolicyDialog2> {
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(32),
                     border: Border.all(color: Colors.green[200]!),
                   ),
                   child: Row(
@@ -2737,7 +2737,7 @@ class _InforcePolicyDialog2State extends State<InforcePolicyDialog2> {
                         backgroundColor: _canContinue
                             ? Constants.ftaColorLight
                             : Colors.grey,
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(32),
                         ),
@@ -2760,17 +2760,14 @@ class _InforcePolicyDialog2State extends State<InforcePolicyDialog2> {
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).pop();
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) => SalesAgentNewSale(),
-                        );
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Constants.ftaColorLight,
-                        padding: EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(32),
                         ),
                       ),
                       child: Text(

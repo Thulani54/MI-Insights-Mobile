@@ -85,6 +85,8 @@ class _NeedAnalysisState extends State<NeedAnalysis> {
                 SizedBox(
                   height: 16,
                 ),
+                Text(Constants.currentleadAvailable!.additionalMembers.length
+                    .toString()),
                 Center(
                   child: InkWell(
                     child: Container(
@@ -113,7 +115,9 @@ class _NeedAnalysisState extends State<NeedAnalysis> {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => NewMemberDialog2(
                           current_member_index: 0,
-                          canAddMember: false,
+                          canAddMember: Constants.currentleadAvailable!
+                                  .additionalMembers.length ==
+                              0,
                         ),
                       ));
                     },
@@ -171,7 +175,9 @@ class _NeedAnalysisState extends State<NeedAnalysis> {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => NewMemberDialog2(
                           current_member_index: 0,
-                          canAddMember: false,
+                          canAddMember: Constants.currentleadAvailable!
+                                  .additionalMembers.length ==
+                              0,
                         ),
                       ));
                       setState(() {});
@@ -447,13 +453,13 @@ class _AdvancedMemberCard2State extends State<AdvancedMemberCard2> {
                             gender: widget.member.gender,
                             phone: widget.member.contact,
                             idNumber: widget.member.id,
-                            sourceOfIncome:
-                                widget.member.sourceOfIncome,
-                            sourceOfWealth:
-                                widget.member.sourceOfWealth,
+                            sourceOfIncome: widget.member.sourceOfIncome,
+                            sourceOfWealth: widget.member.sourceOfWealth,
                             autoNumber: widget.member.autoNumber,
                             current_member_index: 0,
-                            canAddMember: true,
+                            canAddMember: Constants.currentleadAvailable!
+                                    .additionalMembers.length ==
+                                0,
                           ),
                         ),
                       );
