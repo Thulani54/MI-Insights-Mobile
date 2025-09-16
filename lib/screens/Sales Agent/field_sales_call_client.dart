@@ -10,7 +10,12 @@ import 'package:timeago/timeago.dart' as timeago;
 
 import '../../../../constants/Constants.dart';
 import '../../../../models/map_class.dart';
+import '../../customwidgets/CustomCard.dart';
 import '../../customwidgets/custom_input.dart';
+import '../../customwidgets/custom_script_text.dart';
+import '../../models/ScriptConfig.dart';
+import '../../models/WaitingPeriods.dart';
+import '../../services/sales_service.dart';
 import 'confirmpremium.dart';
 import 'endcalldialog2.dart';
 import 'newmemberdialog.dart';
@@ -238,6 +243,9 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           children: [
+            SizedBox(
+              height: 25,
+            ),
             StyledText(
               text: callClientQuestions["Good Morning"]["Question1"],
               tags: {
@@ -285,7 +293,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                             border: Border.all(
                                 width: 1.0,
                                 color: dailogueList[index].stateValue == true
-                                    ? Constants.ftaColorLight
+                                    ? Constants.ctaColorLight
                                     : Colors.grey.withOpacity(0.35)),
                             color: Colors.transparent,
                           ),
@@ -299,7 +307,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                       value: dailogueList[index].stateValue,
                                       side: BorderSide(
                                           width: 1.4,
-                                          color: Constants.ftaColorLight),
+                                          color: Constants.ctaColorLight),
                                       activeColor: Constants.ctaColorLight,
                                       checkColor: Colors.white,
                                       shape: RoundedRectangleBorder(
@@ -372,7 +380,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                       fontFamily: 'YuGothic',
                                       color:
                                           dailogueList[index].stateValue == true
-                                              ? Constants.ftaColorLight
+                                              ? Constants.ctaColorLight
                                               : Colors.grey.withOpacity(0.35),
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600),
@@ -452,7 +460,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                 color: dailogueList[index]
                                                             .stateValue ==
                                                         true
-                                                    ? Constants.ftaColorLight
+                                                    ? Constants.ctaColorLight
                                                     : Colors.grey
                                                         .withOpacity(0.35)),
                                             color: Colors.transparent,
@@ -470,7 +478,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                       side: BorderSide(
                                                           width: 1.4,
                                                           color: Constants
-                                                              .ftaColorLight),
+                                                              .ctaColorLight),
                                                       activeColor: Constants
                                                           .ctaColorLight,
                                                       checkColor: Colors.white,
@@ -522,7 +530,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                                   .stateValue ==
                                                               true
                                                           ? Constants
-                                                              .ftaColorLight
+                                                              .ctaColorLight
                                                           : Colors.grey
                                                               .withOpacity(
                                                                   0.35),
@@ -601,8 +609,8 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                 minimumSize: Size(220, 40),
                                                 backgroundColor: index ==
                                                         viewList.length - 1
-                                                    ? Constants.ctaColorLight
-                                                    : Constants.ftaColorLight),
+                                                    ? Constants.ftaColorLight
+                                                    : Constants.ctaColorLight),
                                             child: Text(
                                               viewList[index],
                                               style: TextStyle(
@@ -616,70 +624,13 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                               setState(() {
                                                 //ConfirmPremium
                                                 if (index == 3) {
-                                                  showDialog(
-                                                      context: context,
-                                                      barrierDismissible: false,
-                                                      // set to false if you want to force a rating
-                                                      builder:
-                                                          (context) =>
-                                                              StatefulBuilder(
-                                                                builder: (context,
-                                                                        setState) =>
-                                                                    Dialog(
-                                                                  shape:
-                                                                      RoundedRectangleBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            84),
-                                                                  ),
-                                                                  elevation:
-                                                                      0.0,
-                                                                  backgroundColor:
-                                                                      Colors
-                                                                          .transparent,
-                                                                  child:
-                                                                      Container(
-                                                                    // width: MediaQuery.of(context).size.width,
-
-                                                                    //height: MediaQuery.of(context).size.height,
-                                                                    constraints: BoxConstraints(
-                                                                        maxWidth:
-                                                                            880,
-                                                                        minHeight:
-                                                                            200),
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      shape: BoxShape
-                                                                          .rectangle,
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              16),
-                                                                      boxShadow: const [
-                                                                        BoxShadow(
-                                                                          color:
-                                                                              Colors.black26,
-                                                                          blurRadius:
-                                                                              10.0,
-                                                                          offset: Offset(
-                                                                              0.0,
-                                                                              10.0),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                    child: SingleChildScrollView(
-                                                                        scrollDirection: Axis.vertical,
-                                                                        child: Padding(
-                                                                          padding: const EdgeInsets
-                                                                              .all(
-                                                                              8.0),
-                                                                          child:
-                                                                              ConfirmPremium(),
-                                                                        )),
-                                                                  ),
-                                                                ),
-                                                              ));
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          ConfirmPremium(),
+                                                    ),
+                                                  );
 
                                                   setState(() {});
                                                 }
@@ -851,7 +802,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                                                                         height: 45,
                                                                                                         // Reduced height for better alignment
                                                                                                         decoration: BoxDecoration(
-                                                                                                          color: Constants.ftaColorLight,
+                                                                                                          color: Constants.ctaColorLight,
                                                                                                           borderRadius: BorderRadius.only(
                                                                                                             topRight: Radius.circular(360),
                                                                                                             bottomRight: Radius.circular(360),
@@ -1414,7 +1365,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                                                                                           padding: EdgeInsets.only(left: 16, right: 16),
                                                                                                                           decoration: BoxDecoration(
                                                                                                                             borderRadius: BorderRadius.circular(360),
-                                                                                                                            color: Constants.ftaColorLight,
+                                                                                                                            color: Constants.ctaColorLight,
                                                                                                                           ),
                                                                                                                           child: Row(
                                                                                                                             children: [
@@ -1448,7 +1399,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                                                                                           padding: EdgeInsets.only(left: 16, right: 16),
                                                                                                                           decoration: BoxDecoration(
                                                                                                                             borderRadius: BorderRadius.circular(360),
-                                                                                                                            color: Constants.ftaColorLight,
+                                                                                                                            color: Constants.ctaColorLight,
                                                                                                                           ),
                                                                                                                           child: Row(
                                                                                                                             children: [
@@ -1607,7 +1558,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                                                                                       padding: EdgeInsets.only(left: 16, right: 16),
                                                                                                                       decoration: BoxDecoration(
                                                                                                                         borderRadius: BorderRadius.circular(360),
-                                                                                                                        color: Constants.ftaColorLight,
+                                                                                                                        color: Constants.ctaColorLight,
                                                                                                                       ),
                                                                                                                       child: Row(
                                                                                                                         children: [
@@ -1641,7 +1592,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                                                                                       padding: EdgeInsets.only(left: 16, right: 16),
                                                                                                                       decoration: BoxDecoration(
                                                                                                                         borderRadius: BorderRadius.circular(360),
-                                                                                                                        color: Constants.ftaColorLight,
+                                                                                                                        color: Constants.ctaColorLight,
                                                                                                                       ),
                                                                                                                       child: Row(
                                                                                                                         children: [
@@ -1721,7 +1672,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                                                       padding: EdgeInsets.only(left: 16, right: 16),
                                                                                       decoration: BoxDecoration(
                                                                                         borderRadius: BorderRadius.circular(360),
-                                                                                        color: Constants.ftaColorLight,
+                                                                                        color: Constants.ctaColorLight,
                                                                                       ),
                                                                                       child: Center(
                                                                                         child: Text(
@@ -1745,7 +1696,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                                                       padding: EdgeInsets.only(left: 16, right: 16),
                                                                                       decoration: BoxDecoration(
                                                                                         borderRadius: BorderRadius.circular(360),
-                                                                                        color: Constants.ftaColorLight,
+                                                                                        color: Constants.ctaColorLight,
                                                                                       ),
                                                                                       child: Center(
                                                                                         child: Text(
@@ -1904,7 +1855,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                                                       padding: EdgeInsets.only(left: 16, right: 16),
                                                                                       decoration: BoxDecoration(
                                                                                         borderRadius: BorderRadius.circular(360),
-                                                                                        color: Constants.ftaColorLight,
+                                                                                        color: Constants.ctaColorLight,
                                                                                       ),
                                                                                       child: Center(
                                                                                         child: Text(
@@ -1928,7 +1879,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                                                       padding: EdgeInsets.only(left: 16, right: 16),
                                                                                       decoration: BoxDecoration(
                                                                                         borderRadius: BorderRadius.circular(360),
-                                                                                        color: Constants.ftaColorLight,
+                                                                                        color: Constants.ctaColorLight,
                                                                                       ),
                                                                                       child: Center(
                                                                                         child: Text(
@@ -2066,7 +2017,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                                               ),
                                                                               if (mainMember != null)
                                                                                 SizedBox(
-                                                                                  height: 150,
+                                                                                  height: 200,
                                                                                   width: 600,
                                                                                   child: AdvancedMemberCard(member: mainMember!),
                                                                                 ),
@@ -2098,7 +2049,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                                                                         padding: EdgeInsets.only(left: 16, right: 16),
                                                                                         decoration: BoxDecoration(
                                                                                           borderRadius: BorderRadius.circular(360),
-                                                                                          color: Constants.ftaColorLight,
+                                                                                          color: Constants.ctaColorLight,
                                                                                         ),
                                                                                         child: Center(
                                                                                           child: Text(
@@ -2134,6 +2085,9 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                         );
                                       },
                                     ),
+                                  ),
+                                  SizedBox(
+                                    height: 16,
                                   ),
                                   StyledText(
                                     text: callClientQuestions["Good Morning"]
@@ -2217,7 +2171,7 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                       style: TextButton.styleFrom(
                                           minimumSize: Size(220, 50),
                                           backgroundColor:
-                                              Constants.ftaColorLight),
+                                              Constants.ctaColorLight),
                                       child: Text(
                                         callClientQuestions["Good Morning"]
                                                 ["Yes1"]["Yes2"]
@@ -2231,495 +2185,13 @@ class _FieldSalesCallClientPageState extends State<FieldSalesCallClientPage> {
                                       ),
                                       onPressed: () {
                                         setState(() {
-                                          showDialog(
-                                              context: context,
-                                              barrierDismissible: false,
-                                              // set to false if you want to force a rating
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
                                               builder: (context) =>
-                                                  StatefulBuilder(
-                                                      builder:
-                                                          (context, setState) =>
-                                                              Dialog(
-                                                                elevation: 0.0,
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .transparent,
-                                                                shape:
-                                                                    RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              12),
-                                                                ),
-                                                                child: Container(
-                                                                    width: MediaQuery.of(context).size.width,
-                                                                    height: MediaQuery.of(context).size.height,
-                                                                    //padding: EdgeInsets.all(16),
-                                                                    constraints: BoxConstraints(
-                                                                      maxWidth:
-                                                                          880,
-                                                                    ),
-                                                                    //margin: EdgeInsets.only(top: 16),
-                                                                    decoration: BoxDecoration(
-                                                                      color: Colors
-                                                                          .white,
-                                                                      shape: BoxShape
-                                                                          .rectangle,
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              16),
-                                                                    ),
-                                                                    child: SingleChildScrollView(
-                                                                        child: Column(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .start,
-                                                                      children: [
-                                                                        SizedBox(
-                                                                            height:
-                                                                                24),
-                                                                        Padding(
-                                                                          padding: const EdgeInsets
-                                                                              .only(
-                                                                              left: 16.0,
-                                                                              right: 16),
-                                                                          child:
-                                                                              Row(
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.spaceBetween,
-                                                                            children: [
-                                                                              Text(
-                                                                                'SHOW WAITING PERIODS',
-                                                                                style: TextStyle(
-                                                                                  fontSize: 18,
-                                                                                  fontWeight: FontWeight.w500,
-                                                                                  fontFamily: 'YuGothic',
-                                                                                  color: Colors.black,
-                                                                                ),
-                                                                              ),
-                                                                              InkWell(
-                                                                                onTap: () => Navigator.of(context).pop(),
-                                                                                child: Icon(
-                                                                                  Icons.close,
-                                                                                  size: 28,
-                                                                                  color: Colors.black54,
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                        Padding(
-                                                                          padding: const EdgeInsets
-                                                                              .only(
-                                                                              left: 16.0,
-                                                                              right: 16),
-                                                                          child:
-                                                                              Divider(color: Colors.grey.withOpacity(0.55)),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              24,
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              24,
-                                                                        ),
-                                                                        Padding(
-                                                                          padding:
-                                                                              EdgeInsets.only(
-                                                                            left:
-                                                                                24,
-                                                                            right:
-                                                                                24,
-                                                                          ),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                MediaQuery.of(context).size.width,
-                                                                            padding: EdgeInsets.only(
-                                                                                left: 24,
-                                                                                right: 24,
-                                                                                top: 24,
-                                                                                bottom: 24),
-                                                                            decoration: BoxDecoration(
-                                                                                color: Colors.transparent,
-                                                                                shape: BoxShape.rectangle,
-                                                                                borderRadius: BorderRadius.circular(16),
-                                                                                border: Border.all(width: 1.0, color: Constants.ftaColorLight)),
-                                                                            child:
-                                                                                Row(
-                                                                              children: [
-                                                                                Expanded(
-                                                                                  child: SizedBox(
-                                                                                    //height: 45,
-                                                                                    child: ListView.builder(
-                                                                                        itemCount: descriptionList.length,
-                                                                                        scrollDirection: Axis.vertical,
-                                                                                        shrinkWrap: true,
-                                                                                        physics: NeverScrollableScrollPhysics(),
-                                                                                        itemBuilder: (context, index) {
-                                                                                          return Column(
-                                                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                                                            children: [
-                                                                                              Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.start, children: [
-                                                                                                Expanded(
-                                                                                                  flex: 1,
-                                                                                                  child: Row(
-                                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                                    mainAxisAlignment: MainAxisAlignment.start,
-                                                                                                    children: [
-                                                                                                      Expanded(
-                                                                                                        child: Text(
-                                                                                                          descriptionList[index].description,
-                                                                                                          style: TextStyle(fontSize: 14, fontFamily: 'YuGothic', fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                                        ),
-                                                                                                      ),
-                                                                                                    ],
-                                                                                                  ),
-                                                                                                ),
-                                                                                                SizedBox(width: 22),
-                                                                                                index < descriptionList.length - 1
-                                                                                                    ? Transform.scale(
-                                                                                                        scaleX: 1.4,
-                                                                                                        scaleY: 1.4,
-                                                                                                        child: Checkbox(
-                                                                                                            splashRadius: 0.0,
-                                                                                                            value: descriptionList[index].value,
-                                                                                                            side: BorderSide(width: 1.4, color: Constants.ftaColorLight),
-                                                                                                            activeColor: Constants.ctaColorLight,
-                                                                                                            checkColor: Colors.white,
-                                                                                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(360.0)),
-                                                                                                            onChanged: (newValue) {
-                                                                                                              descriptionList[index].value = newValue!;
-                                                                                                              setState(() {
-                                                                                                                if (index == 0) {
-                                                                                                                  if (descriptionList[index].value == true) {
-                                                                                                                    Constants.trueOrFalseStringValueF = "Yes";
-                                                                                                                    Constants.documentsIndexedPolicyDocuments = Constants.trueOrFalseStringValueF;
-                                                                                                                  }
-                                                                                                                  if (descriptionList[index].value == false) {
-                                                                                                                    Constants.trueOrFalseStringValueF = descriptionList[index].stringValue;
-                                                                                                                    Constants.documentsIndexedPolicyDocuments = Constants.trueOrFalseStringValueF;
-                                                                                                                  }
-                                                                                                                }
-                                                                                                                if (index == 1) {
-                                                                                                                  if (descriptionList[index].value == true) {
-                                                                                                                    Constants.trueOrFalseStringValueF = "Yes";
-                                                                                                                    Constants.isDeclarationsRead = Constants.trueOrFalseStringValueF;
-                                                                                                                  }
-                                                                                                                  if (descriptionList[index].value == false) {
-                                                                                                                    Constants.trueOrFalseStringValueF = descriptionList[index].stringValue;
-                                                                                                                    Constants.isDeclarationsRead = Constants.trueOrFalseStringValueF;
-                                                                                                                  }
-                                                                                                                }
-                                                                                                                print("hfdfhghsdghgds ${Constants.trueOrFalseStringValueF}");
-                                                                                                              });
-                                                                                                            }),
-                                                                                                      )
-                                                                                                    : Container()
-                                                                                              ]),
-                                                                                              index < descriptionList.length - 1
-                                                                                                  ? SizedBox(
-                                                                                                      height: 8,
-                                                                                                    )
-                                                                                                  : Container(),
-                                                                                              index < descriptionList.length - 1
-                                                                                                  ? Padding(
-                                                                                                      padding: const EdgeInsets.only(left: 16.0, right: 16),
-                                                                                                      child: Divider(color: Colors.grey.withOpacity(0.55)),
-                                                                                                    )
-                                                                                                  : Container(),
-                                                                                              index < descriptionList.length - 1
-                                                                                                  ? SizedBox(
-                                                                                                      height: 8,
-                                                                                                    )
-                                                                                                  : Container(),
-                                                                                            ],
-                                                                                          );
-                                                                                        }),
-                                                                                  ),
-                                                                                ),
-                                                                                SizedBox(
-                                                                                  height: 12,
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              24,
-                                                                        ),
-                                                                        Padding(
-                                                                          padding:
-                                                                              EdgeInsets.only(
-                                                                            left:
-                                                                                24,
-                                                                            right:
-                                                                                24,
-                                                                          ),
-                                                                          child:
-                                                                              Row(
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
-                                                                            children: [
-                                                                              Expanded(
-                                                                                child: Container(
-                                                                                  height: 266,
-                                                                                  width: 1000,
-                                                                                  child: Column(
-                                                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                                                    children: [
-                                                                                      Container(
-                                                                                        height: 50,
-                                                                                        //#00a65a
-                                                                                        //width: 350,
-                                                                                        padding: const EdgeInsets.only(left: 24, right: 28),
-                                                                                        decoration: BoxDecoration(
-                                                                                          borderRadius: const BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16)),
-                                                                                          color: Constants.ftaColorLight,
-                                                                                        ),
-                                                                                        child: Row(
-                                                                                          crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                          mainAxisAlignment: MainAxisAlignment.start,
-                                                                                          children: [
-                                                                                            Expanded(
-                                                                                              child: Text(
-                                                                                                'Funeral Product',
-                                                                                                style: TextStyle(fontSize: 16, fontFamily: 'YuGothic', color: Colors.white, fontWeight: FontWeight.w600),
-                                                                                              ),
-                                                                                            ),
-                                                                                          ],
-                                                                                        ),
-                                                                                      ),
-                                                                                      Expanded(
-                                                                                        child: Container(
-                                                                                            //height: 180,
-                                                                                            padding: const EdgeInsets.only(left: 24, right: 24, top: 24),
-                                                                                            decoration: BoxDecoration(
-                                                                                              border: Border(left: BorderSide(color: Constants.ftaColorLight), right: BorderSide(color: Constants.ftaColorLight), bottom: BorderSide(color: Constants.ftaColorLight)),
-                                                                                              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
-                                                                                              //color: Colors.grey
-                                                                                            ),
-                                                                                            child: Column(
-                                                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                              mainAxisAlignment: MainAxisAlignment.start,
-                                                                                              children: [
-                                                                                                Row(
-                                                                                                  children: [
-                                                                                                    Expanded(
-                                                                                                      child: SizedBox(
-                                                                                                        //height: 45,
-                                                                                                        child: ListView.builder(
-                                                                                                            itemCount: funeralProductList.length,
-                                                                                                            scrollDirection: Axis.vertical,
-                                                                                                            shrinkWrap: true,
-                                                                                                            physics: NeverScrollableScrollPhysics(),
-                                                                                                            itemBuilder: (context, index) {
-                                                                                                              return Column(
-                                                                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                                                                children: [
-                                                                                                                  Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisAlignment: MainAxisAlignment.start, children: [
-                                                                                                                    Container(
-                                                                                                                      width: 160,
-                                                                                                                      child: Text(
-                                                                                                                        funeralProductList[index].productName,
-                                                                                                                        style: TextStyle(fontSize: 14, fontFamily: 'YuGothic', fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                                                      ),
-                                                                                                                    ),
-                                                                                                                    SizedBox(width: 22),
-                                                                                                                    Expanded(
-                                                                                                                      flex: 1,
-                                                                                                                      child: Row(
-                                                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                                                        mainAxisAlignment: MainAxisAlignment.start,
-                                                                                                                        children: [
-                                                                                                                          Expanded(
-                                                                                                                            child: Text(
-                                                                                                                              funeralProductList[index].productDescription,
-                                                                                                                              style: TextStyle(fontSize: 14, fontFamily: 'YuGothic', fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                                                            ),
-                                                                                                                          ),
-                                                                                                                        ],
-                                                                                                                      ),
-                                                                                                                    ),
-                                                                                                                    SizedBox(width: 22),
-                                                                                                                    Transform.scale(
-                                                                                                                      scaleX: 1.4,
-                                                                                                                      scaleY: 1.4,
-                                                                                                                      child: Checkbox(
-                                                                                                                          splashRadius: 0.0,
-                                                                                                                          value: funeralProductList[index].value,
-                                                                                                                          side: BorderSide(width: 1.4, color: Constants.ftaColorLight),
-                                                                                                                          activeColor: Constants.ctaColorLight,
-                                                                                                                          checkColor: Colors.white,
-                                                                                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(360.0)),
-                                                                                                                          onChanged: (newValue) {
-                                                                                                                            funeralProductList[index].value = newValue!;
-                                                                                                                            setState(() {
-                                                                                                                              if (funeralProductList[index].value == true) {
-                                                                                                                                Constants.trueOrFalseStringValueE = "Yes";
-                                                                                                                              }
-                                                                                                                              if (funeralProductList[index].value == false) {
-                                                                                                                                Constants.trueOrFalseStringValueE = funeralProductList[index].stringValue;
-                                                                                                                              }
-
-                                                                                                                              print("pippojiohyiiugfh ${Constants.trueOrFalseStringValueE}");
-                                                                                                                            });
-                                                                                                                          }),
-                                                                                                                    )
-                                                                                                                  ]),
-                                                                                                                  index < funeralProductList.length - 1
-                                                                                                                      ? SizedBox(
-                                                                                                                          height: 8,
-                                                                                                                        )
-                                                                                                                      : Container(),
-                                                                                                                  index < funeralProductList.length - 1
-                                                                                                                      ? Divider(
-                                                                                                                          thickness: 1.0,
-                                                                                                                          color: Colors.grey.withOpacity(0.35),
-                                                                                                                        )
-                                                                                                                      : Container(),
-                                                                                                                  index < funeralProductList.length - 1
-                                                                                                                      ? SizedBox(
-                                                                                                                          height: 8,
-                                                                                                                        )
-                                                                                                                      : Container(),
-                                                                                                                ],
-                                                                                                              );
-                                                                                                            }),
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                  ],
-                                                                                                ),
-                                                                                              ],
-                                                                                            )),
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(
-                                                                          height:
-                                                                              24,
-                                                                        ),
-                                                                        Padding(
-                                                                          padding: EdgeInsets.only(
-                                                                              left: 24,
-                                                                              right: 24,
-                                                                              bottom: 24),
-                                                                          child:
-                                                                              Container(
-                                                                            width:
-                                                                                MediaQuery.of(context).size.width,
-                                                                            padding: EdgeInsets.only(
-                                                                                left: 24,
-                                                                                right: 24,
-                                                                                top: 24,
-                                                                                bottom: 24),
-                                                                            decoration: BoxDecoration(
-                                                                                color: Colors.transparent,
-                                                                                shape: BoxShape.rectangle,
-                                                                                borderRadius: BorderRadius.circular(16),
-                                                                                border: Border.all(width: 1.0, color: Constants.ftaColorLight)),
-                                                                            child:
-                                                                                Column(
-                                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                                              mainAxisAlignment: MainAxisAlignment.start,
-                                                                              children: [
-                                                                                Row(
-                                                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                                  children: [
-                                                                                    Text(
-                                                                                      "Children/Grandchildren",
-                                                                                      style: TextStyle(fontSize: 16, fontFamily: 'YuGothic', fontWeight: FontWeight.w500, color: Colors.black),
-                                                                                    ),
-                                                                                    Transform.scale(
-                                                                                      scaleX: 1.4,
-                                                                                      scaleY: 1.4,
-                                                                                      child: Checkbox(
-                                                                                          splashRadius: 0.0,
-                                                                                          value: checkBoxValue3,
-                                                                                          side: BorderSide(width: 1.4, color: Constants.ftaColorLight),
-                                                                                          activeColor: Constants.ctaColorLight,
-                                                                                          checkColor: Colors.white,
-                                                                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(360.0)),
-                                                                                          onChanged: (bool? newValue) {
-                                                                                            isTickMarked = 1;
-                                                                                            checkBoxValue3 = newValue!;
-                                                                                            setState(() {
-                                                                                              if (checkBoxValue3 == true) {
-                                                                                                Constants.trueOrFalseStringValueG = "Yes";
-                                                                                                Constants.currentleadAvailable!.leadObject.documentsIndexedAdditionalInformation = Constants.trueOrFalseStringValueG;
-                                                                                              }
-                                                                                              if (checkBoxValue3 == false) {
-                                                                                                Constants.trueOrFalseStringValueG = "No";
-                                                                                                //  Constants.currentleadAvailable!.documentsIndexedAdditionalInformation = Constants.trueOrFalseStringValueG;
-                                                                                              }
-                                                                                              print("qwawsqszqewssw ${Constants.trueOrFalseStringValueG}");
-                                                                                            });
-                                                                                          }),
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                                SizedBox(
-                                                                                  height: 24,
-                                                                                ),
-                                                                                ListView.builder(
-                                                                                    itemCount: childrenList.length,
-                                                                                    shrinkWrap: true,
-                                                                                    itemBuilder: (context, index) {
-                                                                                      return Column(
-                                                                                        children: [
-                                                                                          Row(
-                                                                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                                                            children: [
-                                                                                              Container(
-                                                                                                height: 8,
-                                                                                                width: 8,
-                                                                                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(360), color: Colors.black),
-                                                                                              ),
-                                                                                              SizedBox(
-                                                                                                width: 22,
-                                                                                              ),
-                                                                                              Expanded(
-                                                                                                child: Text(
-                                                                                                  childrenList[index],
-                                                                                                  style: TextStyle(fontSize: 14, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                                ),
-                                                                                              ),
-                                                                                            ],
-                                                                                          ),
-                                                                                          index <= descriptionList.length - 1
-                                                                                              ? SizedBox(
-                                                                                                  height: 24,
-                                                                                                )
-                                                                                              : SizedBox(
-                                                                                                  height: 0,
-                                                                                                )
-                                                                                        ],
-                                                                                      );
-                                                                                    }),
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ))),
-                                                              )));
+                                                  BranchWaitingPeriodsScreen(),
+                                            ),
+                                          );
                                         });
                                       },
                                     ),
@@ -2875,16 +2347,16 @@ class _AdvancedMemberCardState extends State<AdvancedMemberCard> {
               borderRadius: BorderRadius.circular(12.0),
               border: Border(
                 top: BorderSide(
-                    color: Constants.ftaColorLight,
+                    color: Constants.ctaColorLight,
                     width: 2.0), // Thick top border
                 left: BorderSide(
-                    color: Constants.ftaColorLight,
+                    color: Constants.ctaColorLight,
                     width: 1.0), // Thin left border
                 right: BorderSide(
-                    color: Constants.ftaColorLight,
+                    color: Constants.ctaColorLight,
                     width: 1.0), // Thin right border
                 bottom: BorderSide(
-                    color: Constants.ftaColorLight,
+                    color: Constants.ctaColorLight,
                     width: 1.0), // Thin bottom border
               ),
               boxShadow: [
@@ -2901,7 +2373,7 @@ class _AdvancedMemberCardState extends State<AdvancedMemberCard> {
                 // Profile Avatar
                 CircleAvatar(
                   radius: 30,
-                  backgroundColor: Constants.ftaColorLight,
+                  backgroundColor: Constants.ctaColorLight,
                   child: Icon(
                     widget.member.gender.toLowerCase() == "female"
                         ? Icons.female
@@ -3028,14 +2500,14 @@ class _AdvancedMemberCardState extends State<AdvancedMemberCard> {
                   child: Container(
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
-                      color: Constants.ftaColorLight.withOpacity(0.1),
+                      color: Constants.ctaColorLight.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8.0),
                       border: Border.all(
-                          color: Constants.ftaColorLight, width: 1.5),
+                          color: Constants.ctaColorLight, width: 1.5),
                     ),
                     child: Icon(
                       Icons.edit,
-                      color: Constants.ftaColorLight,
+                      color: Constants.ctaColorLight,
                       size: 20,
                     ),
                   ),
@@ -3046,5 +2518,442 @@ class _AdvancedMemberCardState extends State<AdvancedMemberCard> {
         ),
       ),
     );
+  }
+}
+
+class WaitingPeriodScreen extends StatefulWidget {
+  const WaitingPeriodScreen({super.key});
+
+  @override
+  State<WaitingPeriodScreen> createState() => _WaitingPeriodScreenState();
+}
+
+class _WaitingPeriodScreenState extends State<WaitingPeriodScreen> {
+  // Optional: store local state or rely on Constants.acceptedDeclarationsAndWaitingPeriods
+  // For simplicity, we'll use Constants here.
+
+  Future<void> _showDeclarationsDialog() async {
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          surfaceTintColor: Colors.white,
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          // The ConstrainedBox ensures the dialog does not exceed 400 in width
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // shrink-wrap vertically
+                children: [
+                  const SizedBox(height: 16),
+                  // Icon + Title
+                  Center(
+                    child: Column(
+                      children: [
+                        const Icon(Icons.warning_amber_rounded,
+                            color: Colors.orange, size: 40),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'DECLARATION BY SALES AGENT',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'YuGothic',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Paragraph 1
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      "I confirm that I have read and explained all the declarations and "
+                      "exclusions to the client during our phone call. This includes verifying "
+                      "the client’s understanding of coverage limitations, disclaimers, and "
+                      "relevant policy details. I have not withheld any crucial information "
+                      "or misrepresented any policy terms.",
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Paragraph 2
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      "I have also thoroughly explained the waiting periods, ensuring the client "
+                      "is aware of how they apply to the policy coverage. The client has "
+                      "acknowledged their understanding of these waiting periods.",
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Confirmation text
+                  const Text(
+                    "Do you accept the declarations and waiting periods?",
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Actions Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, "I don't"),
+                        child: Text(
+                          "I don't",
+                          style: TextStyle(color: Constants.ftaColorLight),
+                        ),
+                      ),
+                      Container(
+                        width: 160,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            backgroundColor: Constants.ftaColorLight,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 15),
+                            // Text color
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          onPressed: () => Navigator.pop(context, "I agree"),
+                          child: Text(
+                            "I agree",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    // If user chooses "I agree", set the box to checked; otherwise, uncheck it.
+    if (result == "I agree") {
+      setState(() {
+        Constants.accepteddeclationsAndWaitiongPeriods = true;
+      });
+    } else {
+      setState(() {
+        Constants.accepteddeclationsAndWaitiongPeriods = false;
+      });
+    }
+  }
+
+  // Example: remove the IntrinsicHeight and just use a normal Row
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(left: 24, right: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 16),
+
+          // Row with two columns, each minHeight=400
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start, // or stretch
+            children: [
+              // Right Column (Waiting Periods)
+              Expanded(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 400),
+                  child: CustomCard(
+                    elevation: 5,
+                    color: Colors.white,
+                    child: Container(
+                      padding: EdgeInsets.zero,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: SingleChildScrollView(
+                        physics: NeverScrollableScrollPhysics(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.15),
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(12),
+                                  topLeft: Radius.circular(12),
+                                ),
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.all(12.0),
+                                child: Center(
+                                  child: Text(
+                                    "Waiting Periods",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'YuGothic',
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: BranchWaitingPeriodsScreen(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Centered text
+          Row(
+            children: [
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                    child: StyledText(
+                      text:
+                          "I confirm that I have read all the declarations and waiting periods to the client.",
+                      style: const TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          // Checkbox option
+          Center(
+            child: Container(
+              height: 60,
+              width: 180,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  width: 1.0,
+                  color: Constants.accepteddeclationsAndWaitiongPeriods
+                      ? Constants.ftaColorLight
+                      : Colors.grey.withOpacity(0.35),
+                ),
+                color: Colors.transparent,
+              ),
+              child: Row(
+                children: [
+                  Transform.scale(
+                    scaleX: 1.3,
+                    scaleY: 1.3,
+                    child: Checkbox(
+                      value: Constants.accepteddeclationsAndWaitiongPeriods,
+                      side: BorderSide(
+                        width: 1.4,
+                        color: Constants.ftaColorLight,
+                      ),
+                      activeColor: Constants.ctaColorLight,
+                      checkColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(360),
+                      ),
+                      onChanged: (bool? newValue) async {
+                        if (newValue == true) {
+                          await _showDeclarationsDialog();
+                        } else {
+                          setState(() {
+                            Constants.accepteddeclationsAndWaitiongPeriods =
+                                false;
+                          });
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "I accept",
+                    style: TextStyle(
+                      color: Constants.accepteddeclationsAndWaitiongPeriods
+                          ? Constants.ftaColorLight
+                          : Colors.grey.withOpacity(0.35),
+                      fontSize: 18,
+                      fontFamily: 'YuGothic',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+}
+
+class BranchWaitingPeriodsScreen extends StatefulWidget {
+  @override
+  _BranchWaitingPeriodsScreenState createState() =>
+      _BranchWaitingPeriodsScreenState();
+}
+
+class _BranchWaitingPeriodsScreenState
+    extends State<BranchWaitingPeriodsScreen> {
+  late Future<List<ProductWaitingPeriod>> futureProducts;
+
+  @override
+  void initState() {
+    super.initState();
+    SalesService salesService = SalesService();
+    futureProducts = salesService.fetchGroupedProducts();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            title: Text("Waiting Periods"),
+            surfaceTintColor: Colors.white,
+            shadowColor: Colors.black.withOpacity(0.65),
+
+            //Back Button
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+          backgroundColor: Colors.white,
+          body: FutureBuilder<List<ProductWaitingPeriod>>(
+            future: futureProducts,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text('No products found.'));
+              }
+
+              SalesService salesService = SalesService();
+              salesService.fetchScriptConfig().then((val) {
+                Constants.currentConfigAvailable = val;
+                setState(() {});
+              }).catchError((error) {
+                print('Error loading script config: $error');
+                // Continue without script config - don't block the user
+              });
+
+              final products = snapshot.data!;
+
+              // Remove duplicates based on type field
+              final seen = <String>{};
+              final uniqueProducts =
+                  products.where((product) => seen.add(product.type)).toList();
+
+              List<Paragraph>? declarations = Constants
+                  .currentConfigAvailable?.paragraphs["Waiting Periods"];
+              if (declarations == null) {
+                declarations = [];
+              }
+
+              return Column(
+                children: [
+                  // Only show the CustomScriptText if declarations is not empty
+                  if (declarations.isNotEmpty)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.only(left: 0.0, bottom: 0),
+                            child: CustomScriptText(
+                              text: declarations.first.paragraph,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                  Container(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: uniqueProducts.length, // Use unique products
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final product =
+                            uniqueProducts[index]; // Use unique products
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: CustomCard(
+                            elevation: 4,
+                            color: Colors.white,
+                            child: Padding(
+                              padding: EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    product.productName,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                      'Product Family: ${product.productFamily}'),
+                                  SizedBox(height: 2),
+                                  Text(
+                                      'Waiting Period: ${product.waitingPeriod} months'),
+                                  SizedBox(height: 2),
+                                  Text('Member Type(s): ${product.type}'),
+                                  SizedBox(height: 2),
+                                  Text('Death Type: ${product.deathType}'),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ));
   }
 }

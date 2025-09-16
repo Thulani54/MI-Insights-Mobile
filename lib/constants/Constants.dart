@@ -7,7 +7,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart' as jst;
+import 'package:mi_insights/models/ScriptConfig.dart';
 import 'package:mi_insights/models/notification.dart';
+import 'package:styled_text/tags/styled_text_tag_base.dart';
 
 import '../config/EnvironmentConfig.dart';
 import '../models/BusinessInfo.dart';
@@ -3159,4 +3161,10 @@ class Constants {
     "SubscriptionAccount",
     "TransmissionAccount"
   ];
+
+  static bool accepteddeclationsAndWaitiongPeriods = false;
+
+  static Map<String, StyledTextTagBase>? scriptTextTags;
+
+  static ScriptConfig? currentConfigAvailable;
 }

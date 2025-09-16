@@ -1031,15 +1031,34 @@ class _MyHomePageState extends State<MyHomePage> with InactivityLogoutMixin {
                             return InkWell(
                               onTap: () {
                                 print("index " + index.toString());
-                                if (sectionsList[index].id == "Sales") {
+                                if (sectionsList[index].id == "Sales" || sectionsList[index].id == "My Sales") {
                                   Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ExecutivesSalesReport()))
-                                      .then((_) {
+                                      context,
+                                      MaterialPageRoute(builder: (context) => sectionsList[index].map)
+                                  ).then((_) {
                                     Constants.pageLevel = 1;
                                   });
+                                } else if (sectionsList[index].id == "Collections" || sectionsList[index].id == "My Collect") {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => sectionsList[index].map)
+                                  ).then((_) {
+                                    Constants.pageLevel = 1;
+                                  });
+                                } else if (sectionsList[index].id == "My Chats") {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => sectionsList[index].map)
+                                  ).then((_) {
+                                    Constants.pageLevel = 1;
+                                  });
+                                } else if (sectionsList[index].id == "My Comm") {
+                                  _showCommissionsDialog(); // Since this requires password protection
+                                } else if (sectionsList[index].id == "Micro-Learn") {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => sectionsList[index].map)
+                                  );
                                 } else if (sectionsList[index].id ==
                                     "Cust. Profile") {
                                   Navigator.push(
@@ -1047,16 +1066,6 @@ class _MyHomePageState extends State<MyHomePage> with InactivityLogoutMixin {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               CustomersReport())).then((_) {
-                                    Constants.pageLevel = 1;
-                                  });
-                                } else if (sectionsList[index].id ==
-                                    "Collections") {
-                                  Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ExecutiveCollectionsReport()))
-                                      .then((_) {
                                     Constants.pageLevel = 1;
                                   });
                                 } else if (sectionsList[index].id ==
@@ -1115,20 +1124,6 @@ class _MyHomePageState extends State<MyHomePage> with InactivityLogoutMixin {
                                               CommsReport())).then((_) {
                                     Constants.pageLevel = 1;
                                   });
-                                } else if (sectionsList[index].id ==
-                                    "Micro-Learn") {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              ExecutiveMicroLearnReport()));
-                                } else if (sectionsList[index].id ==
-                                    "My Sales") {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              SalesAgentReport()));
                                 } else if (index == 10) {
                                   _showPasswordDialog();
                                 } else if (sectionsList[index].id ==
@@ -1399,6 +1394,9 @@ class _MyHomePageState extends State<MyHomePage> with InactivityLogoutMixin {
       //filterPageData();
 
       setState(() {});
+    }).catchError((error) {
+      print('Error loading script config: $error');
+      // Continue without script config - don't block the user
     });
     salesService.fetchParlourConfig(Constants.cec_client_id).then((val) {
       if (val != null) {

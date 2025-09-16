@@ -1,13 +1,22 @@
 import 'dart:math';
 
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mi_insights/screens/Sales%20Agent/universal_premium_calculator.dart';
-
+import 'package:motion_toast/motion_toast.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../constants/Constants.dart';
 import '../../customwidgets/CustomCard.dart';
+import '../../customwidgets/cssloadloader.dart';
+import '../../customwidgets/custom_input.dart';
+import '../../models/map_class.dart';
 import '../../services/MyNoyifier.dart';
 import '../../services/log.dart';
+import '../../services/sales_service.dart';
 import '../PaymentHistoryPage.dart';
+import 'SalesAgentSalesReport.dart';
 import 'conclusion.dart';
 import 'field_client_signature.dart';
 import 'field_premium_calculator.dart';
@@ -32,7 +41,7 @@ List<CreateLeads> createLeadStepsList = [
   CreateLeads("Premium Calculator", "premium_calculator"),
   CreateLeads("Member Details", "member_details"),
   CreateLeads("Communication Preferences", "communication_preferences"),
-  CreateLeads("Call Client", "call_client"),
+  // CreateLeads("Call Client", "call_client"),
   CreateLeads("Conclusion", "conclusion"),
   CreateLeads("OTP Verification", "otp_verification"),
   CreateLeads("Client Signature", "client_signature"),
@@ -98,7 +107,19 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
               style: TextStyle(color: Colors.black)),
           elevation: 6,
           leading: InkWell(
-            onTap: () => Navigator.of(context).pop(),
+            onTap: () {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => StatefulBuilder(
+                  builder: (context, setState) => EndCallDialog2(
+                    lead: Constants.currentleadAvailable!.leadObject,
+                    context2: context,
+                    type: "Field",
+                  ),
+                ),
+              );
+            },
             child: const Icon(Icons.arrow_back, color: Colors.black),
           ),
         ),
@@ -116,17 +137,21 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
                 child: Padding(
                   padding:
                       const EdgeInsets.only(top: 16.0, left: 16, right: 16),
-                  child: Card(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(36),
-                    ),
-                    color: Colors.white,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(32),
+                        border: Border.all(
+                          color: Colors.grey.withOpacity(0.35),
+                          width: (activeStep != index) ? 1 : 2,
+                        )),
                     child: Theme(
                       data: Theme.of(context)
                           .copyWith(dividerColor: Colors.transparent),
                       child: Column(
                         children: [
+                          SizedBox(
+                            height: 8,
+                          ),
                           // Header row with step number and title
                           Padding(
                             padding: const EdgeInsets.symmetric(
@@ -181,17 +206,18 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
                                   FieldSaleBasicInformation(
                                       type: widget.sale_type!)
                                 else if (step.stepNameId == "member_details")
-                                  FieldSalesMembersDetails()
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 16.0),
+                                    child: FieldSalesMembersDetails(),
+                                  )
                                 else if (step.stepNameId ==
                                     "premium_calculator")
-                                  Container(
-                                      height: 1300,
-                                      child: UniversalPremiumCalculator())
+                                  UniversalPremiumCalculator()
                                 else if (step.stepNameId ==
                                     "communication_preferences")
                                   FieldSalesCommunicationPreference()
-                                else if (step.stepNameId == "call_client")
-                                  FieldSalesCallClientPage()
+                                // else if (step.stepNameId == "call_client")
+                                //   FieldSalesCallClientPage()
                                 else if (step.stepNameId == "conclusion")
                                   Conclusion5a()
                                 else if (step.stepNameId == "client_signature")
@@ -224,15 +250,11 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
                                               height: 36,
                                               child: ElevatedButton(
                                                 onPressed: () {
-                                                  setState(() {
-                                                    activeStep = index - 1;
-                                                    // ✅ Force ListView to rebuild with new key
-                                                    key1 = UniqueKey();
-                                                  });
+                                                  onBackStep(index);
                                                 },
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor:
-                                                      Colors.grey[400],
+                                                      Constants.ctaColorLight,
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius:
                                                         BorderRadius.circular(
@@ -269,31 +291,7 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
                                               height: 36,
                                               child: ElevatedButton(
                                                 onPressed: () {
-                                                  // Check if we're on needs analysis and validate before moving
-                                                  if (step.stepNameId ==
-                                                          "needs_analysis" &&
-                                                      !canMoveFromNeedsAnalysis()) {
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                      const SnackBar(
-                                                        content: Text(
-                                                          'Please add at least one policy with one main member before proceeding.',
-                                                        ),
-                                                        backgroundColor:
-                                                            Colors.red,
-                                                        duration: Duration(
-                                                            seconds: 3),
-                                                      ),
-                                                    );
-                                                    return;
-                                                  }
-
-                                                  setState(() {
-                                                    activeStep = index + 1;
-                                                    // ✅ Force ListView to rebuild with new key
-                                                    key1 = UniqueKey();
-                                                  });
+                                                  _onNextStep(index, step);
                                                 },
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor:
@@ -410,7 +408,7 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
         CreateLeads("Premium Calculator", "premium_calculator"),
         CreateLeads("Member Details", "member_details"),
         CreateLeads("Communication Preferences", "communication_preferences"),
-        CreateLeads("Call Client", "call_client"),
+        // CreateLeads("Call Client", "call_client"),
         CreateLeads("Conclusion", "conclusion"),
         CreateLeads("Summary", "summary"),
       ];
@@ -428,6 +426,292 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
       ];
       setState(() {});
     }
+  }
+
+  void onBackStep(int currentIndex) {
+    if (!mounted) return;
+
+    // Get current step name
+    String stepName = createLeadStepsList[currentIndex].leadStepName;
+    String stepId = createLeadStepsList[currentIndex].stepNameId;
+
+    print("Back step from: $stepName");
+
+    // If we're on the Premium Calculator page and can go back within it,
+    // simply decrement the premium calculator step.
+    if (stepId == "premium_calculator") {
+      if (universalPremiumCalculatorActiveStep > 0) {
+        setState(() {
+          universalPremiumCalculatorActiveStep--;
+        });
+        return;
+      }
+      // If we're on the first step of premium calculator, go to previous main step
+    }
+
+    if (stepId == "member_details") {
+      if (fieldSalesActiveStep > 0) {
+        setState(() {
+          fieldSalesActiveStep--;
+        });
+        return;
+      }
+      // If we're on the first step of member details, go to previous main step
+    }
+
+    // Otherwise, handle the normal back step logic.
+    setState(() {
+      if (activeStep > 0) {
+        activeStep--;
+        key1 = UniqueKey();
+      }
+    });
+  }
+
+  void _onNextStep(int currentIndex, dynamic step) {
+    if (!mounted) return;
+
+    String stepName = step.leadStepName;
+    String stepId = step.stepNameId;
+
+    print("Next step from: $stepName");
+
+    setState(() {
+      // Update last position based on current step
+      if (stepId == "needs_analysis") {
+        Constants.currentleadAvailable!.leadObject.lastPosition =
+            "Needs Analysis";
+      } else if (stepId == "premium_calculator") {
+        Constants.currentleadAvailable!.leadObject.lastPosition =
+            "Premium Calculator";
+      } else if (stepId == "member_details") {
+        Constants.currentleadAvailable!.leadObject.lastPosition =
+            "Member Details";
+      } else if (stepId == "communication_preferences") {
+        Constants.currentleadAvailable!.leadObject.lastPosition =
+            "Communication Preference";
+        // } else if (stepId == "call_client") {
+        //   Constants.currentleadAvailable!.leadObject.lastPosition = "Call Client";
+      } else if (stepId == "conclusion") {
+        Constants.currentleadAvailable!.leadObject.lastPosition = "Conclusion";
+      }
+
+      // Validate current step before proceeding
+      if (stepId == "needs_analysis") {
+        if (!validateNeedsAnalysis()) {
+          return; // Stop if validation fails
+        }
+      } else if (stepId == "member_details") {
+        // Handle internal navigation within member details
+        if (fieldSalesActiveStep < fieldbottomBarList.length - 1) {
+          fieldSalesActiveStep++;
+          return; // Stay within member details
+        }
+        // If we're on the last step of member details, validate before moving to next main step
+        if (!validateMemberDetails()) {
+          return; // Stop if validation fails
+        }
+      } else if (stepId == "premium_calculator") {
+        // Handle internal navigation within premium calculator
+        if (universalPremiumCalculatorActiveStep <
+            universalPremuimCalculatorBottomBarList.length - 1) {
+          universalPremiumCalculatorActiveStep++;
+          return; // Stay within premium calculator
+        }
+        // If we're on the last step of premium calculator, validate before moving to next main step
+        if (!validatePremiumCalculator()) {
+          return; // Stop if validation fails
+        }
+      } else if (stepId == "communication_preferences") {
+        if (!validateCommunicationPreferences()) {
+          return; // Stop if validation fails
+        }
+        // } else if (stepId == "call_client") {
+        //   if (!validateCallClient()) {
+        //     return; // Stop if validation fails
+        //   }
+      }
+
+      // If validation passes, move to next step
+      if (currentIndex < createLeadStepsList.length - 1) {
+        activeStep = currentIndex + 1;
+        key1 = UniqueKey();
+      }
+    });
+  }
+
+  bool validateNeedsAnalysis() {
+    var membersAvailable = Constants.currentleadAvailable!.additionalMembers;
+    print("Validating members: ${membersAvailable.length} found");
+    if (membersAvailable.isEmpty) {
+      MotionToast.error(
+          height: 45,
+          description: Text(
+            "Add at least one member to proceed.",
+            style: TextStyle(color: Colors.white),
+          )).show(context);
+      return false;
+    }
+    return true;
+  }
+
+  bool validateMemberDetails() {
+    // Employment Status validation
+    String employmentStatus =
+        Constants.currentleadAvailable!.employer!.employmentStatus;
+    if (employmentStatus == "Employed") {
+      if (Constants.currentleadAvailable!.employer!.employerName.isEmpty) {
+        MotionToast.error(
+            height: 45,
+            description: Text(
+              "Please enter the employer name.",
+              style: TextStyle(color: Colors.white),
+            )).show(context);
+        return false;
+      }
+      if (Constants.currentleadAvailable!.employer!.occupation.isEmpty) {
+        MotionToast.error(
+            height: 45,
+            description: Text(
+              "Please select the occupation.",
+              style: TextStyle(color: Colors.white),
+            )).show(context);
+        return false;
+      }
+      // Add more employment validations as needed
+    }
+
+    // Payment Type validation
+    String paymentType = Constants.currentleadAvailable!.leadObject.paymentType;
+    if (paymentType.isEmpty) {
+      MotionToast.error(
+          height: 45,
+          description: Text(
+            "Please select the payment type.",
+            style: TextStyle(color: Colors.white),
+          )).show(context);
+      return false;
+    }
+
+    // Basic info validation
+    final premiumPayer =
+        Constants.currentleadAvailable!.policies.first.premiumPayer!;
+    String debitDay = premiumPayer.collectionday;
+    if (debitDay.isEmpty) {
+      MotionToast.error(
+          height: 45,
+          description: Text(
+            "Please select the debit day.",
+            style: TextStyle(color: Colors.white),
+          )).show(context);
+      return false;
+    }
+
+    String combinePremium = premiumPayer.combinePremium;
+    if (combinePremium.isEmpty) {
+      MotionToast.error(
+          height: 55,
+          description: Text(
+            "Please select the option to combine premium.",
+            style: TextStyle(color: Colors.white),
+          )).show(context);
+      return false;
+    }
+
+    return true;
+  }
+
+  bool validatePremiumCalculator() {
+    print("Validating premium calculator...");
+
+    // Create a list to store the references of policies with a zero premium.
+    List<String> invalidPolicyRefs = [];
+
+    // Loop through each policy and check if the premium was calculated.
+    for (var policy in Constants.currentleadAvailable!.policies) {
+      print("Premium check: ${policy.quote.totalAmountPayable}");
+      if (policy.quote.totalAmountPayable == 0 ||
+          policy.quote.totalAmountPayable == null) {
+        invalidPolicyRefs.add(policy.quote.reference ?? "Unknown");
+      }
+    }
+
+    // If there are any policies without a calculated premium, show an error.
+    if (invalidPolicyRefs.isNotEmpty) {
+      String refs = invalidPolicyRefs.join(", ");
+      String errorMessage =
+          "Premium was not calculated for policy reference(s)";
+
+      MotionToast.error(
+          height: 55,
+          description: Text(
+            errorMessage,
+            style: TextStyle(color: Colors.white),
+          )).show(context);
+      return false;
+    }
+
+    // Check commencement dates ONLY for policies with calculated premiums
+    List<String> policiesWithoutDates = [];
+    for (int i = 0; i < Constants.currentleadAvailable!.policies.length; i++) {
+      var policy = Constants.currentleadAvailable!.policies[i];
+
+      if ((policy.quote.totalAmountPayable ?? 0) > 0) {
+        String? commencementDate = policy.premiumPayer.commencementDate;
+        bool isDateMissing = commencementDate == null ||
+            commencementDate.isEmpty ||
+            commencementDate.trim().isEmpty;
+
+        if (isDateMissing) {
+          policiesWithoutDates.add(policy.quote.reference ?? "Policy ${i + 1}");
+        }
+      }
+    }
+
+    if (policiesWithoutDates.isNotEmpty) {
+      String policyRefs = policiesWithoutDates.join(", ");
+      String errorMessage = policiesWithoutDates.length == 1
+          ? "Please select the commencement date for policy: $policyRefs"
+          : "Please select commencement dates for policies: $policyRefs";
+
+      MotionToast.error(
+          height: 55,
+          description: Text(
+            errorMessage,
+            style: TextStyle(color: Colors.white),
+          )).show(context);
+      return false;
+    }
+
+    return true;
+  }
+
+  bool validateCommunicationPreferences() {
+    String communicationPreference =
+        Constants.currentleadAvailable!.leadObject.communicationPreference;
+    if (communicationPreference.isEmpty) {
+      MotionToast.error(
+          height: 55,
+          description: Text(
+            "Please select the communication preference type.",
+            style: TextStyle(color: Colors.white),
+          )).show(context);
+      return false;
+    }
+    return true;
+  }
+
+  bool validateCallClient() {
+    if (Constants.accepteddeclationsAndWaitiongPeriods == false) {
+      MotionToast.error(
+          height: 55,
+          description: Text(
+            "Please accept the declarations and waiting periods to proceed.",
+            style: TextStyle(color: Colors.white),
+          )).show(context);
+      return false;
+    }
+    return true;
   }
 }
 
@@ -1192,4 +1476,779 @@ String generateRandomDigits(int length) {
   }
 
   return result;
+}
+
+class EndCallDialog2 extends StatefulWidget {
+  final LeadObject lead;
+  final BuildContext context2;
+  final String type;
+
+  const EndCallDialog2(
+      {Key? key,
+      required this.lead,
+      required this.context2,
+      required this.type})
+      : super(key: key);
+
+  @override
+  State<EndCallDialog2> createState() => _EndCallDialog2State();
+}
+
+class _EndCallDialog2State extends State<EndCallDialog2> {
+  /// The complete list of "End Call" reasons
+  /// (Including those that have subReasons).
+  final List<EndCallReason> reasons = [
+    EndCallReason(
+      title: "Incomplete",
+      descriptions: [
+        "No Documents",
+        "Incomplete Form",
+        "Unclear Images",
+        "Invalid ID Number",
+        "Incorrect Premium",
+        "No Affidavit",
+        "Beneficiary Details",
+        "Mandate Not Attached",
+        "Invisible Application Form",
+        "Incorrect Application Form",
+      ],
+    ),
+    EndCallReason(
+      title: "Not Interested",
+      descriptions: [
+        "Wrong Number",
+        "Already Covered",
+        "Client Hang-up",
+        "Cannot Afford",
+        "Waiting Period"
+      ],
+      subReasons: [],
+    ),
+    EndCallReason(
+      title: "Does Not Qualify",
+      descriptions: [
+        "No SA ID",
+        "No Bank Account",
+        "Under Age",
+        "Over Age",
+        "NTU",
+        "Lapsed Policy",
+        "Maximum Cover Reached",
+      ],
+    ),
+    EndCallReason(
+      title: "Prank Call",
+      descriptions: ["Jail", "Child"],
+    ),
+    EndCallReason(
+      title: "Transfer",
+      descriptions: ["CSU", "To Pool", "Language Barrier"],
+      subReasons: [
+        SubReason(
+          title: "CSU Type",
+          options: ["maintenance", "Enquiry"],
+        ),
+      ],
+    ),
+    EndCallReason(
+      title: "Call Back",
+      descriptions: ["Client Request", "Network"],
+    ),
+  ];
+
+  /// The currently-selected main reason's title
+  String? selectedMainReason;
+  String? selectedSubReason;
+
+  /// Helper: returns the matching [EndCallReason] if the user has chosen one
+  EndCallReason? get selectedReason {
+    if (selectedMainReason == null) return null;
+    return reasons.firstWhere(
+      (r) => r.title == selectedMainReason,
+      orElse: () => EndCallReason(title: '', descriptions: []),
+    );
+  }
+
+  // Additional lists if you just want to append them to the reason dropdown
+  // leaving them out of the main reasons array.
+  // They won't show sub-descriptions though, unless you handle them similarly:
+  final List<String> _extraReasons = ["Duplicate", "Mystery Shopper"];
+
+  /// CONTROLLERS for date/time
+  final TextEditingController _callBackDateController = TextEditingController();
+  final TextEditingController _callBackTimeController = TextEditingController();
+  final TextEditingController _underDOBController = TextEditingController();
+  final TextEditingController _overDOBController = TextEditingController();
+
+  final FocusNode _dateFocusNode = FocusNode();
+  final FocusNode _timeFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _callBackDateController.dispose();
+    _callBackTimeController.dispose();
+    _underDOBController.dispose();
+    _overDOBController.dispose();
+    _dateFocusNode.dispose();
+    _timeFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+          horizontal: 24.0), // Add 24px padding on left and right
+      child: Dialog(
+        backgroundColor: Colors.black.withOpacity(0.65),
+        surfaceTintColor: Colors.black.withOpacity(0.65),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        insetPadding: EdgeInsets.zero, // Remove default dialog padding
+        child: Container(
+          width: double
+              .infinity, // Fill available width (which will be screen width - 48px due to padding)
+          constraints: const BoxConstraints(minHeight: 250),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              SizedBox(
+                height: 16,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, right: 16, top: 16),
+                child: Center(
+                  child: Text(
+                    "Important Reminder",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'YuGothic',
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, right: 16, top: 16),
+                child: Text(
+                  "Before ending the call, ensure the appointment date and time are confirmed with the client. Double-check these details to avoid any scheduling errors and provide a seamless experience.",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'YuGothic',
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildMainReasonDropdown(),
+                    if (selectedMainReason != null) _buildReasonContent(),
+                    _buildActionButtons2(widget.context2),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // -----------------------------------------------------------
+  // WIDGET BUILDERS
+  // -----------------------------------------------------------
+
+  Widget _buildHeader() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.14),
+      ),
+      height: 65,
+      child: Row(
+        children: [
+          SizedBox(
+            width: 24,
+          ),
+          Text(
+            "End Call",
+            style: TextStyle(
+              color: Constants.ftaColorLight,
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'YuGothic',
+            ),
+          ),
+          Spacer(),
+          InkWell(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Icon(
+                Icons.close,
+                color: Colors.grey,
+              )),
+          SizedBox(
+            width: 24,
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMainReasonDropdown() {
+    // We combine the reasons in the array + the extra reasons in _extraReasons
+    final allReasonTitles = [
+      ...reasons.map((r) => r.title),
+      ..._extraReasons,
+    ];
+
+    return _buildDropdown(
+      context: context,
+      value: selectedMainReason,
+      items: allReasonTitles,
+      hint: "Choose Reason",
+      onChanged: (value) {
+        setState(() {
+          selectedMainReason = value;
+          // Clear any previously selected sub-description
+          final sr = selectedReason;
+          if (sr != null) sr.selectedDescription = null;
+        });
+      },
+    );
+  }
+
+  Widget _buildReasonContent() {
+    final reason = selectedReason;
+    if (reason == null) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        // Sub-description dropdown
+        _buildDropdown(
+          context: context,
+          value: reason.selectedDescription,
+          items: reason.descriptions,
+          hint: "--Select--",
+          onChanged: (value) {
+            setState(() {
+              reason.selectedDescription = value;
+              selectedSubReason = value;
+            });
+          },
+        ),
+        if (reason.selectedDescription != null) ...[
+          // If this reason has "subReasons", build them
+          ..._buildSubReasons(reason),
+          // If sub-reason triggers special inputs (DOB, callback, etc.)
+          ..._buildSpecialInputs(reason),
+        ],
+      ],
+    );
+  }
+
+  List<Widget> _buildSubReasons(EndCallReason reason) {
+    if (reason.subReasons == null) return [];
+    return reason.subReasons!.map((subReason) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 16),
+          Text(
+            subReason.title, // e.g. "Insurance Company" or "CSU Type"
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 8),
+          _buildDropdown(
+            context: context,
+            value: subReason.selectedOption,
+            items: subReason.options,
+            hint: "--Select--",
+            onChanged: (value) {
+              setState(() {
+                subReason.selectedOption = value;
+              });
+            },
+          ),
+        ],
+      );
+    }).toList();
+  }
+
+  List<Widget> _buildSpecialInputs(EndCallReason reason) {
+    final widgets = <Widget>[];
+    final desc = reason.selectedDescription!;
+
+    // Example: If "Under Age" or "Over Age", ask for DOB
+    if (desc == "Under Age" || desc == "Over Age") {
+      widgets.add(const SizedBox(height: 16));
+      widgets.add(
+        _buildDateInput(
+          controller:
+              desc == "Under Age" ? _underDOBController : _overDOBController,
+          label: "Date of Birth",
+        ),
+      );
+    }
+
+    // Example: If "Call Back" reason + "Client Request" or "Network"
+    // then show the callback time.
+    if (reason.title == "Call Back" &&
+        (desc == "Client Request" || desc == "Network")) {
+      widgets.add(const SizedBox(height: 16));
+      widgets.add(_buildDateTimePickerSection());
+    }
+
+    return widgets;
+  }
+
+  Widget _buildDateTimePickerSection() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.grey.withOpacity(0.14),
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          // Header
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.withOpacity(0.14),
+            ),
+            height: 35,
+            child: Row(
+              children: [
+                Flexible(
+                  child: Center(
+                    child: Text(
+                      "Call Back Time",
+                      style: TextStyle(
+                        color: Constants.ftaColorLight,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'YuGothic',
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Body
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildDateInput(
+                    controller: _callBackDateController,
+                    label: "Call Back Date",
+                    focusNode: _dateFocusNode,
+                  ),
+                ),
+                const SizedBox(width: 22),
+                Expanded(child: _buildTimeInput()),
+                const SizedBox(width: 22),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButtons2(context2) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 24),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildButton(
+            "End call",
+            Constants.ctaColorLight,
+            () async {
+              // Check if a main reason is selected.
+              if (selectedMainReason == null) {
+                MotionToast.error(
+                  height: 40,
+                  width: 380,
+                  onClose: () {},
+                  description: const Text(
+                    "Select a reason to decline the lead",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ).show(context);
+                return;
+              }
+              // Check if a subreason is selected.
+              if (selectedSubReason == null) {
+                MotionToast.error(
+                  height: 40,
+                  width: 380,
+                  onClose: () {},
+                  description: const Text(
+                    "Select a subreason to decline the lead",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ).show(context);
+                return;
+              }
+              // If the main reason is "Call Back", check that the date and time are provided.
+              if (selectedMainReason == "Call Back") {
+                if (_callBackDateController.text.isEmpty ||
+                    _callBackTimeController.text.isEmpty) {
+                  MotionToast.error(
+                    height: 40,
+                    width: 380,
+                    onClose: () {},
+                    description: const Text(
+                      "Select call back date and time",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ).show(context);
+                  return;
+                }
+              }
+
+              // Show loading dialog
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => CSSLoadLoader(),
+              );
+
+              // Proceed to end the call.
+              print(
+                  "Ending call for lead2: ${widget.lead.onololeadid} ${_callBackDateController.text}");
+              Constants.currentleadAvailable!.leadObject.hangUpReason =
+                  selectedReason!.title;
+              Constants.currentleadAvailable!.leadObject.hangUpDesc1 =
+                  selectedSubReason.toString();
+              Constants.currentleadAvailable!.leadObject.callBackDate =
+                  _callBackDateController.text.toString();
+              Constants.currentleadAvailable!.leadObject.callBackTime =
+                  _callBackTimeController.text.toString();
+              //Constants.currentleadAvailable!.leadObject.callBackDate =  Constants.formatter.format(DateTime.parse());
+
+              SalesService salesService = SalesService();
+              try {
+                final value = await salesService.endLeadCall(
+                    lead: widget.lead, empId: Constants.cec_employeeid);
+
+                // Close loading dialog
+                Navigator.pop(context);
+
+                print(
+                    "Call ended: ${widget.lead.onololeadid} ${value.success} ${value.message}");
+                if (value.success == true &&
+                    value.message == 'Call ended successfully') {
+                  widget.lead.hangUpReason = selectedReason!.title;
+                  widget.lead.hangUpDesc1 = selectedSubReason.toString();
+                  setState(() {});
+
+                  // Close the EndCallDialog
+                  Navigator.pop(widget.context2);
+
+                  // Close the FieldSalesAffinity screen and go to SalesAgentReport
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => SalesAgentReport()),
+                    (route) => false,
+                  );
+                }
+              } catch (e) {
+                // Close loading dialog in case of error
+                Navigator.pop(context);
+                // Handle error - you might want to show an error dialog here
+                print("Error ending call: $e");
+              }
+            },
+          ),
+          const SizedBox(width: 32),
+        ],
+      ),
+    );
+  }
+
+  // -----------------------------------------------------------
+  // REUSABLE UI COMPONENTS
+  // -----------------------------------------------------------
+
+  Widget _buildDropdown({
+    required BuildContext context,
+    required String? value,
+    required List<String> items,
+    required String hint,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return Container(
+      // Optional: set top/bottom padding to space the dropdown
+      padding: const EdgeInsets.only(top: 14.0, bottom: 4.0),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton2<String>(
+          isExpanded: true,
+          alignment: AlignmentDirectional.center,
+          hint: Row(
+            children: [
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  hint,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'YuGothic',
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          items: items.map((String item) {
+            return DropdownMenuItem<String>(
+              value: item,
+              child: Text(
+                item,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'YuGothic',
+                  color: Colors.black,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            );
+          }).toList(),
+          value: value,
+          onChanged: onChanged,
+
+          // --- Button styling (container around the selected value)
+          buttonStyleData: ButtonStyleData(
+            height: 45,
+            width: MediaQuery.of(context).size.width,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(32),
+              border: Border.all(color: Colors.black26),
+              color: Colors.transparent,
+            ),
+            elevation: 0,
+          ),
+
+          // --- Icon styling (the arrow on the right)
+          iconStyleData: const IconStyleData(
+            icon: Icon(Icons.arrow_forward_ios_outlined),
+            iconSize: 14,
+            iconEnabledColor: Colors.black,
+            iconDisabledColor: Colors.transparent,
+          ),
+
+          // --- Dropdown menu styling
+          dropdownStyleData: DropdownStyleData(
+            elevation: 0,
+            maxHeight: 200,
+            width: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              color: Colors.white,
+            ),
+            offset: const Offset(-5, 0),
+            scrollbarTheme: ScrollbarThemeData(
+              radius: const Radius.circular(40),
+              thickness: MaterialStateProperty.all(6),
+              thumbVisibility: MaterialStateProperty.all(true),
+            ),
+          ),
+
+          // --- Individual menu item styling
+          menuItemStyleData: MenuItemStyleData(
+            overlayColor: null,
+            height: 40,
+            padding: EdgeInsets.only(left: 14, right: 14),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateInput({
+    required TextEditingController controller,
+    required String label,
+    FocusNode? focusNode,
+  }) {
+    return InkWell(
+      onTap: () {
+        _selectDate(context, controller);
+      },
+      child: CustomInputTransparent4(
+        controller: controller,
+        hintText: label,
+        focusNode: FocusNode(),
+        isEditable: false,
+        textInputAction: TextInputAction.next,
+        // We'll trigger the date picker on tap rather than onChanged
+        onChanged: (val) {},
+        prefix: Container(
+          width: 45,
+          height: 45,
+          margin: EdgeInsets.only(right: 8),
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(32),
+              bottomLeft: Radius.circular(32),
+            ),
+          ),
+          child: Icon(
+            CupertinoIcons.calendar,
+            size: 18,
+            color: Colors.white,
+          ),
+        ),
+        onSubmitted: (String) {},
+        isPasswordField: false,
+      ),
+    );
+  }
+
+  Widget _buildTimeInput() {
+    return InkWell(
+      onTap: () {
+        _selectTime(context, _callBackTimeController);
+      },
+      child: CustomInputTransparent4(
+        controller: _callBackTimeController,
+        hintText: "Call Back Time",
+        focusNode: _timeFocusNode,
+        isPasswordField: false,
+        isEditable: false,
+        textInputAction: TextInputAction.next,
+        // We'll trigger the time picker on tap rather than onChanged
+        onChanged: (val) {},
+        suffix: Container(
+          width: 45,
+          height: 45,
+          decoration: BoxDecoration(
+            color: Colors.grey,
+            borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(36),
+              bottomRight: Radius.circular(36),
+            ),
+          ),
+          child: const Icon(CupertinoIcons.time, size: 18, color: Colors.white),
+        ),
+        onSubmitted: (String) {},
+      ),
+    );
+  }
+
+  Widget _buildButton(String text, Color color, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        height: 40,
+        constraints: const BoxConstraints(minWidth: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(32),
+          color: color,
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: GoogleFonts.lato(
+              textStyle: const TextStyle(
+                fontSize: 13,
+                letterSpacing: 0,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'YuGothic',
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // -----------------------------------------------------------
+  // DATE/TIME PICKERS
+  // -----------------------------------------------------------
+
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
+    final DateTime now = DateTime.now();
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: now,
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        controller.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
+
+  Future<void> _selectTime(
+      BuildContext context, TextEditingController controller) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        controller.text = picked.format(context);
+      });
+    }
+  }
+}
+
+class SubReason {
+  final String title; // e.g. "Insurance Company" or "CSU Type"
+  final List<String> options; // e.g. ["Old Mutual", "Discovery", ...]
+  String? selectedOption; // user-chosen item
+
+  SubReason({
+    required this.title,
+    required this.options,
+    this.selectedOption,
+  });
+}
+
+class EndCallReason {
+  final String title; // e.g. "Incomplete", "Not Interested"
+  final List<String> descriptions; // the sub-descriptions
+  final List<SubReason>? subReasons; // optional nested subreason(s)
+
+  // user-chosen sub-description
+  String? selectedDescription;
+
+  EndCallReason({
+    required this.title,
+    required this.descriptions,
+    this.subReasons,
+    this.selectedDescription,
+  });
 }

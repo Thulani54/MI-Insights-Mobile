@@ -35,6 +35,9 @@ class _NeedAnalysisState extends State<NeedAnalysis> {
       child: containsMembers == true
           ? Column(
               children: [
+                SizedBox(
+                  height: 16,
+                ),
                 Row(
                   children: [
                     Text(
@@ -85,12 +88,12 @@ class _NeedAnalysisState extends State<NeedAnalysis> {
                 Center(
                   child: InkWell(
                     child: Container(
-                      height: 45,
+                      height: 40,
                       width: 160,
                       padding: EdgeInsets.only(left: 16, right: 16),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(360),
-                        color: Constants.ftaColorLight,
+                        color: Constants.ctaColorLight,
                       ),
                       child: Center(
                         child: Text(
@@ -143,7 +146,7 @@ class _NeedAnalysisState extends State<NeedAnalysis> {
                 Center(
                   child: InkWell(
                     child: Container(
-                      height: 45,
+                      height: 40,
                       width: 160,
                       padding: EdgeInsets.only(left: 16, right: 16),
                       decoration: BoxDecoration(
@@ -340,14 +343,14 @@ class _AdvancedMemberCard2State extends State<AdvancedMemberCard2> {
                           topLeft: Radius.circular(12),
                           bottomLeft: Radius.circular(12),
                         ),
-                        color: Constants.ftaColorLight.withOpacity(0.15)),
+                        color: Constants.ctaColorLight.withOpacity(0.15)),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         CircleAvatar(
                           radius: 30,
-                          backgroundColor: Constants.ftaColorLight,
+                          backgroundColor: Constants.ctaColorLight,
                           child: Icon(
                             widget.member.gender.toLowerCase() == "female"
                                 ? Icons.female
@@ -431,57 +434,29 @@ class _AdvancedMemberCard2State extends State<AdvancedMemberCard2> {
                 children: [
                   InkWell(
                     onTap: () {
-                      showDialog(
-                          context: context,
-                          barrierDismissible:
-                              false, // set to false if you want to force a rating
-                          builder: (context) => StatefulBuilder(
-                                builder: (context, setState) => Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(64),
-                                  ),
-                                  elevation: 0.0,
-                                  backgroundColor: Colors.transparent,
-                                  child: Container(
-                                    // width: MediaQuery.of(context).size.width,
-                                    height: MediaQuery.of(context).size.height,
-                                    constraints: BoxConstraints(
-                                      maxWidth: 1200,
-                                    ),
-                                    margin: const EdgeInsets.only(top: 16),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.rectangle,
-                                      borderRadius: BorderRadius.circular(16),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          blurRadius: 10.0,
-                                          offset: Offset(0.0, 10.0),
-                                        ),
-                                      ],
-                                    ),
-                                    child: NewMemberDialog2(
-                                      isEditMode: true,
-                                      relationship: widget.member.relationship,
-                                      title: widget.member.title,
-                                      name: widget.member.name,
-                                      surname: widget.member.surname,
-                                      dob: widget.member.dob,
-                                      gender: widget.member.gender,
-                                      phone: widget.member.contact,
-                                      idNumber: widget.member.id,
-                                      sourceOfIncome:
-                                          widget.member.sourceOfIncome,
-                                      sourceOfWealth:
-                                          widget.member.sourceOfWealth,
-                                      autoNumber: widget.member.autoNumber,
-                                      current_member_index: 0,
-                                      canAddMember: true,
-                                    ),
-                                  ),
-                                ),
-                              ));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NewMemberDialog2(
+                            isEditMode: true,
+                            relationship: widget.member.relationship,
+                            title: widget.member.title,
+                            name: widget.member.name,
+                            surname: widget.member.surname,
+                            dob: widget.member.dob,
+                            gender: widget.member.gender,
+                            phone: widget.member.contact,
+                            idNumber: widget.member.id,
+                            sourceOfIncome:
+                                widget.member.sourceOfIncome,
+                            sourceOfWealth:
+                                widget.member.sourceOfWealth,
+                            autoNumber: widget.member.autoNumber,
+                            current_member_index: 0,
+                            canAddMember: true,
+                          ),
+                        ),
+                      );
                     },
                     child: Container(
                       padding: const EdgeInsets.all(8.0),

@@ -380,6 +380,13 @@ class RoleBasedDrawer {
         'my_chats',
         'micro_learn',
       ],
+      'specialist': [
+        'sales',
+        'collections',
+        'commission',
+        'my_chats',
+        'micro_learn',
+      ],
     };
 
     // Get drawer items for the specific role

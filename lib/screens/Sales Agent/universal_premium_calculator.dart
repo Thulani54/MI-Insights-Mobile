@@ -78,6 +78,7 @@ List<BottomBar> universalPremuimCalculatorBottomBarList = [
   //BottomBar("Cover", "cover"),
   BottomBar("Value Added Benefits", "benefits"),
 ];
+
 List<Map<String, String>> steplist = [
   {'task': '1', 'content': "Main Insured"},
   {'task': '2', 'content': "Partner"},
@@ -2068,10 +2069,10 @@ class _UniversalPremiumCalculatorState
 
         SizedBox(height: 16),
         Padding(
-          padding: const EdgeInsets.only(left: 24.0, right: 24),
+          padding: const EdgeInsets.only(left: 4.0, right: 4),
           child: Container(
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.withOpacity(0.15)),
+              border: Border.all(color: Colors.grey.withOpacity(0.0)),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Column(
@@ -2909,59 +2910,23 @@ class _UniversalPremiumCalculatorState
                       ),
                       TextButton.icon(
                         onPressed: () {
-                          showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              // set to false if you want to force a rating
-                              builder: (context) => StatefulBuilder(
-                                    builder: (context, setState) => AlertDialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(64),
-                                      ),
-                                      elevation: 0.0,
-                                      backgroundColor: Colors.transparent,
-                                      content: Container(
-                                        // width: MediaQuery.of(context).size.width,
-
-                                        constraints: BoxConstraints(
-                                          maxWidth: (Constants
-                                                  .currentleadAvailable!
-                                                  .leadObject
-                                                  .documentsIndexed
-                                                  .isEmpty)
-                                              ? 750
-                                              : 1200,
-                                        ),
-                                        margin: const EdgeInsets.only(top: 16),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.rectangle,
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Colors.black26,
-                                              blurRadius: 10.0,
-                                              offset: Offset(0.0, 10.0),
-                                            ),
-                                          ],
-                                        ),
-                                        child: NewMemberDialog(
-                                          isEditMode: false,
-                                          autoNumber: 0,
-                                          relationship: "",
-                                          title: "",
-                                          name: "",
-                                          surname: "",
-                                          dob: "",
-                                          gender: "",
-                                          current_member_index:
-                                              current_member_index,
-                                          canAddMember: false,
-                                        ),
-                                      ),
-                                    ),
-                                  ));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NewMemberDialog2(
+                                isEditMode: false,
+                                autoNumber: 0,
+                                relationship: "",
+                                title: "",
+                                name: "",
+                                surname: "",
+                                dob: "",
+                                gender: "",
+                                current_member_index: current_member_index,
+                                canAddMember: false,
+                              ),
+                            ),
+                          );
                         },
                         icon: const Icon(
                           Icons.add,
@@ -2988,6 +2953,7 @@ class _UniversalPremiumCalculatorState
                               context,
                               Constants.currentleadAvailable!.policies.length +
                                   1);
+                                  
                         },
                         icon: const Icon(
                           Icons.add,
@@ -4765,59 +4731,23 @@ class _UniversalPremiumCalculatorState
                           updateSalesStepsValueNotifier3.value++;
                           Navigator.of(context).pop();
 
-                          showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              // set to false if you want to force a rating
-                              builder: (context) => StatefulBuilder(
-                                    builder: (context, setState) => Dialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(64),
-                                      ),
-                                      elevation: 0.0,
-                                      backgroundColor: Colors.transparent,
-                                      child: Container(
-                                        // width: MediaQuery.of(context).size.width,
-
-                                        constraints: BoxConstraints(
-                                          maxWidth: (Constants
-                                                  .currentleadAvailable!
-                                                  .leadObject
-                                                  .documentsIndexed
-                                                  .isEmpty)
-                                              ? 750
-                                              : 1200,
-                                        ),
-                                        margin: const EdgeInsets.only(top: 16),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.rectangle,
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Colors.black26,
-                                              blurRadius: 10.0,
-                                              offset: Offset(0.0, 10.0),
-                                            ),
-                                          ],
-                                        ),
-                                        child: NewMemberDialog(
-                                          isEditMode: false,
-                                          autoNumber: 0,
-                                          relationship: "",
-                                          title: "",
-                                          name: "",
-                                          surname: "",
-                                          dob: "",
-                                          gender: "",
-                                          current_member_index:
-                                              current_member_index,
-                                          canAddMember: false,
-                                        ),
-                                      ),
-                                    ),
-                                  ));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NewMemberDialog2(
+                                isEditMode: false,
+                                autoNumber: 0,
+                                relationship: "",
+                                title: "",
+                                name: "",
+                                surname: "",
+                                dob: "",
+                                gender: "",
+                                current_member_index: current_member_index,
+                                canAddMember: false,
+                              ),
+                            ),
+                          );
                         },
                         icon: const Icon(
                           Icons.add,
@@ -4906,15 +4836,9 @@ class _UniversalPremiumCalculatorState
     }
 
     // 4) Build the grid of child cards using a layout similar to your partner example
-    return GridView.builder(
+    return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3, // Number of columns
-        crossAxisSpacing: 16.0, // Space between columns
-        mainAxisSpacing: 16.0, // Space between rows
-        mainAxisExtent: 225, // Height per grid item
-      ),
       itemCount: childMembersFromPolicy.length,
       itemBuilder: (context, index) {
         final AdditionalMember child = childMembersFromPolicy[index];
@@ -5304,55 +5228,23 @@ class _UniversalPremiumCalculatorState
                       InkWell(
                         onTap: () {
                           // Show dialog for editing the child
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) => StatefulBuilder(
-                              builder: (context, setState) => Dialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(64),
-                                ),
-                                elevation: 0.0,
-                                backgroundColor: Colors.transparent,
-                                child: Container(
-                                  constraints: BoxConstraints(
-                                    maxWidth: (Constants
-                                            .currentleadAvailable!
-                                            .leadObject
-                                            .documentsIndexed
-                                            .isEmpty)
-                                        ? 750
-                                        : 1200,
-                                  ),
-                                  margin: const EdgeInsets.only(top: 16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.rectangle,
-                                    borderRadius: BorderRadius.circular(16),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        blurRadius: 10.0,
-                                        offset: Offset(0.0, 10.0),
-                                      ),
-                                    ],
-                                  ),
-                                  child: NewMemberDialog(
-                                    isEditMode: true,
-                                    autoNumber: child.autoNumber,
-                                    relationship: "Child",
-                                    title: child.title,
-                                    name: child.name,
-                                    surname: child.surname,
-                                    dob: child.dob,
-                                    phone: child.contact,
-                                    idNumber: child.id,
-                                    is_self_or_payer: false,
-                                    gender: child.gender,
-                                    canAddMember: true,
-                                    current_member_index: current_member_index,
-                                  ),
-                                ),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NewMemberDialog2(
+                                isEditMode: true,
+                                autoNumber: child.autoNumber,
+                                relationship: "Child",
+                                title: child.title,
+                                name: child.name,
+                                surname: child.surname,
+                                dob: child.dob,
+                                phone: child.contact,
+                                idNumber: child.id,
+                                is_self_or_payer: false,
+                                gender: child.gender,
+                                canAddMember: true,
+                                current_member_index: current_member_index,
                               ),
                             ),
                           );
@@ -7252,61 +7144,23 @@ class _UniversalPremiumCalculatorState
                               // activeStep = 2;
                               activeStep1 = 2;
                               updateSalesStepsValueNotifier3.value++;
-                              showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  // set to false if you want to force a rating
-                                  builder: (context) => StatefulBuilder(
-                                        builder: (context, setState) => Dialog(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(64),
-                                          ),
-                                          elevation: 0.0,
-                                          backgroundColor: Colors.transparent,
-                                          child: Container(
-                                            // width: MediaQuery.of(context).size.width,
-
-                                            constraints: BoxConstraints(
-                                              maxWidth: (Constants
-                                                      .currentleadAvailable!
-                                                      .leadObject
-                                                      .documentsIndexed
-                                                      .isEmpty)
-                                                  ? 750
-                                                  : 1200,
-                                            ),
-                                            margin:
-                                                const EdgeInsets.only(top: 16),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              shape: BoxShape.rectangle,
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                  color: Colors.black26,
-                                                  blurRadius: 10.0,
-                                                  offset: Offset(0.0, 10.0),
-                                                ),
-                                              ],
-                                            ),
-                                            child: NewMemberDialog(
-                                              isEditMode: false,
-                                              autoNumber: 0,
-                                              relationship: "Partner",
-                                              title: "",
-                                              name: "",
-                                              surname: "",
-                                              dob: "",
-                                              gender: "",
-                                              current_member_index:
-                                                  current_member_index,
-                                              canAddMember: canAddMember,
-                                            ),
-                                          ),
-                                        ),
-                                      ));
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => NewMemberDialog2(
+                                    isEditMode: false,
+                                    autoNumber: 0,
+                                    relationship: "Partner",
+                                    title: "",
+                                    name: "",
+                                    surname: "",
+                                    dob: "",
+                                    gender: "",
+                                    current_member_index: current_member_index,
+                                    canAddMember: canAddMember,
+                                  ),
+                                ),
+                              );
                             },
                             icon: const Icon(
                               Icons.add,
@@ -8044,55 +7898,23 @@ class _UniversalPremiumCalculatorState
                         Navigator.of(context).pop();
                         activeStep1 = 2;
                         updateSalesStepsValueNotifier3.value++;
-                        showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) => StatefulBuilder(
-                                  builder: (context, setState) => Dialog(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(64),
-                                    ),
-                                    elevation: 0.0,
-                                    backgroundColor: Colors.transparent,
-                                    child: Container(
-                                      constraints: BoxConstraints(
-                                        maxWidth: (Constants
-                                                .currentleadAvailable!
-                                                .leadObject
-                                                .documentsIndexed
-                                                .isEmpty)
-                                            ? 750
-                                            : 1200,
-                                      ),
-                                      margin: const EdgeInsets.only(top: 16),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.rectangle,
-                                        borderRadius: BorderRadius.circular(16),
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.black26,
-                                            blurRadius: 10.0,
-                                            offset: Offset(0.0, 10.0),
-                                          ),
-                                        ],
-                                      ),
-                                      child: NewMemberDialog(
-                                        isEditMode: false,
-                                        autoNumber: 0,
-                                        relationship: "self",
-                                        title: "",
-                                        name: "",
-                                        surname: "",
-                                        dob: "",
-                                        gender: "",
-                                        canAddMember: canAddMember,
-                                        current_member_index:
-                                            current_member_index,
-                                      ),
-                                    ),
-                                  ),
-                                ));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NewMemberDialog2(
+                              isEditMode: false,
+                              autoNumber: 0,
+                              relationship: "self",
+                              title: "",
+                              name: "",
+                              surname: "",
+                              dob: "",
+                              gender: "",
+                              canAddMember: canAddMember,
+                              current_member_index: current_member_index,
+                            ),
+                          ),
+                        );
                       },
                       icon: const Icon(
                         Icons.add,
@@ -8196,15 +8018,9 @@ class _UniversalPremiumCalculatorState
     // -----------------------------
     // E) Build a grid of extended-member cards with a remove/edit function
     // -----------------------------
-    return GridView.builder(
+    return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3, // Number of columns
-        crossAxisSpacing: 16.0, // Space between columns
-        mainAxisSpacing: 16.0, // Space between rows
-        mainAxisExtent: 220, // Height for each grid item
-      ),
       itemCount: extendedMembersFromPolicy.length,
       itemBuilder: (context, index) {
         final AdditionalMember member = extendedMembersFromPolicy[index];
@@ -8617,55 +8433,23 @@ class _UniversalPremiumCalculatorState
                       InkWell(
                         onTap: () {
                           // Show an edit dialog
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) => StatefulBuilder(
-                              builder: (context, setState) => Dialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(64),
-                                ),
-                                elevation: 0.0,
-                                backgroundColor: Colors.transparent,
-                                child: Container(
-                                  constraints: BoxConstraints(
-                                    maxWidth: (Constants
-                                            .currentleadAvailable!
-                                            .leadObject
-                                            .documentsIndexed
-                                            .isEmpty)
-                                        ? 750
-                                        : 1200,
-                                  ),
-                                  margin: const EdgeInsets.only(top: 16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.rectangle,
-                                    borderRadius: BorderRadius.circular(16),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        blurRadius: 10.0,
-                                        offset: Offset(0.0, 10.0),
-                                      ),
-                                    ],
-                                  ),
-                                  child: NewMemberDialog(
-                                    isEditMode: true,
-                                    autoNumber: member.autoNumber,
-                                    relationship: "Extended",
-                                    title: member.title,
-                                    name: member.name,
-                                    surname: member.surname,
-                                    dob: member.dob,
-                                    phone: member.contact,
-                                    idNumber: member.id,
-                                    is_self_or_payer: false,
-                                    gender: member.gender,
-                                    current_member_index: current_member_index,
-                                    canAddMember: true,
-                                  ),
-                                ),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NewMemberDialog2(
+                                isEditMode: true,
+                                autoNumber: member.autoNumber,
+                                relationship: "Extended",
+                                title: member.title,
+                                name: member.name,
+                                surname: member.surname,
+                                dob: member.dob,
+                                phone: member.contact,
+                                idNumber: member.id,
+                                is_self_or_payer: false,
+                                gender: member.gender,
+                                current_member_index: current_member_index,
+                                canAddMember: true,
                               ),
                             ),
                           );
@@ -9568,7 +9352,7 @@ class _UniversalPremiumCalculatorState
                                               ),
                                             ],
                                           ),
-                                          child: NewMemberDialog(
+                                          child: NewMemberDialog2(
                                             isEditMode: true,
                                             autoNumber: partner.autoNumber,
                                             relationship: "Partner",
@@ -9683,17 +9467,11 @@ class _UniversalPremiumCalculatorState
 
     // Build the grid view of child cards.
     return Container(
-      padding: const EdgeInsets.only(left: 8, right: 32),
+      padding: const EdgeInsets.only(left: 8, right: 8),
       width: MediaQuery.of(context).size.width,
-      child: GridView.builder(
+      child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 16.0,
-          mainAxisSpacing: 16.0,
-          mainAxisExtent: 200,
-        ),
         itemCount: childMembers.length,
         itemBuilder: (context, index) {
           Map<int, String> _selectedChildCoverAmounts = {};
@@ -9890,31 +9668,6 @@ class _UniversalPremiumCalculatorState
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Left container with avatar.
-                        Container(
-                          width: 120,
-                          decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(12),
-                              bottomLeft: Radius.circular(12),
-                            ),
-                            color: Constants.ftaColorLight.withOpacity(0.95),
-                          ),
-                          child: Center(
-                            child: CircleAvatar(
-                              radius: 40,
-                              backgroundColor: Colors.grey.withOpacity(0.65),
-                              child: Icon(
-                                child.gender.toLowerCase() == "female"
-                                    ? Icons.female
-                                    : Icons.male,
-                                size: 30,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16.0),
                         // Main child information.
                         Expanded(
                           child: Padding(
@@ -10224,7 +9977,7 @@ class _UniversalPremiumCalculatorState
                                               ),
                                             ],
                                           ),
-                                          child: NewMemberDialog(
+                                          child: NewMemberDialog2(
                                             isEditMode: true,
                                             autoNumber: child.autoNumber,
                                             relationship: "Child",
@@ -10335,17 +10088,11 @@ class _UniversalPremiumCalculatorState
 
     // Build the grid view of extended member cards.
     return Container(
-      padding: const EdgeInsets.only(left: 8, right: 32),
+      padding: const EdgeInsets.only(left: 8, right: 8),
       width: MediaQuery.of(context).size.width,
-      child: GridView.builder(
+      child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 16.0,
-          mainAxisSpacing: 16.0,
-          mainAxisExtent: 200,
-        ),
         itemCount: extendedMembers.length,
         itemBuilder: (context, index) {
           Map<int, String> _selectedExtendedCoverAmounts = {};
@@ -10573,31 +10320,6 @@ class _UniversalPremiumCalculatorState
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Left container with avatar.
-                        Container(
-                          width: 120,
-                          decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(12),
-                              bottomLeft: Radius.circular(12),
-                            ),
-                            color: Constants.ftaColorLight.withOpacity(0.95),
-                          ),
-                          child: Center(
-                            child: CircleAvatar(
-                              radius: 40,
-                              backgroundColor: Colors.grey.withOpacity(0.65),
-                              child: Icon(
-                                extended.gender.toLowerCase() == "female"
-                                    ? Icons.female
-                                    : Icons.male,
-                                size: 30,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16.0),
                         // Main extended member information.
                         Expanded(
                           child: Padding(
@@ -10907,7 +10629,7 @@ class _UniversalPremiumCalculatorState
                                               ),
                                             ],
                                           ),
-                                          child: NewMemberDialog(
+                                          child: NewMemberDialog2(
                                             isEditMode: true,
                                             autoNumber: extended.autoNumber,
                                             relationship: "Extended",
@@ -10980,7 +10702,7 @@ class _UniversalPremiumCalculatorState
           Constants.currentleadAvailable!.additionalMembers.where((m) {
         // If dob is empty, assume age is 0
         int age = m.dob.isEmpty ? 0 : calculateAge(DateTime.parse(m.dob));
-        return age <= 24;
+        return age <= 21;
       }).toList();
     }
 
@@ -10991,8 +10713,8 @@ class _UniversalPremiumCalculatorState
         int age = m.dob.isEmpty ? 0 : calculateAge(DateTime.parse(m.dob));
 
         // Exclude members with the relationship "self" and only keep children under 18
-        //return age <= 24 && m.relationship.toLowerCase() == "child";
-        return (age <= 24 && m.relationship.toLowerCase() == "child");
+        //return age <= 21 && m.relationship.toLowerCase() == "child";
+        return (age <= 21 && m.relationship.toLowerCase() == "child");
       }).toList();
     }
     print("sahjs1 ${allChildrenList}");
@@ -11078,6 +10800,7 @@ class _UniversalPremiumCalculatorState
                       ),
                     ),
                     const SizedBox(height: 12),
+
                     const Center(
                       child: Text(
                         "Click on a member below to select them as a child",
@@ -11094,228 +10817,234 @@ class _UniversalPremiumCalculatorState
                     // -------------------- List of potential children --------------------
                     ListView.builder(
                       shrinkWrap: true,
+                      physics: const AlwaysScrollableScrollPhysics(),
                       itemCount: allChildrenList.length,
                       itemBuilder: (context, index) {
                         final member = allChildrenList[index];
-                        return Container(
-                          // -------------------- The Child UI Card --------------------
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
                           child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 12.0,
-                              horizontal: 16.0,
-                            ),
-                            padding: const EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Constants.ftaColorLight.withOpacity(0.9),
-                                  Constants.ftaColorLight,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
+                            // -------------------- The Child UI Card --------------------
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(
+                                vertical: 12.0,
+                                horizontal: 16.0,
                               ),
-                              borderRadius: BorderRadius.circular(12.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
+                              padding: const EdgeInsets.all(16.0),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Constants.ftaColorLight.withOpacity(0.9),
+                                    Constants.ftaColorLight,
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
-                              ],
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Profile Avatar.
-                                CircleAvatar(
-                                  radius: 20,
-                                  backgroundColor: Colors.white,
-                                  child: Icon(
-                                    member.gender.toLowerCase() == "female"
-                                        ? Icons.female
-                                        : Icons.male,
-                                    size: 24,
-                                    color:
-                                        member.gender.toLowerCase() == "female"
-                                            ? Colors.pinkAccent
-                                            : Colors.blueAccent,
+                                borderRadius: BorderRadius.circular(12.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
                                   ),
-                                ),
-                                const SizedBox(width: 16.0),
-                                // Member information.
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // Updated text label to reflect that this is for a child.
-                                      Text(
-                                        member.dob.isEmpty
-                                            ? 'Child DoB: -'
-                                            : 'Child DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4.0),
-                                      Text(
-                                        '${member.title} ${member.name} ${member.surname}',
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1.2,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4.0),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.people_alt,
-                                            color: Colors.white70,
-                                            size: 15,
+                                ],
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Profile Avatar.
+                                  CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: Colors.white,
+                                    child: Icon(
+                                      member.gender.toLowerCase() == "female"
+                                          ? Icons.female
+                                          : Icons.male,
+                                      size: 24,
+                                      color: member.gender.toLowerCase() ==
+                                              "female"
+                                          ? Colors.pinkAccent
+                                          : Colors.blueAccent,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16.0),
+                                  // Member information.
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // Updated text label to reflect that this is for a child.
+                                        Text(
+                                          member.dob.isEmpty
+                                              ? 'Child DoB: -'
+                                              : 'Child DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w400,
                                           ),
-                                          const SizedBox(width: 4.0),
-                                          Text(
-                                            'Relationship: ${member.relationship}',
-                                            style: const TextStyle(
-                                              fontSize: 13,
+                                        ),
+                                        const SizedBox(height: 4.0),
+                                        Text(
+                                          '${member.title} ${member.name} ${member.surname}',
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1.2,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4.0),
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.people_alt,
                                               color: Colors.white70,
-                                              fontWeight: FontWeight.w400,
+                                              size: 15,
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Row(
-                                        children: [
-                                          Spacer(),
-                                          Container(
-                                            height: 30,
-                                            child: TextButton(
-                                              onPressed: () {
-                                                // Close the dialog.
-                                                Navigator.of(context).pop();
-
-                                                // 1) Create a new policy 'child' Member object.
-                                                final newPolicyMember = Member(
-                                                  member.autoNumber,
-                                                  // Use the AdditionalMember's autoNumber.
-                                                  null,
-                                                  // pId (if not needed)
-                                                  null,
-                                                  // polId (if not needed)
-                                                  currentReference,
-                                                  // Policy reference.
-                                                  member.autoNumber,
-                                                  // additional_member_id.
-                                                  null,
-                                                  // mainMemberDOB (if not needed)
-                                                  policiesSelectedCoverAmounts[
-                                                      current_member_index],
-                                                  // premium (set to 0 or adjust accordingly)
-                                                  "child",
-                                                  // A marker value (could be a string or a code for child)
-                                                  0,
-                                                  // type (you can define a code for child here, e.g. 0)
-                                                  null,
-                                                  // percentage (if not used for child)
-                                                  "child",
-                                                  // coverMembersCol (marker for child)
-                                                  null,
-                                                  // benRelationship
-                                                  null,
-                                                  // memberStatus
-                                                  Constants.cec_employeeid,
-                                                  // terminationDate (example value; adjust as needed)
-                                                  null,
-                                                  // updatedBy
-                                                  null,
-                                                  // memberQueryType
-                                                  null,
-                                                  // memberQueryTypeOldNew
-                                                  Constants.cec_client_id,
-                                                  // memberQueryTypeOldAutoNumber
-                                                  Constants
-                                                      .cec_employeeid, // cecClientId (or empId, adjust as needed)
-                                                );
-
-                                                // 2) Update policy.members to include (or replace) this child.
-                                                final existingIndex =
-                                                    membersList.indexWhere((m) {
-                                                  if (m
-                                                      is Map<String, dynamic>) {
-                                                    return (m['autoNumber'] ==
-                                                            member
-                                                                .autoNumber) &&
-                                                        (((m['type'] as String?)
-                                                                    ?.toLowerCase()) ??
-                                                                '') ==
-                                                            'child' &&
-                                                        m['reference'] ==
-                                                            currentReference;
-                                                  } else if (m is Member) {
-                                                    return (m.autoNumber ==
-                                                            member
-                                                                .autoNumber) &&
-                                                        ((m.type ?? '')
-                                                                .toLowerCase()) ==
-                                                            'child' &&
-                                                        m.reference ==
-                                                            currentReference;
-                                                  }
-                                                  return false;
-                                                });
-
-                                                if (existingIndex != -1) {
-                                                  // Replace the existing child.
-                                                  membersList[existingIndex] =
-                                                      newPolicyMember.toJson();
-                                                } else {
-                                                  // Otherwise, add the new child.
-                                                  membersList.add(
-                                                      newPolicyMember.toJson());
-                                                }
-
-                                                // Update the policy's members list.
-                                                policy.members = membersList;
-
-                                                // 3) Recalculate the premium and update the UI.
-                                                mySalesPremiumCalculatorValue
-                                                    .value++;
-                                                appBarMemberCardNotifier
-                                                    .value++;
-                                                advancedMemberCardKey2 =
-                                                    UniqueKey();
-                                                setState(() {});
-                                              },
-                                              child: Text(
-                                                'Select',
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontFamily: 'YuGothic',
-                                                  color:
-                                                      Constants.ctaColorLight,
-                                                ),
+                                            const SizedBox(width: 4.0),
+                                            Text(
+                                              'Relationship: ${member.relationship}',
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.white70,
+                                                fontWeight: FontWeight.w400,
                                               ),
-                                              style: TextButton.styleFrom(
-                                                  foregroundColor:
-                                                      Constants.ctaColorLight,
-                                                  backgroundColor:
-                                                      Colors.white),
                                             ),
-                                          ),
-                                        ],
-                                      )
-                                    ],
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Spacer(),
+                                            Container(
+                                              height: 30,
+                                              child: TextButton(
+                                                onPressed: () {
+                                                  // Close the dialog.
+                                                  Navigator.of(context).pop();
+
+                                                  // 1) Create a new policy 'child' Member object.
+                                                  final newPolicyMember =
+                                                      Member(
+                                                    member.autoNumber,
+                                                    // Use the AdditionalMember's autoNumber.
+                                                    null,
+                                                    // pId (if not needed)
+                                                    null,
+                                                    // polId (if not needed)
+                                                    currentReference,
+                                                    // Policy reference.
+                                                    member.autoNumber,
+                                                    // additional_member_id.
+                                                    null,
+                                                    // mainMemberDOB (if not needed)
+                                                    policiesSelectedCoverAmounts[
+                                                        current_member_index],
+                                                    // premium (set to 0 or adjust accordingly)
+                                                    "child",
+                                                    // A marker value (could be a string or a code for child)
+                                                    0,
+                                                    // type (you can define a code for child here, e.g. 0)
+                                                    null,
+                                                    // percentage (if not used for child)
+                                                    "child",
+                                                    // coverMembersCol (marker for child)
+                                                    null,
+                                                    // benRelationship
+                                                    null,
+                                                    // memberStatus
+                                                    Constants.cec_employeeid,
+                                                    // terminationDate (example value; adjust as needed)
+                                                    null,
+                                                    // updatedBy
+                                                    null,
+                                                    // memberQueryType
+                                                    null,
+                                                    // memberQueryTypeOldNew
+                                                    Constants.cec_client_id,
+                                                    // memberQueryTypeOldAutoNumber
+                                                    Constants
+                                                        .cec_employeeid, // cecClientId (or empId, adjust as needed)
+                                                  );
+
+                                                  // 2) Update policy.members to include (or replace) this child.
+                                                  final existingIndex =
+                                                      membersList
+                                                          .indexWhere((m) {
+                                                    if (m is Map<String,
+                                                        dynamic>) {
+                                                      return (m['autoNumber'] ==
+                                                              member
+                                                                  .autoNumber) &&
+                                                          (((m['type'] as String?)
+                                                                      ?.toLowerCase()) ??
+                                                                  '') ==
+                                                              'child' &&
+                                                          m['reference'] ==
+                                                              currentReference;
+                                                    } else if (m is Member) {
+                                                      return (m.autoNumber == member.autoNumber) &&
+                                                          ((m.type ?? '')
+                                                                  .toLowerCase()) ==
+                                                              'child' &&
+                                                          m.reference ==
+                                                              currentReference;
+                                                    }
+                                                    return false;
+                                                  });
+
+                                                  if (existingIndex != -1) {
+                                                    // Replace the existing child.
+                                                    membersList[existingIndex] =
+                                                        newPolicyMember
+                                                            .toJson();
+                                                  } else {
+                                                    // Otherwise, add the new child.
+                                                    membersList.add(
+                                                        newPolicyMember
+                                                            .toJson());
+                                                  }
+
+                                                  // Update the policy's members list.
+                                                  policy.members = membersList;
+
+                                                  // 3) Recalculate the premium and update the UI.
+                                                  mySalesPremiumCalculatorValue
+                                                      .value++;
+                                                  appBarMemberCardNotifier
+                                                      .value++;
+                                                  advancedMemberCardKey2 =
+                                                      UniqueKey();
+                                                  setState(() {});
+                                                },
+                                                child: Text(
+                                                  'Select',
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: 'YuGothic',
+                                                    color:
+                                                        Constants.ctaColorLight,
+                                                  ),
+                                                ),
+                                                style: TextButton.styleFrom(
+                                                    foregroundColor:
+                                                        Constants.ctaColorLight,
+                                                    backgroundColor:
+                                                        Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         );
@@ -11326,62 +11055,27 @@ class _UniversalPremiumCalculatorState
                       child: TextButton.icon(
                         onPressed: () {
                           activeStep1 = 2;
+
                           updateSalesStepsValueNotifier3.value++;
                           Navigator.of(context).pop();
 
-                          showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              // set to false if you want to force a rating
-                              builder: (context) => StatefulBuilder(
-                                    builder: (context, setState) => Dialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(64),
-                                      ),
-                                      elevation: 0.0,
-                                      backgroundColor: Colors.transparent,
-                                      child: Container(
-                                        // width: MediaQuery.of(context).size.width,
-
-                                        constraints: BoxConstraints(
-                                          maxWidth: (Constants
-                                                  .currentleadAvailable!
-                                                  .leadObject
-                                                  .documentsIndexed
-                                                  .isEmpty)
-                                              ? 750
-                                              : 1200,
-                                        ),
-                                        margin: const EdgeInsets.only(top: 16),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.rectangle,
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Colors.black26,
-                                              blurRadius: 10.0,
-                                              offset: Offset(0.0, 10.0),
-                                            ),
-                                          ],
-                                        ),
-                                        child: NewMemberDialog(
-                                          isEditMode: false,
-                                          autoNumber: 0,
-                                          relationship: "Child",
-                                          title: "",
-                                          name: "",
-                                          surname: "",
-                                          dob: "",
-                                          gender: "",
-                                          current_member_index:
-                                              current_member_index,
-                                          canAddMember: canAddMember,
-                                        ),
-                                      ),
-                                    ),
-                                  ));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NewMemberDialog2(
+                                isEditMode: false,
+                                autoNumber: 0,
+                                relationship: "Child",
+                                title: "",
+                                name: "",
+                                surname: "",
+                                dob: "",
+                                gender: "",
+                                current_member_index: current_member_index,
+                                canAddMember: canAddMember,
+                              ),
+                            ),
+                          );
                         },
                         icon: const Icon(
                           Icons.add,
@@ -11767,60 +11461,24 @@ class _UniversalPremiumCalculatorState
                           updateSalesStepsValueNotifier3.value++;
                           Navigator.of(context).pop();
 
-                          showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              // set to false if you want to force a rating
-                              builder: (context) => StatefulBuilder(
-                                    builder: (context, setState) => Dialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(64),
-                                      ),
-                                      elevation: 0.0,
-                                      backgroundColor: Colors.transparent,
-                                      child: Container(
-                                        // width: MediaQuery.of(context).size.width,
-
-                                        constraints: BoxConstraints(
-                                          maxWidth: (Constants
-                                                  .currentleadAvailable!
-                                                  .leadObject
-                                                  .documentsIndexed
-                                                  .isEmpty)
-                                              ? 750
-                                              : 1200,
-                                        ),
-                                        margin: const EdgeInsets.only(top: 16),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.rectangle,
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Colors.black26,
-                                              blurRadius: 10.0,
-                                              offset: Offset(0.0, 10.0),
-                                            ),
-                                          ],
-                                        ),
-                                        child: NewMemberDialog(
-                                          isEditMode: false,
-                                          autoNumber: 0,
-                                          relationship: "",
-                                          title: "",
-                                          name: "",
-                                          surname: "",
-                                          dob: "",
-                                          gender: "",
-                                          current_member_index:
-                                              current_member_index,
-                                          canAddMember: canAddMember,
-                                          is_self_or_payer: false,
-                                        ),
-                                      ),
-                                    ),
-                                  ));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NewMemberDialog2(
+                                isEditMode: false,
+                                autoNumber: 0,
+                                relationship: "",
+                                title: "",
+                                name: "",
+                                surname: "",
+                                dob: "",
+                                gender: "",
+                                current_member_index: current_member_index,
+                                canAddMember: canAddMember,
+                                is_self_or_payer: false,
+                              ),
+                            ),
+                          );
                         },
                         icon: const Icon(
                           Icons.add,
@@ -12245,7 +11903,7 @@ class _UniversalPremiumCalculatorState
                                                   ),
                                                 ],
                                               ),
-                                              child: NewMemberDialog(
+                                              child: NewMemberDialog2(
                                                 isEditMode: false,
                                                 autoNumber: 0,
                                                 relationship: "Partner",
@@ -12679,54 +12337,21 @@ class _UniversalPremiumCalculatorState
                                 Navigator.of(context).pop();
 
                                 // Then show your "NewMemberDialog" for a new partner
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (context) => StatefulBuilder(
-                                    builder: (context, setState) => Dialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(64),
-                                      ),
-                                      elevation: 0.0,
-                                      backgroundColor: Colors.transparent,
-                                      child: Container(
-                                        constraints: BoxConstraints(
-                                          maxWidth: (Constants
-                                                  .currentleadAvailable!
-                                                  .leadObject
-                                                  .documentsIndexed
-                                                  .isEmpty)
-                                              ? 750
-                                              : 1200,
-                                        ),
-                                        margin: const EdgeInsets.only(top: 16),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.rectangle,
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Colors.black26,
-                                              blurRadius: 10.0,
-                                              offset: Offset(0.0, 10.0),
-                                            ),
-                                          ],
-                                        ),
-                                        child: NewMemberDialog(
-                                          isEditMode: false,
-                                          autoNumber: 0,
-                                          relationship: "Partner",
-                                          title: "",
-                                          name: "",
-                                          surname: "",
-                                          dob: "",
-                                          gender: "",
-                                          current_member_index:
-                                              current_member_index,
-                                          canAddMember: true,
-                                        ),
-                                      ),
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => NewMemberDialog2(
+                                      isEditMode: false,
+                                      autoNumber: 0,
+                                      relationship: "Partner",
+                                      title: "",
+                                      name: "",
+                                      surname: "",
+                                      dob: "",
+                                      gender: "",
+                                      current_member_index:
+                                          current_member_index,
+                                      canAddMember: true,
                                     ),
                                   ),
                                 );
@@ -13081,7 +12706,7 @@ class _UniversalPremiumCalculatorState
                                             ),
                                           ],
                                         ),
-                                        child: NewMemberDialog(
+                                        child: NewMemberDialog2(
                                           isEditMode: false,
                                           autoNumber: 0,
                                           relationship: "Partner",
@@ -13455,15 +13080,9 @@ class _UniversalPremiumCalculatorState
     return Center(
       child: Padding(
         padding: const EdgeInsets.only(left: 16.0, right: 16),
-        child: GridView.builder(
+        child: ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, // 3 columns
-            crossAxisSpacing: 16.0, // horizontal spacing
-            mainAxisSpacing: 16.0, // vertical spacing
-            mainAxisExtent: 290, // height per grid item
-          ),
           itemCount: filteredRiders.length,
           itemBuilder: (context, index) {
             final rider = filteredRiders[index];
@@ -14088,160 +13707,171 @@ class _AdvancedPolicyCardState extends State<AdvancedPolicyCard> {
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-        onEnter: (_) => setState(() => isHovered = true),
-        onExit: (_) => setState(() => isHovered = false),
-        child: AnimatedScale(
-            scale: isHovered ? 1.02 : 1.0, // Smooth scaling on hover
-            duration: const Duration(milliseconds: 200),
-            child: Container(
-              height: 145,
-              width: 400,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                      color: widget.is_selected == true
-                          ? Colors.green
-                          : Colors.grey.withOpacity(0.55))),
-              child: Column(
-                children: [
-                  Container(
-                    height: 10,
-                    decoration: BoxDecoration(
-                        color: widget.is_selected == true
-                            ? Colors.green
-                            : Colors.grey,
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12))),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(widget.main_insured,
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500)),
-                        ),
-                        InkWell(
-                          child: Container(
-                            padding: const EdgeInsets.all(0.0),
-                            decoration: BoxDecoration(
-                              color: widget.is_selected == true
-                                  ? Colors.green.withOpacity(0.15)
-                                  : Colors.grey.withOpacity(0.15),
-                              //  color: Constants.ftaColorLight.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(360.0),
-                              border: Border.all(
-                                color: widget.is_selected == true
-                                    ? Colors.green
-                                    : Colors.grey,
-                                width: 1.5,
-                              ),
-                            ),
-                            child: SizedBox(
-                              width: 30,
-                              height: 30,
-                              child: Center(
-                                child: Text(number_of_members.toString()),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 6),
-                        Container(
-                            height: 32,
-                            decoration: BoxDecoration(
-                                color: widget.is_selected == true
-                                    ? Colors.green
-                                    : Colors.grey,
-                                borderRadius: BorderRadius.circular(32)),
-                            child: Center(
-                                child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 12.0, right: 12, top: 0, bottom: 0),
-                              child: Text(
-                                widget.policy_status,
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            )))
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            widget.policy_index < policyPremiums.length
-                                ? (
-                                    // If memberPremiums is empty, show "No Premium for Selected Cover"
-                                    policyPremiums[widget.policy_index]
-                                            .memberPremiums
-                                            .isEmpty
-                                        ? "No Premium for Selected Cover"
-                                        : (
-                                            // Otherwise, check if the first member's comment is not empty and total premium is 0.
-                                            policyPremiums[widget.policy_index]
-                                                        .memberPremiums
-                                                        .first
-                                                        .comment
-                                                        .isNotEmpty &&
-                                                    widget.total_premium == 0
-                                                ? "No Premium for Selected Cover"
-                                                : "R" +
-                                                    widget.total_premium
-                                                        .toStringAsFixed(2)))
-                                : "R" + widget.total_premium.toStringAsFixed(2),
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: (widget.policy_index <
-                                          policyPremiums.length &&
-                                      policyPremiums[widget.policy_index]
-                                          .memberPremiums
-                                          .isNotEmpty &&
-                                      policyPremiums[widget.policy_index]
-                                          .memberPremiums
-                                          .first
-                                          .comment
-                                          .isNotEmpty)
-                                  ? 16
-                                  : 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12.0, right: 12),
-                          child: Text(
-                            widget.selected_product,
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Row(
+    return ValueListenableBuilder<int>(
+      valueListenable: appBarMemberCardNotifier,
+      builder: (context, value, child) {
+        return MouseRegion(
+            onEnter: (_) => setState(() => isHovered = true),
+            onExit: (_) => setState(() => isHovered = false),
+            child: AnimatedScale(
+                scale: isHovered ? 1.02 : 1.0, // Smooth scaling on hover
+                duration: const Duration(milliseconds: 200),
+                child: Container(
+                  height: 145,
+                  width: 400,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                          color: widget.is_selected == true
+                              ? Colors.green
+                              : Colors.grey.withOpacity(0.55))),
+                  child: Column(
                     children: [
+                      Container(
+                        height: 10,
+                        decoration: BoxDecoration(
+                            color: widget.is_selected == true
+                                ? Colors.green
+                                : Colors.grey,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(12),
+                                topRight: Radius.circular(12))),
+                      ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 8.0, right: 12),
-                        child: Text(
-                          (widget.selected_cover != 0
-                              ? "R${widget.selected_cover.toStringAsFixed(2)}"
-                              : ""),
-                          style: TextStyle(color: Colors.black),
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(widget.main_insured,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500)),
+                            ),
+                            InkWell(
+                              child: Container(
+                                padding: const EdgeInsets.all(0.0),
+                                decoration: BoxDecoration(
+                                  color: widget.is_selected == true
+                                      ? Colors.green.withOpacity(0.15)
+                                      : Colors.grey.withOpacity(0.15),
+                                  //  color: Constants.ftaColorLight.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(360.0),
+                                  border: Border.all(
+                                    color: widget.is_selected == true
+                                        ? Colors.green
+                                        : Colors.grey,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: SizedBox(
+                                  width: 30,
+                                  height: 30,
+                                  child: Center(
+                                    child: Text(number_of_members.toString()),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 6),
+                            Container(
+                                height: 32,
+                                decoration: BoxDecoration(
+                                    color: widget.is_selected == true
+                                        ? Colors.green
+                                        : Colors.grey,
+                                    borderRadius: BorderRadius.circular(32)),
+                                child: Center(
+                                    child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 12.0, right: 12, top: 0, bottom: 0),
+                                  child: Text(
+                                    widget.policy_status,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                )))
+                          ],
                         ),
                       ),
-                      Spacer()
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                widget.policy_index < policyPremiums.length
+                                    ? (
+                                        // If memberPremiums is empty, show "No Premium for Selected Cover"
+                                        policyPremiums[widget.policy_index]
+                                                .memberPremiums
+                                                .isEmpty
+                                            ? "No Premium for Selected Cover"
+                                            : (
+                                                // Otherwise, check if the first member's comment is not empty and total premium is 0.
+                                                policyPremiums[widget
+                                                                .policy_index]
+                                                            .memberPremiums
+                                                            .first
+                                                            .comment
+                                                            .isNotEmpty &&
+                                                        widget.total_premium ==
+                                                            0
+                                                    ? "No Premium for Selected Cover"
+                                                    : "R" +
+                                                        widget.total_premium
+                                                            .toStringAsFixed(
+                                                                2)))
+                                    : "R" +
+                                        widget.total_premium.toStringAsFixed(2),
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: (widget.policy_index <
+                                              policyPremiums.length &&
+                                          policyPremiums[widget.policy_index]
+                                              .memberPremiums
+                                              .isNotEmpty &&
+                                          policyPremiums[widget.policy_index]
+                                              .memberPremiums
+                                              .first
+                                              .comment
+                                              .isNotEmpty)
+                                      ? 16
+                                      : 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 12.0, right: 12),
+                              child: Text(
+                                widget.selected_product,
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 8.0, right: 12),
+                            child: Text(
+                              (widget.selected_cover != 0
+                                  ? "R${widget.selected_cover.toStringAsFixed(2)}"
+                                  : ""),
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                          Spacer()
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-            )));
+                )));
+      },
+    );
   }
 
   String formatLargeNumber3(String valueStr) {

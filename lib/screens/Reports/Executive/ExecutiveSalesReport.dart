@@ -470,7 +470,6 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
       home: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          elevation: 6,
           leading: InkWell(
               onTap: () {
                 Navigator.of(context).pop();
@@ -482,6 +481,7 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
           shadowColor: Colors.black.withOpacity(0.3),
+          elevation: 6,
           centerTitle: true,
           title: const Text(
             "Sales Report",
@@ -6709,7 +6709,7 @@ class _NtuChartWidgetState extends State<NtuChartWidget> {
         ntu_lapse_index == 0 ? _get12MonthsNTUData() : _get12MonthsLapseData();
 
     List<FlSpot> allSpots = _convertMonthlyRateToFlSpot(sourceData);
-    
+
     // Trim trailing zero spots while keeping the x-axis domain the same
     return _trimTrailingZeroSpots(allSpots);
   }
@@ -6834,7 +6834,7 @@ class _NtuChartWidgetState extends State<NtuChartWidget> {
   // Helper method to trim trailing zero spots while keeping x-axis domain
   List<FlSpot> _trimTrailingZeroSpots(List<FlSpot> spots) {
     if (spots.isEmpty) return spots;
-    
+
     // Find the last non-zero spot
     int lastNonZeroIndex = -1;
     for (int i = spots.length - 1; i >= 0; i--) {
@@ -6843,10 +6843,10 @@ class _NtuChartWidgetState extends State<NtuChartWidget> {
         break;
       }
     }
-    
+
     // If no non-zero spots found, return original list
     if (lastNonZeroIndex == -1) return spots;
-    
+
     // Return only up to the last non-zero spot
     return spots.sublist(0, lastNonZeroIndex + 1);
   }

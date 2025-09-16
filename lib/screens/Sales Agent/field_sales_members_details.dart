@@ -38,8 +38,8 @@ int current_member_index = 0;
 int fieldSalesActiveStep = 0;
 List<BottomBar> fieldbottomBarList = [
   BottomBar("View Main Members", "main_members"),
-  BottomBar("View Members", "Members"),
   BottomBar("View Beneficiaries", "beneficiaries"),
+  BottomBar("View Members", "Members"),
   BottomBar("Add Premium Payer/Policy Holder", "premium_payer"),
   BottomBar("Add Employers Details", "employers_details"),
   BottomBar("Select Communication Preference", "communication_preference"),
@@ -261,12 +261,13 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
 
   List<Map<String, String>> steplist = [
     {'task': '1', 'content': "View Main Members"},
-    {'task': '3', 'content': "View/Add Beneficiaries"},
-    {'task': '2', 'content': "View Members"},
+    {'task': '2', 'content': "View/Add Beneficiaries"},
+    {'task': '3', 'content': "View Members"},
     {'task': '4', 'content': "Add Premium Payer/Policy Holder"},
     {'task': '5', 'content': "Add Employer Details"},
     {'task': '6', 'content': "Select Communication Preference"},
   ];
+
   List<AdditionalMember> additionalMembers = [];
   List<AdditionalMember> policyMembers = [];
   int policy_member_index = 0;
@@ -1479,17 +1480,11 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
     }
 
     return Container(
-      padding: const EdgeInsets.only(left: 8, right: 32),
+      padding: const EdgeInsets.only(left: 8, right: 8, top: 0),
       width: MediaQuery.of(context).size.width,
-      child: GridView.builder(
+      child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 16.0,
-          mainAxisSpacing: 16.0,
-          mainAxisExtent: 145,
-        ),
         itemCount: policy.members.length,
         itemBuilder: (context, index) {
           // Get the member map from the policy.
@@ -1545,95 +1540,84 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
           );
 
           // Build the card using a custom card widget.
-          return CustomCard2(
-            elevation: 8,
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            boderRadius: 12,
-            child: Container(
-              decoration: BoxDecoration(
+          return Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: CustomCard2(
+              elevation: 8,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Constants.ftaColorLight.withOpacity(0.95),
-                ),
               ),
-              margin:
-                  const EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
-              padding: const EdgeInsets.all(0.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Left: CircleAvatar with gender icon.
-                  Container(
-                    width: 120,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        bottomLeft: Radius.circular(12),
-                      ),
-                      color: Constants.ftaColorLight.withOpacity(0.95),
-                    ),
-                    child: Center(
-                      child: CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.grey.withOpacity(0.65),
-                        child: Icon(
-                          additionalMember.gender.toLowerCase() == "female"
-                              ? Icons.female
-                              : Icons.male,
-                          size: 30,
-                          color: Colors.white,
+              boderRadius: 12,
+              child: Container(
+                height: 150,
+                margin:
+                    const EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
+                padding: const EdgeInsets.all(0.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Left: CircleAvatar with gender icon.
+
+                    // Middle: Member details.
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          right: 16.0,
+                          left: 16,
+                          top: 16,
+                          bottom: 8,
                         ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16.0),
-                  // Middle: Member details.
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        right: 16.0,
-                        left: 16,
-                        top: 16,
-                        bottom: 8,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (additionalMember.dob.isNotEmpty)
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (additionalMember.dob.isNotEmpty)
+                              Text(
+                                'DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(additionalMember.dob))}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'YuGothic',
+                                  color: Colors.black,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            const SizedBox(height: 8.0),
                             Text(
-                              'DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(additionalMember.dob))}',
+                              '${additionalMember.title} ${additionalMember.name} ${additionalMember.surname}',
                               style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'YuGothic',
+                                fontSize: 16,
                                 color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: 1.2,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
-                          const SizedBox(height: 8.0),
-                          Text(
-                            '${additionalMember.title} ${additionalMember.name} ${additionalMember.surname}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 1.2,
+                            const SizedBox(height: 8.0),
+                            Row(
+                              children: [
+                                const Icon(Icons.people_alt,
+                                    color: Colors.black, size: 16),
+                                const SizedBox(width: 4.0),
+                                Expanded(
+                                  child: Text(
+                                    'Relationship: ${additionalMember.relationship[0].toUpperCase() + additionalMember.relationship.substring(1)}',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 8.0),
-                          Row(
-                            children: [
-                              const Icon(Icons.people_alt,
-                                  color: Colors.black, size: 16),
-                              const SizedBox(width: 4.0),
-                              Expanded(
-                                child: Text(
-                                  'Relationship: ${additionalMember.relationship[0].toUpperCase() + additionalMember.relationship.substring(1)}',
+                            const SizedBox(height: 8.0),
+                            Row(
+                              children: [
+                                Text(
+                                  'Premium: R${premium.toStringAsFixed(2)}',
                                   style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.black,
@@ -1641,40 +1625,26 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8.0),
-                          Row(
-                            children: [
-                              Text(
-                                'Premium: R${premium.toStringAsFixed(2)}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w400,
+                                const Spacer(),
+                                Text(
+                                  'Cover: R${formatLargeNumber((cover ?? 0).toString())}',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const Spacer(),
-                              Text(
-                                'Cover: R${formatLargeNumber((cover ?? 0).toString())}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8.0),
-                        ],
+                              ],
+                            ),
+                            const SizedBox(height: 8.0),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  // (Optional: add an edit button column here if desired)
-                ],
+                    // (Optional: add an edit button column here if desired)
+                  ],
+                ),
               ),
             ),
           );
@@ -1689,10 +1659,10 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
         width: MediaQuery.of(context).size.width,
         //height: MediaQuery.of(context).size.height,
         child: Padding(
-            padding: const EdgeInsets.only(left: 24.0, right: 24),
+            padding: const EdgeInsets.only(left: 4.0, right: 4),
             child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.withOpacity(0.15)),
+                  border: Border.all(color: Colors.grey.withOpacity(0.0)),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Column(
@@ -1709,7 +1679,8 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                          children: List.generate(fieldbottomBarList.length, (index) {
+                          children:
+                              List.generate(fieldbottomBarList.length, (index) {
                             final isActive = fieldSalesActiveStep == index;
                             return GestureDetector(
                               onTap: () {
@@ -1730,14 +1701,16 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                 alignment: Alignment.center,
                                 // Active background highlight - covers full tab width
                                 decoration: BoxDecoration(
-                                  color: isActive 
-                                      ? Constants.ftaColorLight 
+                                  color: isActive
+                                      ? Constants.ftaColorLight
                                       : Colors.transparent,
                                   borderRadius: BorderRadius.only(
                                     topLeft: isActive && index == 0
                                         ? const Radius.circular(12)
                                         : Radius.zero,
-                                    topRight: isActive && index == fieldbottomBarList.length - 1
+                                    topRight: isActive &&
+                                            index ==
+                                                fieldbottomBarList.length - 1
                                         ? const Radius.circular(12)
                                         : Radius.zero,
                                   ),
@@ -1746,7 +1719,8 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      fieldbottomBarList[index].bottomStringName,
+                                      fieldbottomBarList[index]
+                                          .bottomStringName,
                                       style: TextStyle(
                                         fontSize: 14.5,
                                         color: isActive
@@ -1764,7 +1738,8 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                         width: 24,
                                         decoration: BoxDecoration(
                                           color: Colors.white.withOpacity(0.2),
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                         ),
                                         child: Center(
                                           child: Text(
@@ -2012,7 +1987,13 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                     child: Column(
                                       children: [
                                         Container(
-                                            width: 450,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width -
+                                                82,
+                                            constraints: BoxConstraints(
+                                              maxWidth: 450,
+                                            ),
                                             height: 130,
                                             child: InkWell(
                                               onTap: () {
@@ -2254,9 +2235,16 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                     ],
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 32,
-                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              //current_member_index
+                              height: 24,
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
@@ -2502,7 +2490,7 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                       ),
                     if (fieldSalesActiveStep == 2)
                       Padding(
-                        padding: const EdgeInsets.only(left: 24.0, right: 24),
+                        padding: const EdgeInsets.only(left: 4.0, right: 4),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -2599,7 +2587,7 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                       ),
                     if (fieldSalesActiveStep == 4)
                       Padding(
-                        padding: const EdgeInsets.only(left: 24.0, right: 24),
+                        padding: const EdgeInsets.only(left: 0.0, right: 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -2607,858 +2595,2624 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                             const SizedBox(
                               height: 24,
                             ),
-                            const SizedBox(height: 8),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                // Yes Option
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      Constants.currentlyEmployed = true;
-
-                                      Constants.currentleadAvailable!.employer!
-                                          .employmentStatus = "Employed";
-
-                                      Constants.isEmployerDetailsSaved = false;
-
-                                      //  print("fgfghhggh ${Constants.currentlyEmployed}");
-                                    });
-                                  },
-                                  child: Container(
-                                    height: 60,
-                                    width: 150,
-                                    padding: EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        width: 1.0,
-                                        color:
-                                            Constants.currentlyEmployed ?? false
-                                                ? Constants.ftaColorLight
-                                                : Colors.grey.withOpacity(0.35),
-                                      ),
-                                      color: Colors.transparent,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Transform.scale(
-                                          scaleX: 1.7,
-                                          scaleY: 1.7,
-                                          child: Checkbox(
-                                            value:
-                                                Constants.currentlyEmployed ??
-                                                    false,
-                                            side: BorderSide(
-                                                width: 1.4,
-                                                color: Constants.ftaColorLight),
-                                            activeColor:
-                                                Constants.ctaColorLight,
-                                            checkColor: Colors.white,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(360)),
-                                            onChanged: (value) {
-                                              setState(() {
-                                                Constants.currentlyEmployed =
-                                                    true;
-
-                                                Constants
-                                                        .currentleadAvailable!
-                                                        .employer!
-                                                        .employmentStatus =
-                                                    "Employed";
-                                                Constants
-                                                        .isEmployerDetailsSaved =
-                                                    false;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          "Yes",
-                                          style: TextStyle(
-                                            fontFamily: 'YuGothic',
-                                            color: Constants
-                                                        .currentlyEmployed ??
-                                                    false
-                                                ? Constants.ftaColorLight
-                                                : Colors.grey.withOpacity(0.35),
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 16),
-                                // No Option
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      Constants.currentlyEmployed = false;
-                                      Constants.currentleadAvailable!.employer!
-                                          .employmentStatus = "Unemployed";
-                                      Constants.isEmployerDetailsSaved = false;
-                                    });
-                                  },
-                                  child: Container(
-                                    height: 60,
-                                    width: 150,
-                                    padding: EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        width: 1.0,
-                                        color: !(Constants.currentlyEmployed ??
-                                                true)
-                                            ? Constants.ftaColorLight
-                                            : Colors.grey.withOpacity(0.35),
-                                      ),
-                                      color: Colors.transparent,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Transform.scale(
-                                          scaleX: 1.7,
-                                          scaleY: 1.7,
-                                          child: Checkbox(
-                                            value:
-                                                !(Constants.currentlyEmployed ??
-                                                    true),
-                                            side: BorderSide(
-                                                width: 1.4,
-                                                color: Constants.ftaColorLight),
-                                            activeColor:
-                                                Constants.ctaColorLight,
-                                            checkColor: Colors.white,
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(360)),
-                                            onChanged: (value) {
-                                              setState(() {
-                                                Constants.currentlyEmployed =
-                                                    false;
-                                                Constants
-                                                        .currentleadAvailable!
-                                                        .employer!
-                                                        .employmentStatus =
-                                                    "Unemployed";
-                                                Constants
-                                                        .isEmployerDetailsSaved =
-                                                    false;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          "No",
-                                          style: TextStyle(
-                                            fontFamily: 'YuGothic',
-                                            color: !(Constants
-                                                        .currentlyEmployed ??
-                                                    true)
-                                                ? Constants.ftaColorLight
-                                                : Colors.grey.withOpacity(0.35),
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: CustomCard(
-                                  elevation: 5,
-                                  surfaceTintColor: Colors.white,
-                                  color: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12)),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey.withOpacity(0.15),
-                                          borderRadius: BorderRadius.only(
-                                            topRight: Radius.circular(12),
-                                            topLeft: Radius.circular(12),
-                                          ),
+                              child: Container(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    // Header
+                                    Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.withOpacity(0.15),
+                                        borderRadius: BorderRadius.only(
+                                          topRight: Radius.circular(12),
+                                          topLeft: Radius.circular(12),
                                         ),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(12.0),
-                                                child: Center(
-                                                  child: Text(
-                                                    "Employer Details",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontFamily: 'YuGothic',
-                                                        fontSize: 16),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(12.0),
+                                              child: Center(
+                                                child: Text(
+                                                  "Employer Details",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: 'YuGothic',
+                                                    fontSize: 16,
                                                   ),
                                                 ),
                                               ),
-                                            )
-                                          ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+
+                                    // Employer Name Field
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 12, right: 12),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Employer Name",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          CustomInputTransparent4(
+                                            controller: employerNameController,
+                                            hintText: 'Employer Name',
+                                            onChanged: (val) {
+                                              Constants.isEmployerDetailsSaved =
+                                                  false;
+                                              Constants.currentleadAvailable!
+                                                  .employer!.employerName = val;
+                                              setState(() {});
+                                            },
+                                            onSubmitted: (val) {},
+                                            focusNode: employerNameFocusNode,
+                                            textInputAction:
+                                                TextInputAction.next,
+                                            isPasswordField: false,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+
+                                    // Occupation Field
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 12, right: 12),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Occupation",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          CustomInputTransparent4(
+                                            controller: occupationController,
+                                            hintText: 'Occupation',
+                                            onChanged: (val) {
+                                              Constants.isEmployerDetailsSaved =
+                                                  false;
+                                              setState(() {});
+                                              Constants.currentleadAvailable!
+                                                  .employer!.occupation = val;
+                                            },
+                                            onSubmitted: (val) {
+                                              Constants.isEmployerDetailsSaved =
+                                                  false;
+                                              setState(() {});
+                                            },
+                                            focusNode: occupationFocusNode,
+                                            textInputAction:
+                                                TextInputAction.next,
+                                            isPasswordField: false,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+
+                                    // Employee Number Field
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 12, right: 12),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Employee Number",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          CustomInputTransparent4(
+                                            controller:
+                                                employeeNumberController,
+                                            hintText: 'Employee Number',
+                                            onChanged: (val) {
+                                              Constants.isEmployerDetailsSaved =
+                                                  false;
+                                              Constants
+                                                  .currentleadAvailable!
+                                                  .employer!
+                                                  .employeeNumber = val;
+                                              setState(() {});
+                                            },
+                                            onSubmitted: (val) {
+                                              Constants.isEmployerDetailsSaved =
+                                                  false;
+                                              setState(() {});
+                                            },
+                                            focusNode: employeeNumberFocusNode,
+                                            textInputAction:
+                                                TextInputAction.next,
+                                            isPasswordField: false,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+
+                                    // Salary Range Field
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 12, right: 12),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Salary Range',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Container(
+                                            padding: const EdgeInsets.only(
+                                                top: 8.0, bottom: 4.0),
+                                            child: DropdownButtonHideUnderline(
+                                              child: DropdownButton2<String>(
+                                                isExpanded: true,
+                                                alignment:
+                                                    AlignmentDirectional.center,
+                                                hint: const Row(
+                                                  children: [
+                                                    SizedBox(width: 4),
+                                                    Expanded(
+                                                      child: Text(
+                                                        ' Select salary range',
+                                                        style: TextStyle(
+                                                          color: Colors.grey,
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontFamily:
+                                                              'YuGothic',
+                                                        ),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                items: salaryRange
+                                                    .map((String item) =>
+                                                        DropdownMenuItem<
+                                                            String>(
+                                                          value: item,
+                                                          child: Text(
+                                                            item,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              fontFamily:
+                                                                  'YuGothic',
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ))
+                                                    .toList(),
+                                                value: selectedSalaryRange == ""
+                                                    ? null
+                                                    : selectedSalaryRange,
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    selectedSalaryRange = value;
+                                                    Constants
+                                                        .currentleadAvailable!
+                                                        .employer!
+                                                        .salaryRange = value!;
+                                                  });
+                                                },
+                                                buttonStyleData:
+                                                    ButtonStyleData(
+                                                  height: 50,
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 14, right: 14),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            360),
+                                                    border: Border.all(
+                                                        color: Colors.black26),
+                                                    color: Colors.transparent,
+                                                  ),
+                                                  elevation: 0,
+                                                ),
+                                                iconStyleData:
+                                                    const IconStyleData(
+                                                  icon: Icon(Icons
+                                                      .arrow_forward_ios_outlined),
+                                                  iconSize: 14,
+                                                  iconEnabledColor:
+                                                      Colors.black,
+                                                  iconDisabledColor:
+                                                      Colors.transparent,
+                                                ),
+                                                dropdownStyleData:
+                                                    DropdownStyleData(
+                                                  elevation: 0,
+                                                  maxHeight: 200,
+                                                  width: 200,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                    color: Colors.white,
+                                                  ),
+                                                  offset: const Offset(-5, 0),
+                                                  scrollbarTheme:
+                                                      ScrollbarThemeData(
+                                                    radius:
+                                                        const Radius.circular(
+                                                            40),
+                                                    thickness:
+                                                        WidgetStateProperty.all<
+                                                            double>(6),
+                                                    thumbVisibility:
+                                                        WidgetStateProperty.all<
+                                                            bool>(true),
+                                                  ),
+                                                ),
+                                                menuItemStyleData:
+                                                    const MenuItemStyleData(
+                                                  overlayColor: null,
+                                                  height: 40,
+                                                  padding: EdgeInsets.only(
+                                                      left: 14, right: 14),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+
+                                    // Salary Day Field
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 12, right: 12),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Salary Day',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Container(
+                                            padding: const EdgeInsets.only(
+                                                top: 8.0, bottom: 4.0),
+                                            child: DropdownButtonHideUnderline(
+                                              child: DropdownButton2<String>(
+                                                isExpanded: true,
+                                                hint: const Text(
+                                                  'Select salary day',
+                                                  style: TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: 'YuGothic',
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                items: payDay
+                                                    .map((String item) =>
+                                                        DropdownMenuItem<
+                                                            String>(
+                                                          value: item,
+                                                          child: Text(
+                                                            item.toString(),
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              fontFamily:
+                                                                  'YuGothic',
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ))
+                                                    .toList(),
+                                                value: (selectedPayDay ==
+                                                            null ||
+                                                        selectedPayDay!.isEmpty)
+                                                    ? null
+                                                    : selectedPayDay,
+                                                onChanged: (String? value) {
+                                                  Constants
+                                                          .isEmployerDetailsSaved =
+                                                      false;
+                                                  setState(() {});
+                                                  setState(() {
+                                                    selectedPayDay = value;
+                                                    Constants
+                                                        .currentleadAvailable!
+                                                        .employer!
+                                                        .salaryDay = value!;
+                                                  });
+                                                },
+                                                buttonStyleData:
+                                                    ButtonStyleData(
+                                                  height: 50,
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 14, right: 14),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            360),
+                                                    border: Border.all(
+                                                        color: Colors.black26),
+                                                    color: Colors.transparent,
+                                                  ),
+                                                  elevation: 0,
+                                                ),
+                                                iconStyleData:
+                                                    const IconStyleData(
+                                                  icon: Icon(Icons
+                                                      .arrow_forward_ios_outlined),
+                                                  iconSize: 14,
+                                                  iconEnabledColor:
+                                                      Colors.black,
+                                                  iconDisabledColor:
+                                                      Colors.transparent,
+                                                ),
+                                                dropdownStyleData:
+                                                    DropdownStyleData(
+                                                  elevation: 0,
+                                                  maxHeight: 200,
+                                                  width: 200,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                    color: Colors.white,
+                                                  ),
+                                                  offset: const Offset(-5, 0),
+                                                  scrollbarTheme:
+                                                      ScrollbarThemeData(
+                                                    radius:
+                                                        const Radius.circular(
+                                                            40),
+                                                    thickness:
+                                                        WidgetStateProperty.all<
+                                                            double>(6),
+                                                    thumbVisibility:
+                                                        WidgetStateProperty.all<
+                                                            bool>(true),
+                                                  ),
+                                                ),
+                                                menuItemStyleData:
+                                                    const MenuItemStyleData(
+                                                  overlayColor: null,
+                                                  height: 40,
+                                                  padding: EdgeInsets.only(
+                                                      left: 14, right: 14),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+
+                                    // Salary Frequency Field
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 12, right: 12),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            'Salary Frequency',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Container(
+                                            padding: const EdgeInsets.only(
+                                                top: 8.0, bottom: 4.0),
+                                            child: DropdownButtonHideUnderline(
+                                              child: DropdownButton2<String>(
+                                                isExpanded: true,
+                                                alignment:
+                                                    AlignmentDirectional.center,
+                                                hint: const Row(
+                                                  children: [
+                                                    SizedBox(width: 4),
+                                                    Expanded(
+                                                      child: Text(
+                                                        ' Select salary frequency',
+                                                        style: TextStyle(
+                                                          color: Colors.grey,
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontFamily:
+                                                              'YuGothic',
+                                                        ),
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                items: salaryFrequency
+                                                    .map((String item) =>
+                                                        DropdownMenuItem<
+                                                            String>(
+                                                          value: item,
+                                                          child: Text(
+                                                            item,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              fontFamily:
+                                                                  'YuGothic',
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ))
+                                                    .toList(),
+                                                value: selectedSalaryFrequency ==
+                                                        ""
+                                                    ? null
+                                                    : selectedSalaryFrequency,
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    selectedSalaryFrequency =
+                                                        value;
+                                                    Constants
+                                                        .currentleadAvailable!
+                                                        .employer!
+                                                        .salaryFrequency = value!;
+                                                  });
+                                                },
+                                                buttonStyleData:
+                                                    ButtonStyleData(
+                                                  height: 50,
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 14, right: 14),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            360),
+                                                    border: Border.all(
+                                                        color: Colors.black26),
+                                                    color: Colors.transparent,
+                                                  ),
+                                                  elevation: 0,
+                                                ),
+                                                iconStyleData:
+                                                    const IconStyleData(
+                                                  icon: Icon(Icons
+                                                      .arrow_forward_ios_outlined),
+                                                  iconSize: 14,
+                                                  iconEnabledColor:
+                                                      Colors.black,
+                                                  iconDisabledColor:
+                                                      Colors.transparent,
+                                                ),
+                                                dropdownStyleData:
+                                                    DropdownStyleData(
+                                                  elevation: 0,
+                                                  maxHeight: 200,
+                                                  width: 200,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                    color: Colors.white,
+                                                  ),
+                                                  offset: const Offset(-5, 0),
+                                                  scrollbarTheme:
+                                                      ScrollbarThemeData(
+                                                    radius:
+                                                        const Radius.circular(
+                                                            40),
+                                                    thickness:
+                                                        WidgetStateProperty.all<
+                                                            double>(6),
+                                                    thumbVisibility:
+                                                        WidgetStateProperty.all<
+                                                            bool>(true),
+                                                  ),
+                                                ),
+                                                menuItemStyleData:
+                                                    const MenuItemStyleData(
+                                                  overlayColor: null,
+                                                  height: 40,
+                                                  padding: EdgeInsets.only(
+                                                      left: 14, right: 14),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+
+                                    // Save Button
+                                    Row(
+                                      children: [
+                                        Spacer(),
+                                        TextButton(
+                                          onPressed: () {
+                                            String employmentstatus = Constants
+                                                .currentleadAvailable!
+                                                .employer!
+                                                .employmentStatus;
+
+                                            // Validation logic
+                                            if (employerNameController
+                                                .text.isEmpty) {
+                                              if (employmentstatus !=
+                                                  "Employed") {
+                                                return;
+                                              }
+                                              MotionToast.error(
+                                                height: 40,
+                                                width: 380,
+                                                description: const Text(
+                                                  "Please enter the employer name.",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                              ).show(context);
+                                              return;
+                                            }
+
+                                            if (occupationController
+                                                .text.isEmpty) {
+                                              if (employmentstatus !=
+                                                  "Employed") {
+                                                return;
+                                              }
+                                              MotionToast.error(
+                                                height: 40,
+                                                width: 380,
+                                                description: const Text(
+                                                  "Please enter the occupation.",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                              ).show(context);
+                                              return;
+                                            }
+
+                                            if (employeeNumberController
+                                                .text.isEmpty) {
+                                              if (employmentstatus !=
+                                                  "Employed") {
+                                                return;
+                                              }
+                                              MotionToast.error(
+                                                height: 40,
+                                                width: 380,
+                                                description: const Text(
+                                                  "Please enter the employee number.",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                              ).show(context);
+                                              return;
+                                            }
+
+                                            if (selectedSalaryRange == null ||
+                                                selectedSalaryRange!.isEmpty) {
+                                              if (employmentstatus !=
+                                                  "Employed") {
+                                                return;
+                                              }
+                                              MotionToast.error(
+                                                height: 40,
+                                                width: 380,
+                                                description: const Text(
+                                                  "Please select a salary range.",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                              ).show(context);
+                                              return;
+                                            }
+
+                                            if (selectedSalaryFrequency ==
+                                                    null ||
+                                                selectedSalaryFrequency!
+                                                    .isEmpty) {
+                                              if (employmentstatus !=
+                                                  "Employed") {
+                                                return;
+                                              }
+                                              MotionToast.error(
+                                                height: 40,
+                                                width: 380,
+                                                description: const Text(
+                                                  "Please select a salary frequency.",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                              ).show(context);
+                                              return;
+                                            }
+
+                                            if (selectedPayDay == null ||
+                                                selectedPayDay!.isEmpty) {
+                                              if (employmentstatus !=
+                                                  "Employed") {
+                                                return;
+                                              }
+                                              MotionToast.error(
+                                                height: 40,
+                                                width: 380,
+                                                description: const Text(
+                                                  "Please select a pay day.",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                              ).show(context);
+                                              return;
+                                            }
+
+                                            updateEmployersRequest(
+                                              employerId: '0',
+                                              leadId: Constants
+                                                  .currentleadAvailable!
+                                                  .leadObject
+                                                  .onololeadid!
+                                                  .toString(),
+                                              employerNameController:
+                                                  employerNameController,
+                                              occupationController:
+                                                  occupationController,
+                                              employeeNumberController:
+                                                  employeeNumberController,
+                                              selectedSalaryRange:
+                                                  selectedSalaryRange!,
+                                              selectedSalaryFrequency:
+                                                  selectedSalaryFrequency!,
+                                              selectedPayDay: selectedPayDay!,
+                                              employmentStatus: Constants
+                                                  .currentleadAvailable!
+                                                  .employer!
+                                                  .employmentStatus!,
+                                            );
+
+                                            setState(() {});
+                                          },
+                                          style: TextButton.styleFrom(
+                                            minimumSize: Size(180, 48),
+                                            backgroundColor: Constants
+                                                        .isEmployerDetailsSaved ==
+                                                    false
+                                                ? Constants.ctaColorLight
+                                                : Colors.grey,
+                                          ),
+                                          child: const Text(
+                                            "Validate and Save",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                        ),
+                                        Spacer(),
+                                      ],
+                                    ),
+                                    SizedBox(height: 24)
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 24,
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (fieldSalesActiveStep == 3)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 24,
+                          ),
+                          Container(
+                            child: Padding(
+                              padding: const EdgeInsets.all(0.0),
+                              child: Container(
+                                  child: SingleChildScrollView(
+                                physics: NeverScrollableScrollPhysics(),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.withOpacity(0.15),
+                                        borderRadius: BorderRadius.only(
+                                          topRight: Radius.circular(12),
+                                          topLeft: Radius.circular(12),
                                         ),
                                       ),
-                                      SizedBox(
-                                        height: 16,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 24, right: 24),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    "Employer Name",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(12.0),
+                                              child: Center(
+                                                child: Text(
+                                                  "Premium Payer (Banking and Address)",
+                                                  style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.w500,
                                                       fontFamily: 'YuGothic',
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  CustomInputTransparent4(
-                                                    controller:
-                                                        employerNameController,
-                                                    hintText: 'Employer Name',
-                                                    onChanged: (val) {
-                                                      Constants
-                                                              .isEmployerDetailsSaved =
-                                                          false;
-                                                      Constants
-                                                          .currentleadAvailable!
-                                                          .employer!
-                                                          .employerName = val;
-                                                      setState(() {});
-                                                    },
-                                                    onSubmitted: (val) {},
-                                                    focusNode:
-                                                        employerNameFocusNode,
-                                                    textInputAction:
-                                                        TextInputAction.next,
-                                                    isPasswordField: false,
-                                                  ),
-                                                  const SizedBox(height: 24),
-                                                ],
+                                                      fontSize: 16),
+                                                ),
                                               ),
                                             ),
-                                            SizedBox(
-                                              width: 22,
-                                            ),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    "Occupation",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontFamily: 'YuGothic',
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  CustomInputTransparent4(
-                                                    controller:
-                                                        occupationController,
-                                                    hintText: 'Occupation',
-                                                    onChanged: (val) {
-                                                      Constants
-                                                              .isEmployerDetailsSaved =
-                                                          false;
-                                                      setState(() {});
-                                                      Constants
-                                                          .currentleadAvailable!
-                                                          .employer!
-                                                          .occupation = val;
-                                                    },
-                                                    onSubmitted: (val) {
-                                                      Constants
-                                                              .isEmployerDetailsSaved =
-                                                          false;
-                                                      setState(() {});
-                                                    },
-                                                    focusNode:
-                                                        occupationFocusNode,
-                                                    textInputAction:
-                                                        TextInputAction.next,
-                                                    isPasswordField: false,
-                                                  ),
-                                                  const SizedBox(height: 24),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 22,
-                                            ),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    "Employee Number",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontFamily: 'YuGothic',
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  CustomInputTransparent4(
-                                                    controller:
-                                                        employeeNumberController,
-                                                    hintText: 'Employee Number',
-                                                    onChanged: (val) {
-                                                      Constants
-                                                              .isEmployerDetailsSaved =
-                                                          false;
-                                                      Constants
-                                                          .currentleadAvailable!
-                                                          .employer!
-                                                          .employeeNumber = val;
-                                                      setState(() {});
-                                                    },
-                                                    onSubmitted: (val) {
-                                                      Constants
-                                                              .isEmployerDetailsSaved =
-                                                          false;
-                                                      setState(() {});
-                                                    },
-                                                    focusNode:
-                                                        employeeNumberFocusNode,
-                                                    textInputAction:
-                                                        TextInputAction.next,
-                                                    isPasswordField: false,
-                                                  ),
-                                                  const SizedBox(height: 24),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                          )
+                                        ],
                                       ),
-                                      SizedBox(
-                                        height: 16,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 24, right: 24),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  const Text(
-                                                    'Salary Range',
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontFamily: 'YuGothic',
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 2),
-                                                  Row(
+                                    ),
+                                    SizedBox(
+                                      height: 16,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 24, right: 0, top: 16),
+                                      child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width -
+                                                40,
+                                        constraints:
+                                            BoxConstraints(maxWidth: 400),
+                                        height: 150,
+                                        child:
+                                            premiumPayerMember !=
+                                                    AdditionalMember.empty()
+                                                ? Row(
                                                     children: [
-                                                      Expanded(
-                                                        flex: 1,
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  top: 12.0,
-                                                                  bottom: 4.0),
-                                                          child:
-                                                              DropdownButtonHideUnderline(
-                                                            child:
-                                                                DropdownButton2<
-                                                                    String>(
-                                                              isExpanded: true,
-                                                              alignment:
-                                                                  AlignmentDirectional
-                                                                      .center,
-                                                              hint: const Row(
-                                                                children: [
-                                                                  SizedBox(
-                                                                    width: 4,
-                                                                  ),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      ' Select salary range',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        color: Colors
-                                                                            .grey,
-                                                                        fontSize:
-                                                                            14,
-                                                                        fontWeight:
-                                                                            FontWeight.w500,
-                                                                        fontFamily:
-                                                                            'YuGothic',
-                                                                      ),
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              items: salaryRange
-                                                                  .map((String
-                                                                          item) =>
-                                                                      DropdownMenuItem<
-                                                                          String>(
-                                                                        value:
-                                                                            item,
-                                                                        child:
-                                                                            Text(
-                                                                          item,
-                                                                          style:
-                                                                              const TextStyle(
-                                                                            fontSize:
-                                                                                14,
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            color:
-                                                                                Colors.black,
-                                                                          ),
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
-                                                                        ),
-                                                                      ))
-                                                                  .toList(),
-                                                              value: selectedSalaryRange ==
-                                                                      ""
-                                                                  ? null
-                                                                  : selectedSalaryRange,
-                                                              onChanged:
-                                                                  (String?
-                                                                      value) {
-                                                                setState(() {
-                                                                  selectedSalaryRange =
-                                                                      value;
-                                                                  Constants
-                                                                      .currentleadAvailable!
-                                                                      .employer!
-                                                                      .salaryRange = value!;
-                                                                });
-                                                              },
-                                                              buttonStyleData:
-                                                                  ButtonStyleData(
-                                                                height: 50,
-                                                                width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                        .only(
-                                                                        left:
-                                                                            14,
-                                                                        right:
-                                                                            14),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              360),
-                                                                  border: Border
-                                                                      .all(
-                                                                    color: Colors
-                                                                        .black26,
-                                                                  ),
-                                                                  color: Colors
-                                                                      .transparent,
-                                                                ),
-                                                                elevation: 0,
-                                                              ),
-                                                              iconStyleData:
-                                                                  const IconStyleData(
-                                                                icon: Icon(
-                                                                  Icons
-                                                                      .arrow_forward_ios_outlined,
-                                                                ),
-                                                                iconSize: 14,
-                                                                iconEnabledColor:
-                                                                    Colors
-                                                                        .black,
-                                                                iconDisabledColor:
+                                                      Container(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width -
+                                                            100,
+                                                        constraints:
+                                                            BoxConstraints(
+                                                          maxWidth: 450,
+                                                        ),
+                                                        height: 135,
+                                                        child:
+                                                            AdvancedPremiumPayerMemberCard(
+                                                          id: premiumPayerMember
+                                                              .id,
+                                                          dob:
+                                                              premiumPayerMember
+                                                                  .dob,
+                                                          surname:
+                                                              premiumPayerMember
+                                                                  .surname,
+                                                          contact:
+                                                              premiumPayerMember
+                                                                  .contact,
+                                                          sourceOfWealth:
+                                                              premiumPayerMember
+                                                                  .sourceOfWealth,
+                                                          otherUnknownWealth:
+                                                              premiumPayerMember
+                                                                  .otherUnknownWealth,
+                                                          otherUnknownIncome:
+                                                              premiumPayerMember
+                                                                  .otherUnknownIncome,
+                                                          dateOfBirth:
+                                                              premiumPayerMember
+                                                                  .dob,
+                                                          sourceOfIncome:
+                                                              premiumPayerMember
+                                                                  .sourceOfIncome,
+                                                          title:
+                                                              premiumPayerMember
+                                                                  .title,
+                                                          name:
+                                                              premiumPayerMember
+                                                                  .name,
+                                                          relationship:
+                                                              premiumPayerMember
+                                                                  .relationship,
+                                                          gender:
+                                                              premiumPayerMember
+                                                                  .gender,
+                                                          autoNumber:
+                                                              premiumPayerMember
+                                                                  .autoNumber,
+                                                          isSelected: true,
+                                                          isEditing: true,
+                                                          current_member_index:
+                                                              current_member_index,
+                                                          is_self_or_payer:
+                                                              true,
+                                                          noOfMembers: 0,
+                                                          cover: (policiesSelectedCoverAmounts !=
+                                                                      null &&
+                                                                  current_member_index >=
+                                                                      0 &&
+                                                                  current_member_index <
+                                                                      policiesSelectedCoverAmounts
+                                                                          .length &&
+                                                                  policiesSelectedCoverAmounts[
+                                                                          current_member_index] !=
+                                                                      null)
+                                                              ? policiesSelectedCoverAmounts[
+                                                                  current_member_index]
+                                                              : 0.0,
+                                                          premium: policyPremiums
+                                                                  .isEmpty
+                                                              ? 0
+                                                              : policyPremiums[
+                                                                          current_member_index]
+                                                                      .memberPremiums
+                                                                      .isEmpty
+                                                                  ? 0
+                                                                  : policyPremiums[
+                                                                          current_member_index]
+                                                                      .memberPremiums
+                                                                      .first
+                                                                      .premium,
+                                                          onSingleTap: () {},
+                                                          onDoubleTap: () {
+                                                            if (Constants
+                                                                    .currentleadAvailable ==
+                                                                null) {
+                                                              return null;
+                                                            }
+                                                            final List<
+                                                                    AdditionalMember>
+                                                                allAdditionalMembers =
+                                                                Constants
+                                                                    .currentleadAvailable!
+                                                                    .additionalMembers
+                                                                    .where((m) {
+                                                              // Ensure dob is not empty
+                                                              if (m.relationship ==
+                                                                  "self")
+                                                                return false;
+
+                                                              if (m.dob.isEmpty)
+                                                                return false;
+
+                                                              // Parse date and check if age is greater than 18
+                                                              return calculateAge(
+                                                                      DateTime.parse(
+                                                                          m.dob)) >
+                                                                  18;
+                                                            }).toList();
+
+                                                            showDialog(
+                                                              context: context,
+                                                              builder:
+                                                                  (context) =>
+                                                                      Dialog(
+                                                                backgroundColor:
                                                                     Colors
                                                                         .transparent,
-                                                              ),
-                                                              dropdownStyleData:
-                                                                  DropdownStyleData(
-                                                                elevation: 0,
-                                                                maxHeight: 200,
-                                                                width: 200,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              16),
-                                                                  color: Colors
-                                                                      .white,
+                                                                elevation: 0.0,
+                                                                child:
+                                                                    MovingLineDialog(
+                                                                  child:
+                                                                      Container(
+                                                                    width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width,
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            16),
+                                                                    constraints: const BoxConstraints(
+                                                                        maxWidth:
+                                                                            500,
+                                                                        maxHeight:
+                                                                            630),
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              36),
+                                                                    ),
+                                                                    child:
+                                                                        StatefulBuilder(
+                                                                      builder: (context,
+                                                                              setState1) =>
+                                                                          SingleChildScrollView(
+                                                                        child:
+                                                                            Column(
+                                                                          crossAxisAlignment:
+                                                                              CrossAxisAlignment.start,
+                                                                          mainAxisSize:
+                                                                              MainAxisSize.min,
+                                                                          children: [
+                                                                            SizedBox(height: 16),
+                                                                            Row(
+                                                                              children: [
+                                                                                Spacer(),
+                                                                                InkWell(
+                                                                                    onTap: () {
+                                                                                      Navigator.of(context).pop();
+                                                                                    },
+                                                                                    child: Icon(
+                                                                                      Icons.close,
+                                                                                      color: Colors.grey,
+                                                                                    )),
+                                                                                SizedBox(
+                                                                                  width: 24,
+                                                                                )
+                                                                              ],
+                                                                            ),
+                                                                            SizedBox(height: 8),
+                                                                            Center(
+                                                                              child: Text(
+                                                                                "Change the Premium Payer",
+                                                                                style: TextStyle(
+                                                                                  fontSize: 20,
+                                                                                  fontWeight: FontWeight.w500,
+                                                                                  color: Constants.ftaColorLight,
+                                                                                ),
+                                                                                textAlign: TextAlign.center,
+                                                                              ),
+                                                                            ),
+                                                                            const SizedBox(height: 12),
+                                                                            const Center(
+                                                                              child: Text(
+                                                                                "Click on a member below to select them as an premium payer",
+                                                                                style: TextStyle(
+                                                                                  fontSize: 14,
+                                                                                  fontWeight: FontWeight.w500,
+                                                                                  fontFamily: 'YuGothic',
+                                                                                  color: Colors.grey,
+                                                                                ),
+                                                                                textAlign: TextAlign.center,
+                                                                              ),
+                                                                            ),
+                                                                            const SizedBox(height: 16),
+
+                                                                            // -------------------- List of potential additional members --------------------
+                                                                            ListView.builder(
+                                                                              shrinkWrap: true,
+                                                                              itemCount: allAdditionalMembers.length,
+                                                                              itemBuilder: (context, index) {
+                                                                                final member = allAdditionalMembers[index];
+
+                                                                                return GestureDetector(
+                                                                                  // -------------------- The additional members UI Card --------------------
+                                                                                  child: Container(
+                                                                                    margin: const EdgeInsets.symmetric(
+                                                                                      vertical: 12.0,
+                                                                                      horizontal: 16.0,
+                                                                                    ),
+                                                                                    padding: const EdgeInsets.all(16.0),
+                                                                                    decoration: BoxDecoration(
+                                                                                      gradient: LinearGradient(
+                                                                                        colors: [
+                                                                                          Constants.ftaColorLight.withOpacity(0.9),
+                                                                                          Constants.ftaColorLight,
+                                                                                        ],
+                                                                                        begin: Alignment.topLeft,
+                                                                                        end: Alignment.bottomRight,
+                                                                                      ),
+                                                                                      borderRadius: BorderRadius.circular(12.0),
+                                                                                      boxShadow: [
+                                                                                        BoxShadow(
+                                                                                          color: Colors.black.withOpacity(0.1),
+                                                                                          blurRadius: 10,
+                                                                                          offset: const Offset(0, 4),
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                    child: Row(
+                                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                      children: [
+                                                                                        // Profile Avatar
+                                                                                        CircleAvatar(
+                                                                                          radius: 20,
+                                                                                          backgroundColor: Colors.white,
+                                                                                          child: Icon(
+                                                                                            member.gender.toLowerCase() == "female" ? Icons.female : Icons.male,
+                                                                                            size: 24,
+                                                                                            color: member.gender.toLowerCase() == "female" ? Colors.pinkAccent : Colors.blueAccent,
+                                                                                          ),
+                                                                                        ),
+                                                                                        const SizedBox(width: 16.0),
+
+                                                                                        // Info
+                                                                                        Expanded(
+                                                                                          child: Column(
+                                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                            children: [
+                                                                                              Text(
+                                                                                                member.dob.isEmpty ? 'DoB: - ' : '${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
+                                                                                                style: const TextStyle(
+                                                                                                  fontSize: 13,
+                                                                                                  color: Colors.white,
+                                                                                                  fontWeight: FontWeight.w400,
+                                                                                                ),
+                                                                                              ),
+                                                                                              const SizedBox(height: 4.0),
+                                                                                              Text(
+                                                                                                '${member.title} ${member.name} ${member.surname}',
+                                                                                                style: const TextStyle(
+                                                                                                  fontSize: 15,
+                                                                                                  color: Colors.white,
+                                                                                                  fontWeight: FontWeight.bold,
+                                                                                                  letterSpacing: 1.2,
+                                                                                                ),
+                                                                                              ),
+                                                                                              const SizedBox(height: 4.0),
+                                                                                              Row(
+                                                                                                children: [
+                                                                                                  const Icon(
+                                                                                                    Icons.people_alt,
+                                                                                                    color: Colors.white70,
+                                                                                                    size: 15,
+                                                                                                  ),
+                                                                                                  const SizedBox(width: 4.0),
+                                                                                                  Text(
+                                                                                                    'Relationship: ${member.relationship}',
+                                                                                                    style: const TextStyle(
+                                                                                                      fontSize: 13,
+                                                                                                      color: Colors.white70,
+                                                                                                      fontWeight: FontWeight.w400,
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                ],
+                                                                                              ),
+                                                                                              SizedBox(
+                                                                                                height: 8,
+                                                                                              ),
+                                                                                              Row(
+                                                                                                children: [
+                                                                                                  Spacer(),
+                                                                                                  Container(
+                                                                                                    height: 30,
+                                                                                                    child: TextButton(
+                                                                                                      onPressed: () async {
+                                                                                                        try {
+                                                                                                          // Get the current premium payer
+                                                                                                          AdditionalMember currentPremiumPayer = premiumPayerMember;
+
+                                                                                                          // Get the selected new premium payer
+                                                                                                          AdditionalMember newPremiumPayer = member; // This is the selected member
+
+                                                                                                          print("Changing premium payer from ${currentPremiumPayer.name} to ${newPremiumPayer.name}");
+
+                                                                                                          // Step 1: Determine the old premium payer's new relationship based on the new payer's relationship
+                                                                                                          String oldPremiumPayerNewRelationship = getOldPayerRelationship(newPremiumPayer.relationship.toLowerCase(), currentPremiumPayer.relationship.toLowerCase(), currentPremiumPayer);
+
+                                                                                                          // Step 2: Find and update the current premium payer in additionalMembers
+                                                                                                          int currentPayerIndex = Constants.currentleadAvailable!.additionalMembers.indexWhere((m) => m.autoNumber == currentPremiumPayer.autoNumber);
+                                                                                                          AdditionalMember updatedCurrentPayer = AdditionalMember.empty();
+                                                                                                          AdditionalMember updatedNewPayer = AdditionalMember.empty();
+                                                                                                          if (currentPayerIndex != -1) {
+                                                                                                            // Create updated version of current premium payer with new relationship
+                                                                                                            updatedCurrentPayer = AdditionalMember(
+                                                                                                              memberType: currentPremiumPayer.memberType,
+                                                                                                              autoNumber: currentPremiumPayer.autoNumber,
+                                                                                                              id: currentPremiumPayer.id,
+                                                                                                              contact: currentPremiumPayer.contact,
+                                                                                                              dob: currentPremiumPayer.dob,
+                                                                                                              gender: currentPremiumPayer.gender,
+                                                                                                              name: currentPremiumPayer.name,
+                                                                                                              surname: currentPremiumPayer.surname,
+                                                                                                              title: currentPremiumPayer.title,
+                                                                                                              onololeadid: currentPremiumPayer.onololeadid,
+                                                                                                              altContact: currentPremiumPayer.altContact,
+                                                                                                              email: currentPremiumPayer.email,
+                                                                                                              percentage: currentPremiumPayer.percentage,
+                                                                                                              maritalStatus: currentPremiumPayer.maritalStatus,
+                                                                                                              relationship: oldPremiumPayerNewRelationship, // Updated relationship
+                                                                                                              mipCover: currentPremiumPayer.mipCover,
+                                                                                                              mipStatus: currentPremiumPayer.mipStatus,
+                                                                                                              updatedBy: currentPremiumPayer.updatedBy,
+                                                                                                              memberQueryType: currentPremiumPayer.memberQueryType,
+                                                                                                              memberQueryTypeOldNew: currentPremiumPayer.memberQueryTypeOldNew,
+                                                                                                              memberQueryTypeOldAutoNumber: currentPremiumPayer.memberQueryTypeOldAutoNumber,
+                                                                                                              membersAutoNumber: currentPremiumPayer.membersAutoNumber,
+                                                                                                              sourceOfIncome: currentPremiumPayer.sourceOfIncome,
+                                                                                                              sourceOfWealth: currentPremiumPayer.sourceOfWealth,
+                                                                                                              otherUnknownIncome: currentPremiumPayer.otherUnknownIncome,
+                                                                                                              otherUnknownWealth: currentPremiumPayer.otherUnknownWealth,
+                                                                                                              timestamp: currentPremiumPayer.timestamp,
+                                                                                                              lastUpdate: DateTime.now().toIso8601String(),
+                                                                                                            );
+
+                                                                                                            // Update in the list
+                                                                                                            Constants.currentleadAvailable!.additionalMembers[currentPayerIndex] = updatedCurrentPayer;
+                                                                                                          }
+
+                                                                                                          // Step 3: Find and update the new premium payer in additionalMembers
+                                                                                                          int newPayerIndex = Constants.currentleadAvailable!.additionalMembers.indexWhere((m) => m.autoNumber == newPremiumPayer.autoNumber);
+
+                                                                                                          if (newPayerIndex != -1) {
+                                                                                                            // Create updated version of new premium payer with "self" relationship
+                                                                                                            updatedNewPayer = AdditionalMember(
+                                                                                                              memberType: newPremiumPayer.memberType,
+                                                                                                              autoNumber: newPremiumPayer.autoNumber,
+                                                                                                              id: newPremiumPayer.id,
+                                                                                                              contact: newPremiumPayer.contact,
+                                                                                                              dob: newPremiumPayer.dob,
+                                                                                                              gender: newPremiumPayer.gender,
+                                                                                                              name: newPremiumPayer.name,
+                                                                                                              surname: newPremiumPayer.surname,
+                                                                                                              title: newPremiumPayer.title,
+                                                                                                              onololeadid: newPremiumPayer.onololeadid,
+                                                                                                              altContact: newPremiumPayer.altContact,
+                                                                                                              email: newPremiumPayer.email,
+                                                                                                              percentage: newPremiumPayer.percentage,
+                                                                                                              maritalStatus: newPremiumPayer.maritalStatus,
+                                                                                                              relationship: "self", // New premium payer becomes "self"
+                                                                                                              mipCover: newPremiumPayer.mipCover,
+                                                                                                              mipStatus: newPremiumPayer.mipStatus,
+                                                                                                              updatedBy: newPremiumPayer.updatedBy,
+                                                                                                              memberQueryType: newPremiumPayer.memberQueryType,
+                                                                                                              memberQueryTypeOldNew: newPremiumPayer.memberQueryTypeOldNew,
+                                                                                                              memberQueryTypeOldAutoNumber: newPremiumPayer.memberQueryTypeOldAutoNumber,
+                                                                                                              membersAutoNumber: newPremiumPayer.membersAutoNumber,
+                                                                                                              sourceOfIncome: newPremiumPayer.sourceOfIncome,
+                                                                                                              sourceOfWealth: newPremiumPayer.sourceOfWealth,
+                                                                                                              otherUnknownIncome: newPremiumPayer.otherUnknownIncome,
+                                                                                                              otherUnknownWealth: newPremiumPayer.otherUnknownWealth,
+                                                                                                              timestamp: newPremiumPayer.timestamp,
+                                                                                                              lastUpdate: DateTime.now().toIso8601String(),
+                                                                                                            );
+
+                                                                                                            // Update in the list
+                                                                                                            Constants.currentleadAvailable!.additionalMembers[newPayerIndex] = updatedNewPayer;
+
+                                                                                                            // Update the premium payer reference
+                                                                                                            premiumPayerMember = updatedNewPayer;
+                                                                                                          }
+
+                                                                                                          // Step 4: Update mainMembers if needed
+                                                                                                          int mainMemberIndex = mainMembers.indexWhere(
+                                                                                                            (member) => member.autoNumber == currentPremiumPayer.autoNumber,
+                                                                                                          );
+                                                                                                          if (mainMemberIndex != -1) {
+                                                                                                            mainMembers[mainMemberIndex] = Constants.currentleadAvailable!.additionalMembers[currentPayerIndex];
+                                                                                                          }
+
+                                                                                                          // Update new premium payer in mainMembers
+                                                                                                          int newMainMemberIndex = mainMembers.indexWhere(
+                                                                                                            (member) => member.autoNumber == newPremiumPayer.autoNumber,
+                                                                                                          );
+                                                                                                          if (newMainMemberIndex != -1) {
+                                                                                                            mainMembers[newMainMemberIndex] = Constants.currentleadAvailable!.additionalMembers[newPayerIndex];
+                                                                                                          }
+
+                                                                                                          // Step 5: Call updateMember for both members to sync with backend
+                                                                                                          if (updatedCurrentPayer != AdditionalMember.empty()) await updateMemberBackend(context, currentPremiumPayer.autoNumber, updatedCurrentPayer);
+                                                                                                          if (updatedNewPayer != AdditionalMember.empty()) await updateMemberBackend(context, newPremiumPayer.autoNumber, updatedNewPayer);
+
+                                                                                                          // Step 6: Notify UI to refresh
+                                                                                                          needsAnalysisValueNotifier2.value++;
+                                                                                                          //mySalesPremiumCalculatorValue.value++;
+
+                                                                                                          print("Premium payer changed successfully");
+
+                                                                                                          // Close the dialog
+                                                                                                          Navigator.of(context).pop();
+                                                                                                        } catch (e) {
+                                                                                                          print("Error changing premium payer: $e");
+                                                                                                          // Show error message to user if needed
+                                                                                                        }
+                                                                                                      },
+                                                                                                      child: Text(
+                                                                                                        'Select',
+                                                                                                        style: TextStyle(
+                                                                                                          fontSize: 13,
+                                                                                                          fontWeight: FontWeight.w500,
+                                                                                                          fontFamily: 'YuGothic',
+                                                                                                          color: Constants.ctaColorLight,
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                      style: TextButton.styleFrom(
+                                                                                                        foregroundColor: Constants.ctaColorLight,
+                                                                                                        backgroundColor: Colors.white,
+                                                                                                      ),
+                                                                                                    ),
+                                                                                                  ),
+                                                                                                ],
+                                                                                              )
+                                                                                            ],
+                                                                                          ),
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                  ),
+                                                                                );
+                                                                              },
+                                                                            ),
+                                                                            const SizedBox(height: 16),
+                                                                            // Optionally, a button to add a new partner manually.
+                                                                            Center(
+                                                                              child: TextButton.icon(
+                                                                                onPressed: () {
+                                                                                  // activeStep = 2;
+                                                                                  activeStep1 = 2;
+                                                                                  updateSalesStepsValueNotifier3.value++;
+                                                                                  Navigator.of(context).pop();
+
+                                                                                  Navigator.push(
+                                                                                    context,
+                                                                                    MaterialPageRoute(
+                                                                                      builder: (context) => NewMemberDialog2(
+                                                                                        isEditMode: false,
+                                                                                        autoNumber: 0,
+                                                                                        relationship: "Partner",
+                                                                                        title: "",
+                                                                                        name: "",
+                                                                                        surname: "",
+                                                                                        dob: "",
+                                                                                        gender: "",
+                                                                                        current_member_index: current_member_index,
+                                                                                        canAddMember: false,
+                                                                                      ),
+                                                                                    ),
+                                                                                  );
+                                                                                },
+                                                                                icon: const Icon(
+                                                                                  Icons.add,
+                                                                                  color: Colors.white,
+                                                                                ),
+                                                                                label: const Text(
+                                                                                  'Add New Member',
+                                                                                  style: TextStyle(
+                                                                                    fontSize: 14,
+                                                                                    fontWeight: FontWeight.w500,
+                                                                                    fontFamily: 'YuGothic',
+                                                                                    color: Colors.white,
+                                                                                  ),
+                                                                                ),
+                                                                                style: TextButton.styleFrom(
+                                                                                  foregroundColor: Colors.teal,
+                                                                                  backgroundColor: Constants.ctaColorLight,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                            const SizedBox(height: 16),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
                                                                 ),
-                                                                offset:
-                                                                    const Offset(
-                                                                        -5, 0),
-                                                                scrollbarTheme:
-                                                                    ScrollbarThemeData(
-                                                                  radius: const Radius
-                                                                      .circular(
-                                                                      40),
-                                                                  thickness:
-                                                                      WidgetStateProperty
-                                                                          .all<double>(
-                                                                              6),
-                                                                  thumbVisibility:
-                                                                      WidgetStateProperty.all<
-                                                                              bool>(
-                                                                          true),
-                                                                ),
                                                               ),
-                                                              menuItemStyleData:
-                                                                  const MenuItemStyleData(
-                                                                overlayColor:
-                                                                    null,
-                                                                height: 40,
-                                                                padding: EdgeInsets
-                                                                    .only(
-                                                                        left:
-                                                                            14,
-                                                                        right:
-                                                                            14),
-                                                              ),
-                                                            ),
-                                                          ),
+                                                            );
+                                                          },
                                                         ),
                                                       ),
+                                                      SizedBox(width: 16),
                                                     ],
-                                                  ),
-                                                  const SizedBox(height: 24),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 22,
-                                            ),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  const Text(
-                                                    'Salary Day',
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontFamily: 'YuGothic',
+                                                  )
+                                                : Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width -
+                                                            120,
+                                                    constraints: BoxConstraints(
+                                                      maxWidth: 450,
+                                                    ),
+                                                    child:
+                                                        AdvancedPremiumPayerMemberCard(
+                                                      id: mainMembers[
+                                                              current_member_index]
+                                                          .id,
+                                                      dob: mainMembers[
+                                                              current_member_index]
+                                                          .dob,
+                                                      surname: mainMembers[
+                                                              current_member_index]
+                                                          .surname,
+                                                      contact: mainMembers[
+                                                              current_member_index]
+                                                          .contact,
+                                                      sourceOfWealth: mainMembers[
+                                                              current_member_index]
+                                                          .sourceOfWealth,
+                                                      otherUnknownWealth: mainMembers[
+                                                              current_member_index]
+                                                          .otherUnknownWealth,
+                                                      otherUnknownIncome: mainMembers[
+                                                              current_member_index]
+                                                          .otherUnknownIncome,
+                                                      dateOfBirth: mainMembers[
+                                                              current_member_index]
+                                                          .dob,
+                                                      sourceOfIncome: mainMembers[
+                                                              current_member_index]
+                                                          .sourceOfIncome,
+                                                      title: mainMembers[
+                                                              current_member_index]
+                                                          .title,
+                                                      name: mainMembers[
+                                                              current_member_index]
+                                                          .name,
+                                                      relationship: mainMembers[
+                                                              current_member_index]
+                                                          .relationship,
+                                                      gender: mainMembers[
+                                                              current_member_index]
+                                                          .gender,
+                                                      autoNumber: mainMembers[
+                                                              current_member_index]
+                                                          .autoNumber,
+                                                      isSelected: true,
+                                                      isEditing: true,
+                                                      current_member_index:
+                                                          current_member_index,
+                                                      is_self_or_payer: true,
+                                                      noOfMembers: 0,
+                                                      cover: policiesSelectedCoverAmounts[
+                                                          current_member_index],
+                                                      premium: policyPremiums
+                                                              .isEmpty
+                                                          ? 0
+                                                          : policyPremiums[
+                                                                      current_member_index]
+                                                                  .memberPremiums
+                                                                  .isEmpty
+                                                              ? 0
+                                                              : policyPremiums[
+                                                                      current_member_index]
+                                                                  .memberPremiums
+                                                                  .first
+                                                                  .premium,
+                                                      onSingleTap: () {},
+                                                      onDoubleTap: () {},
                                                     ),
                                                   ),
-                                                  const SizedBox(height: 2),
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                        flex: 1,
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  top: 12.0,
-                                                                  bottom: 4.0),
-                                                          child:
-                                                              DropdownButtonHideUnderline(
-                                                            child:
-                                                                DropdownButton2<
-                                                                    String>(
-                                                              isExpanded: true,
-                                                              hint: const Text(
-                                                                'Select salary day',
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 8,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Spacer(),
+                                        InkWell(
+                                          onTap: () {
+                                            if (Constants
+                                                    .currentleadAvailable ==
+                                                null) {
+                                              return null;
+                                            }
+                                            final List<AdditionalMember>
+                                                allAdditionalMembers = Constants
+                                                    .currentleadAvailable!
+                                                    .additionalMembers
+                                                    .where((m) {
+                                              // Ensure dob is not empty
+                                              if (m.relationship == "self")
+                                                return false;
+
+                                              if (m.dob.isEmpty) return false;
+
+                                              // Parse date and check if age is greater than 18
+                                              return calculateAge(
+                                                      DateTime.parse(m.dob)) >
+                                                  18;
+                                            }).toList();
+
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => Dialog(
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                elevation: 0.0,
+                                                child: MovingLineDialog(
+                                                  child: Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                            .size
+                                                            .width,
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            16),
+                                                    constraints:
+                                                        const BoxConstraints(
+                                                            maxWidth: 500,
+                                                            maxHeight: 630),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              36),
+                                                    ),
+                                                    child: StatefulBuilder(
+                                                      builder: (context,
+                                                              setState1) =>
+                                                          SingleChildScrollView(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            SizedBox(
+                                                                height: 16),
+                                                            Row(
+                                                              children: [
+                                                                Spacer(),
+                                                                InkWell(
+                                                                    onTap: () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                    },
+                                                                    child: Icon(
+                                                                      Icons
+                                                                          .close,
+                                                                      color: Colors
+                                                                          .grey,
+                                                                    )),
+                                                                SizedBox(
+                                                                  width: 24,
+                                                                )
+                                                              ],
+                                                            ),
+                                                            SizedBox(height: 8),
+                                                            Center(
+                                                              child: Text(
+                                                                "Change the Premium Payer",
                                                                 style:
                                                                     TextStyle(
-                                                                  color: Colors
-                                                                      .grey,
+                                                                  fontSize: 20,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  color: Constants
+                                                                      .ftaColorLight,
+                                                                ),
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                                height: 12),
+                                                            const Center(
+                                                              child: Text(
+                                                                "Click on a member below to select them as an premium payer",
+                                                                style:
+                                                                    TextStyle(
                                                                   fontSize: 14,
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w500,
                                                                   fontFamily:
                                                                       'YuGothic',
-                                                                ),
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                              ),
-                                                              items: payDay
-                                                                  .map((String
-                                                                          item) =>
-                                                                      DropdownMenuItem<
-                                                                          String>(
-                                                                        value:
-                                                                            item,
-                                                                        // Use the correct item value
-                                                                        child:
-                                                                            Text(
-                                                                          item.toString(),
-                                                                          style:
-                                                                              const TextStyle(
-                                                                            fontSize:
-                                                                                14,
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            color:
-                                                                                Colors.black,
-                                                                          ),
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
-                                                                        ),
-                                                                      ))
-                                                                  .toList(),
-                                                              value: (selectedPayDay ==
-                                                                          null ||
-                                                                      selectedPayDay!
-                                                                          .isEmpty)
-                                                                  ? null
-                                                                  : selectedPayDay,
-                                                              // Ensure null for an empty value
-                                                              onChanged:
-                                                                  (String?
-                                                                      value) {
-                                                                Constants
-                                                                        .isEmployerDetailsSaved =
-                                                                    false;
-                                                                setState(() {});
-                                                                setState(() {
-                                                                  selectedPayDay =
-                                                                      value;
-                                                                  Constants
-                                                                      .currentleadAvailable!
-                                                                      .employer!
-                                                                      .salaryDay = value!;
-                                                                });
-                                                              },
-                                                              buttonStyleData:
-                                                                  ButtonStyleData(
-                                                                height: 50,
-                                                                width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                        .only(
-                                                                        left:
-                                                                            14,
-                                                                        right:
-                                                                            14),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              360),
-                                                                  border: Border.all(
-                                                                      color: Colors
-                                                                          .black26),
                                                                   color: Colors
-                                                                      .transparent,
+                                                                      .grey,
                                                                 ),
-                                                                elevation: 0,
-                                                              ),
-                                                              iconStyleData:
-                                                                  const IconStyleData(
-                                                                icon: Icon(Icons
-                                                                    .arrow_forward_ios_outlined),
-                                                                iconSize: 14,
-                                                                iconEnabledColor:
-                                                                    Colors
-                                                                        .black,
-                                                                iconDisabledColor:
-                                                                    Colors
-                                                                        .transparent,
-                                                              ),
-                                                              dropdownStyleData:
-                                                                  DropdownStyleData(
-                                                                elevation: 0,
-                                                                maxHeight: 200,
-                                                                width: 200,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              16),
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                                offset:
-                                                                    const Offset(
-                                                                        -5, 0),
-                                                                scrollbarTheme:
-                                                                    ScrollbarThemeData(
-                                                                  radius: const Radius
-                                                                      .circular(
-                                                                      40),
-                                                                  thickness:
-                                                                      WidgetStateProperty
-                                                                          .all<double>(
-                                                                              6),
-                                                                  thumbVisibility:
-                                                                      WidgetStateProperty.all<
-                                                                              bool>(
-                                                                          true),
-                                                                ),
-                                                              ),
-                                                              menuItemStyleData:
-                                                                  const MenuItemStyleData(
-                                                                overlayColor:
-                                                                    null,
-                                                                height: 40,
-                                                                padding: EdgeInsets
-                                                                    .only(
-                                                                        left:
-                                                                            14,
-                                                                        right:
-                                                                            14),
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
                                                               ),
                                                             ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 24),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 22,
-                                            ),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  const Text(
-                                                    'Salary Frequency',
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontFamily: 'YuGothic',
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 2),
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                        flex: 1,
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  top: 12.0,
-                                                                  bottom: 4.0),
-                                                          child:
-                                                              DropdownButtonHideUnderline(
-                                                            child:
-                                                                DropdownButton2<
-                                                                    String>(
-                                                              isExpanded: true,
-                                                              alignment:
-                                                                  AlignmentDirectional
-                                                                      .center,
-                                                              hint: const Row(
-                                                                children: [
-                                                                  SizedBox(
-                                                                    width: 4,
+                                                            const SizedBox(
+                                                                height: 16),
+
+                                                            // -------------------- List of potential additional members --------------------
+                                                            ListView.builder(
+                                                              shrinkWrap: true,
+                                                              itemCount:
+                                                                  allAdditionalMembers
+                                                                      .length,
+                                                              itemBuilder:
+                                                                  (context,
+                                                                      index) {
+                                                                final member =
+                                                                    allAdditionalMembers[
+                                                                        index];
+
+                                                                return GestureDetector(
+                                                                  // -------------------- The additional members UI Card --------------------
+                                                                  child:
+                                                                      Container(
+                                                                    margin: const EdgeInsets
+                                                                        .symmetric(
+                                                                      vertical:
+                                                                          12.0,
+                                                                      horizontal:
+                                                                          16.0,
+                                                                    ),
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            16.0),
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      gradient:
+                                                                          LinearGradient(
+                                                                        colors: [
+                                                                          Constants
+                                                                              .ftaColorLight
+                                                                              .withOpacity(0.9),
+                                                                          Constants
+                                                                              .ftaColorLight,
+                                                                        ],
+                                                                        begin: Alignment
+                                                                            .topLeft,
+                                                                        end: Alignment
+                                                                            .bottomRight,
+                                                                      ),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              12.0),
+                                                                      boxShadow: [
+                                                                        BoxShadow(
+                                                                          color: Colors
+                                                                              .black
+                                                                              .withOpacity(0.1),
+                                                                          blurRadius:
+                                                                              10,
+                                                                          offset: const Offset(
+                                                                              0,
+                                                                              4),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    child: Row(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        // Profile Avatar
+                                                                        CircleAvatar(
+                                                                          radius:
+                                                                              20,
+                                                                          backgroundColor:
+                                                                              Colors.white,
+                                                                          child:
+                                                                              Icon(
+                                                                            member.gender.toLowerCase() == "female"
+                                                                                ? Icons.female
+                                                                                : Icons.male,
+                                                                            size:
+                                                                                24,
+                                                                            color: member.gender.toLowerCase() == "female"
+                                                                                ? Colors.pinkAccent
+                                                                                : Colors.blueAccent,
+                                                                          ),
+                                                                        ),
+                                                                        const SizedBox(
+                                                                            width:
+                                                                                16.0),
+
+                                                                        // Info
+                                                                        Expanded(
+                                                                          child:
+                                                                              Column(
+                                                                            crossAxisAlignment:
+                                                                                CrossAxisAlignment.start,
+                                                                            children: [
+                                                                              Text(
+                                                                                member.dob.isEmpty ? 'DoB: - ' : '${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
+                                                                                style: const TextStyle(
+                                                                                  fontSize: 13,
+                                                                                  color: Colors.white,
+                                                                                  fontWeight: FontWeight.w400,
+                                                                                ),
+                                                                              ),
+                                                                              const SizedBox(height: 4.0),
+                                                                              Text(
+                                                                                '${member.title} ${member.name} ${member.surname}',
+                                                                                style: const TextStyle(
+                                                                                  fontSize: 15,
+                                                                                  color: Colors.white,
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  letterSpacing: 1.2,
+                                                                                ),
+                                                                              ),
+                                                                              const SizedBox(height: 4.0),
+                                                                              Row(
+                                                                                children: [
+                                                                                  const Icon(
+                                                                                    Icons.people_alt,
+                                                                                    color: Colors.white70,
+                                                                                    size: 15,
+                                                                                  ),
+                                                                                  const SizedBox(width: 4.0),
+                                                                                  Text(
+                                                                                    'Relationship: ${member.relationship}',
+                                                                                    style: const TextStyle(
+                                                                                      fontSize: 13,
+                                                                                      color: Colors.white70,
+                                                                                      fontWeight: FontWeight.w400,
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                              SizedBox(
+                                                                                height: 8,
+                                                                              ),
+                                                                              Row(
+                                                                                children: [
+                                                                                  Container(
+                                                                                    height: 30,
+                                                                                    child: TextButton(
+                                                                                      onPressed: () async {
+                                                                                        try {
+                                                                                          // Get the current premium payer
+                                                                                          AdditionalMember currentPremiumPayer = premiumPayerMember;
+
+                                                                                          // Get the selected new premium payer
+                                                                                          AdditionalMember newPremiumPayer = member; // This is the selected member
+
+                                                                                          print("Changing premium payer from ${currentPremiumPayer.name} to ${newPremiumPayer.name}");
+
+                                                                                          // Step 1: Determine the old premium payer's new relationship based on the new payer's relationship
+                                                                                          String oldPremiumPayerNewRelationship = getOldPayerRelationship(newPremiumPayer.relationship.toLowerCase(), currentPremiumPayer.relationship.toLowerCase(), currentPremiumPayer);
+
+                                                                                          // Step 2: Find and update the current premium payer in additionalMembers
+                                                                                          int currentPayerIndex = Constants.currentleadAvailable!.additionalMembers.indexWhere((m) => m.autoNumber == currentPremiumPayer.autoNumber);
+                                                                                          AdditionalMember updatedCurrentPayer = AdditionalMember.empty();
+                                                                                          AdditionalMember updatedNewPayer = AdditionalMember.empty();
+                                                                                          if (currentPayerIndex != -1) {
+                                                                                            // Create updated version of current premium payer with new relationship
+                                                                                            updatedCurrentPayer = AdditionalMember(
+                                                                                              memberType: currentPremiumPayer.memberType,
+                                                                                              autoNumber: currentPremiumPayer.autoNumber,
+                                                                                              id: currentPremiumPayer.id,
+                                                                                              contact: currentPremiumPayer.contact,
+                                                                                              dob: currentPremiumPayer.dob,
+                                                                                              gender: currentPremiumPayer.gender,
+                                                                                              name: currentPremiumPayer.name,
+                                                                                              surname: currentPremiumPayer.surname,
+                                                                                              title: currentPremiumPayer.title,
+                                                                                              onololeadid: currentPremiumPayer.onololeadid,
+                                                                                              altContact: currentPremiumPayer.altContact,
+                                                                                              email: currentPremiumPayer.email,
+                                                                                              percentage: currentPremiumPayer.percentage,
+                                                                                              maritalStatus: currentPremiumPayer.maritalStatus,
+                                                                                              relationship: oldPremiumPayerNewRelationship, // Updated relationship
+                                                                                              mipCover: currentPremiumPayer.mipCover,
+                                                                                              mipStatus: currentPremiumPayer.mipStatus,
+                                                                                              updatedBy: currentPremiumPayer.updatedBy,
+                                                                                              memberQueryType: currentPremiumPayer.memberQueryType,
+                                                                                              memberQueryTypeOldNew: currentPremiumPayer.memberQueryTypeOldNew,
+                                                                                              memberQueryTypeOldAutoNumber: currentPremiumPayer.memberQueryTypeOldAutoNumber,
+                                                                                              membersAutoNumber: currentPremiumPayer.membersAutoNumber,
+                                                                                              sourceOfIncome: currentPremiumPayer.sourceOfIncome,
+                                                                                              sourceOfWealth: currentPremiumPayer.sourceOfWealth,
+                                                                                              otherUnknownIncome: currentPremiumPayer.otherUnknownIncome,
+                                                                                              otherUnknownWealth: currentPremiumPayer.otherUnknownWealth,
+                                                                                              timestamp: currentPremiumPayer.timestamp,
+                                                                                              lastUpdate: DateTime.now().toIso8601String(),
+                                                                                            );
+
+                                                                                            // Update in the list
+                                                                                            Constants.currentleadAvailable!.additionalMembers[currentPayerIndex] = updatedCurrentPayer;
+                                                                                          }
+
+                                                                                          // Step 3: Find and update the new premium payer in additionalMembers
+                                                                                          int newPayerIndex = Constants.currentleadAvailable!.additionalMembers.indexWhere((m) => m.autoNumber == newPremiumPayer.autoNumber);
+
+                                                                                          if (newPayerIndex != -1) {
+                                                                                            // Create updated version of new premium payer with "self" relationship
+                                                                                            updatedNewPayer = AdditionalMember(
+                                                                                              memberType: newPremiumPayer.memberType,
+                                                                                              autoNumber: newPremiumPayer.autoNumber,
+                                                                                              id: newPremiumPayer.id,
+                                                                                              contact: newPremiumPayer.contact,
+                                                                                              dob: newPremiumPayer.dob,
+                                                                                              gender: newPremiumPayer.gender,
+                                                                                              name: newPremiumPayer.name,
+                                                                                              surname: newPremiumPayer.surname,
+                                                                                              title: newPremiumPayer.title,
+                                                                                              onololeadid: newPremiumPayer.onololeadid,
+                                                                                              altContact: newPremiumPayer.altContact,
+                                                                                              email: newPremiumPayer.email,
+                                                                                              percentage: newPremiumPayer.percentage,
+                                                                                              maritalStatus: newPremiumPayer.maritalStatus,
+                                                                                              relationship: "self", // New premium payer becomes "self"
+                                                                                              mipCover: newPremiumPayer.mipCover,
+                                                                                              mipStatus: newPremiumPayer.mipStatus,
+                                                                                              updatedBy: newPremiumPayer.updatedBy,
+                                                                                              memberQueryType: newPremiumPayer.memberQueryType,
+                                                                                              memberQueryTypeOldNew: newPremiumPayer.memberQueryTypeOldNew,
+                                                                                              memberQueryTypeOldAutoNumber: newPremiumPayer.memberQueryTypeOldAutoNumber,
+                                                                                              membersAutoNumber: newPremiumPayer.membersAutoNumber,
+                                                                                              sourceOfIncome: newPremiumPayer.sourceOfIncome,
+                                                                                              sourceOfWealth: newPremiumPayer.sourceOfWealth,
+                                                                                              otherUnknownIncome: newPremiumPayer.otherUnknownIncome,
+                                                                                              otherUnknownWealth: newPremiumPayer.otherUnknownWealth,
+                                                                                              timestamp: newPremiumPayer.timestamp,
+                                                                                              lastUpdate: DateTime.now().toIso8601String(),
+                                                                                            );
+
+                                                                                            // Update in the list
+                                                                                            Constants.currentleadAvailable!.additionalMembers[newPayerIndex] = updatedNewPayer;
+
+                                                                                            // Update the premium payer reference
+                                                                                            premiumPayerMember = updatedNewPayer;
+                                                                                          }
+
+                                                                                          // Step 4: Update mainMembers if needed
+                                                                                          int mainMemberIndex = mainMembers.indexWhere(
+                                                                                            (member) => member.autoNumber == currentPremiumPayer.autoNumber,
+                                                                                          );
+                                                                                          if (mainMemberIndex != -1) {
+                                                                                            mainMembers[mainMemberIndex] = Constants.currentleadAvailable!.additionalMembers[currentPayerIndex];
+                                                                                          }
+
+                                                                                          // Update new premium payer in mainMembers
+                                                                                          int newMainMemberIndex = mainMembers.indexWhere(
+                                                                                            (member) => member.autoNumber == newPremiumPayer.autoNumber,
+                                                                                          );
+                                                                                          if (newMainMemberIndex != -1) {
+                                                                                            mainMembers[newMainMemberIndex] = Constants.currentleadAvailable!.additionalMembers[newPayerIndex];
+                                                                                          }
+
+                                                                                          // Step 5: Call updateMember for both members to sync with backend
+                                                                                          if (updatedCurrentPayer != AdditionalMember.empty()) await updateMemberBackend(context, currentPremiumPayer.autoNumber, updatedCurrentPayer);
+                                                                                          if (updatedNewPayer != AdditionalMember.empty()) await updateMemberBackend(context, newPremiumPayer.autoNumber, updatedNewPayer);
+
+                                                                                          // Step 6: Notify UI to refresh
+                                                                                          needsAnalysisValueNotifier2.value++;
+                                                                                          //mySalesPremiumCalculatorValue.value++;
+
+                                                                                          print("Premium payer changed successfully");
+
+                                                                                          // Close the dialog
+                                                                                          Navigator.of(context).pop();
+                                                                                        } catch (e) {
+                                                                                          print("Error changing premium payer: $e");
+                                                                                          // Show error message to user if needed
+                                                                                        }
+                                                                                      },
+                                                                                      child: Text(
+                                                                                        'Select',
+                                                                                        style: TextStyle(
+                                                                                          fontSize: 13,
+                                                                                          fontWeight: FontWeight.w500,
+                                                                                          fontFamily: 'YuGothic',
+                                                                                          color: Constants.ctaColorLight,
+                                                                                        ),
+                                                                                      ),
+                                                                                      style: TextButton.styleFrom(
+                                                                                        foregroundColor: Constants.ctaColorLight,
+                                                                                        backgroundColor: Colors.white,
+                                                                                      ),
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              )
+                                                                            ],
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
                                                                   ),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      ' Select salary frequency',
+                                                                );
+                                                              },
+                                                            ),
+                                                            const SizedBox(
+                                                                height: 16),
+                                                            // Optionally, a button to add a new partner manually.
+                                                            Row(
+                                                              children: [
+                                                                Spacer(),
+                                                                Center(
+                                                                  child:
+                                                                      TextButton
+                                                                          .icon(
+                                                                    onPressed:
+                                                                        () {
+                                                                      // activeStep = 2;
+                                                                      activeStep1 =
+                                                                          2;
+                                                                      updateSalesStepsValueNotifier3
+                                                                          .value++;
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+
+                                                                      Navigator
+                                                                          .push(
+                                                                        context,
+                                                                        MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              NewMemberDialog2(
+                                                                            isEditMode:
+                                                                                false,
+                                                                            autoNumber:
+                                                                                0,
+                                                                            relationship:
+                                                                                "Partner",
+                                                                            title:
+                                                                                "",
+                                                                            name:
+                                                                                "",
+                                                                            surname:
+                                                                                "",
+                                                                            dob:
+                                                                                "",
+                                                                            gender:
+                                                                                "",
+                                                                            current_member_index:
+                                                                                current_member_index,
+                                                                            canAddMember:
+                                                                                false,
+                                                                          ),
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                    icon:
+                                                                        const Icon(
+                                                                      Icons.add,
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                    label:
+                                                                        const Text(
+                                                                      'Add New Member',
                                                                       style:
                                                                           TextStyle(
-                                                                        color: Colors
-                                                                            .grey,
                                                                         fontSize:
                                                                             14,
                                                                         fontWeight:
                                                                             FontWeight.w500,
                                                                         fontFamily:
                                                                             'YuGothic',
+                                                                        color: Colors
+                                                                            .white,
                                                                       ),
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
+                                                                    ),
+                                                                    style: TextButton
+                                                                        .styleFrom(
+                                                                      foregroundColor:
+                                                                          Colors
+                                                                              .teal,
+                                                                      backgroundColor:
+                                                                          Constants
+                                                                              .ctaColorLight,
                                                                     ),
                                                                   ),
-                                                                ],
+                                                                ),
+                                                                Spacer(),
+                                                              ],
+                                                            ),
+                                                            const SizedBox(
+                                                                height: 16),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Container(
+                                            height: 40,
+                                            width: 190,
+                                            padding: EdgeInsets.only(
+                                                left: 16, right: 16),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(360),
+                                              color: Constants.ftaColorLight,
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                "Change Premium Payer",
+                                                style: GoogleFonts.lato(
+                                                  textStyle: TextStyle(
+                                                      fontSize: 13,
+                                                      fontFamily: 'YuGothic',
+                                                      letterSpacing: 0,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: Colors.white),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          /*onTap: () {
+                                                                                                                 if (activeClientServicingStepFieldAffinity == createLeadStepsList.length - 1) {
+                                                                                                                   return;
+                                                                                                                 }
+                                                                                                                 SalesService salesService = SalesService();
+                                                                                                                 salesService.updateLeadDetails(context);
+                                                                                                                 print("ddfdfdfg ${activeClientServicingStepFieldAffinity}");
+                                                                                                                 if (activeClientServicingStepFieldAffinity == 2) {
+                                                                                                                   SalesService salesservice = new SalesService();
+                                                                                                                   salesservice.updatePolicy(
+                                                                                                                       Constants.currentleadAvailable!, context);
+                                                                                                                 }
+
+                                                                                                                 setState(() {
+                                                                                                                   if (activeClientServicingStepFieldAffinity < createLeadStepsList.length) {
+                                                                                                                     activeClientServicingStepFieldAffinity++;
+                                                                                                                     client_servicing_module_index =
+                                                                                                                         createLeadStepsList[activeClientServicingStepFieldAffinity].item_id;
+                                                                                                                     stepName = createLeadStepsList[activeClientServicingStepFieldAffinity].itemName;
+                                                                                                                   } else {
+                                                                                                                     activeClientServicingStepFieldAffinity = 0;
+                                                                                                                     client_servicing_module_index = createLeadStepsList[0].item_id;
+                                                                                                                     stepName = createLeadStepsList[0].itemName;
+                                                                                                                   }
+                                                                                                                 });
+                                                                                                               },*/
+                                        ),
+                                        Spacer(),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 16,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 22.0, right: 16),
+                                          child: const Text(
+                                            'Payment Type',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 0),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 1,
+                                              child: Container(
+                                                padding: const EdgeInsets.only(
+                                                    left: 20,
+                                                    right: 16,
+                                                    top: 8.0,
+                                                    bottom: 4.0),
+                                                child:
+                                                    DropdownButtonHideUnderline(
+                                                  child:
+                                                      DropdownButton2<String>(
+                                                    isExpanded: true,
+                                                    alignment:
+                                                        AlignmentDirectional
+                                                            .center,
+                                                    hint: const Row(
+                                                      children: [
+                                                        SizedBox(
+                                                          width: 4,
+                                                        ),
+                                                        Expanded(
+                                                          child: Text(
+                                                            ' Select payment type',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              fontFamily:
+                                                                  'YuGothic',
+                                                            ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    items: paymentType
+                                                        .map((String item) =>
+                                                            DropdownMenuItem<
+                                                                String>(
+                                                              value: item,
+                                                              child: Text(
+                                                                item.toTitleCase(),
+                                                                style:
+                                                                    const TextStyle(
+                                                                  fontSize: 14,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontFamily:
+                                                                      'YuGothic',
+                                                                  color: Colors
+                                                                      .black,
+                                                                ),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
                                                               ),
-                                                              items:
-                                                                  salaryFrequency
+                                                            ))
+                                                        .toList(),
+                                                    value: _selectedPaymentType,
+                                                    onChanged: (String? value) {
+                                                      setState(() {
+                                                        _selectedPaymentType =
+                                                            value;
+                                                      });
+                                                      Constants
+                                                          .currentleadAvailable!
+                                                          .leadObject
+                                                          .paymentType = value!;
+
+                                                      // Auto-fill account holder name when Debit Order is selected
+                                                      if (value.toLowerCase() ==
+                                                              "Debit Order"
+                                                                  .toLowerCase() &&
+                                                          accountHolderController
+                                                              .text
+                                                              .toString()
+                                                              .isEmpty) {
+                                                        accountHolderController
+                                                            .text = (Constants
+                                                                    .currentleadAvailable
+                                                                    ?.additionalMembers
+                                                                    .first
+                                                                    .title ??
+                                                                "") +
+                                                            " " +
+                                                            (Constants
+                                                                    .currentleadAvailable!
+                                                                    .additionalMembers
+                                                                    .first
+                                                                    .name ??
+                                                                "") +
+                                                            " " +
+                                                            (Constants
+                                                                    .currentleadAvailable!
+                                                                    .additionalMembers
+                                                                    .first
+                                                                    .surname ??
+                                                                "");
+                                                        setState(() {});
+                                                      }
+                                                    },
+                                                    buttonStyleData:
+                                                        ButtonStyleData(
+                                                      height: 50,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                              .size
+                                                              .width,
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 14,
+                                                              right: 14),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(360),
+                                                        border: Border.all(
+                                                          color: Colors.black26,
+                                                        ),
+                                                        color:
+                                                            Colors.transparent,
+                                                      ),
+                                                      elevation: 0,
+                                                    ),
+                                                    iconStyleData:
+                                                        const IconStyleData(
+                                                      icon: Icon(
+                                                        Icons
+                                                            .arrow_forward_ios_outlined,
+                                                      ),
+                                                      iconSize: 14,
+                                                      iconEnabledColor:
+                                                          Colors.black,
+                                                      iconDisabledColor:
+                                                          Colors.transparent,
+                                                    ),
+                                                    dropdownStyleData:
+                                                        DropdownStyleData(
+                                                      elevation: 0,
+                                                      maxHeight: 200,
+                                                      width: 200,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(16),
+                                                        color: Colors.white,
+                                                      ),
+                                                      offset:
+                                                          const Offset(-5, 0),
+                                                      scrollbarTheme:
+                                                          ScrollbarThemeData(
+                                                        radius: const Radius
+                                                            .circular(40),
+                                                        thickness:
+                                                            WidgetStateProperty
+                                                                .all<double>(6),
+                                                        thumbVisibility:
+                                                            WidgetStateProperty
+                                                                .all<bool>(
+                                                                    true),
+                                                      ),
+                                                    ),
+                                                    menuItemStyleData:
+                                                        const MenuItemStyleData(
+                                                      overlayColor: null,
+                                                      height: 40,
+                                                      padding: EdgeInsets.only(
+                                                          left: 14, right: 14),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 16),
+                                      ],
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 22.0, top: 8),
+                                          child: Text(
+                                            "Debit Day",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 0),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              flex: 1,
+                                              child: Container(
+                                                padding: const EdgeInsets.only(
+                                                    top: 8.0, bottom: 4.0),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 20.0,
+                                                          right: 16),
+                                                  child:
+                                                      DropdownButtonHideUnderline(
+                                                    child:
+                                                        DropdownButton2<String>(
+                                                      isExpanded: true,
+                                                      alignment:
+                                                          AlignmentDirectional
+                                                              .center,
+                                                      hint: const Row(
+                                                        children: [
+                                                          SizedBox(
+                                                            width: 4,
+                                                          ),
+                                                          Expanded(
+                                                            child: Text(
+                                                              ' Debit Day',
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors.grey,
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontFamily:
+                                                                    'YuGothic',
+                                                              ),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      items: Constants.debitDays
+                                                          .map((String item) =>
+                                                              DropdownMenuItem<
+                                                                  String>(
+                                                                value: item,
+                                                                child: Text(
+                                                                  item,
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontFamily:
+                                                                        'YuGothic',
+                                                                    color: Colors
+                                                                        .black,
+                                                                  ),
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                ),
+                                                              ))
+                                                          .toList(),
+                                                      value: _selectedDebitDay,
+                                                      onChanged:
+                                                          (String? value) {
+                                                        if (value != null) {
+                                                          // Validation logic converted from JavaScript
+                                                          for (int i = 0;
+                                                              i <
+                                                                  Constants
+                                                                      .currentleadAvailable!
+                                                                      .policies
+                                                                      .length;
+                                                              i++) {
+                                                            var policy = Constants
+                                                                .currentleadAvailable!
+                                                                .policies[i];
+                                                            var incDate = DateTime
+                                                                .parse((policy
+                                                                            .quote
+                                                                            .inceptionDate ??
+                                                                        "")
+                                                                    .toString());
+                                                            var todayDate =
+                                                                DateTime.now();
+                                                            var lastDay = DateTime(
+                                                                todayDate.year,
+                                                                todayDate
+                                                                        .month +
+                                                                    1,
+                                                                0);
+
+                                                            if (policy.quote
+                                                                    .acceptPolicy ==
+                                                                'yes') {
+                                                              // Check if debit day is invalid for current month inception
+                                                              if (int.parse(
+                                                                          value) <=
+                                                                      todayDate
+                                                                          .day &&
+                                                                  incDate.month ==
+                                                                      todayDate
+                                                                          .month) {
+                                                                showErrorMessage(
+                                                                    'Invalid Debit Day, Please change a commencement date for Policy : ${policy.quote.reference} (${policy.quote.productType})');
+                                                                setState(() {
+                                                                  _selectedDebitDay =
+                                                                      null;
+                                                                });
+                                                                return;
+                                                              }
+
+                                                              // Check for next month inception with late debit day
+                                                              if (todayDate
+                                                                          .day <=
+                                                                      10 &&
+                                                                  incDate.month >
+                                                                      todayDate
+                                                                          .month &&
+                                                                  int.parse(
+                                                                          value) >
+                                                                      20) {
+                                                                showErrorMessage(
+                                                                    'Please note that Policy Inception date of next month is far out. Encourage the client to Incept this month and enjoy full cover upon receipt of the first premium.<br> Policy : ${policy.quote.reference} (${policy.quote.productType})');
+                                                                setState(() {
+                                                                  _selectedDebitDay =
+                                                                      null;
+                                                                });
+                                                                return;
+                                                              }
+
+                                                              // Commented out validation (as in original JavaScript)
+                                                              // if (int.parse(value) <= (todayDate.day + 7) && incDate.month == todayDate.month) {
+                                                              //   // Show special date modal logic would go here
+                                                              //   // tempDay = value;
+                                                              //   // setState(() {
+                                                              //   //   _selectedDebitDay = null;
+                                                              //   // });
+                                                              //   // return;
+                                                              // }
+                                                            }
+                                                          }
+
+                                                          // If validation passes, update the values
+                                                          setState(() {
+                                                            Constants
+                                                                .currentleadAvailable!
+                                                                .policies
+                                                                .first
+                                                                .premiumPayer!
+                                                                .collectionday = value;
+                                                            _selectedDebitDay =
+                                                                value;
+                                                          });
+                                                        }
+                                                      },
+                                                      buttonStyleData:
+                                                          ButtonStyleData(
+                                                        height: 50,
+                                                        width: MediaQuery.of(
+                                                                context)
+                                                            .size
+                                                            .width,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                left: 14,
+                                                                right: 14),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      360),
+                                                          border: Border.all(
+                                                            color:
+                                                                Colors.black26,
+                                                          ),
+                                                          color: Colors
+                                                              .transparent,
+                                                        ),
+                                                        elevation: 0,
+                                                      ),
+                                                      iconStyleData:
+                                                          const IconStyleData(
+                                                        icon: Icon(
+                                                          Icons
+                                                              .arrow_forward_ios_outlined,
+                                                        ),
+                                                        iconSize: 14,
+                                                        iconEnabledColor:
+                                                            Colors.black,
+                                                        iconDisabledColor:
+                                                            Colors.transparent,
+                                                      ),
+                                                      dropdownStyleData:
+                                                          DropdownStyleData(
+                                                        elevation: 0,
+                                                        maxHeight: 200,
+                                                        width: 200,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(16),
+                                                          color: Colors.white,
+                                                        ),
+                                                        offset:
+                                                            const Offset(-5, 0),
+                                                        scrollbarTheme:
+                                                            ScrollbarThemeData(
+                                                          radius: const Radius
+                                                              .circular(40),
+                                                          thickness:
+                                                              WidgetStateProperty
+                                                                  .all<double>(
+                                                                      6),
+                                                          thumbVisibility:
+                                                              WidgetStateProperty
+                                                                  .all<bool>(
+                                                                      true),
+                                                        ),
+                                                      ),
+                                                      menuItemStyleData:
+                                                          const MenuItemStyleData(
+                                                        overlayColor: null,
+                                                        height: 40,
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 14,
+                                                                right: 14),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 24),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 24, right: 24),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            width: 22,
+                                          ),
+                                          Constants.currentleadAvailable!
+                                                      .policies.length ==
+                                                  1
+                                              ? Container()
+                                              : Expanded(
+                                                  flex: 2,
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                left: 8.0,
+                                                                top: 8),
+                                                        child: Text(
+                                                          "Combine Premium",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            fontFamily:
+                                                                'YuGothic',
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 0),
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                            flex: 1,
+                                                            child: Container(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                      top: 8.0,
+                                                                      bottom:
+                                                                          4.0),
+                                                              child:
+                                                                  DropdownButtonHideUnderline(
+                                                                child:
+                                                                    DropdownButton2<
+                                                                        String>(
+                                                                  isExpanded:
+                                                                      true,
+                                                                  alignment:
+                                                                      AlignmentDirectional
+                                                                          .center,
+                                                                  hint:
+                                                                      const Row(
+                                                                    children: [
+                                                                      SizedBox(
+                                                                        width:
+                                                                            4,
+                                                                      ),
+                                                                      Expanded(
+                                                                        child:
+                                                                            Text(
+                                                                          ' Combine Premium',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            color:
+                                                                                Colors.grey,
+                                                                            fontSize:
+                                                                                14,
+                                                                            fontWeight:
+                                                                                FontWeight.w500,
+                                                                            fontFamily:
+                                                                                'YuGothic',
+                                                                          ),
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                  items: Constants
+                                                                      .yesNoOptionsList
                                                                       .map((String
                                                                               item) =>
                                                                           DropdownMenuItem<
@@ -3478,2983 +5232,689 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                                                             ),
                                                                           ))
                                                                       .toList(),
-                                                              value: selectedSalaryFrequency ==
-                                                                      ""
-                                                                  ? null
-                                                                  : selectedSalaryFrequency,
-                                                              onChanged:
-                                                                  (String?
-                                                                      value) {
-                                                                setState(() {
-                                                                  selectedSalaryFrequency =
-                                                                      value;
-                                                                  Constants
-                                                                      .currentleadAvailable!
-                                                                      .employer!
-                                                                      .salaryFrequency = value!;
-                                                                });
-                                                              },
-                                                              buttonStyleData:
-                                                                  ButtonStyleData(
-                                                                height: 50,
-                                                                width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                                padding:
-                                                                    const EdgeInsets
+                                                                  value:
+                                                                      _selectedCombinePremium,
+                                                                  onChanged: Constants
+                                                                              .currentleadAvailable!
+                                                                              .policies
+                                                                              .length ==
+                                                                          1
+                                                                      ? null
+                                                                      : (String?
+                                                                          value) {
+                                                                          setState(
+                                                                              () {
+                                                                            _selectedCombinePremium =
+                                                                                value;
+                                                                            Constants.currentleadAvailable!.policies.first.premiumPayer.combinePremium =
+                                                                                value!;
+                                                                          });
+                                                                        },
+                                                                  buttonStyleData:
+                                                                      ButtonStyleData(
+                                                                    height: 50,
+                                                                    width: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width,
+                                                                    padding: const EdgeInsets
                                                                         .only(
                                                                         left:
                                                                             14,
                                                                         right:
                                                                             14),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
                                                                               360),
-                                                                  border: Border
-                                                                      .all(
-                                                                    color: Colors
-                                                                        .black26,
+                                                                      border:
+                                                                          Border
+                                                                              .all(
+                                                                        color: Colors
+                                                                            .black26,
+                                                                      ),
+                                                                      color: Colors
+                                                                          .transparent,
+                                                                    ),
+                                                                    elevation:
+                                                                        0,
                                                                   ),
-                                                                  color: Colors
-                                                                      .transparent,
-                                                                ),
-                                                                elevation: 0,
-                                                              ),
-                                                              iconStyleData:
-                                                                  const IconStyleData(
-                                                                icon: Icon(
-                                                                  Icons
-                                                                      .arrow_forward_ios_outlined,
-                                                                ),
-                                                                iconSize: 14,
-                                                                iconEnabledColor:
-                                                                    Colors
-                                                                        .black,
-                                                                iconDisabledColor:
-                                                                    Colors
-                                                                        .transparent,
-                                                              ),
-                                                              dropdownStyleData:
-                                                                  DropdownStyleData(
-                                                                elevation: 0,
-                                                                maxHeight: 200,
-                                                                width: 200,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
+                                                                  iconStyleData:
+                                                                      const IconStyleData(
+                                                                    icon: Icon(
+                                                                      Icons
+                                                                          .arrow_forward_ios_outlined,
+                                                                    ),
+                                                                    iconSize:
+                                                                        14,
+                                                                    iconEnabledColor:
+                                                                        Colors
+                                                                            .black,
+                                                                    iconDisabledColor:
+                                                                        Colors
+                                                                            .transparent,
+                                                                  ),
+                                                                  dropdownStyleData:
+                                                                      DropdownStyleData(
+                                                                    elevation:
+                                                                        0,
+                                                                    maxHeight:
+                                                                        200,
+                                                                    width: 200,
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
                                                                               16),
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                                offset:
-                                                                    const Offset(
-                                                                        -5, 0),
-                                                                scrollbarTheme:
-                                                                    ScrollbarThemeData(
-                                                                  radius: const Radius
-                                                                      .circular(
-                                                                      40),
-                                                                  thickness:
-                                                                      WidgetStateProperty
-                                                                          .all<double>(
+                                                                      color: Colors
+                                                                          .white,
+                                                                    ),
+                                                                    offset:
+                                                                        const Offset(
+                                                                            -5,
+                                                                            0),
+                                                                    scrollbarTheme:
+                                                                        ScrollbarThemeData(
+                                                                      radius: const Radius
+                                                                          .circular(
+                                                                          40),
+                                                                      thickness:
+                                                                          WidgetStateProperty.all<double>(
                                                                               6),
-                                                                  thumbVisibility:
-                                                                      WidgetStateProperty.all<
-                                                                              bool>(
-                                                                          true),
-                                                                ),
-                                                              ),
-                                                              menuItemStyleData:
-                                                                  const MenuItemStyleData(
-                                                                overlayColor:
-                                                                    null,
-                                                                height: 40,
-                                                                padding: EdgeInsets
-                                                                    .only(
+                                                                      thumbVisibility:
+                                                                          WidgetStateProperty.all<bool>(
+                                                                              true),
+                                                                    ),
+                                                                  ),
+                                                                  menuItemStyleData:
+                                                                      const MenuItemStyleData(
+                                                                    overlayColor:
+                                                                        null,
+                                                                    height: 40,
+                                                                    padding: EdgeInsets.only(
                                                                         left:
                                                                             14,
                                                                         right:
                                                                             14),
+                                                                  ),
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
-                                                        ),
+                                                        ],
                                                       ),
+                                                      const SizedBox(
+                                                          height: 24),
                                                     ],
                                                   ),
-                                                  const SizedBox(height: 24),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Row(
-                                        children: [
-                                          Spacer(),
-                                          TextButton(
-                                            onPressed: () {
-                                              String employmentstatus =
-                                                  Constants
-                                                      .currentleadAvailable!
-                                                      .employer!
-                                                      .employmentStatus;
-                                              // 1) Validate employerNameController
-                                              if (employerNameController
-                                                  .text.isEmpty) {
-                                                if (employmentstatus !=
-                                                    "Employed") {
-                                                  return;
-                                                }
-
-                                                MotionToast.error(
-                                                  height: 40,
-                                                  width: 380,
-                                                  description: const Text(
-                                                    "Please enter the employer name.",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                ).show(context);
-                                                return;
-                                              }
-
-                                              // 2) Validate occupationController
-                                              if (occupationController
-                                                  .text.isEmpty) {
-                                                if (employmentstatus !=
-                                                    "Employed") {
-                                                  return;
-                                                }
-                                                MotionToast.error(
-                                                  height: 40,
-                                                  width: 380,
-                                                  description: const Text(
-                                                    "Please enter the occupation.",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                ).show(context);
-                                                return;
-                                              }
-
-                                              // 3) Validate employeeNumberController
-                                              if (employeeNumberController
-                                                  .text.isEmpty) {
-                                                if (employmentstatus !=
-                                                    "Employed") {
-                                                  return;
-                                                }
-                                                MotionToast.error(
-                                                  height: 40,
-                                                  width: 380,
-                                                  description: const Text(
-                                                    "Please enter the employee number.",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                ).show(context);
-                                                return;
-                                              }
-
-                                              // 4) Validate selectedSalaryRange
-                                              if (selectedSalaryRange == null ||
-                                                  selectedSalaryRange!
-                                                      .isEmpty) {
-                                                if (employmentstatus !=
-                                                    "Employed") {
-                                                  return;
-                                                }
-                                                MotionToast.error(
-                                                  height: 40,
-                                                  width: 380,
-                                                  description: const Text(
-                                                    "Please select a salary range.",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                ).show(context);
-                                                return;
-                                              }
-
-                                              // 5) Validate selectedSalaryFrequency
-                                              if (selectedSalaryFrequency ==
-                                                      null ||
-                                                  selectedSalaryFrequency!
-                                                      .isEmpty) {
-                                                if (employmentstatus !=
-                                                    "Employed") {
-                                                  return;
-                                                }
-                                                MotionToast.error(
-                                                  height: 40,
-                                                  width: 380,
-                                                  description: const Text(
-                                                    "Please select a salary frequency.",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                ).show(context);
-                                                return;
-                                              }
-
-                                              // 6) Validate selectedPayDay
-                                              if (selectedPayDay == null ||
-                                                  selectedPayDay!.isEmpty) {
-                                                if (employmentstatus !=
-                                                    "Employed") {
-                                                  return;
-                                                }
-                                                MotionToast.error(
-                                                  height: 40,
-                                                  width: 380,
-                                                  description: const Text(
-                                                    "Please select a pay day.",
-                                                    style: TextStyle(
-                                                        color: Colors.white),
-                                                  ),
-                                                ).show(context);
-                                                return;
-                                              }
-                                              updateEmployersRequest(
-                                                employerId: '0',
-                                                leadId: Constants
-                                                    .currentleadAvailable!
-                                                    .leadObject
-                                                    .onololeadid!
-                                                    .toString(),
-                                                employerNameController:
-                                                    employerNameController,
-                                                occupationController:
-                                                    occupationController,
-                                                employeeNumberController:
-                                                    employeeNumberController,
-                                                selectedSalaryRange:
-                                                    selectedSalaryRange!,
-                                                selectedSalaryFrequency:
-                                                    selectedSalaryFrequency!,
-                                                selectedPayDay: selectedPayDay!,
-                                                employmentStatus: Constants
-                                                    .currentleadAvailable!
-                                                    .employer!
-                                                    .employmentStatus!,
-                                              );
-
-                                              setState(() {});
-                                            },
-                                            style: TextButton.styleFrom(
-                                                minimumSize: Size(180, 48),
-                                                backgroundColor: Constants
-                                                            .isEmployerDetailsSaved ==
-                                                        false
-                                                    ? Constants.ctaColorLight
-                                                    : Colors.grey),
-                                            child: const Text(
-                                              "Validate and Save",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                fontFamily: 'YuGothic',
-                                              ),
-                                            ),
+                                                ),
+                                          SizedBox(
+                                            width: 22,
                                           ),
-                                          Spacer(),
+                                          Expanded(
+                                            flex: 2,
+                                            child: Container(),
+                                          ),
                                         ],
                                       ),
-                                      SizedBox(height: 24)
-                                    ],
-                                  )),
-                            ),
-                            SizedBox(
-                              height: 24,
-                            ),
-                          ],
-                        ),
-                      ),
-                    if (fieldSalesActiveStep == 3)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 24,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: CustomCard(
-                                elevation: 5,
-                                surfaceTintColor: Colors.white,
-                                color: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12)),
-                                child: SingleChildScrollView(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey.withOpacity(0.15),
-                                          borderRadius: BorderRadius.only(
-                                            topRight: Radius.circular(12),
-                                            topLeft: Radius.circular(12),
-                                          ),
-                                        ),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(12.0),
-                                                child: Center(
-                                                  child: Text(
-                                                    "Premium Payer (Banking and Address)",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontFamily: 'YuGothic',
-                                                        fontSize: 16),
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 16,
-                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 16,
+                                    ),
+                                    if (_selectedPaymentType == "Debit Order")
                                       Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 24, right: 24, top: 16),
-                                        child: Container(
-                                          width: 700,
-                                          height: 150,
-                                          child: premiumPayerMember !=
-                                                  AdditionalMember.empty()
-                                              ? Row(
-                                                  children: [
-                                                    Container(
-                                                      width: 450,
-                                                      height: 135,
-                                                      child:
-                                                          AdvancedPremiumPayerMemberCard(
-                                                        id: premiumPayerMember
-                                                            .id,
-                                                        dob: premiumPayerMember
-                                                            .dob,
-                                                        surname:
-                                                            premiumPayerMember
-                                                                .surname,
-                                                        contact:
-                                                            premiumPayerMember
-                                                                .contact,
-                                                        sourceOfWealth:
-                                                            premiumPayerMember
-                                                                .sourceOfWealth,
-                                                        otherUnknownWealth:
-                                                            premiumPayerMember
-                                                                .otherUnknownWealth,
-                                                        otherUnknownIncome:
-                                                            premiumPayerMember
-                                                                .otherUnknownIncome,
-                                                        dateOfBirth:
-                                                            premiumPayerMember
-                                                                .dob,
-                                                        sourceOfIncome:
-                                                            premiumPayerMember
-                                                                .sourceOfIncome,
-                                                        title:
-                                                            premiumPayerMember
-                                                                .title,
-                                                        name: premiumPayerMember
-                                                            .name,
-                                                        relationship:
-                                                            premiumPayerMember
-                                                                .relationship,
-                                                        gender:
-                                                            premiumPayerMember
-                                                                .gender,
-                                                        autoNumber:
-                                                            premiumPayerMember
-                                                                .autoNumber,
-                                                        isSelected: true,
-                                                        isEditing: true,
-                                                        current_member_index:
-                                                            current_member_index,
-                                                        is_self_or_payer: true,
-                                                        noOfMembers: 0,
-                                                        cover: (policiesSelectedCoverAmounts !=
-                                                                    null &&
-                                                                current_member_index >=
-                                                                    0 &&
-                                                                current_member_index <
-                                                                    policiesSelectedCoverAmounts
-                                                                        .length &&
-                                                                policiesSelectedCoverAmounts[
-                                                                        current_member_index] !=
-                                                                    null)
-                                                            ? policiesSelectedCoverAmounts[
-                                                                current_member_index]
-                                                            : 0.0,
-                                                        premium: policyPremiums
-                                                                .isEmpty
-                                                            ? 0
-                                                            : policyPremiums[
-                                                                        current_member_index]
-                                                                    .memberPremiums
-                                                                    .isEmpty
-                                                                ? 0
-                                                                : policyPremiums[
-                                                                        current_member_index]
-                                                                    .memberPremiums
-                                                                    .first
-                                                                    .premium,
-                                                        onSingleTap: () {},
-                                                        onDoubleTap: () {
-                                                          if (Constants
-                                                                  .currentleadAvailable ==
-                                                              null) {
-                                                            return null;
-                                                          }
-                                                          final List<
-                                                                  AdditionalMember>
-                                                              allAdditionalMembers =
-                                                              Constants
-                                                                  .currentleadAvailable!
-                                                                  .additionalMembers
-                                                                  .where((m) {
-                                                            // Ensure dob is not empty
-                                                            if (m.relationship ==
-                                                                "self")
-                                                              return false;
-
-                                                            if (m.dob.isEmpty)
-                                                              return false;
-
-                                                            // Parse date and check if age is greater than 18
-                                                            return calculateAge(
-                                                                    DateTime.parse(
-                                                                        m.dob)) >
-                                                                18;
-                                                          }).toList();
-
-                                                          showDialog(
-                                                            context: context,
-                                                            builder:
-                                                                (context) =>
-                                                                    Dialog(
-                                                              backgroundColor:
-                                                                  Colors
-                                                                      .transparent,
-                                                              elevation: 0.0,
-                                                              child:
-                                                                  MovingLineDialog(
-                                                                child:
-                                                                    Container(
-                                                                  width: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width,
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .all(
-                                                                          16),
-                                                                  constraints: const BoxConstraints(
-                                                                      maxWidth:
-                                                                          500,
-                                                                      maxHeight:
-                                                                          630),
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            36),
-                                                                  ),
-                                                                  child:
-                                                                      StatefulBuilder(
-                                                                    builder: (context,
-                                                                            setState1) =>
-                                                                        SingleChildScrollView(
-                                                                      child:
-                                                                          Column(
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment.start,
-                                                                        mainAxisSize:
-                                                                            MainAxisSize.min,
-                                                                        children: [
-                                                                          SizedBox(
-                                                                              height: 16),
-                                                                          Row(
-                                                                            children: [
-                                                                              Spacer(),
-                                                                              InkWell(
-                                                                                  onTap: () {
-                                                                                    Navigator.of(context).pop();
-                                                                                  },
-                                                                                  child: Icon(
-                                                                                    Icons.close,
-                                                                                    color: Colors.grey,
-                                                                                  )),
-                                                                              SizedBox(
-                                                                                width: 24,
-                                                                              )
-                                                                            ],
-                                                                          ),
-                                                                          SizedBox(
-                                                                              height: 8),
-                                                                          Center(
-                                                                            child:
-                                                                                Text(
-                                                                              "Change the Premium Payer",
-                                                                              style: TextStyle(
-                                                                                fontSize: 20,
-                                                                                fontWeight: FontWeight.w500,
-                                                                                color: Constants.ftaColorLight,
-                                                                              ),
-                                                                              textAlign: TextAlign.center,
-                                                                            ),
-                                                                          ),
-                                                                          const SizedBox(
-                                                                              height: 12),
-                                                                          const Center(
-                                                                            child:
-                                                                                Text(
-                                                                              "Click on a member below to select them as an premium payer",
-                                                                              style: TextStyle(
-                                                                                fontSize: 14,
-                                                                                fontWeight: FontWeight.w500,
-                                                                                fontFamily: 'YuGothic',
-                                                                                color: Colors.grey,
-                                                                              ),
-                                                                              textAlign: TextAlign.center,
-                                                                            ),
-                                                                          ),
-                                                                          const SizedBox(
-                                                                              height: 16),
-
-                                                                          // -------------------- List of potential additional members --------------------
-                                                                          ListView
-                                                                              .builder(
-                                                                            shrinkWrap:
-                                                                                true,
-                                                                            itemCount:
-                                                                                allAdditionalMembers.length,
-                                                                            itemBuilder:
-                                                                                (context, index) {
-                                                                              final member = allAdditionalMembers[index];
-
-                                                                              return GestureDetector(
-                                                                                // -------------------- The additional members UI Card --------------------
-                                                                                child: Container(
-                                                                                  margin: const EdgeInsets.symmetric(
-                                                                                    vertical: 12.0,
-                                                                                    horizontal: 16.0,
-                                                                                  ),
-                                                                                  padding: const EdgeInsets.all(16.0),
-                                                                                  decoration: BoxDecoration(
-                                                                                    gradient: LinearGradient(
-                                                                                      colors: [
-                                                                                        Constants.ftaColorLight.withOpacity(0.9),
-                                                                                        Constants.ftaColorLight,
-                                                                                      ],
-                                                                                      begin: Alignment.topLeft,
-                                                                                      end: Alignment.bottomRight,
-                                                                                    ),
-                                                                                    borderRadius: BorderRadius.circular(12.0),
-                                                                                    boxShadow: [
-                                                                                      BoxShadow(
-                                                                                        color: Colors.black.withOpacity(0.1),
-                                                                                        blurRadius: 10,
-                                                                                        offset: const Offset(0, 4),
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                  child: Row(
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                    children: [
-                                                                                      // Profile Avatar
-                                                                                      CircleAvatar(
-                                                                                        radius: 20,
-                                                                                        backgroundColor: Colors.white,
-                                                                                        child: Icon(
-                                                                                          member.gender.toLowerCase() == "female" ? Icons.female : Icons.male,
-                                                                                          size: 24,
-                                                                                          color: member.gender.toLowerCase() == "female" ? Colors.pinkAccent : Colors.blueAccent,
-                                                                                        ),
-                                                                                      ),
-                                                                                      const SizedBox(width: 16.0),
-
-                                                                                      // Info
-                                                                                      Expanded(
-                                                                                        child: Column(
-                                                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                          children: [
-                                                                                            Text(
-                                                                                              member.dob.isEmpty ? 'DoB: - ' : '${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
-                                                                                              style: const TextStyle(
-                                                                                                fontSize: 13,
-                                                                                                color: Colors.white,
-                                                                                                fontWeight: FontWeight.w400,
-                                                                                              ),
-                                                                                            ),
-                                                                                            const SizedBox(height: 4.0),
-                                                                                            Text(
-                                                                                              '${member.title} ${member.name} ${member.surname}',
-                                                                                              style: const TextStyle(
-                                                                                                fontSize: 15,
-                                                                                                color: Colors.white,
-                                                                                                fontWeight: FontWeight.bold,
-                                                                                                letterSpacing: 1.2,
-                                                                                              ),
-                                                                                            ),
-                                                                                            const SizedBox(height: 4.0),
-                                                                                            Row(
-                                                                                              children: [
-                                                                                                const Icon(
-                                                                                                  Icons.people_alt,
-                                                                                                  color: Colors.white70,
-                                                                                                  size: 15,
-                                                                                                ),
-                                                                                                const SizedBox(width: 4.0),
-                                                                                                Text(
-                                                                                                  'Relationship: ${member.relationship}',
-                                                                                                  style: const TextStyle(
-                                                                                                    fontSize: 13,
-                                                                                                    color: Colors.white70,
-                                                                                                    fontWeight: FontWeight.w400,
-                                                                                                  ),
-                                                                                                ),
-                                                                                              ],
-                                                                                            ),
-                                                                                            SizedBox(
-                                                                                              height: 8,
-                                                                                            ),
-                                                                                            Row(
-                                                                                              children: [
-                                                                                                Spacer(),
-                                                                                                Container(
-                                                                                                  height: 30,
-                                                                                                  child: TextButton(
-                                                                                                    onPressed: () async {
-                                                                                                      try {
-                                                                                                        // Get the current premium payer
-                                                                                                        AdditionalMember currentPremiumPayer = premiumPayerMember;
-
-                                                                                                        // Get the selected new premium payer
-                                                                                                        AdditionalMember newPremiumPayer = member; // This is the selected member
-
-                                                                                                        print("Changing premium payer from ${currentPremiumPayer.name} to ${newPremiumPayer.name}");
-
-                                                                                                        // Step 1: Determine the old premium payer's new relationship based on the new payer's relationship
-                                                                                                        String oldPremiumPayerNewRelationship = getOldPayerRelationship(newPremiumPayer.relationship.toLowerCase(), currentPremiumPayer.relationship.toLowerCase(), currentPremiumPayer);
-
-                                                                                                        // Step 2: Find and update the current premium payer in additionalMembers
-                                                                                                        int currentPayerIndex = Constants.currentleadAvailable!.additionalMembers.indexWhere((m) => m.autoNumber == currentPremiumPayer.autoNumber);
-                                                                                                        AdditionalMember updatedCurrentPayer = AdditionalMember.empty();
-                                                                                                        AdditionalMember updatedNewPayer = AdditionalMember.empty();
-                                                                                                        if (currentPayerIndex != -1) {
-                                                                                                          // Create updated version of current premium payer with new relationship
-                                                                                                          updatedCurrentPayer = AdditionalMember(
-                                                                                                            memberType: currentPremiumPayer.memberType,
-                                                                                                            autoNumber: currentPremiumPayer.autoNumber,
-                                                                                                            id: currentPremiumPayer.id,
-                                                                                                            contact: currentPremiumPayer.contact,
-                                                                                                            dob: currentPremiumPayer.dob,
-                                                                                                            gender: currentPremiumPayer.gender,
-                                                                                                            name: currentPremiumPayer.name,
-                                                                                                            surname: currentPremiumPayer.surname,
-                                                                                                            title: currentPremiumPayer.title,
-                                                                                                            onololeadid: currentPremiumPayer.onololeadid,
-                                                                                                            altContact: currentPremiumPayer.altContact,
-                                                                                                            email: currentPremiumPayer.email,
-                                                                                                            percentage: currentPremiumPayer.percentage,
-                                                                                                            maritalStatus: currentPremiumPayer.maritalStatus,
-                                                                                                            relationship: oldPremiumPayerNewRelationship, // Updated relationship
-                                                                                                            mipCover: currentPremiumPayer.mipCover,
-                                                                                                            mipStatus: currentPremiumPayer.mipStatus,
-                                                                                                            updatedBy: currentPremiumPayer.updatedBy,
-                                                                                                            memberQueryType: currentPremiumPayer.memberQueryType,
-                                                                                                            memberQueryTypeOldNew: currentPremiumPayer.memberQueryTypeOldNew,
-                                                                                                            memberQueryTypeOldAutoNumber: currentPremiumPayer.memberQueryTypeOldAutoNumber,
-                                                                                                            membersAutoNumber: currentPremiumPayer.membersAutoNumber,
-                                                                                                            sourceOfIncome: currentPremiumPayer.sourceOfIncome,
-                                                                                                            sourceOfWealth: currentPremiumPayer.sourceOfWealth,
-                                                                                                            otherUnknownIncome: currentPremiumPayer.otherUnknownIncome,
-                                                                                                            otherUnknownWealth: currentPremiumPayer.otherUnknownWealth,
-                                                                                                            timestamp: currentPremiumPayer.timestamp,
-                                                                                                            lastUpdate: DateTime.now().toIso8601String(),
-                                                                                                          );
-
-                                                                                                          // Update in the list
-                                                                                                          Constants.currentleadAvailable!.additionalMembers[currentPayerIndex] = updatedCurrentPayer;
-                                                                                                        }
-
-                                                                                                        // Step 3: Find and update the new premium payer in additionalMembers
-                                                                                                        int newPayerIndex = Constants.currentleadAvailable!.additionalMembers.indexWhere((m) => m.autoNumber == newPremiumPayer.autoNumber);
-
-                                                                                                        if (newPayerIndex != -1) {
-                                                                                                          // Create updated version of new premium payer with "self" relationship
-                                                                                                          updatedNewPayer = AdditionalMember(
-                                                                                                            memberType: newPremiumPayer.memberType,
-                                                                                                            autoNumber: newPremiumPayer.autoNumber,
-                                                                                                            id: newPremiumPayer.id,
-                                                                                                            contact: newPremiumPayer.contact,
-                                                                                                            dob: newPremiumPayer.dob,
-                                                                                                            gender: newPremiumPayer.gender,
-                                                                                                            name: newPremiumPayer.name,
-                                                                                                            surname: newPremiumPayer.surname,
-                                                                                                            title: newPremiumPayer.title,
-                                                                                                            onololeadid: newPremiumPayer.onololeadid,
-                                                                                                            altContact: newPremiumPayer.altContact,
-                                                                                                            email: newPremiumPayer.email,
-                                                                                                            percentage: newPremiumPayer.percentage,
-                                                                                                            maritalStatus: newPremiumPayer.maritalStatus,
-                                                                                                            relationship: "self", // New premium payer becomes "self"
-                                                                                                            mipCover: newPremiumPayer.mipCover,
-                                                                                                            mipStatus: newPremiumPayer.mipStatus,
-                                                                                                            updatedBy: newPremiumPayer.updatedBy,
-                                                                                                            memberQueryType: newPremiumPayer.memberQueryType,
-                                                                                                            memberQueryTypeOldNew: newPremiumPayer.memberQueryTypeOldNew,
-                                                                                                            memberQueryTypeOldAutoNumber: newPremiumPayer.memberQueryTypeOldAutoNumber,
-                                                                                                            membersAutoNumber: newPremiumPayer.membersAutoNumber,
-                                                                                                            sourceOfIncome: newPremiumPayer.sourceOfIncome,
-                                                                                                            sourceOfWealth: newPremiumPayer.sourceOfWealth,
-                                                                                                            otherUnknownIncome: newPremiumPayer.otherUnknownIncome,
-                                                                                                            otherUnknownWealth: newPremiumPayer.otherUnknownWealth,
-                                                                                                            timestamp: newPremiumPayer.timestamp,
-                                                                                                            lastUpdate: DateTime.now().toIso8601String(),
-                                                                                                          );
-
-                                                                                                          // Update in the list
-                                                                                                          Constants.currentleadAvailable!.additionalMembers[newPayerIndex] = updatedNewPayer;
-
-                                                                                                          // Update the premium payer reference
-                                                                                                          premiumPayerMember = updatedNewPayer;
-                                                                                                        }
-
-                                                                                                        // Step 4: Update mainMembers if needed
-                                                                                                        int mainMemberIndex = mainMembers.indexWhere(
-                                                                                                          (member) => member.autoNumber == currentPremiumPayer.autoNumber,
-                                                                                                        );
-                                                                                                        if (mainMemberIndex != -1) {
-                                                                                                          mainMembers[mainMemberIndex] = Constants.currentleadAvailable!.additionalMembers[currentPayerIndex];
-                                                                                                        }
-
-                                                                                                        // Update new premium payer in mainMembers
-                                                                                                        int newMainMemberIndex = mainMembers.indexWhere(
-                                                                                                          (member) => member.autoNumber == newPremiumPayer.autoNumber,
-                                                                                                        );
-                                                                                                        if (newMainMemberIndex != -1) {
-                                                                                                          mainMembers[newMainMemberIndex] = Constants.currentleadAvailable!.additionalMembers[newPayerIndex];
-                                                                                                        }
-
-                                                                                                        // Step 5: Call updateMember for both members to sync with backend
-                                                                                                        if (updatedCurrentPayer != AdditionalMember.empty()) await updateMemberBackend(context, currentPremiumPayer.autoNumber, updatedCurrentPayer);
-                                                                                                        if (updatedNewPayer != AdditionalMember.empty()) await updateMemberBackend(context, newPremiumPayer.autoNumber, updatedNewPayer);
-
-                                                                                                        // Step 6: Notify UI to refresh
-                                                                                                        needsAnalysisValueNotifier2.value++;
-                                                                                                        //mySalesPremiumCalculatorValue.value++;
-
-                                                                                                        print("Premium payer changed successfully");
-
-                                                                                                        // Close the dialog
-                                                                                                        Navigator.of(context).pop();
-                                                                                                      } catch (e) {
-                                                                                                        print("Error changing premium payer: $e");
-                                                                                                        // Show error message to user if needed
-                                                                                                      }
-                                                                                                    },
-                                                                                                    child: Text(
-                                                                                                      'Select',
-                                                                                                      style: TextStyle(
-                                                                                                        fontSize: 13,
-                                                                                                        fontWeight: FontWeight.w500,
-                                                                                                        fontFamily: 'YuGothic',
-                                                                                                        color: Constants.ctaColorLight,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                    style: TextButton.styleFrom(
-                                                                                                      foregroundColor: Constants.ctaColorLight,
-                                                                                                      backgroundColor: Colors.white,
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                ),
-                                                                                              ],
-                                                                                            )
-                                                                                          ],
-                                                                                        ),
-                                                                                      ),
-                                                                                    ],
-                                                                                  ),
-                                                                                ),
-                                                                              );
-                                                                            },
-                                                                          ),
-                                                                          const SizedBox(
-                                                                              height: 16),
-                                                                          // Optionally, a button to add a new partner manually.
-                                                                          Center(
-                                                                            child:
-                                                                                TextButton.icon(
-                                                                              onPressed: () {
-                                                                                // activeStep = 2;
-                                                                                activeStep1 = 2;
-                                                                                updateSalesStepsValueNotifier3.value++;
-                                                                                Navigator.of(context).pop();
-
-                                                                                showDialog(
-                                                                                    context: context,
-                                                                                    barrierDismissible: false,
-                                                                                    // set to false if you want to force a rating
-                                                                                    builder: (context) => StatefulBuilder(
-                                                                                          builder: (context, setState) => Dialog(
-                                                                                            shape: RoundedRectangleBorder(
-                                                                                              borderRadius: BorderRadius.circular(64),
-                                                                                            ),
-                                                                                            elevation: 0.0,
-                                                                                            backgroundColor: Colors.transparent,
-                                                                                            child: Container(
-                                                                                              // width: MediaQuery.of(context).size.width,
-
-                                                                                              constraints: BoxConstraints(
-                                                                                                maxWidth: (Constants.currentleadAvailable!.leadObject.documentsIndexed.isEmpty) ? 750 : 1200,
-                                                                                              ),
-                                                                                              margin: const EdgeInsets.only(top: 16),
-                                                                                              decoration: BoxDecoration(
-                                                                                                color: Colors.white,
-                                                                                                shape: BoxShape.rectangle,
-                                                                                                borderRadius: BorderRadius.circular(16),
-                                                                                                boxShadow: const [
-                                                                                                  BoxShadow(
-                                                                                                    color: Colors.black26,
-                                                                                                    blurRadius: 10.0,
-                                                                                                    offset: Offset(0.0, 10.0),
-                                                                                                  ),
-                                                                                                ],
-                                                                                              ),
-                                                                                              child: NewMemberDialog2(
-                                                                                                isEditMode: false,
-                                                                                                autoNumber: 0,
-                                                                                                relationship: "Partner",
-                                                                                                title: "",
-                                                                                                name: "",
-                                                                                                surname: "",
-                                                                                                dob: "",
-                                                                                                gender: "",
-                                                                                                current_member_index: current_member_index,
-                                                                                                canAddMember: false,
-                                                                                              ),
-                                                                                            ),
-                                                                                          ),
-                                                                                        ));
-                                                                              },
-                                                                              icon: const Icon(
-                                                                                Icons.add,
-                                                                                color: Colors.white,
-                                                                              ),
-                                                                              label: const Text(
-                                                                                'Add New Member',
-                                                                                style: TextStyle(
-                                                                                  fontSize: 14,
-                                                                                  fontWeight: FontWeight.w500,
-                                                                                  fontFamily: 'YuGothic',
-                                                                                  color: Colors.white,
-                                                                                ),
-                                                                              ),
-                                                                              style: TextButton.styleFrom(
-                                                                                foregroundColor: Colors.teal,
-                                                                                backgroundColor: Constants.ctaColorLight,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                          const SizedBox(
-                                                                              height: 16),
-                                                                        ],
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          );
-                                                        },
-                                                      ),
+                                            left: 24, right: 24),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            // Bank Institution Row
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                  child: Text(
+                                                    "Bank Institution",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: 'YuGothic',
                                                     ),
-                                                    SizedBox(width: 16),
-                                                    InkWell(
-                                                      onTap: () {
-                                                        if (Constants
-                                                                .currentleadAvailable ==
-                                                            null) {
-                                                          return null;
-                                                        }
-                                                        final List<
-                                                                AdditionalMember>
-                                                            allAdditionalMembers =
-                                                            Constants
-                                                                .currentleadAvailable!
-                                                                .additionalMembers
-                                                                .where((m) {
-                                                          // Ensure dob is not empty
-                                                          if (m.relationship ==
-                                                              "self")
-                                                            return false;
-
-                                                          if (m.dob.isEmpty)
-                                                            return false;
-
-                                                          // Parse date and check if age is greater than 18
-                                                          return calculateAge(
-                                                                  DateTime.parse(
-                                                                      m.dob)) >
-                                                              18;
-                                                        }).toList();
-
-                                                        showDialog(
-                                                          context: context,
-                                                          builder: (context) =>
-                                                              Dialog(
-                                                            backgroundColor:
-                                                                Colors
-                                                                    .transparent,
-                                                            elevation: 0.0,
-                                                            child:
-                                                                MovingLineDialog(
-                                                              child: Container(
-                                                                width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                        .all(
-                                                                        16),
-                                                                constraints:
-                                                                    const BoxConstraints(
-                                                                        maxWidth:
-                                                                            500,
-                                                                        maxHeight:
-                                                                            630),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  color: Colors
-                                                                      .white,
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              36),
-                                                                ),
-                                                                child:
-                                                                    StatefulBuilder(
-                                                                  builder: (context,
-                                                                          setState1) =>
-                                                                      SingleChildScrollView(
-                                                                    child:
-                                                                        Column(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      mainAxisSize:
-                                                                          MainAxisSize
-                                                                              .min,
-                                                                      children: [
-                                                                        SizedBox(
-                                                                            height:
-                                                                                16),
-                                                                        Row(
-                                                                          children: [
-                                                                            Spacer(),
-                                                                            InkWell(
-                                                                                onTap: () {
-                                                                                  Navigator.of(context).pop();
-                                                                                },
-                                                                                child: Icon(
-                                                                                  Icons.close,
-                                                                                  color: Colors.grey,
-                                                                                )),
-                                                                            SizedBox(
-                                                                              width: 24,
-                                                                            )
-                                                                          ],
-                                                                        ),
-                                                                        SizedBox(
-                                                                            height:
-                                                                                8),
-                                                                        Center(
-                                                                          child:
-                                                                              Text(
-                                                                            "Change the Premium Payer",
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: 20,
-                                                                              fontWeight: FontWeight.w500,
-                                                                              color: Constants.ftaColorLight,
-                                                                            ),
-                                                                            textAlign:
-                                                                                TextAlign.center,
-                                                                          ),
-                                                                        ),
-                                                                        const SizedBox(
-                                                                            height:
-                                                                                12),
-                                                                        const Center(
-                                                                          child:
-                                                                              Text(
-                                                                            "Click on a member below to select them as an premium payer",
-                                                                            style:
-                                                                                TextStyle(
-                                                                              fontSize: 14,
-                                                                              fontWeight: FontWeight.w500,
-                                                                              fontFamily: 'YuGothic',
-                                                                              color: Colors.grey,
-                                                                            ),
-                                                                            textAlign:
-                                                                                TextAlign.center,
-                                                                          ),
-                                                                        ),
-                                                                        const SizedBox(
-                                                                            height:
-                                                                                16),
-
-                                                                        // -------------------- List of potential additional members --------------------
-                                                                        ListView
-                                                                            .builder(
-                                                                          shrinkWrap:
-                                                                              true,
-                                                                          itemCount:
-                                                                              allAdditionalMembers.length,
-                                                                          itemBuilder:
-                                                                              (context, index) {
-                                                                            final member =
-                                                                                allAdditionalMembers[index];
-
-                                                                            return GestureDetector(
-                                                                              // -------------------- The additional members UI Card --------------------
-                                                                              child: Container(
-                                                                                margin: const EdgeInsets.symmetric(
-                                                                                  vertical: 12.0,
-                                                                                  horizontal: 16.0,
-                                                                                ),
-                                                                                padding: const EdgeInsets.all(16.0),
-                                                                                decoration: BoxDecoration(
-                                                                                  gradient: LinearGradient(
-                                                                                    colors: [
-                                                                                      Constants.ftaColorLight.withOpacity(0.9),
-                                                                                      Constants.ftaColorLight,
-                                                                                    ],
-                                                                                    begin: Alignment.topLeft,
-                                                                                    end: Alignment.bottomRight,
-                                                                                  ),
-                                                                                  borderRadius: BorderRadius.circular(12.0),
-                                                                                  boxShadow: [
-                                                                                    BoxShadow(
-                                                                                      color: Colors.black.withOpacity(0.1),
-                                                                                      blurRadius: 10,
-                                                                                      offset: const Offset(0, 4),
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                                child: Row(
-                                                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                  children: [
-                                                                                    // Profile Avatar
-                                                                                    CircleAvatar(
-                                                                                      radius: 20,
-                                                                                      backgroundColor: Colors.white,
-                                                                                      child: Icon(
-                                                                                        member.gender.toLowerCase() == "female" ? Icons.female : Icons.male,
-                                                                                        size: 24,
-                                                                                        color: member.gender.toLowerCase() == "female" ? Colors.pinkAccent : Colors.blueAccent,
-                                                                                      ),
-                                                                                    ),
-                                                                                    const SizedBox(width: 16.0),
-
-                                                                                    // Info
-                                                                                    Expanded(
-                                                                                      child: Column(
-                                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                        children: [
-                                                                                          Text(
-                                                                                            member.dob.isEmpty ? 'DoB: - ' : '${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
-                                                                                            style: const TextStyle(
-                                                                                              fontSize: 13,
-                                                                                              color: Colors.white,
-                                                                                              fontWeight: FontWeight.w400,
-                                                                                            ),
-                                                                                          ),
-                                                                                          const SizedBox(height: 4.0),
-                                                                                          Text(
-                                                                                            '${member.title} ${member.name} ${member.surname}',
-                                                                                            style: const TextStyle(
-                                                                                              fontSize: 15,
-                                                                                              color: Colors.white,
-                                                                                              fontWeight: FontWeight.bold,
-                                                                                              letterSpacing: 1.2,
-                                                                                            ),
-                                                                                          ),
-                                                                                          const SizedBox(height: 4.0),
-                                                                                          Row(
-                                                                                            children: [
-                                                                                              const Icon(
-                                                                                                Icons.people_alt,
-                                                                                                color: Colors.white70,
-                                                                                                size: 15,
-                                                                                              ),
-                                                                                              const SizedBox(width: 4.0),
-                                                                                              Text(
-                                                                                                'Relationship: ${member.relationship}',
-                                                                                                style: const TextStyle(
-                                                                                                  fontSize: 13,
-                                                                                                  color: Colors.white70,
-                                                                                                  fontWeight: FontWeight.w400,
-                                                                                                ),
-                                                                                              ),
-                                                                                            ],
-                                                                                          ),
-                                                                                          SizedBox(
-                                                                                            height: 8,
-                                                                                          ),
-                                                                                          Row(
-                                                                                            children: [
-                                                                                              Spacer(),
-                                                                                              Container(
-                                                                                                height: 30,
-                                                                                                child: TextButton(
-                                                                                                  onPressed: () async {
-                                                                                                    try {
-                                                                                                      // Get the current premium payer
-                                                                                                      AdditionalMember currentPremiumPayer = premiumPayerMember;
-
-                                                                                                      // Get the selected new premium payer
-                                                                                                      AdditionalMember newPremiumPayer = member; // This is the selected member
-
-                                                                                                      print("Changing premium payer from ${currentPremiumPayer.name} to ${newPremiumPayer.name}");
-
-                                                                                                      // Step 1: Determine the old premium payer's new relationship based on the new payer's relationship
-                                                                                                      String oldPremiumPayerNewRelationship = getOldPayerRelationship(newPremiumPayer.relationship.toLowerCase(), currentPremiumPayer.relationship.toLowerCase(), currentPremiumPayer);
-
-                                                                                                      // Step 2: Find and update the current premium payer in additionalMembers
-                                                                                                      int currentPayerIndex = Constants.currentleadAvailable!.additionalMembers.indexWhere((m) => m.autoNumber == currentPremiumPayer.autoNumber);
-                                                                                                      AdditionalMember updatedCurrentPayer = AdditionalMember.empty();
-                                                                                                      AdditionalMember updatedNewPayer = AdditionalMember.empty();
-                                                                                                      if (currentPayerIndex != -1) {
-                                                                                                        // Create updated version of current premium payer with new relationship
-                                                                                                        updatedCurrentPayer = AdditionalMember(
-                                                                                                          memberType: currentPremiumPayer.memberType,
-                                                                                                          autoNumber: currentPremiumPayer.autoNumber,
-                                                                                                          id: currentPremiumPayer.id,
-                                                                                                          contact: currentPremiumPayer.contact,
-                                                                                                          dob: currentPremiumPayer.dob,
-                                                                                                          gender: currentPremiumPayer.gender,
-                                                                                                          name: currentPremiumPayer.name,
-                                                                                                          surname: currentPremiumPayer.surname,
-                                                                                                          title: currentPremiumPayer.title,
-                                                                                                          onololeadid: currentPremiumPayer.onololeadid,
-                                                                                                          altContact: currentPremiumPayer.altContact,
-                                                                                                          email: currentPremiumPayer.email,
-                                                                                                          percentage: currentPremiumPayer.percentage,
-                                                                                                          maritalStatus: currentPremiumPayer.maritalStatus,
-                                                                                                          relationship: oldPremiumPayerNewRelationship, // Updated relationship
-                                                                                                          mipCover: currentPremiumPayer.mipCover,
-                                                                                                          mipStatus: currentPremiumPayer.mipStatus,
-                                                                                                          updatedBy: currentPremiumPayer.updatedBy,
-                                                                                                          memberQueryType: currentPremiumPayer.memberQueryType,
-                                                                                                          memberQueryTypeOldNew: currentPremiumPayer.memberQueryTypeOldNew,
-                                                                                                          memberQueryTypeOldAutoNumber: currentPremiumPayer.memberQueryTypeOldAutoNumber,
-                                                                                                          membersAutoNumber: currentPremiumPayer.membersAutoNumber,
-                                                                                                          sourceOfIncome: currentPremiumPayer.sourceOfIncome,
-                                                                                                          sourceOfWealth: currentPremiumPayer.sourceOfWealth,
-                                                                                                          otherUnknownIncome: currentPremiumPayer.otherUnknownIncome,
-                                                                                                          otherUnknownWealth: currentPremiumPayer.otherUnknownWealth,
-                                                                                                          timestamp: currentPremiumPayer.timestamp,
-                                                                                                          lastUpdate: DateTime.now().toIso8601String(),
-                                                                                                        );
-
-                                                                                                        // Update in the list
-                                                                                                        Constants.currentleadAvailable!.additionalMembers[currentPayerIndex] = updatedCurrentPayer;
-                                                                                                      }
-
-                                                                                                      // Step 3: Find and update the new premium payer in additionalMembers
-                                                                                                      int newPayerIndex = Constants.currentleadAvailable!.additionalMembers.indexWhere((m) => m.autoNumber == newPremiumPayer.autoNumber);
-
-                                                                                                      if (newPayerIndex != -1) {
-                                                                                                        // Create updated version of new premium payer with "self" relationship
-                                                                                                        updatedNewPayer = AdditionalMember(
-                                                                                                          memberType: newPremiumPayer.memberType,
-                                                                                                          autoNumber: newPremiumPayer.autoNumber,
-                                                                                                          id: newPremiumPayer.id,
-                                                                                                          contact: newPremiumPayer.contact,
-                                                                                                          dob: newPremiumPayer.dob,
-                                                                                                          gender: newPremiumPayer.gender,
-                                                                                                          name: newPremiumPayer.name,
-                                                                                                          surname: newPremiumPayer.surname,
-                                                                                                          title: newPremiumPayer.title,
-                                                                                                          onololeadid: newPremiumPayer.onololeadid,
-                                                                                                          altContact: newPremiumPayer.altContact,
-                                                                                                          email: newPremiumPayer.email,
-                                                                                                          percentage: newPremiumPayer.percentage,
-                                                                                                          maritalStatus: newPremiumPayer.maritalStatus,
-                                                                                                          relationship: "self", // New premium payer becomes "self"
-                                                                                                          mipCover: newPremiumPayer.mipCover,
-                                                                                                          mipStatus: newPremiumPayer.mipStatus,
-                                                                                                          updatedBy: newPremiumPayer.updatedBy,
-                                                                                                          memberQueryType: newPremiumPayer.memberQueryType,
-                                                                                                          memberQueryTypeOldNew: newPremiumPayer.memberQueryTypeOldNew,
-                                                                                                          memberQueryTypeOldAutoNumber: newPremiumPayer.memberQueryTypeOldAutoNumber,
-                                                                                                          membersAutoNumber: newPremiumPayer.membersAutoNumber,
-                                                                                                          sourceOfIncome: newPremiumPayer.sourceOfIncome,
-                                                                                                          sourceOfWealth: newPremiumPayer.sourceOfWealth,
-                                                                                                          otherUnknownIncome: newPremiumPayer.otherUnknownIncome,
-                                                                                                          otherUnknownWealth: newPremiumPayer.otherUnknownWealth,
-                                                                                                          timestamp: newPremiumPayer.timestamp,
-                                                                                                          lastUpdate: DateTime.now().toIso8601String(),
-                                                                                                        );
-
-                                                                                                        // Update in the list
-                                                                                                        Constants.currentleadAvailable!.additionalMembers[newPayerIndex] = updatedNewPayer;
-
-                                                                                                        // Update the premium payer reference
-                                                                                                        premiumPayerMember = updatedNewPayer;
-                                                                                                      }
-
-                                                                                                      // Step 4: Update mainMembers if needed
-                                                                                                      int mainMemberIndex = mainMembers.indexWhere(
-                                                                                                        (member) => member.autoNumber == currentPremiumPayer.autoNumber,
-                                                                                                      );
-                                                                                                      if (mainMemberIndex != -1) {
-                                                                                                        mainMembers[mainMemberIndex] = Constants.currentleadAvailable!.additionalMembers[currentPayerIndex];
-                                                                                                      }
-
-                                                                                                      // Update new premium payer in mainMembers
-                                                                                                      int newMainMemberIndex = mainMembers.indexWhere(
-                                                                                                        (member) => member.autoNumber == newPremiumPayer.autoNumber,
-                                                                                                      );
-                                                                                                      if (newMainMemberIndex != -1) {
-                                                                                                        mainMembers[newMainMemberIndex] = Constants.currentleadAvailable!.additionalMembers[newPayerIndex];
-                                                                                                      }
-
-                                                                                                      // Step 5: Call updateMember for both members to sync with backend
-                                                                                                      if (updatedCurrentPayer != AdditionalMember.empty()) await updateMemberBackend(context, currentPremiumPayer.autoNumber, updatedCurrentPayer);
-                                                                                                      if (updatedNewPayer != AdditionalMember.empty()) await updateMemberBackend(context, newPremiumPayer.autoNumber, updatedNewPayer);
-
-                                                                                                      // Step 6: Notify UI to refresh
-                                                                                                      needsAnalysisValueNotifier2.value++;
-                                                                                                      //mySalesPremiumCalculatorValue.value++;
-
-                                                                                                      print("Premium payer changed successfully");
-
-                                                                                                      // Close the dialog
-                                                                                                      Navigator.of(context).pop();
-                                                                                                    } catch (e) {
-                                                                                                      print("Error changing premium payer: $e");
-                                                                                                      // Show error message to user if needed
-                                                                                                    }
-                                                                                                  },
-                                                                                                  child: Text(
-                                                                                                    'Select',
-                                                                                                    style: TextStyle(
-                                                                                                      fontSize: 13,
-                                                                                                      fontWeight: FontWeight.w500,
-                                                                                                      fontFamily: 'YuGothic',
-                                                                                                      color: Constants.ctaColorLight,
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                  style: TextButton.styleFrom(
-                                                                                                    foregroundColor: Constants.ctaColorLight,
-                                                                                                    backgroundColor: Colors.white,
-                                                                                                  ),
-                                                                                                ),
-                                                                                              ),
-                                                                                            ],
-                                                                                          )
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-                                                                                  ],
-                                                                                ),
-                                                                              ),
-                                                                            );
-                                                                          },
-                                                                        ),
-                                                                        const SizedBox(
-                                                                            height:
-                                                                                16),
-                                                                        // Optionally, a button to add a new partner manually.
-                                                                        Center(
-                                                                          child:
-                                                                              TextButton.icon(
-                                                                            onPressed:
-                                                                                () {
-                                                                              // activeStep = 2;
-                                                                              activeStep1 = 2;
-                                                                              updateSalesStepsValueNotifier3.value++;
-                                                                              Navigator.of(context).pop();
-
-                                                                              showDialog(
-                                                                                  context: context,
-                                                                                  barrierDismissible: false,
-                                                                                  // set to false if you want to force a rating
-                                                                                  builder: (context) => StatefulBuilder(
-                                                                                        builder: (context, setState) => Dialog(
-                                                                                          shape: RoundedRectangleBorder(
-                                                                                            borderRadius: BorderRadius.circular(64),
-                                                                                          ),
-                                                                                          elevation: 0.0,
-                                                                                          backgroundColor: Colors.transparent,
-                                                                                          child: Container(
-                                                                                            // width: MediaQuery.of(context).size.width,
-
-                                                                                            constraints: BoxConstraints(
-                                                                                              maxWidth: (Constants.currentleadAvailable!.leadObject.documentsIndexed.isEmpty) ? 750 : 1200,
-                                                                                            ),
-                                                                                            margin: const EdgeInsets.only(top: 16),
-                                                                                            decoration: BoxDecoration(
-                                                                                              color: Colors.white,
-                                                                                              shape: BoxShape.rectangle,
-                                                                                              borderRadius: BorderRadius.circular(16),
-                                                                                              boxShadow: const [
-                                                                                                BoxShadow(
-                                                                                                  color: Colors.black26,
-                                                                                                  blurRadius: 10.0,
-                                                                                                  offset: Offset(0.0, 10.0),
-                                                                                                ),
-                                                                                              ],
-                                                                                            ),
-                                                                                            child: NewMemberDialog2(
-                                                                                              isEditMode: false,
-                                                                                              autoNumber: 0,
-                                                                                              relationship: "Partner",
-                                                                                              title: "",
-                                                                                              name: "",
-                                                                                              surname: "",
-                                                                                              dob: "",
-                                                                                              gender: "",
-                                                                                              current_member_index: current_member_index,
-                                                                                              canAddMember: false,
-                                                                                            ),
-                                                                                          ),
-                                                                                        ),
-                                                                                      ));
-                                                                            },
-                                                                            icon:
-                                                                                const Icon(
-                                                                              Icons.add,
-                                                                              color: Colors.white,
-                                                                            ),
-                                                                            label:
-                                                                                const Text(
-                                                                              'Add New Member',
-                                                                              style: TextStyle(
-                                                                                fontSize: 14,
-                                                                                fontWeight: FontWeight.w500,
-                                                                                fontFamily: 'YuGothic',
-                                                                                color: Colors.white,
-                                                                              ),
-                                                                            ),
-                                                                            style:
-                                                                                TextButton.styleFrom(
-                                                                              foregroundColor: Colors.teal,
-                                                                              backgroundColor: Constants.ctaColorLight,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        const SizedBox(
-                                                                            height:
-                                                                                16),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 8.0,
+                                                          bottom: 4.0),
+                                                  child:
+                                                      DropdownButtonHideUnderline(
+                                                    child:
+                                                        DropdownButton2<String>(
+                                                      isExpanded: true,
+                                                      alignment:
+                                                          AlignmentDirectional
+                                                              .center,
+                                                      hint: const Row(
+                                                        children: [
+                                                          SizedBox(width: 4),
+                                                          Expanded(
+                                                            child: Text(
+                                                              ' Bank types',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontFamily:
+                                                                    'YuGothic',
                                                               ),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                             ),
                                                           ),
-                                                        );
-                                                      },
-                                                      child: Container(
-                                                        height: 40,
-                                                        width: 190,
+                                                        ],
+                                                      ),
+                                                      items: Constants.banksList
+                                                          .map((String item) =>
+                                                              DropdownMenuItem<
+                                                                  String>(
+                                                                value: item,
+                                                                child: Text(
+                                                                  item,
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontFamily:
+                                                                        'YuGothic',
+                                                                    color: Colors
+                                                                        .black,
+                                                                  ),
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                ),
+                                                              ))
+                                                          .toList(),
+                                                      value: _selectedBankTypes,
+                                                      onChanged:
+                                                          _selectedPaymentType !=
+                                                                  "Debit Order"
+                                                              ? null
+                                                              : (String?
+                                                                  value) {
+                                                                  setState(() {
+                                                                    _selectedBankTypes =
+                                                                        value;
+                                                                    var selectedBank =
+                                                                        Constants
+                                                                            .banksListWithCountryCodes
+                                                                            .firstWhere(
+                                                                      (bank) =>
+                                                                          bank[
+                                                                              "name"] ==
+                                                                          value,
+                                                                      orElse:
+                                                                          () =>
+                                                                              {},
+                                                                    );
+                                                                    branchCodeController
+                                                                            .text =
+                                                                        selectedBank["id"] ??
+                                                                            "";
+                                                                    branchNameController
+                                                                            .text =
+                                                                        "UNIVERSAL";
+                                                                  });
+                                                                },
+                                                      buttonStyleData:
+                                                          ButtonStyleData(
+                                                        height: 50,
+                                                        width: MediaQuery.of(
+                                                                context)
+                                                            .size
+                                                            .width,
                                                         padding:
-                                                            EdgeInsets.only(
-                                                                left: 16,
-                                                                right: 16),
+                                                            const EdgeInsets
+                                                                .only(
+                                                                left: 14,
+                                                                right: 14),
                                                         decoration:
                                                             BoxDecoration(
                                                           borderRadius:
                                                               BorderRadius
                                                                   .circular(
                                                                       360),
-                                                          color: Constants
-                                                              .ftaColorLight,
+                                                          border: Border.all(
+                                                              color: Colors
+                                                                  .black26),
+                                                          color: Colors
+                                                              .transparent,
                                                         ),
-                                                        child: Center(
-                                                          child: Text(
-                                                            "Change Premium Payer",
-                                                            style: GoogleFonts
-                                                                .lato(
-                                                              textStyle: TextStyle(
-                                                                  fontSize: 13,
-                                                                  fontFamily:
-                                                                      'YuGothic',
-                                                                  letterSpacing:
-                                                                      0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  color: Colors
-                                                                      .white),
-                                                            ),
-                                                          ),
+                                                        elevation: 0,
+                                                      ),
+                                                      iconStyleData:
+                                                          const IconStyleData(
+                                                        icon: Icon(Icons
+                                                            .arrow_forward_ios_outlined),
+                                                        iconSize: 14,
+                                                        iconEnabledColor:
+                                                            Colors.black,
+                                                        iconDisabledColor:
+                                                            Colors.transparent,
+                                                      ),
+                                                      dropdownStyleData:
+                                                          DropdownStyleData(
+                                                        elevation: 0,
+                                                        maxHeight: 200,
+                                                        width: 200,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(16),
+                                                          color: Colors.white,
+                                                        ),
+                                                        offset:
+                                                            const Offset(-5, 0),
+                                                        scrollbarTheme:
+                                                            ScrollbarThemeData(
+                                                          radius: const Radius
+                                                              .circular(40),
+                                                          thickness:
+                                                              WidgetStateProperty
+                                                                  .all<double>(
+                                                                      6),
+                                                          thumbVisibility:
+                                                              WidgetStateProperty
+                                                                  .all<bool>(
+                                                                      true),
                                                         ),
                                                       ),
-                                                      /*onTap: () {
-                                                                         if (activeClientServicingStepFieldAffinity == createLeadStepsList.length - 1) {
-                                                                           return;
-                                                                         }
-                                                                         SalesService salesService = SalesService();
-                                                                         salesService.updateLeadDetails(context);
-                                                                         print("ddfdfdfg ${activeClientServicingStepFieldAffinity}");
-                                                                         if (activeClientServicingStepFieldAffinity == 2) {
-                                                                           SalesService salesservice = new SalesService();
-                                                                           salesservice.updatePolicy(
-                                                                               Constants.currentleadAvailable!, context);
-                                                                         }
-
-                                                                         setState(() {
-                                                                           if (activeClientServicingStepFieldAffinity < createLeadStepsList.length) {
-                                                                             activeClientServicingStepFieldAffinity++;
-                                                                             client_servicing_module_index =
-                                                                                 createLeadStepsList[activeClientServicingStepFieldAffinity].item_id;
-                                                                             stepName = createLeadStepsList[activeClientServicingStepFieldAffinity].itemName;
-                                                                           } else {
-                                                                             activeClientServicingStepFieldAffinity = 0;
-                                                                             client_servicing_module_index = createLeadStepsList[0].item_id;
-                                                                             stepName = createLeadStepsList[0].itemName;
-                                                                           }
-                                                                         });
-                                                                       },*/
+                                                      menuItemStyleData:
+                                                          const MenuItemStyleData(
+                                                        overlayColor: null,
+                                                        height: 40,
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 14,
+                                                                right: 14),
+                                                      ),
                                                     ),
-                                                  ],
-                                                )
-                                              : AdvancedPremiumPayerMemberCard(
-                                                  id: mainMembers[
-                                                          current_member_index]
-                                                      .id,
-                                                  dob: mainMembers[
-                                                          current_member_index]
-                                                      .dob,
-                                                  surname: mainMembers[
-                                                          current_member_index]
-                                                      .surname,
-                                                  contact: mainMembers[
-                                                          current_member_index]
-                                                      .contact,
-                                                  sourceOfWealth: mainMembers[
-                                                          current_member_index]
-                                                      .sourceOfWealth,
-                                                  otherUnknownWealth: mainMembers[
-                                                          current_member_index]
-                                                      .otherUnknownWealth,
-                                                  otherUnknownIncome: mainMembers[
-                                                          current_member_index]
-                                                      .otherUnknownIncome,
-                                                  dateOfBirth: mainMembers[
-                                                          current_member_index]
-                                                      .dob,
-                                                  sourceOfIncome: mainMembers[
-                                                          current_member_index]
-                                                      .sourceOfIncome,
-                                                  title: mainMembers[
-                                                          current_member_index]
-                                                      .title,
-                                                  name: mainMembers[
-                                                          current_member_index]
-                                                      .name,
-                                                  relationship: mainMembers[
-                                                          current_member_index]
-                                                      .relationship,
-                                                  gender: mainMembers[
-                                                          current_member_index]
-                                                      .gender,
-                                                  autoNumber: mainMembers[
-                                                          current_member_index]
-                                                      .autoNumber,
-                                                  isSelected: true,
-                                                  isEditing: true,
-                                                  current_member_index:
-                                                      current_member_index,
-                                                  is_self_or_payer: true,
-                                                  noOfMembers: 0,
-                                                  cover:
-                                                      policiesSelectedCoverAmounts[
-                                                          current_member_index],
-                                                  premium: policyPremiums
-                                                          .isEmpty
-                                                      ? 0
-                                                      : policyPremiums[
-                                                                  current_member_index]
-                                                              .memberPremiums
-                                                              .isEmpty
-                                                          ? 0
-                                                          : policyPremiums[
-                                                                  current_member_index]
-                                                              .memberPremiums
-                                                              .first
-                                                              .premium,
-                                                  onSingleTap: () {},
-                                                  onDoubleTap: () {},
+                                                  ),
                                                 ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 16,
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 24, right: 24),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              flex: 2,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8.0),
-                                                    child: const Text(
-                                                      'Payment Type',
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontFamily: 'YuGothic',
-                                                      ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 24),
+
+                                            // Account Type Row
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                  child: Text(
+                                                    "Account Type",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: 'YuGothic',
                                                     ),
                                                   ),
-                                                  const SizedBox(height: 0),
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                        flex: 1,
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  top: 8.0,
-                                                                  bottom: 4.0),
-                                                          child:
-                                                              DropdownButtonHideUnderline(
-                                                            child:
-                                                                DropdownButton2<
-                                                                    String>(
-                                                              isExpanded: true,
-                                                              alignment:
-                                                                  AlignmentDirectional
-                                                                      .center,
-                                                              hint: const Row(
-                                                                children: [
-                                                                  SizedBox(
-                                                                    width: 4,
-                                                                  ),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      ' Select payment type',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        color: Colors
-                                                                            .black,
-                                                                        fontSize:
-                                                                            14,
-                                                                        fontWeight:
-                                                                            FontWeight.w500,
-                                                                        fontFamily:
-                                                                            'YuGothic',
-                                                                      ),
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                    ),
-                                                                  ),
-                                                                ],
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 8.0,
+                                                          bottom: 4.0),
+                                                  child:
+                                                      DropdownButtonHideUnderline(
+                                                    child:
+                                                        DropdownButton2<String>(
+                                                      isExpanded: true,
+                                                      alignment:
+                                                          AlignmentDirectional
+                                                              .center,
+                                                      hint: const Row(
+                                                        children: [
+                                                          SizedBox(width: 4),
+                                                          Expanded(
+                                                            child: Text(
+                                                              ' Account Types',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontFamily:
+                                                                    'YuGothic',
                                                               ),
-                                                              items: paymentType
-                                                                  .map((String
-                                                                          item) =>
-                                                                      DropdownMenuItem<
-                                                                          String>(
-                                                                        value:
-                                                                            item,
-                                                                        child:
-                                                                            Text(
-                                                                          item.toTitleCase(),
-                                                                          style:
-                                                                              const TextStyle(
-                                                                            fontSize:
-                                                                                14,
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            color:
-                                                                                Colors.black,
-                                                                          ),
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
-                                                                        ),
-                                                                      ))
-                                                                  .toList(),
-                                                              value:
-                                                                  _selectedPaymentType,
-                                                              onChanged:
-                                                                  (String?
-                                                                      value) {
-                                                                setState(() {
-                                                                  _selectedPaymentType =
-                                                                      value;
-                                                                });
-                                                                Constants
-                                                                    .currentleadAvailable!
-                                                                    .leadObject
-                                                                    .paymentType = value!;
-
-                                                                // Auto-fill account holder name when Debit Order is selected
-                                                                if (value.toLowerCase() ==
-                                                                        "Debit Order"
-                                                                            .toLowerCase() &&
-                                                                    accountHolderController
-                                                                        .text
-                                                                        .toString()
-                                                                        .isEmpty) {
-                                                                  accountHolderController
-                                                                      .text = (Constants
-                                                                              .currentleadAvailable
-                                                                              ?.additionalMembers
-                                                                              .first
-                                                                              .title ??
-                                                                          "") +
-                                                                      " " +
-                                                                      (Constants
-                                                                              .currentleadAvailable!
-                                                                              .additionalMembers
-                                                                              .first
-                                                                              .name ??
-                                                                          "") +
-                                                                      " " +
-                                                                      (Constants
-                                                                              .currentleadAvailable!
-                                                                              .additionalMembers
-                                                                              .first
-                                                                              .surname ??
-                                                                          "");
-                                                                  setState(
-                                                                      () {});
-                                                                }
-                                                              },
-                                                              buttonStyleData:
-                                                                  ButtonStyleData(
-                                                                height: 50,
-                                                                width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                        .only(
-                                                                        left:
-                                                                            14,
-                                                                        right:
-                                                                            14),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              360),
-                                                                  border: Border
-                                                                      .all(
-                                                                    color: Colors
-                                                                        .black26,
-                                                                  ),
-                                                                  color: Colors
-                                                                      .transparent,
-                                                                ),
-                                                                elevation: 0,
-                                                              ),
-                                                              iconStyleData:
-                                                                  const IconStyleData(
-                                                                icon: Icon(
-                                                                  Icons
-                                                                      .arrow_forward_ios_outlined,
-                                                                ),
-                                                                iconSize: 14,
-                                                                iconEnabledColor:
-                                                                    Colors
-                                                                        .black,
-                                                                iconDisabledColor:
-                                                                    Colors
-                                                                        .transparent,
-                                                              ),
-                                                              dropdownStyleData:
-                                                                  DropdownStyleData(
-                                                                elevation: 0,
-                                                                maxHeight: 200,
-                                                                width: 200,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              16),
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                                offset:
-                                                                    const Offset(
-                                                                        -5, 0),
-                                                                scrollbarTheme:
-                                                                    ScrollbarThemeData(
-                                                                  radius: const Radius
-                                                                      .circular(
-                                                                      40),
-                                                                  thickness:
-                                                                      WidgetStateProperty
-                                                                          .all<double>(
-                                                                              6),
-                                                                  thumbVisibility:
-                                                                      WidgetStateProperty.all<
-                                                                              bool>(
-                                                                          true),
-                                                                ),
-                                                              ),
-                                                              menuItemStyleData:
-                                                                  const MenuItemStyleData(
-                                                                overlayColor:
-                                                                    null,
-                                                                height: 40,
-                                                                padding: EdgeInsets
-                                                                    .only(
-                                                                        left:
-                                                                            14,
-                                                                        right:
-                                                                            14),
-                                                              ),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                             ),
                                                           ),
-                                                        ),
+                                                        ],
                                                       ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 16),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 22,
-                                            ),
-                                            Expanded(
-                                              flex: 2,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8.0, top: 8),
-                                                    child: Text(
-                                                      "Debit Day",
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontFamily: 'YuGothic',
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 0),
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                        flex: 1,
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  top: 8.0,
-                                                                  bottom: 4.0),
-                                                          child:
-                                                              DropdownButtonHideUnderline(
-                                                            child:
-                                                                DropdownButton2<
-                                                                    String>(
-                                                              isExpanded: true,
-                                                              alignment:
-                                                                  AlignmentDirectional
-                                                                      .center,
-                                                              hint: const Row(
-                                                                children: [
-                                                                  SizedBox(
-                                                                    width: 4,
+                                                      items: Constants
+                                                          .accountTypes
+                                                          .map((String item) =>
+                                                              DropdownMenuItem<
+                                                                  String>(
+                                                                value: item,
+                                                                child: Text(
+                                                                  item.toReadable(),
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    fontSize:
+                                                                        14,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                    fontFamily:
+                                                                        'YuGothic',
+                                                                    color: Colors
+                                                                        .black,
                                                                   ),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      ' Debit Day',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        color: Colors
-                                                                            .grey,
-                                                                        fontSize:
-                                                                            14,
-                                                                        fontWeight:
-                                                                            FontWeight.w500,
-                                                                        fontFamily:
-                                                                            'YuGothic',
-                                                                      ),
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              items: Constants
-                                                                  .debitDays
-                                                                  .map((String
-                                                                          item) =>
-                                                                      DropdownMenuItem<
-                                                                          String>(
-                                                                        value:
-                                                                            item,
-                                                                        child:
-                                                                            Text(
-                                                                          item,
-                                                                          style:
-                                                                              const TextStyle(
-                                                                            fontSize:
-                                                                                14,
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            color:
-                                                                                Colors.black,
-                                                                          ),
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
-                                                                        ),
-                                                                      ))
-                                                                  .toList(),
-                                                              value:
-                                                                  _selectedDebitDay,
-                                                              onChanged:
-                                                                  (String?
-                                                                      value) {
-                                                                if (value !=
-                                                                    null) {
-                                                                  // Validation logic converted from JavaScript
-                                                                  for (int i =
-                                                                          0;
-                                                                      i <
-                                                                          Constants
-                                                                              .currentleadAvailable!
-                                                                              .policies
-                                                                              .length;
-                                                                      i++) {
-                                                                    var policy =
-                                                                        Constants
-                                                                            .currentleadAvailable!
-                                                                            .policies[i];
-                                                                    var incDate =
-                                                                        DateTime.parse((policy.quote.inceptionDate ??
-                                                                                "")
-                                                                            .toString());
-                                                                    var todayDate =
-                                                                        DateTime
-                                                                            .now();
-                                                                    var lastDay = DateTime(
-                                                                        todayDate
-                                                                            .year,
-                                                                        todayDate.month +
-                                                                            1,
-                                                                        0);
-
-                                                                    if (policy
-                                                                            .quote
-                                                                            .acceptPolicy ==
-                                                                        'yes') {
-                                                                      // Check if debit day is invalid for current month inception
-                                                                      if (int.parse(value) <=
-                                                                              todayDate
-                                                                                  .day &&
-                                                                          incDate.month ==
-                                                                              todayDate.month) {
-                                                                        showErrorMessage(
-                                                                            'Invalid Debit Day, Please change a commencement date for Policy : ${policy.quote.reference} (${policy.quote.productType})');
-                                                                        setState(
-                                                                            () {
-                                                                          _selectedDebitDay =
-                                                                              null;
-                                                                        });
-                                                                        return;
-                                                                      }
-
-                                                                      // Check for next month inception with late debit day
-                                                                      if (todayDate.day <=
-                                                                              10 &&
-                                                                          incDate.month >
-                                                                              todayDate
-                                                                                  .month &&
-                                                                          int.parse(value) >
-                                                                              20) {
-                                                                        showErrorMessage(
-                                                                            'Please note that Policy Inception date of next month is far out. Encourage the client to Incept this month and enjoy full cover upon receipt of the first premium.<br> Policy : ${policy.quote.reference} (${policy.quote.productType})');
-                                                                        setState(
-                                                                            () {
-                                                                          _selectedDebitDay =
-                                                                              null;
-                                                                        });
-                                                                        return;
-                                                                      }
-
-                                                                      // Commented out validation (as in original JavaScript)
-                                                                      // if (int.parse(value) <= (todayDate.day + 7) && incDate.month == todayDate.month) {
-                                                                      //   // Show special date modal logic would go here
-                                                                      //   // tempDay = value;
-                                                                      //   // setState(() {
-                                                                      //   //   _selectedDebitDay = null;
-                                                                      //   // });
-                                                                      //   // return;
-                                                                      // }
-                                                                    }
-                                                                  }
-
-                                                                  // If validation passes, update the values
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis,
+                                                                ),
+                                                              ))
+                                                          .toList(),
+                                                      value:
+                                                          _selectedAccountType,
+                                                      onChanged:
+                                                          _selectedPaymentType !=
+                                                                  "Debit Order"
+                                                              ? null
+                                                              : (String?
+                                                                  value) {
                                                                   setState(() {
-                                                                    Constants
-                                                                        .currentleadAvailable!
-                                                                        .policies
-                                                                        .first
-                                                                        .premiumPayer!
-                                                                        .collectionday = value;
-                                                                    _selectedDebitDay =
+                                                                    _selectedAccountType =
                                                                         value;
                                                                   });
-                                                                }
-                                                              },
-                                                              buttonStyleData:
-                                                                  ButtonStyleData(
-                                                                height: 50,
-                                                                width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                        .only(
-                                                                        left:
-                                                                            14,
-                                                                        right:
-                                                                            14),
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              360),
-                                                                  border: Border
-                                                                      .all(
-                                                                    color: Colors
-                                                                        .black26,
-                                                                  ),
-                                                                  color: Colors
-                                                                      .transparent,
-                                                                ),
-                                                                elevation: 0,
-                                                              ),
-                                                              iconStyleData:
-                                                                  const IconStyleData(
-                                                                icon: Icon(
-                                                                  Icons
-                                                                      .arrow_forward_ios_outlined,
-                                                                ),
-                                                                iconSize: 14,
-                                                                iconEnabledColor:
-                                                                    Colors
-                                                                        .black,
-                                                                iconDisabledColor:
-                                                                    Colors
-                                                                        .transparent,
-                                                              ),
-                                                              dropdownStyleData:
-                                                                  DropdownStyleData(
-                                                                elevation: 0,
-                                                                maxHeight: 200,
-                                                                width: 200,
-                                                                decoration:
-                                                                    BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              16),
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                                offset:
-                                                                    const Offset(
-                                                                        -5, 0),
-                                                                scrollbarTheme:
-                                                                    ScrollbarThemeData(
-                                                                  radius: const Radius
-                                                                      .circular(
-                                                                      40),
-                                                                  thickness:
-                                                                      WidgetStateProperty
-                                                                          .all<double>(
-                                                                              6),
-                                                                  thumbVisibility:
-                                                                      WidgetStateProperty.all<
-                                                                              bool>(
-                                                                          true),
-                                                                ),
-                                                              ),
-                                                              menuItemStyleData:
-                                                                  const MenuItemStyleData(
-                                                                overlayColor:
-                                                                    null,
-                                                                height: 40,
-                                                                padding: EdgeInsets
-                                                                    .only(
-                                                                        left:
-                                                                            14,
-                                                                        right:
-                                                                            14),
-                                                              ),
-                                                            ),
-                                                          ),
+                                                                },
+                                                      buttonStyleData:
+                                                          ButtonStyleData(
+                                                        height: 50,
+                                                        width: MediaQuery.of(
+                                                                context)
+                                                            .size
+                                                            .width,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                left: 14,
+                                                                right: 14),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      360),
+                                                          border: Border.all(
+                                                              color: Colors
+                                                                  .black26),
+                                                          color: Colors
+                                                              .transparent,
+                                                        ),
+                                                        elevation: 0,
+                                                      ),
+                                                      iconStyleData:
+                                                          const IconStyleData(
+                                                        icon: Icon(Icons
+                                                            .arrow_forward_ios_outlined),
+                                                        iconSize: 14,
+                                                        iconEnabledColor:
+                                                            Colors.black,
+                                                        iconDisabledColor:
+                                                            Colors.transparent,
+                                                      ),
+                                                      dropdownStyleData:
+                                                          DropdownStyleData(
+                                                        elevation: 0,
+                                                        maxHeight: 200,
+                                                        width: 200,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(16),
+                                                          color: Colors.white,
+                                                        ),
+                                                        offset:
+                                                            const Offset(-5, 0),
+                                                        scrollbarTheme:
+                                                            ScrollbarThemeData(
+                                                          radius: const Radius
+                                                              .circular(40),
+                                                          thickness:
+                                                              WidgetStateProperty
+                                                                  .all<double>(
+                                                                      6),
+                                                          thumbVisibility:
+                                                              WidgetStateProperty
+                                                                  .all<bool>(
+                                                                      true),
                                                         ),
                                                       ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 24),
-                                                ],
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 22,
-                                            ),
-                                            Constants.currentleadAvailable!
-                                                        .policies.length ==
-                                                    1
-                                                ? Container()
-                                                : Expanded(
-                                                    flex: 2,
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  left: 8.0,
-                                                                  top: 8),
-                                                          child: Text(
-                                                            "Combine Premium",
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontFamily:
-                                                                  'YuGothic',
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                            height: 0),
-                                                        Row(
-                                                          children: [
-                                                            Expanded(
-                                                              flex: 1,
-                                                              child: Container(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                        .only(
-                                                                        top:
-                                                                            8.0,
-                                                                        bottom:
-                                                                            4.0),
-                                                                child:
-                                                                    DropdownButtonHideUnderline(
-                                                                  child:
-                                                                      DropdownButton2<
-                                                                          String>(
-                                                                    isExpanded:
-                                                                        true,
-                                                                    alignment:
-                                                                        AlignmentDirectional
-                                                                            .center,
-                                                                    hint:
-                                                                        const Row(
-                                                                      children: [
-                                                                        SizedBox(
-                                                                          width:
-                                                                              4,
-                                                                        ),
-                                                                        Expanded(
-                                                                          child:
-                                                                              Text(
-                                                                            ' Combine Premium',
-                                                                            style:
-                                                                                TextStyle(
-                                                                              color: Colors.grey,
-                                                                              fontSize: 14,
-                                                                              fontWeight: FontWeight.w500,
-                                                                              fontFamily: 'YuGothic',
-                                                                            ),
-                                                                            overflow:
-                                                                                TextOverflow.ellipsis,
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                    items: Constants
-                                                                        .yesNoOptionsList
-                                                                        .map((String
-                                                                                item) =>
-                                                                            DropdownMenuItem<String>(
-                                                                              value: item,
-                                                                              child: Text(
-                                                                                item,
-                                                                                style: const TextStyle(
-                                                                                  fontSize: 14,
-                                                                                  fontWeight: FontWeight.w500,
-                                                                                  fontFamily: 'YuGothic',
-                                                                                  color: Colors.black,
-                                                                                ),
-                                                                                overflow: TextOverflow.ellipsis,
-                                                                              ),
-                                                                            ))
-                                                                        .toList(),
-                                                                    value:
-                                                                        _selectedCombinePremium,
-                                                                    onChanged: Constants.currentleadAvailable!.policies.length ==
-                                                                            1
-                                                                        ? null
-                                                                        : (String?
-                                                                            value) {
-                                                                            setState(() {
-                                                                              _selectedCombinePremium = value;
-                                                                              Constants.currentleadAvailable!.policies.first.premiumPayer.combinePremium = value!;
-                                                                            });
-                                                                          },
-                                                                    buttonStyleData:
-                                                                        ButtonStyleData(
-                                                                      height:
-                                                                          50,
-                                                                      width: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width,
-                                                                      padding: const EdgeInsets
-                                                                          .only(
-                                                                          left:
-                                                                              14,
-                                                                          right:
-                                                                              14),
-                                                                      decoration:
-                                                                          BoxDecoration(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(360),
-                                                                        border:
-                                                                            Border.all(
-                                                                          color:
-                                                                              Colors.black26,
-                                                                        ),
-                                                                        color: Colors
-                                                                            .transparent,
-                                                                      ),
-                                                                      elevation:
-                                                                          0,
-                                                                    ),
-                                                                    iconStyleData:
-                                                                        const IconStyleData(
-                                                                      icon:
-                                                                          Icon(
-                                                                        Icons
-                                                                            .arrow_forward_ios_outlined,
-                                                                      ),
-                                                                      iconSize:
-                                                                          14,
-                                                                      iconEnabledColor:
-                                                                          Colors
-                                                                              .black,
-                                                                      iconDisabledColor:
-                                                                          Colors
-                                                                              .transparent,
-                                                                    ),
-                                                                    dropdownStyleData:
-                                                                        DropdownStyleData(
-                                                                      elevation:
-                                                                          0,
-                                                                      maxHeight:
-                                                                          200,
-                                                                      width:
-                                                                          200,
-                                                                      decoration:
-                                                                          BoxDecoration(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(16),
-                                                                        color: Colors
-                                                                            .white,
-                                                                      ),
-                                                                      offset:
-                                                                          const Offset(
-                                                                              -5,
-                                                                              0),
-                                                                      scrollbarTheme:
-                                                                          ScrollbarThemeData(
-                                                                        radius: const Radius
-                                                                            .circular(
-                                                                            40),
-                                                                        thickness:
-                                                                            WidgetStateProperty.all<double>(6),
-                                                                        thumbVisibility:
-                                                                            WidgetStateProperty.all<bool>(true),
-                                                                      ),
-                                                                    ),
-                                                                    menuItemStyleData:
-                                                                        const MenuItemStyleData(
-                                                                      overlayColor:
-                                                                          null,
-                                                                      height:
-                                                                          40,
-                                                                      padding: EdgeInsets.only(
-                                                                          left:
-                                                                              14,
-                                                                          right:
-                                                                              14),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        const SizedBox(
-                                                            height: 24),
-                                                      ],
+                                                      menuItemStyleData:
+                                                          const MenuItemStyleData(
+                                                        overlayColor: null,
+                                                        height: 40,
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 14,
+                                                                right: 14),
+                                                      ),
                                                     ),
                                                   ),
-                                            SizedBox(
-                                              width: 22,
+                                                ),
+                                              ],
                                             ),
-                                            Expanded(
-                                              flex: 2,
-                                              child: Container(),
+                                            const SizedBox(height: 24),
+
+                                            // Account Holder Name Row
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                  child: Text(
+                                                    "Account Holder Name",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: 'YuGothic',
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                CustomInputTransparent4(
+                                                  controller:
+                                                      accountHolderController,
+                                                  hintText:
+                                                      'Account Holder Name',
+                                                  onChanged: (String) {},
+                                                  onSubmitted: (String) {},
+                                                  focusNode:
+                                                      accountHolderFocusNode,
+                                                  isEditable:
+                                                      _selectedPaymentType !=
+                                                              "Debit Order"
+                                                          ? false
+                                                          : true,
+                                                  textInputAction:
+                                                      TextInputAction.next,
+                                                  isPasswordField: false,
+                                                ),
+                                              ],
                                             ),
+                                            const SizedBox(height: 24),
+
+                                            // Account Number Row
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                  child: Text(
+                                                    "Account Number",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: 'YuGothic',
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                CustomInputTransparent3(
+                                                  controller:
+                                                      accountNumberController,
+                                                  hintText: 'Account Number',
+                                                  onChanged: (String) {},
+                                                  onSubmitted: (String) {},
+                                                  focusNode:
+                                                      accountNumberFocusNode,
+                                                  textInputAction:
+                                                      TextInputAction.next,
+                                                  integersOnly: true,
+                                                  isPasswordField: false,
+                                                  maxInputs: 14,
+                                                  allow_editing:
+                                                      _selectedPaymentType !=
+                                                              "Debit Order"
+                                                          ? false
+                                                          : true,
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 24),
+
+                                            // Branch Code Row
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                  child: Text(
+                                                    "Branch Code",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: 'YuGothic',
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                CustomInputTransparent4(
+                                                  controller:
+                                                      branchCodeController,
+                                                  hintText: 'Branch Code',
+                                                  isEditable: false,
+                                                  onChanged: (String) {},
+                                                  onSubmitted: (String) {},
+                                                  focusNode:
+                                                      branchCodeFocusNode,
+                                                  textInputAction:
+                                                      TextInputAction.next,
+                                                  isPasswordField: false,
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 24),
+
+                                            // Branch Name Row
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 8.0),
+                                                  child: Text(
+                                                    "Branch Name",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: 'YuGothic',
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                CustomInputTransparent4(
+                                                  controller:
+                                                      branchNameController,
+                                                  hintText: 'Branch Name',
+                                                  onChanged: (String) {},
+                                                  onSubmitted: (String) {},
+                                                  focusNode:
+                                                      branchNameFocusNode,
+                                                  textInputAction:
+                                                      TextInputAction.next,
+                                                  isEditable: false,
+                                                  isPasswordField: false,
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 24),
                                           ],
                                         ),
                                       ),
-                                      SizedBox(
-                                        height: 16,
-                                      ),
-                                      if (_selectedPaymentType == "Debit Order")
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 24, right: 24),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 8.0),
-                                                      child: Text(
-                                                        "Bank Institution",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          flex: 1,
-                                                          child: Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    top: 8.0,
-                                                                    bottom:
-                                                                        4.0),
-                                                            child:
-                                                                DropdownButtonHideUnderline(
-                                                              child:
-                                                                  DropdownButton2<
-                                                                      String>(
-                                                                isExpanded:
-                                                                    true,
-                                                                alignment:
-                                                                    AlignmentDirectional
-                                                                        .center,
-                                                                hint: const Row(
-                                                                  children: [
-                                                                    SizedBox(
-                                                                      width: 4,
-                                                                    ),
-                                                                    Expanded(
-                                                                      child:
-                                                                          Text(
-                                                                        ' Bank types',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              Colors.black,
-                                                                          fontSize:
-                                                                              14,
-                                                                          fontWeight:
-                                                                              FontWeight.w500,
-                                                                          fontFamily:
-                                                                              'YuGothic',
-                                                                        ),
-                                                                        overflow:
-                                                                            TextOverflow.ellipsis,
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                items: Constants
-                                                                    .banksList
-                                                                    .map((String
-                                                                            item) =>
-                                                                        DropdownMenuItem<
-                                                                            String>(
-                                                                          value:
-                                                                              item,
-                                                                          child:
-                                                                              Text(
-                                                                            item,
-                                                                            style:
-                                                                                const TextStyle(
-                                                                              fontSize: 14,
-                                                                              fontWeight: FontWeight.w500,
-                                                                              fontFamily: 'YuGothic',
-                                                                              color: Colors.black,
-                                                                            ),
-                                                                            overflow:
-                                                                                TextOverflow.ellipsis,
-                                                                          ),
-                                                                        ))
-                                                                    .toList(),
-                                                                value:
-                                                                    _selectedBankTypes,
-                                                                onChanged: _selectedPaymentType !=
-                                                                        "Debit Order"
-                                                                    ? null
-                                                                    : (String?
-                                                                        value) {
-                                                                        setState(
-                                                                            () {
-                                                                          _selectedBankTypes =
-                                                                              value;
-                                                                          // Find the bank map where the "name" matches the selected value.
-                                                                          var selectedBank = Constants
-                                                                              .banksListWithCountryCodes
-                                                                              .firstWhere(
-                                                                            (bank) =>
-                                                                                bank["name"] ==
-                                                                                value,
-                                                                            orElse: () =>
-                                                                                {},
-                                                                          );
-                                                                          // Set the branch code controller text to the bank's "id"
-                                                                          branchCodeController.text =
-                                                                              selectedBank["id"] ?? "";
-                                                                          branchNameController.text =
-                                                                              "UNIVERSAL";
-                                                                        });
-                                                                      },
-                                                                buttonStyleData:
-                                                                    ButtonStyleData(
-                                                                  height: 50,
-                                                                  width: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width,
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .only(
-                                                                          left:
-                                                                              14,
-                                                                          right:
-                                                                              14),
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            360),
-                                                                    border:
-                                                                        Border
-                                                                            .all(
-                                                                      color: Colors
-                                                                          .black26,
-                                                                    ),
-                                                                    color: Colors
-                                                                        .transparent,
-                                                                  ),
-                                                                  elevation: 0,
-                                                                ),
-                                                                iconStyleData:
-                                                                    const IconStyleData(
-                                                                  icon: Icon(
-                                                                    Icons
-                                                                        .arrow_forward_ios_outlined,
-                                                                  ),
-                                                                  iconSize: 14,
-                                                                  iconEnabledColor:
-                                                                      Colors
-                                                                          .black,
-                                                                  iconDisabledColor:
-                                                                      Colors
-                                                                          .transparent,
-                                                                ),
-                                                                dropdownStyleData:
-                                                                    DropdownStyleData(
-                                                                  elevation: 0,
-                                                                  maxHeight:
-                                                                      200,
-                                                                  width: 200,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            16),
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                                  offset:
-                                                                      const Offset(
-                                                                          -5,
-                                                                          0),
-                                                                  scrollbarTheme:
-                                                                      ScrollbarThemeData(
-                                                                    radius: const Radius
-                                                                        .circular(
-                                                                        40),
-                                                                    thickness:
-                                                                        WidgetStateProperty.all<
-                                                                            double>(6),
-                                                                    thumbVisibility:
-                                                                        WidgetStateProperty.all<bool>(
-                                                                            true),
-                                                                  ),
-                                                                ),
-                                                                menuItemStyleData:
-                                                                    const MenuItemStyleData(
-                                                                  overlayColor:
-                                                                      null,
-                                                                  height: 40,
-                                                                  padding: EdgeInsets
-                                                                      .only(
-                                                                          left:
-                                                                              14,
-                                                                          right:
-                                                                              14),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 22,
-                                              ),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 8.0),
-                                                      child: Text(
-                                                        "Account Type",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          flex: 1,
-                                                          child: Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    top: 8.0,
-                                                                    bottom:
-                                                                        4.0),
-                                                            child:
-                                                                DropdownButtonHideUnderline(
-                                                              child:
-                                                                  DropdownButton2<
-                                                                      String>(
-                                                                isExpanded:
-                                                                    true,
-                                                                alignment:
-                                                                    AlignmentDirectional
-                                                                        .center,
-                                                                hint: const Row(
-                                                                  children: [
-                                                                    SizedBox(
-                                                                      width: 4,
-                                                                    ),
-                                                                    Expanded(
-                                                                      child:
-                                                                          Text(
-                                                                        ' Account Types',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              Colors.black,
-                                                                          fontSize:
-                                                                              14,
-                                                                          fontWeight:
-                                                                              FontWeight.w500,
-                                                                          fontFamily:
-                                                                              'YuGothic',
-                                                                        ),
-                                                                        overflow:
-                                                                            TextOverflow.ellipsis,
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                items: Constants
-                                                                    .accountTypes
-                                                                    .map((String
-                                                                            item) =>
-                                                                        DropdownMenuItem<
-                                                                            String>(
-                                                                          value:
-                                                                              item,
-                                                                          child:
-                                                                              Text(
-                                                                            item.toReadable(),
-                                                                            style:
-                                                                                const TextStyle(
-                                                                              fontSize: 14,
-                                                                              fontWeight: FontWeight.w500,
-                                                                              fontFamily: 'YuGothic',
-                                                                              color: Colors.black,
-                                                                            ),
-                                                                            overflow:
-                                                                                TextOverflow.ellipsis,
-                                                                          ),
-                                                                        ))
-                                                                    .toList(),
-                                                                value:
-                                                                    _selectedAccountType,
-                                                                onChanged: _selectedPaymentType !=
-                                                                        "Debit Order"
-                                                                    ? null
-                                                                    : (String?
-                                                                        value) {
-                                                                        setState(
-                                                                            () {
-                                                                          _selectedAccountType =
-                                                                              value;
-                                                                        });
-                                                                      },
-                                                                buttonStyleData:
-                                                                    ButtonStyleData(
-                                                                  height: 50,
-                                                                  width: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width,
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .only(
-                                                                          left:
-                                                                              14,
-                                                                          right:
-                                                                              14),
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            360),
-                                                                    border:
-                                                                        Border
-                                                                            .all(
-                                                                      color: Colors
-                                                                          .black26,
-                                                                    ),
-                                                                    color: Colors
-                                                                        .transparent,
-                                                                  ),
-                                                                  elevation: 0,
-                                                                ),
-                                                                iconStyleData:
-                                                                    const IconStyleData(
-                                                                  icon: Icon(
-                                                                    Icons
-                                                                        .arrow_forward_ios_outlined,
-                                                                  ),
-                                                                  iconSize: 14,
-                                                                  iconEnabledColor:
-                                                                      Colors
-                                                                          .black,
-                                                                  iconDisabledColor:
-                                                                      Colors
-                                                                          .transparent,
-                                                                ),
-                                                                dropdownStyleData:
-                                                                    DropdownStyleData(
-                                                                  elevation: 0,
-                                                                  maxHeight:
-                                                                      200,
-                                                                  width: 200,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            16),
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                                  offset:
-                                                                      const Offset(
-                                                                          -5,
-                                                                          0),
-                                                                  scrollbarTheme:
-                                                                      ScrollbarThemeData(
-                                                                    radius: const Radius
-                                                                        .circular(
-                                                                        40),
-                                                                    thickness:
-                                                                        WidgetStateProperty.all<
-                                                                            double>(6),
-                                                                    thumbVisibility:
-                                                                        WidgetStateProperty.all<bool>(
-                                                                            true),
-                                                                  ),
-                                                                ),
-                                                                menuItemStyleData:
-                                                                    const MenuItemStyleData(
-                                                                  overlayColor:
-                                                                      null,
-                                                                  height: 40,
-                                                                  padding: EdgeInsets
-                                                                      .only(
-                                                                          left:
-                                                                              14,
-                                                                          right:
-                                                                              14),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 22,
-                                              ),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 8.0),
-                                                      child: Text(
-                                                        "Account Holder Name",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    CustomInputTransparent4(
-                                                      controller:
-                                                          accountHolderController,
-                                                      hintText:
-                                                          'Account Holder Name',
-                                                      onChanged: (String) {},
-                                                      onSubmitted: (String) {},
-                                                      focusNode:
-                                                          accountHolderFocusNode,
-                                                      isEditable:
-                                                          _selectedPaymentType !=
-                                                                  "Debit Order"
-                                                              ? false
-                                                              : true,
-                                                      textInputAction:
-                                                          TextInputAction.next,
-                                                      isPasswordField: false,
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 22,
-                                              ),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 8.0),
-                                                      child: Text(
-                                                        "Account Number",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    CustomInputTransparent3(
-                                                      controller:
-                                                          accountNumberController,
-                                                      hintText:
-                                                          'Account Number',
-                                                      onChanged: (String) {},
-                                                      onSubmitted: (String) {},
-                                                      focusNode:
-                                                          accountNumberFocusNode,
-                                                      textInputAction:
-                                                          TextInputAction.next,
-                                                      integersOnly: true,
-                                                      isPasswordField: false,
-                                                      maxInputs: 14,
-                                                      allow_editing:
-                                                          _selectedPaymentType !=
-                                                                  "Debit Order"
-                                                              ? false
-                                                              : true,
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      if (_selectedPaymentType == "Debit Order")
-                                        SizedBox(
-                                          height: 16,
-                                        ),
-                                      if (_selectedPaymentType == "Debit Order")
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 24, right: 24),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                flex: 2,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 8.0),
-                                                      child: Text(
-                                                        "Branch Code",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    CustomInputTransparent4(
-                                                      controller:
-                                                          branchCodeController,
-                                                      hintText: 'Branch Code',
-                                                      isEditable: false,
-                                                      onChanged: (String) {},
-                                                      onSubmitted: (String) {},
-                                                      focusNode:
-                                                          branchCodeFocusNode,
-                                                      textInputAction:
-                                                          TextInputAction.next,
-                                                      isPasswordField: false,
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 22,
-                                              ),
-                                              Expanded(
-                                                flex: 2,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 8.0),
-                                                      child: Text(
-                                                        "Branch Name",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    CustomInputTransparent4(
-                                                      controller:
-                                                          branchNameController,
-                                                      hintText: 'Branch Name',
-                                                      onChanged: (String) {},
-                                                      onSubmitted: (String) {},
-                                                      focusNode:
-                                                          branchNameFocusNode,
-                                                      textInputAction:
-                                                          TextInputAction.next,
-                                                      isEditable: false,
-                                                      isPasswordField: false,
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 22,
-                                              ),
-                                              Expanded(
-                                                  flex: 4, child: Container())
-                                            ],
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                )),
+                                  ],
+                                ),
+                              )),
+                            ),
                           ),
                           SizedBox(
                             height: 20,
                           ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: CustomCard(
-                                    elevation: 5,
-                                    surfaceTintColor: Colors.white,
-                                    color: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
+                          Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                // Physical Address Section
+                                Padding(
+                                  padding: const EdgeInsets.all(0.0),
+                                  child: Container(
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
@@ -6498,552 +5958,289 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                         ),
                                         const SizedBox(height: 16),
 
-                                        // Row: Address & Suburb
+                                        // Address Field
                                         Padding(
                                           padding: const EdgeInsets.only(
                                               left: 24, right: 24),
-                                          child: Row(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              // Address
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 8.0),
-                                                      child: Text(
-                                                        "Address",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    CustomInputTransparent4(
-                                                      controller:
-                                                          addressController,
-                                                      hintText: 'Address',
-                                                      onChanged: (val) {
-                                                        setState(() {
-                                                          // Update the lead's address
-                                                          Constants
-                                                              .currentleadAvailable!
-                                                              .addresses!
-                                                              .physaddressLine1 = val;
-                                                        });
-                                                      },
-                                                      onSubmitted: (val) {},
-                                                      focusNode:
-                                                          addressFocusNode,
-                                                      textInputAction:
-                                                          TextInputAction.next,
-                                                      isPasswordField: false,
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
+                                              const Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 8.0),
+                                                child: Text(
+                                                  "Address",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: 'YuGothic',
+                                                  ),
                                                 ),
                                               ),
-                                              const SizedBox(width: 22),
-                                              // Suburb
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 8.0),
-                                                      child: Text(
-                                                        "Suburb",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    CustomInputTransparent4(
-                                                      controller:
-                                                          suburbController,
-                                                      hintText: 'Suburb',
-                                                      onChanged: (val) {
-                                                        setState(() {
-                                                          Constants
-                                                              .currentleadAvailable!
-                                                              .addresses!
-                                                              .physaddressLine2 = val;
-                                                        });
-                                                      },
-                                                      onSubmitted: (val) {},
-                                                      focusNode:
-                                                          suburbFocusNode,
-                                                      textInputAction:
-                                                          TextInputAction.next,
-                                                      isPasswordField: false,
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
-                                                ),
+                                              const SizedBox(height: 8),
+                                              CustomInputTransparent4(
+                                                controller: addressController,
+                                                hintText: 'Address',
+                                                onChanged: (val) {
+                                                  setState(() {
+                                                    Constants
+                                                        .currentleadAvailable!
+                                                        .addresses!
+                                                        .physaddressLine1 = val;
+                                                  });
+                                                },
+                                                onSubmitted: (val) {},
+                                                focusNode: addressFocusNode,
+                                                textInputAction:
+                                                    TextInputAction.next,
+                                                isPasswordField: false,
                                               ),
                                             ],
                                           ),
                                         ),
-                                        const SizedBox(height: 16),
+                                        const SizedBox(height: 24),
 
-                                        // Row: City & Province
+                                        // Suburb Field
                                         Padding(
                                           padding: const EdgeInsets.only(
                                               left: 24, right: 24),
-                                          child: Row(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              // City
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 8.0),
-                                                      child: Text(
-                                                        "City",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    CustomInputTransparent4(
-                                                      controller:
-                                                          cityController,
-                                                      hintText: 'City',
-                                                      onChanged: (val) {
-                                                        setState(() {
-                                                          Constants
-                                                              .currentleadAvailable!
-                                                              .addresses!
-                                                              .physaddressLine3 = val;
-                                                        });
-                                                      },
-                                                      onSubmitted: (val) {},
-                                                      focusNode: cityFocusNode,
-                                                      textInputAction:
-                                                          TextInputAction.next,
-                                                      isPasswordField: false,
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
+                                              const Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 8.0),
+                                                child: Text(
+                                                  "Suburb",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: 'YuGothic',
+                                                  ),
                                                 ),
                                               ),
-                                              const SizedBox(width: 22),
-                                              // Province dropdown
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 8.0),
-                                                      child: Text(
-                                                        "Province",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    Row(
+                                              const SizedBox(height: 8),
+                                              CustomInputTransparent4(
+                                                controller: suburbController,
+                                                hintText: 'Suburb',
+                                                onChanged: (val) {
+                                                  setState(() {
+                                                    Constants
+                                                        .currentleadAvailable!
+                                                        .addresses!
+                                                        .physaddressLine2 = val;
+                                                  });
+                                                },
+                                                onSubmitted: (val) {},
+                                                focusNode: suburbFocusNode,
+                                                textInputAction:
+                                                    TextInputAction.next,
+                                                isPasswordField: false,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 24),
+
+                                        // City Field
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 24, right: 24),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 8.0),
+                                                child: Text(
+                                                  "City",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: 'YuGothic',
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              CustomInputTransparent4(
+                                                controller: cityController,
+                                                hintText: 'City',
+                                                onChanged: (val) {
+                                                  setState(() {
+                                                    Constants
+                                                        .currentleadAvailable!
+                                                        .addresses!
+                                                        .physaddressLine3 = val;
+                                                  });
+                                                },
+                                                onSubmitted: (val) {},
+                                                focusNode: cityFocusNode,
+                                                textInputAction:
+                                                    TextInputAction.next,
+                                                isPasswordField: false,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 24),
+
+                                        // Province Field
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 24, right: 24),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 8.0),
+                                                child: Text(
+                                                  "Province",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: 'YuGothic',
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Container(
+                                                padding: const EdgeInsets.only(
+                                                    top: 8.0, bottom: 4.0),
+                                                child:
+                                                    DropdownButtonHideUnderline(
+                                                  child:
+                                                      DropdownButton2<String>(
+                                                    isExpanded: true,
+                                                    alignment:
+                                                        AlignmentDirectional
+                                                            .center,
+                                                    hint: const Row(
                                                       children: [
+                                                        SizedBox(width: 4),
                                                         Expanded(
-                                                          flex: 1,
-                                                          child: Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    top: 12.0,
-                                                                    bottom:
-                                                                        4.0),
-                                                            child:
-                                                                DropdownButtonHideUnderline(
-                                                              child:
-                                                                  DropdownButton2<
-                                                                      String>(
-                                                                isExpanded:
-                                                                    true,
-                                                                alignment:
-                                                                    AlignmentDirectional
-                                                                        .center,
-                                                                hint: const Row(
-                                                                  children: [
-                                                                    SizedBox(
-                                                                        width:
-                                                                            4),
-                                                                    Expanded(
-                                                                      child:
-                                                                          Text(
-                                                                        'Select a province',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              Colors.black,
-                                                                          fontSize:
-                                                                              14,
-                                                                          fontWeight:
-                                                                              FontWeight.w500,
-                                                                          fontFamily:
-                                                                              'YuGothic',
-                                                                        ),
-                                                                        overflow:
-                                                                            TextOverflow.ellipsis,
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                items: provinceList
-                                                                    .map((String
-                                                                        item) {
-                                                                  return DropdownMenuItem<
-                                                                      String>(
-                                                                    value: item,
-                                                                    child: Text(
-                                                                      item,
-                                                                      style:
-                                                                          const TextStyle(
-                                                                        fontSize:
-                                                                            14,
-                                                                        fontWeight:
-                                                                            FontWeight.w500,
-                                                                        fontFamily:
-                                                                            'YuGothic',
-                                                                        color: Colors
-                                                                            .black,
-                                                                      ),
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                    ),
-                                                                  );
-                                                                }).toList(),
-                                                                value:
-                                                                    _physicalAddressProvince,
-                                                                onChanged:
-                                                                    (String?
-                                                                        value) {
-                                                                  setState(() {
-                                                                    _physicalAddressProvince =
-                                                                        value;
-                                                                    // Also update the lead's address
-                                                                    Constants
-                                                                            .currentleadAvailable!
-                                                                            .addresses!
-                                                                            .physaddressProvince =
-                                                                        value ??
-                                                                            "";
-                                                                  });
-                                                                },
-                                                                buttonStyleData:
-                                                                    ButtonStyleData(
-                                                                  height: 50,
-                                                                  width: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width,
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .only(
-                                                                    left: 14,
-                                                                    right: 14,
-                                                                  ),
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            360),
-                                                                    border:
-                                                                        Border
-                                                                            .all(
-                                                                      color: Colors
-                                                                          .black26,
-                                                                    ),
-                                                                    color: Colors
-                                                                        .transparent,
-                                                                  ),
-                                                                  elevation: 0,
-                                                                ),
-                                                                iconStyleData:
-                                                                    const IconStyleData(
-                                                                  icon: Icon(
-                                                                    Icons
-                                                                        .arrow_forward_ios_outlined,
-                                                                  ),
-                                                                  iconSize: 14,
-                                                                  iconEnabledColor:
-                                                                      Colors
-                                                                          .black,
-                                                                  iconDisabledColor:
-                                                                      Colors
-                                                                          .transparent,
-                                                                ),
-                                                                dropdownStyleData:
-                                                                    DropdownStyleData(
-                                                                  elevation: 0,
-                                                                  maxHeight:
-                                                                      200,
-                                                                  width: 200,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            16),
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                                  offset:
-                                                                      const Offset(
-                                                                          -5,
-                                                                          0),
-                                                                  scrollbarTheme:
-                                                                      ScrollbarThemeData(
-                                                                    radius: const Radius
-                                                                        .circular(
-                                                                        40),
-                                                                    thickness:
-                                                                        WidgetStateProperty.all<
-                                                                            double>(6),
-                                                                    thumbVisibility:
-                                                                        WidgetStateProperty.all<bool>(
-                                                                            true),
-                                                                  ),
-                                                                ),
-                                                                menuItemStyleData:
-                                                                    const MenuItemStyleData(
-                                                                  overlayColor:
-                                                                      null,
-                                                                  height: 40,
-                                                                  padding: EdgeInsets
-                                                                      .only(
-                                                                          left:
-                                                                              14,
-                                                                          right:
-                                                                              14),
-                                                                ),
-                                                              ),
+                                                          child: Text(
+                                                            'Select a province',
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              fontFamily:
+                                                                  'YuGothic',
                                                             ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
                                                           ),
                                                         ),
                                                       ],
                                                     ),
-                                                    const SizedBox(height: 24),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        // Row: Code
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 24, right: 24),
-                                          child: Row(
-                                            children: [
-                                              // Code
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 8.0),
-                                                      child: Text(
-                                                        "Code",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
+                                                    items: provinceList
+                                                        .map((String item) {
+                                                      return DropdownMenuItem<
+                                                          String>(
+                                                        value: item,
+                                                        child: Text(
+                                                          item,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            fontFamily:
+                                                                'YuGothic',
+                                                            color: Colors.black,
+                                                          ),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
                                                         ),
+                                                      );
+                                                    }).toList(),
+                                                    value:
+                                                        _physicalAddressProvince,
+                                                    onChanged: (String? value) {
+                                                      setState(() {
+                                                        _physicalAddressProvince =
+                                                            value;
+                                                        Constants
+                                                                .currentleadAvailable!
+                                                                .addresses!
+                                                                .physaddressProvince =
+                                                            value ?? "";
+                                                      });
+                                                    },
+                                                    buttonStyleData:
+                                                        ButtonStyleData(
+                                                      height: 50,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                              .size
+                                                              .width,
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 14,
+                                                              right: 14),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(360),
+                                                        border: Border.all(
+                                                            color:
+                                                                Colors.black26),
+                                                        color:
+                                                            Colors.transparent,
+                                                      ),
+                                                      elevation: 0,
+                                                    ),
+                                                    iconStyleData:
+                                                        const IconStyleData(
+                                                      icon: Icon(Icons
+                                                          .arrow_forward_ios_outlined),
+                                                      iconSize: 14,
+                                                      iconEnabledColor:
+                                                          Colors.black,
+                                                      iconDisabledColor:
+                                                          Colors.transparent,
+                                                    ),
+                                                    dropdownStyleData:
+                                                        DropdownStyleData(
+                                                      elevation: 0,
+                                                      maxHeight: 200,
+                                                      width: 200,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(16),
+                                                        color: Colors.white,
+                                                      ),
+                                                      offset:
+                                                          const Offset(-5, 0),
+                                                      scrollbarTheme:
+                                                          ScrollbarThemeData(
+                                                        radius: const Radius
+                                                            .circular(40),
+                                                        thickness:
+                                                            WidgetStateProperty
+                                                                .all<double>(6),
+                                                        thumbVisibility:
+                                                            WidgetStateProperty
+                                                                .all<bool>(
+                                                                    true),
                                                       ),
                                                     ),
-                                                    const SizedBox(height: 0),
-                                                    CustomInputTransparent3(
-                                                      controller:
-                                                          codeController,
-                                                      hintText: 'Code',
-                                                      integersOnly: true,
-                                                      maxInputs: 4,
-                                                      onChanged: (val) {
-                                                        setState(() {
-                                                          Constants
-                                                              .currentleadAvailable!
-                                                              .addresses!
-                                                              .physaddressCode = val;
-                                                        });
-                                                      },
-                                                      onSubmitted: (val) {},
-                                                      focusNode: codeFocusNode,
-                                                      textInputAction:
-                                                          TextInputAction.next,
-                                                      isPasswordField: false,
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(width: 22),
-                                              // empty expanded for spacing
-                                              Expanded(child: Container()),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 12,
-                              ),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Container(
-                                  width: 120,
-                                  height: 35,
-                                  child: TextButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        addressPostalController.text =
-                                            addressController.text;
-                                        suburbPostalController.text =
-                                            suburbController.text;
-                                        cityPostalController.text =
-                                            cityController.text;
-                                        codePostalController.text =
-                                            codeController.text;
-                                        provincePostalController.text =
-                                            provinceController.text;
-                                        _postalAddressProvince =
-                                            _physicalAddressProvince;
-                                        Constants.currentleadAvailable!
-                                                .addresses!.postaddressLine1 =
-                                            addressController.text;
-                                        Constants.currentleadAvailable!
-                                                .addresses!.postaddressLine2 =
-                                            suburbController.text;
-                                        Constants.currentleadAvailable!
-                                                .addresses!.postaddressLine3 =
-                                            cityController.text;
-                                        Constants.currentleadAvailable!
-                                                .addresses!.postaddressCode =
-                                            codeController.text;
-                                        Constants
-                                                .currentleadAvailable!
-                                                .addresses!
-                                                .postaddressProvince =
-                                            _physicalAddressProvince ?? "";
-                                      });
-                                    },
-                                    style: TextButton.styleFrom(
-                                      minimumSize: Size(
-                                        MediaQuery.of(context).size.width,
-                                        40,
-                                      ),
-                                      backgroundColor:
-                                          Colors.grey.withOpacity(0.35),
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          "Copy",
-                                          style: TextStyle(
-                                            color: Constants.ctaColorLight,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: 'YuGothic',
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Icon(
-                                          Icons.swap_horiz,
-                                          color: Constants.ctaColorLight,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 12,
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: CustomCard(
-                                    elevation: 5,
-                                    surfaceTintColor: Colors.white,
-                                    color: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        // Header
-                                        Container(
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          decoration: BoxDecoration(
-                                            color:
-                                                Colors.grey.withOpacity(0.15),
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                              topRight: Radius.circular(12),
-                                              topLeft: Radius.circular(12),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Expanded(
-                                                child: Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      12.0),
-                                                  child: Center(
-                                                    child: Text(
-                                                      "Postal Address",
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontFamily: 'YuGothic',
-                                                        fontSize: 16,
-                                                      ),
+                                                    menuItemStyleData:
+                                                        const MenuItemStyleData(
+                                                      overlayColor: null,
+                                                      height: 40,
+                                                      padding: EdgeInsets.only(
+                                                          left: 14, right: 14),
                                                     ),
                                                   ),
                                                 ),
@@ -7051,430 +6248,552 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                             ],
                                           ),
                                         ),
-                                        const SizedBox(height: 16),
+                                        const SizedBox(height: 24),
 
-                                        // Row: Address & Suburb
+                                        // Code Field
                                         Padding(
                                           padding: const EdgeInsets.only(
                                               left: 24, right: 24),
-                                          child: Row(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              // Address
-                                              Expanded(
-                                                flex: 1,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 8.0),
-                                                      child: Text(
-                                                        "Address",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    CustomInputTransparent4(
-                                                      controller:
-                                                          addressPostalController,
-                                                      hintText: 'Address',
-                                                      onChanged: (val) {
-                                                        setState(() {
-                                                          // Store in the lead's postal address field
-                                                          Constants
-                                                              .currentleadAvailable!
-                                                              .addresses!
-                                                              .postaddressLine1 = val;
-                                                        });
-                                                      },
-                                                      onSubmitted: (val) {},
-                                                      focusNode:
-                                                          addressPostalFocusNode,
-                                                      textInputAction:
-                                                          TextInputAction.next,
-                                                      isPasswordField: false,
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
+                                              const Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 8.0),
+                                                child: Text(
+                                                  "Code",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: 'YuGothic',
+                                                  ),
                                                 ),
                                               ),
-                                              const SizedBox(width: 22),
-                                              // Suburb
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Text(
-                                                      "Suburb",
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        fontFamily: 'YuGothic',
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    CustomInputTransparent4(
-                                                      controller:
-                                                          suburbPostalController,
-                                                      hintText: 'Suburb',
-                                                      onChanged: (val) {
-                                                        setState(() {
-                                                          Constants
-                                                              .currentleadAvailable!
-                                                              .addresses!
-                                                              .postaddressLine2 = val;
-                                                        });
-                                                      },
-                                                      onSubmitted: (val) {},
-                                                      focusNode:
-                                                          suburbPostalFocusNode,
-                                                      textInputAction:
-                                                          TextInputAction.next,
-                                                      isPasswordField: false,
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
-                                                ),
+                                              const SizedBox(height: 8),
+                                              CustomInputTransparent4(
+                                                controller: codeController,
+                                                hintText: 'Code',
+                                                integersOnly: true,
+                                                maxInputs: 4,
+                                                onChanged: (val) {
+                                                  setState(() {
+                                                    Constants
+                                                        .currentleadAvailable!
+                                                        .addresses!
+                                                        .physaddressCode = val;
+                                                  });
+                                                },
+                                                onSubmitted: (val) {},
+                                                focusNode: codeFocusNode,
+                                                textInputAction:
+                                                    TextInputAction.next,
+                                                isPasswordField: false,
                                               ),
                                             ],
                                           ),
                                         ),
-                                        const SizedBox(height: 16),
-
-                                        // Row: City & Province
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 24, right: 24),
-                                          child: Row(
-                                            children: [
-                                              // City
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 8.0),
-                                                      child: Text(
-                                                        "City",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    CustomInputTransparent4(
-                                                      controller:
-                                                          cityPostalController,
-                                                      hintText: 'City',
-                                                      onChanged: (val) {
-                                                        setState(() {
-                                                          Constants
-                                                              .currentleadAvailable!
-                                                              .addresses!
-                                                              .postaddressLine3 = val;
-                                                        });
-                                                      },
-                                                      onSubmitted: (val) {},
-                                                      focusNode:
-                                                          cityPostalFocusNode,
-                                                      textInputAction:
-                                                          TextInputAction.next,
-                                                      isPasswordField: false,
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(width: 22),
-                                              // Province
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 8.0),
-                                                      child: Text(
-                                                        "Province",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    Row(
-                                                      children: [
-                                                        Expanded(
-                                                          flex: 1,
-                                                          child: Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    top: 12.0,
-                                                                    bottom:
-                                                                        4.0),
-                                                            child:
-                                                                DropdownButtonHideUnderline(
-                                                              child:
-                                                                  DropdownButton2<
-                                                                      String>(
-                                                                isExpanded:
-                                                                    true,
-                                                                alignment:
-                                                                    AlignmentDirectional
-                                                                        .center,
-                                                                hint: const Row(
-                                                                  children: [
-                                                                    SizedBox(
-                                                                        width:
-                                                                            4),
-                                                                    Expanded(
-                                                                      child:
-                                                                          Text(
-                                                                        'Select a province',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              Colors.black,
-                                                                          fontSize:
-                                                                              14,
-                                                                          fontWeight:
-                                                                              FontWeight.w500,
-                                                                          fontFamily:
-                                                                              'YuGothic',
-                                                                        ),
-                                                                        overflow:
-                                                                            TextOverflow.ellipsis,
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                                items: provinceList
-                                                                    .map((String
-                                                                        item) {
-                                                                  return DropdownMenuItem<
-                                                                      String>(
-                                                                    value: item,
-                                                                    child: Text(
-                                                                      item,
-                                                                      style:
-                                                                          const TextStyle(
-                                                                        fontSize:
-                                                                            14,
-                                                                        fontWeight:
-                                                                            FontWeight.w500,
-                                                                        fontFamily:
-                                                                            'YuGothic',
-                                                                        color: Colors
-                                                                            .black,
-                                                                      ),
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis,
-                                                                    ),
-                                                                  );
-                                                                }).toList(),
-                                                                value:
-                                                                    _postalAddressProvince,
-                                                                onChanged:
-                                                                    (String?
-                                                                        value) {
-                                                                  setState(() {
-                                                                    _postalAddressProvince =
-                                                                        value;
-                                                                    // Also update the lead's postal province
-                                                                    Constants
-                                                                            .currentleadAvailable!
-                                                                            .addresses!
-                                                                            .postaddressProvince =
-                                                                        value ??
-                                                                            "";
-                                                                  });
-                                                                },
-                                                                buttonStyleData:
-                                                                    ButtonStyleData(
-                                                                  height: 50,
-                                                                  width: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width,
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .only(
-                                                                          left:
-                                                                              14,
-                                                                          right:
-                                                                              14),
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            360),
-                                                                    border:
-                                                                        Border
-                                                                            .all(
-                                                                      color: Colors
-                                                                          .black26,
-                                                                    ),
-                                                                    color: Colors
-                                                                        .transparent,
-                                                                  ),
-                                                                  elevation: 0,
-                                                                ),
-                                                                iconStyleData:
-                                                                    const IconStyleData(
-                                                                  icon: Icon(
-                                                                    Icons
-                                                                        .arrow_forward_ios_outlined,
-                                                                  ),
-                                                                  iconSize: 14,
-                                                                  iconEnabledColor:
-                                                                      Colors
-                                                                          .black,
-                                                                  iconDisabledColor:
-                                                                      Colors
-                                                                          .transparent,
-                                                                ),
-                                                                dropdownStyleData:
-                                                                    DropdownStyleData(
-                                                                  elevation: 0,
-                                                                  maxHeight:
-                                                                      200,
-                                                                  width: 200,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.circular(
-                                                                            16),
-                                                                    color: Colors
-                                                                        .white,
-                                                                  ),
-                                                                  offset:
-                                                                      const Offset(
-                                                                          -5,
-                                                                          0),
-                                                                  scrollbarTheme:
-                                                                      ScrollbarThemeData(
-                                                                    radius: const Radius
-                                                                        .circular(
-                                                                        40),
-                                                                    thickness:
-                                                                        WidgetStateProperty.all<
-                                                                            double>(6),
-                                                                    thumbVisibility:
-                                                                        WidgetStateProperty.all<bool>(
-                                                                            true),
-                                                                  ),
-                                                                ),
-                                                                menuItemStyleData:
-                                                                    const MenuItemStyleData(
-                                                                  overlayColor:
-                                                                      null,
-                                                                  height: 40,
-                                                                  padding: EdgeInsets
-                                                                      .only(
-                                                                          left:
-                                                                              14,
-                                                                          right:
-                                                                              14),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(width: 22),
-                                            ],
-                                          ),
-                                        ),
-
-                                        // Row: Code
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 24, right: 24),
-                                          child: Row(
-                                            children: [
-                                              // Code
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 8.0),
-                                                      child: Text(
-                                                        "Code",
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 0),
-                                                    CustomInputTransparent3(
-                                                      controller:
-                                                          codePostalController,
-                                                      hintText: 'Code',
-                                                      onChanged: (val) {
-                                                        setState(() {
-                                                          Constants
-                                                              .currentleadAvailable!
-                                                              .addresses!
-                                                              .postaddressCode = val;
-                                                        });
-                                                      },
-                                                      onSubmitted: (val) {},
-                                                      focusNode:
-                                                          codePostalFocusNode,
-                                                      maxInputs: 4,
-                                                      textInputAction:
-                                                          TextInputAction.next,
-                                                      isPasswordField: false,
-                                                    ),
-                                                    const SizedBox(height: 24),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(width: 22),
-                                              Expanded(child: Container()),
-                                            ],
-                                          ),
-                                        ),
+                                        const SizedBox(height: 24),
                                       ],
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+
+                                // Copy Button
+                                const SizedBox(height: 12),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Container(
+                                    width: 120,
+                                    height: 35,
+                                    child: TextButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          addressPostalController.text =
+                                              addressController.text;
+                                          suburbPostalController.text =
+                                              suburbController.text;
+                                          cityPostalController.text =
+                                              cityController.text;
+                                          codePostalController.text =
+                                              codeController.text;
+                                          provincePostalController.text =
+                                              provinceController.text;
+                                          _postalAddressProvince =
+                                              _physicalAddressProvince;
+                                          Constants.currentleadAvailable!
+                                                  .addresses!.postaddressLine1 =
+                                              addressController.text;
+                                          Constants.currentleadAvailable!
+                                                  .addresses!.postaddressLine2 =
+                                              suburbController.text;
+                                          Constants.currentleadAvailable!
+                                                  .addresses!.postaddressLine3 =
+                                              cityController.text;
+                                          Constants.currentleadAvailable!
+                                                  .addresses!.postaddressCode =
+                                              codeController.text;
+                                          Constants
+                                                  .currentleadAvailable!
+                                                  .addresses!
+                                                  .postaddressProvince =
+                                              _physicalAddressProvince ?? "";
+                                        });
+                                      },
+                                      style: TextButton.styleFrom(
+                                        minimumSize: Size(
+                                            MediaQuery.of(context).size.width,
+                                            40),
+                                        backgroundColor:
+                                            Colors.grey.withOpacity(0.35),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            "Copy",
+                                            style: TextStyle(
+                                              color: Constants.ctaColorLight,
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Icon(
+                                            Icons.swap_horiz,
+                                            color: Constants.ctaColorLight,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+
+                                // Postal Address Section
+                                Container(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Container(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          // Header
+                                          Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors.grey.withOpacity(0.15),
+                                              borderRadius:
+                                                  const BorderRadius.only(
+                                                topRight: Radius.circular(12),
+                                                topLeft: Radius.circular(12),
+                                              ),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            12.0),
+                                                    child: Center(
+                                                      child: Text(
+                                                        "Postal Address",
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontFamily:
+                                                              'YuGothic',
+                                                          fontSize: 16,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 16),
+
+                                          // Address Field
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 24, right: 24),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      left: 8.0),
+                                                  child: Text(
+                                                    "Address",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: 'YuGothic',
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                CustomInputTransparent4(
+                                                  controller:
+                                                      addressPostalController,
+                                                  hintText: 'Address',
+                                                  onChanged: (val) {
+                                                    setState(() {
+                                                      Constants
+                                                          .currentleadAvailable!
+                                                          .addresses!
+                                                          .postaddressLine1 = val;
+                                                    });
+                                                  },
+                                                  onSubmitted: (val) {},
+                                                  focusNode:
+                                                      addressPostalFocusNode,
+                                                  textInputAction:
+                                                      TextInputAction.next,
+                                                  isPasswordField: false,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 24),
+
+                                          // Suburb Field
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 24, right: 24),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      left: 8.0),
+                                                  child: Text(
+                                                    "Suburb",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: 'YuGothic',
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                CustomInputTransparent4(
+                                                  controller:
+                                                      suburbPostalController,
+                                                  hintText: 'Suburb',
+                                                  onChanged: (val) {
+                                                    setState(() {
+                                                      Constants
+                                                          .currentleadAvailable!
+                                                          .addresses!
+                                                          .postaddressLine2 = val;
+                                                    });
+                                                  },
+                                                  onSubmitted: (val) {},
+                                                  focusNode:
+                                                      suburbPostalFocusNode,
+                                                  textInputAction:
+                                                      TextInputAction.next,
+                                                  isPasswordField: false,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 24),
+
+                                          // City Field
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 24, right: 24),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      left: 8.0),
+                                                  child: Text(
+                                                    "City",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: 'YuGothic',
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                CustomInputTransparent4(
+                                                  controller:
+                                                      cityPostalController,
+                                                  hintText: 'City',
+                                                  onChanged: (val) {
+                                                    setState(() {
+                                                      Constants
+                                                          .currentleadAvailable!
+                                                          .addresses!
+                                                          .postaddressLine3 = val;
+                                                    });
+                                                  },
+                                                  onSubmitted: (val) {},
+                                                  focusNode:
+                                                      cityPostalFocusNode,
+                                                  textInputAction:
+                                                      TextInputAction.next,
+                                                  isPasswordField: false,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 24),
+
+                                          // Province Field
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 24, right: 24),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      left: 8.0),
+                                                  child: Text(
+                                                    "Province",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: 'YuGothic',
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 8.0,
+                                                          bottom: 4.0),
+                                                  child:
+                                                      DropdownButtonHideUnderline(
+                                                    child:
+                                                        DropdownButton2<String>(
+                                                      isExpanded: true,
+                                                      alignment:
+                                                          AlignmentDirectional
+                                                              .center,
+                                                      hint: const Row(
+                                                        children: [
+                                                          SizedBox(width: 4),
+                                                          Expanded(
+                                                            child: Text(
+                                                              'Select a province',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontFamily:
+                                                                    'YuGothic',
+                                                              ),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      items: provinceList
+                                                          .map((String item) {
+                                                        return DropdownMenuItem<
+                                                            String>(
+                                                          value: item,
+                                                          child: Text(
+                                                            item,
+                                                            style:
+                                                                const TextStyle(
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              fontFamily:
+                                                                  'YuGothic',
+                                                              color:
+                                                                  Colors.black,
+                                                            ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        );
+                                                      }).toList(),
+                                                      value:
+                                                          _postalAddressProvince,
+                                                      onChanged:
+                                                          (String? value) {
+                                                        setState(() {
+                                                          _postalAddressProvince =
+                                                              value;
+                                                          Constants
+                                                                  .currentleadAvailable!
+                                                                  .addresses!
+                                                                  .postaddressProvince =
+                                                              value ?? "";
+                                                        });
+                                                      },
+                                                      buttonStyleData:
+                                                          ButtonStyleData(
+                                                        height: 50,
+                                                        width: MediaQuery.of(
+                                                                context)
+                                                            .size
+                                                            .width,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                left: 14,
+                                                                right: 14),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      360),
+                                                          border: Border.all(
+                                                              color: Colors
+                                                                  .black26),
+                                                          color: Colors
+                                                              .transparent,
+                                                        ),
+                                                        elevation: 0,
+                                                      ),
+                                                      iconStyleData:
+                                                          const IconStyleData(
+                                                        icon: Icon(Icons
+                                                            .arrow_forward_ios_outlined),
+                                                        iconSize: 14,
+                                                        iconEnabledColor:
+                                                            Colors.black,
+                                                        iconDisabledColor:
+                                                            Colors.transparent,
+                                                      ),
+                                                      dropdownStyleData:
+                                                          DropdownStyleData(
+                                                        elevation: 0,
+                                                        maxHeight: 200,
+                                                        width: 200,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(16),
+                                                          color: Colors.white,
+                                                        ),
+                                                        offset:
+                                                            const Offset(-5, 0),
+                                                        scrollbarTheme:
+                                                            ScrollbarThemeData(
+                                                          radius: const Radius
+                                                              .circular(40),
+                                                          thickness:
+                                                              WidgetStateProperty
+                                                                  .all<double>(
+                                                                      6),
+                                                          thumbVisibility:
+                                                              WidgetStateProperty
+                                                                  .all<bool>(
+                                                                      true),
+                                                        ),
+                                                      ),
+                                                      menuItemStyleData:
+                                                          const MenuItemStyleData(
+                                                        overlayColor: null,
+                                                        height: 40,
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 14,
+                                                                right: 14),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 24),
+
+                                          // Code Field
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 12, right: 12),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      left: 8.0),
+                                                  child: Text(
+                                                    "Code",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: 'YuGothic',
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 8),
+                                                CustomInputTransparent3(
+                                                  controller:
+                                                      codePostalController,
+                                                  hintText: 'Code',
+                                                  onChanged: (val) {
+                                                    setState(() {
+                                                      Constants
+                                                          .currentleadAvailable!
+                                                          .addresses!
+                                                          .postaddressCode = val;
+                                                    });
+                                                  },
+                                                  onSubmitted: (val) {},
+                                                  focusNode:
+                                                      codePostalFocusNode,
+                                                  // maxInputs: 4,
+                                                  textInputAction:
+                                                      TextInputAction.next,
+                                                  isPasswordField: false,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 24),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                           SizedBox(
                             height: 20,
@@ -7491,7 +6810,8 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                       SizedBox(width: 16),
 
                                       // Yes Option
-                                      */ /*
+                                      */
+                          /*
                                                 Padding(
                                                   padding: const EdgeInsets.only(top: 6.0),
                                                   child: Text(
@@ -7505,7 +6825,8 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(width: 8),*/ /*
+                                                SizedBox(width: 8),*/
+                          /*
                                       Spacer(),
 
                                       Container(
@@ -7599,564 +6920,454 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                             height: 20,
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: CustomCard(
-                                elevation: 5,
-                                surfaceTintColor: Colors.white,
-                                color: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12)),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    // Header
-                                    Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.withOpacity(0.15),
-                                        borderRadius: const BorderRadius.only(
-                                          topRight: Radius.circular(12),
-                                          topLeft: Radius.circular(12),
-                                        ),
+                            padding: const EdgeInsets.all(0.0),
+                            child: Container(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  // Header
+                                  Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.withOpacity(0.15),
+                                      borderRadius: const BorderRadius.only(
+                                        topRight: Radius.circular(12),
+                                        topLeft: Radius.circular(12),
                                       ),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(12.0),
-                                              child: Center(
-                                                child: Text(
-                                                  "Beneficiary Address",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    fontFamily: 'YuGothic',
-                                                    fontSize: 16,
-                                                  ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(12.0),
+                                            child: Center(
+                                              child: Text(
+                                                "Beneficiary Address",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontFamily: 'YuGothic',
+                                                  fontSize: 16,
                                                 ),
                                               ),
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(height: 16),
-                                    Container(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Spacer(),
-                                          Container(
-                                            width: 240,
-                                            height: 35,
-                                            child: TextButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  // 1) Copy text from physical address controllers to beneficiary address controllers
-                                                  addressBeneficialController
-                                                          .text =
-                                                      addressController.text;
-                                                  suburbBeneficialController
-                                                          .text =
-                                                      suburbController.text;
-                                                  cityBeneficialController
-                                                          .text =
-                                                      cityController.text;
-                                                  codeBeneficialController
-                                                          .text =
-                                                      codeController.text;
-                                                  provinceBeneficialController
-                                                          .text =
-                                                      provinceController.text;
-                                                  _beneficiaryAddressProvince =
-                                                      _physicalAddressProvince;
+                                  ),
+                                  const SizedBox(height: 16),
 
-                                                  // 2) Update the beneficiary address object in your lead
-                                                  //    Make sure beneficiaryAddress! is not null
-                                                  Constants
-                                                          .currentleadAvailable!
-                                                          .beneficiaryAddress!
-                                                          .physaddressLine1 =
-                                                      addressController.text;
-                                                  Constants
-                                                          .currentleadAvailable!
-                                                          .beneficiaryAddress!
-                                                          .physaddressLine2 =
-                                                      suburbController.text;
-                                                  Constants
-                                                          .currentleadAvailable!
-                                                          .beneficiaryAddress!
-                                                          .physaddressLine3 =
-                                                      cityController.text;
-                                                  Constants
-                                                          .currentleadAvailable!
-                                                          .beneficiaryAddress!
-                                                          .physaddressCode =
-                                                      codeController.text;
+                                  // Copy Button
+                                  Container(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Spacer(),
+                                        Container(
+                                          width: 240,
+                                          height: 35,
+                                          child: TextButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                addressBeneficialController
+                                                        .text =
+                                                    addressController.text;
+                                                suburbBeneficialController
+                                                        .text =
+                                                    suburbController.text;
+                                                cityBeneficialController.text =
+                                                    cityController.text;
+                                                codeBeneficialController.text =
+                                                    codeController.text;
+                                                provinceBeneficialController
+                                                        .text =
+                                                    provinceController.text;
+                                                _beneficiaryAddressProvince =
+                                                    _physicalAddressProvince;
+
+                                                Constants
+                                                        .currentleadAvailable!
+                                                        .beneficiaryAddress!
+                                                        .physaddressLine1 =
+                                                    addressController.text;
+                                                Constants
+                                                        .currentleadAvailable!
+                                                        .beneficiaryAddress!
+                                                        .physaddressLine2 =
+                                                    suburbController.text;
+                                                Constants
+                                                        .currentleadAvailable!
+                                                        .beneficiaryAddress!
+                                                        .physaddressLine3 =
+                                                    cityController.text;
+                                                Constants
+                                                        .currentleadAvailable!
+                                                        .beneficiaryAddress!
+                                                        .physaddressCode =
+                                                    codeController.text;
+                                                Constants
+                                                        .currentleadAvailable!
+                                                        .beneficiaryAddress!
+                                                        .physaddressProvince =
+                                                    _physicalAddressProvince ??
+                                                        "";
+                                              });
+                                            },
+                                            style: TextButton.styleFrom(
+                                              minimumSize: Size(
+                                                  MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  40),
+                                              backgroundColor:
+                                                  Colors.grey.withOpacity(0.35),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  "Same as payer address",
+                                                  style: TextStyle(
+                                                    color:
+                                                        Constants.ctaColorLight,
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontFamily: 'YuGothic',
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Icon(
+                                                  Icons.swap_horiz,
+                                                  color:
+                                                      Constants.ctaColorLight,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        Spacer(),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+
+                                  // Address Field
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 12, right: 12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.only(left: 8.0),
+                                          child: Text(
+                                            "Address",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        CustomInputTransparent4(
+                                          controller:
+                                              addressBeneficialController,
+                                          hintText: 'Address',
+                                          onChanged: (val) {
+                                            setState(() {
+                                              Constants
+                                                  .currentleadAvailable!
+                                                  .beneficiaryAddress!
+                                                  .physaddressLine1 = val;
+                                            });
+                                          },
+                                          onSubmitted: (val) {},
+                                          focusNode: addressBeneficialFocusNode,
+                                          textInputAction: TextInputAction.next,
+                                          isPasswordField: false,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+
+                                  // Suburb Field
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 12, right: 12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.only(left: 8.0),
+                                          child: Text(
+                                            "Suburb",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        CustomInputTransparent4(
+                                          controller:
+                                              suburbBeneficialController,
+                                          hintText: 'Suburb',
+                                          onChanged: (val) {
+                                            setState(() {
+                                              Constants
+                                                  .currentleadAvailable!
+                                                  .beneficiaryAddress!
+                                                  .physaddressLine2 = val;
+                                            });
+                                          },
+                                          onSubmitted: (val) {},
+                                          focusNode: suburbBeneficialFocusNode,
+                                          textInputAction: TextInputAction.next,
+                                          isPasswordField: false,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+
+                                  // City Field
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 12, right: 12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.only(left: 8.0),
+                                          child: Text(
+                                            "City",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        CustomInputTransparent4(
+                                          controller: cityBeneficialController,
+                                          hintText: 'City',
+                                          onChanged: (val) {
+                                            setState(() {
+                                              Constants
+                                                  .currentleadAvailable!
+                                                  .beneficiaryAddress!
+                                                  .physaddressLine3 = val;
+                                            });
+                                          },
+                                          onSubmitted: (val) {},
+                                          focusNode: cityBeneficialFocusNode,
+                                          textInputAction: TextInputAction.next,
+                                          isPasswordField: false,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+
+                                  // Province Field
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 12, right: 12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.only(left: 8.0),
+                                          child: Text(
+                                            "Province",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Container(
+                                          padding: const EdgeInsets.only(
+                                              top: 8.0, bottom: 4.0),
+                                          child: DropdownButtonHideUnderline(
+                                            child: DropdownButton2<String>(
+                                              isExpanded: true,
+                                              alignment:
+                                                  AlignmentDirectional.center,
+                                              hint: const Row(
+                                                children: [
+                                                  SizedBox(width: 4),
+                                                  Expanded(
+                                                    child: Text(
+                                                      'Select a province',
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontFamily: 'YuGothic',
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              items: provinceList
+                                                  .map((String item) {
+                                                return DropdownMenuItem<String>(
+                                                  value: item,
+                                                  child: Text(
+                                                    item,
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily: 'YuGothic',
+                                                      color: Colors.black,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                );
+                                              }).toList(),
+                                              value:
+                                                  _beneficiaryAddressProvince,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _beneficiaryAddressProvince =
+                                                      value;
                                                   Constants
                                                           .currentleadAvailable!
                                                           .beneficiaryAddress!
                                                           .physaddressProvince =
-                                                      _physicalAddressProvince ??
-                                                          "";
+                                                      value ?? "";
                                                 });
                                               },
-                                              style: TextButton.styleFrom(
-                                                minimumSize: Size(
-                                                    MediaQuery.of(context)
-                                                        .size
-                                                        .width,
-                                                    40),
-                                                backgroundColor: Colors.grey
-                                                    .withOpacity(0.35),
+                                              buttonStyleData: ButtonStyleData(
+                                                height: 50,
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                padding: const EdgeInsets.only(
+                                                    left: 14, right: 14),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          360),
+                                                  border: Border.all(
+                                                      color: Colors.black26),
+                                                  color: Colors.transparent,
+                                                ),
+                                                elevation: 0,
                                               ),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  const SizedBox(width: 8),
-                                                  Text(
-                                                    "Same as payer address",
-                                                    style: TextStyle(
-                                                      color: Constants
-                                                          .ctaColorLight,
-                                                      fontSize: 13,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontFamily: 'YuGothic',
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Icon(
-                                                    Icons.swap_horiz,
-                                                    color:
-                                                        Constants.ctaColorLight,
-                                                  ),
-                                                  /*   Icon(
-                                                    Iconsax.refresh_left_square,
-                                                    color:
-                                                        Constants.ctaColorLight,
-                                                  ),*/
-                                                ],
+                                              iconStyleData:
+                                                  const IconStyleData(
+                                                icon: Icon(Icons
+                                                    .arrow_forward_ios_outlined),
+                                                iconSize: 14,
+                                                iconEnabledColor: Colors.black,
+                                                iconDisabledColor:
+                                                    Colors.transparent,
+                                              ),
+                                              dropdownStyleData:
+                                                  DropdownStyleData(
+                                                elevation: 0,
+                                                maxHeight: 200,
+                                                width: 200,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  color: Colors.white,
+                                                ),
+                                                offset: const Offset(-5, 0),
+                                                scrollbarTheme:
+                                                    ScrollbarThemeData(
+                                                  radius:
+                                                      const Radius.circular(40),
+                                                  thickness: WidgetStateProperty
+                                                      .all<double>(6),
+                                                  thumbVisibility:
+                                                      WidgetStateProperty.all<
+                                                          bool>(true),
+                                                ),
+                                              ),
+                                              menuItemStyleData:
+                                                  const MenuItemStyleData(
+                                                overlayColor: null,
+                                                height: 40,
+                                                padding: EdgeInsets.only(
+                                                    left: 14, right: 14),
                                               ),
                                             ),
                                           ),
-                                          Spacer(),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
 
-                                    // Row: Address, Suburb, City
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 24, right: 24),
-                                      child: Row(
-                                        children: [
-                                          // Address
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                const Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: 8.0),
-                                                  child: Text(
-                                                    "Address",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontFamily: 'YuGothic',
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 0),
-                                                CustomInputTransparent4(
-                                                  controller:
-                                                      addressBeneficialController,
-                                                  hintText: 'Address',
-                                                  onChanged: (val) {
-                                                    setState(() {
-                                                      // Store in beneficiaryAddress physaddressLine1
-                                                      Constants
-                                                          .currentleadAvailable!
-                                                          .beneficiaryAddress!
-                                                          .physaddressLine1 = val;
-                                                    });
-                                                  },
-                                                  onSubmitted: (val) {},
-                                                  focusNode:
-                                                      addressBeneficialFocusNode,
-                                                  textInputAction:
-                                                      TextInputAction.next,
-                                                  isPasswordField: false,
-                                                ),
-                                                const SizedBox(height: 24),
-                                              ],
+                                  // Code Field
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 12, right: 12),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Padding(
+                                          padding: EdgeInsets.only(left: 8.0),
+                                          child: Text(
+                                            "Code",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
                                             ),
                                           ),
-                                          const SizedBox(width: 22),
-                                          // Suburb
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                const Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: 8.0),
-                                                  child: Text(
-                                                    "Suburb",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontFamily: 'YuGothic',
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 0),
-                                                CustomInputTransparent4(
-                                                  controller:
-                                                      suburbBeneficialController,
-                                                  hintText: 'Suburb',
-                                                  onChanged: (val) {
-                                                    setState(() {
-                                                      Constants
-                                                          .currentleadAvailable!
-                                                          .beneficiaryAddress!
-                                                          .physaddressLine2 = val;
-                                                    });
-                                                  },
-                                                  onSubmitted: (val) {},
-                                                  focusNode:
-                                                      suburbBeneficialFocusNode,
-                                                  textInputAction:
-                                                      TextInputAction.next,
-                                                  isPasswordField: false,
-                                                ),
-                                                const SizedBox(height: 24),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(width: 22),
-                                          // City
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                const Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: 8.0),
-                                                  child: Text(
-                                                    "City",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontFamily: 'YuGothic',
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 0),
-                                                CustomInputTransparent4(
-                                                  controller:
-                                                      cityBeneficialController,
-                                                  hintText: 'City',
-                                                  onChanged: (val) {
-                                                    setState(() {
-                                                      Constants
-                                                          .currentleadAvailable!
-                                                          .beneficiaryAddress!
-                                                          .physaddressLine3 = val;
-                                                    });
-                                                  },
-                                                  onSubmitted: (val) {},
-                                                  focusNode:
-                                                      cityBeneficialFocusNode,
-                                                  textInputAction:
-                                                      TextInputAction.next,
-                                                  isPasswordField: false,
-                                                ),
-                                                const SizedBox(height: 24),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        CustomInputTransparent3(
+                                          controller: codeBeneficialController,
+                                          hintText: 'Code',
+                                          //maxInputs: 4,
+                                          onChanged: (val) {
+                                            setState(() {
+                                              Constants
+                                                  .currentleadAvailable!
+                                                  .beneficiaryAddress!
+                                                  .physaddressCode = val;
+                                            });
+                                          },
+                                          onSubmitted: (val) {},
+                                          focusNode: codeBeneficialFocusNode,
+                                          textInputAction: TextInputAction.next,
+                                          integersOnly: true,
+                                          isPasswordField: false,
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(height: 16),
-
-                                    // Row: Province, Code
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 24, right: 24),
-                                      child: Row(
-                                        children: [
-                                          // Province dropdown
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                const Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: 8.0),
-                                                  child: Text(
-                                                    "Province",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontFamily: 'YuGothic',
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 0),
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 1,
-                                                      child: Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                top: 8.0,
-                                                                bottom: 4.0),
-                                                        child:
-                                                            DropdownButtonHideUnderline(
-                                                          child:
-                                                              DropdownButton2<
-                                                                  String>(
-                                                            isExpanded: true,
-                                                            alignment:
-                                                                AlignmentDirectional
-                                                                    .center,
-                                                            hint: const Row(
-                                                              children: [
-                                                                SizedBox(
-                                                                    width: 4),
-                                                                Expanded(
-                                                                  child: Text(
-                                                                    'Select a province',
-                                                                    style:
-                                                                        TextStyle(
-                                                                      color: Colors
-                                                                          .black,
-                                                                      fontSize:
-                                                                          14,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                      fontFamily:
-                                                                          'YuGothic',
-                                                                    ),
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            items: provinceList
-                                                                .map((String
-                                                                    item) {
-                                                              return DropdownMenuItem<
-                                                                  String>(
-                                                                value: item,
-                                                                child: Text(
-                                                                  item,
-                                                                  style:
-                                                                      const TextStyle(
-                                                                    fontSize:
-                                                                        14,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500,
-                                                                    fontFamily:
-                                                                        'YuGothic',
-                                                                    color: Colors
-                                                                        .black,
-                                                                  ),
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                ),
-                                                              );
-                                                            }).toList(),
-                                                            value:
-                                                                _beneficiaryAddressProvince,
-                                                            onChanged: (String?
-                                                                value) {
-                                                              setState(() {
-                                                                _beneficiaryAddressProvince =
-                                                                    value;
-                                                                // Also update the beneficiary address
-                                                                Constants
-                                                                        .currentleadAvailable!
-                                                                        .beneficiaryAddress!
-                                                                        .physaddressProvince =
-                                                                    value ?? "";
-                                                              });
-                                                            },
-                                                            buttonStyleData:
-                                                                ButtonStyleData(
-                                                              height: 50,
-                                                              width:
-                                                                  MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width,
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .only(
-                                                                      left: 14,
-                                                                      right:
-                                                                          14),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            360),
-                                                                border:
-                                                                    Border.all(
-                                                                  color: Colors
-                                                                      .black26,
-                                                                ),
-                                                                color: Colors
-                                                                    .transparent,
-                                                              ),
-                                                              elevation: 0,
-                                                            ),
-                                                            iconStyleData:
-                                                                const IconStyleData(
-                                                              icon: Icon(Icons
-                                                                  .arrow_forward_ios_outlined),
-                                                              iconSize: 14,
-                                                              iconEnabledColor:
-                                                                  Colors.black,
-                                                              iconDisabledColor:
-                                                                  Colors
-                                                                      .transparent,
-                                                            ),
-                                                            dropdownStyleData:
-                                                                DropdownStyleData(
-                                                              elevation: 0,
-                                                              maxHeight: 200,
-                                                              width: 200,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            16),
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                              offset:
-                                                                  const Offset(
-                                                                      -5, 0),
-                                                              scrollbarTheme:
-                                                                  ScrollbarThemeData(
-                                                                radius:
-                                                                    const Radius
-                                                                        .circular(
-                                                                        40),
-                                                                thickness:
-                                                                    WidgetStateProperty
-                                                                        .all<double>(
-                                                                            6),
-                                                                thumbVisibility:
-                                                                    WidgetStateProperty
-                                                                        .all<bool>(
-                                                                            true),
-                                                              ),
-                                                            ),
-                                                            menuItemStyleData:
-                                                                const MenuItemStyleData(
-                                                              overlayColor:
-                                                                  null,
-                                                              height: 40,
-                                                              padding: EdgeInsets
-                                                                  .only(
-                                                                      left: 14,
-                                                                      right:
-                                                                          14),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 24),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(width: 22),
-
-                                          // Code
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                const Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: 8.0),
-                                                  child: Text(
-                                                    "Code",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontFamily: 'YuGothic',
-                                                    ),
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 0),
-                                                CustomInputTransparent3(
-                                                  controller:
-                                                      codeBeneficialController,
-                                                  hintText: 'Code',
-                                                  maxInputs: 4,
-                                                  onChanged: (val) {
-                                                    setState(() {
-                                                      Constants
-                                                          .currentleadAvailable!
-                                                          .beneficiaryAddress!
-                                                          .physaddressCode = val;
-                                                    });
-                                                  },
-                                                  onSubmitted: (val) {},
-                                                  focusNode:
-                                                      codeBeneficialFocusNode,
-                                                  textInputAction:
-                                                      TextInputAction.next,
-                                                  integersOnly: true,
-                                                  isPasswordField: false,
-                                                ),
-                                                const SizedBox(height: 24),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(width: 22),
-                                          Expanded(child: Container()),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                )),
+                                  ),
+                                  const SizedBox(height: 24),
+                                ],
+                              ),
+                            ),
                           ),
                           SizedBox(
                             height: 20,
@@ -8262,301 +7473,284 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
 */
     // 5) Show the dialog with the filtered list.
     showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        child: MovingLineDialog(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            padding: const EdgeInsets.all(16),
-            constraints: const BoxConstraints(maxWidth: 500, maxHeight: 630),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(36),
-            ),
-            child: StatefulBuilder(
-              builder: (context, setState1) => SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Spacer(),
-                        InkWell(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Icon(
-                              Icons.close,
-                              color: Colors.grey,
-                            )),
-                        SizedBox(
-                          width: 16,
-                        ) // Reduced width
-                      ],
+        context: context,
+        builder: (context) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Dialog(
+                backgroundColor: Colors.transparent,
+                elevation: 0.0,
+                child: MovingLineDialog(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    padding: const EdgeInsets.all(16),
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width * 0.9,
+                      maxHeight: 630,
                     ),
-                    const SizedBox(height: 32),
-                    Center(
-                      child: Text(
-                        "Add a Beneficiary",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: Constants.ftaColorLight,
-                        ),
-                      ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(36),
                     ),
-                    const SizedBox(height: 12),
-                    const Center(
-                      child: Text(
-                        "Click on a member below to select them as a beneficiary",
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'YuGothic',
-                          color: Colors.grey,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // -------------------- List of potential beneficiaries --------------------
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: allBeneficiariesList.length,
-                      itemBuilder: (context, index) {
-                        final member = allBeneficiariesList[index];
-                        return GestureDetector(
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 12.0,
-                              horizontal: 16.0,
-                            ),
-                            padding: const EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Constants.ftaColorLight.withOpacity(0.9),
-                                  Constants.ftaColorLight,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(12.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
+                    child: StatefulBuilder(
+                      builder: (context, setState1) => SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Spacer(),
+                                InkWell(
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Icon(
+                                      Icons.close,
+                                      color: Colors.grey,
+                                    )),
+                                SizedBox(
+                                  width: 16,
+                                ) // Reduced width
                               ],
                             ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Profile Avatar
-                                CircleAvatar(
-                                  radius: 25,
-                                  backgroundColor: Colors.white,
-                                  child: Icon(
-                                    member.gender.toLowerCase() == "female"
-                                        ? Icons.female
-                                        : Icons.male,
-                                    size: 24,
-                                    color:
-                                        member.gender.toLowerCase() == "female"
-                                            ? Colors.pinkAccent
-                                            : Colors.blueAccent,
-                                  ),
+                            const SizedBox(height: 32),
+                            Center(
+                              child: Text(
+                                "Add a Beneficiary",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: Constants.ftaColorLight,
                                 ),
-                                const SizedBox(width: 16.0),
-                                // Info
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        member.dob.isEmpty
-                                            ? 'DoB: -'
-                                            : 'DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4.0),
-                                      Text(
-                                        '${member.title} ${member.name} ${member.surname}',
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1.2,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4.0),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.people_alt,
-                                            color: Colors.white70,
-                                            size: 15,
-                                          ),
-                                          const SizedBox(width: 4.0),
-                                          Text(
-                                            'Relationship: ${member.relationship}',
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                              color: Colors.white70,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            const Center(
+                              child: Text(
+                                "Click on a member below to select them as a beneficiary",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: 'YuGothic',
+                                  color: Colors.grey,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            // -------------------- List of potential beneficiaries --------------------
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: allBeneficiariesList.length,
+                              itemBuilder: (context, index) {
+                                final member = allBeneficiariesList[index];
+                                return GestureDetector(
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(
+                                      vertical: 12.0,
+                                      horizontal: 16.0,
+                                    ),
+                                    padding: const EdgeInsets.all(16.0),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Constants.ftaColorLight
+                                              .withOpacity(0.9),
+                                          Constants.ftaColorLight,
                                         ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
                                       ),
-                                      Row(
-                                        children: [
-                                          Spacer(),
-                                          Container(
-                                            height: 30,
-                                            child: TextButton(
-                                              onPressed: () async {
-                                                // Close this dialog first...
-                                                Navigator.of(context).pop();
-                                                // ...then open the dialog for adding beneficiary info.
-                                                showDialog(
-                                                  context: context,
-                                                  builder: (context) =>
-                                                      AddBeneficiaryMember(
-                                                          selectedMember:
-                                                              member,
-                                                          currentReference:
-                                                              currentReference,
-                                                          current_member_index:
-                                                              current_member_index),
-                                                );
-                                              },
-                                              child: Text(
-                                                'Select',
-                                                style: TextStyle(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        // Profile Avatar
+                                        CircleAvatar(
+                                          radius: 25,
+                                          backgroundColor: Colors.white,
+                                          child: Icon(
+                                            member.gender.toLowerCase() ==
+                                                    "female"
+                                                ? Icons.female
+                                                : Icons.male,
+                                            size: 24,
+                                            color:
+                                                member.gender.toLowerCase() ==
+                                                        "female"
+                                                    ? Colors.pinkAccent
+                                                    : Colors.blueAccent,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16.0),
+                                        // Info
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                member.dob.isEmpty
+                                                    ? 'DoB: -'
+                                                    : 'DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
+                                                style: const TextStyle(
                                                   fontSize: 13,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontFamily: 'YuGothic',
-                                                  color:
-                                                      Constants.ctaColorLight,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w400,
                                                 ),
                                               ),
-                                              style: TextButton.styleFrom(
-                                                  foregroundColor:
-                                                      Constants.ctaColorLight,
-                                                  backgroundColor:
-                                                      Colors.white),
-                                            ),
+                                              const SizedBox(height: 4.0),
+                                              Text(
+                                                '${member.title} ${member.name} ${member.surname}',
+                                                style: const TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 1.2,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4.0),
+                                              Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.people_alt,
+                                                    color: Colors.white70,
+                                                    size: 15,
+                                                  ),
+                                                  const SizedBox(width: 4.0),
+                                                  Text(
+                                                    'Relationship: ${member.relationship}',
+                                                    style: const TextStyle(
+                                                      fontSize: 13,
+                                                      color: Colors.white70,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Spacer(),
+                                                  Container(
+                                                    height: 30,
+                                                    child: TextButton(
+                                                      onPressed: () async {
+                                                        // Close this dialog first...
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        // ...then open the dialog for adding beneficiary info.
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (context) =>
+                                                              AddBeneficiaryMember(
+                                                                  selectedMember:
+                                                                      member,
+                                                                  currentReference:
+                                                                      currentReference,
+                                                                  current_member_index:
+                                                                      current_member_index),
+                                                        );
+                                                      },
+                                                      child: Text(
+                                                        'Select',
+                                                        style: TextStyle(
+                                                          fontSize: 13,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontFamily:
+                                                              'YuGothic',
+                                                          color: Constants
+                                                              .ctaColorLight,
+                                                        ),
+                                                      ),
+                                                      style: TextButton.styleFrom(
+                                                          foregroundColor:
+                                                              Constants
+                                                                  .ctaColorLight,
+                                                          backgroundColor:
+                                                              Colors.white),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                    ],
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                );
+                              },
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
+                            const SizedBox(height: 16),
 
-                    // -------------------- Add a new partner manually --------------------
-                    Center(
-                      child: TextButton.icon(
-                        onPressed: () {
-                          // If you want to close the current dialog first:
-                          Navigator.of(context).pop();
+                            // -------------------- Add a new partner manually --------------------
+                            Center(
+                              child: TextButton.icon(
+                                onPressed: () {
+                                  // If you want to close the current dialog first:
+                                  Navigator.of(context).pop();
 
-                          // Then show your "NewMemberDialog" for a new partner
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) => StatefulBuilder(
-                              builder: (context, setState) => Dialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(64),
-                                ),
-                                elevation: 0.0,
-                                backgroundColor: Colors.transparent,
-                                child: Container(
-                                  constraints: BoxConstraints(
-                                    maxWidth: (Constants
-                                            .currentleadAvailable!
-                                            .leadObject
-                                            .documentsIndexed
-                                            .isEmpty)
-                                        ? 750
-                                        : 1200,
-                                  ),
-                                  margin: const EdgeInsets.only(top: 16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.rectangle,
-                                    borderRadius: BorderRadius.circular(16),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        blurRadius: 10.0,
-                                        offset: Offset(0.0, 10.0),
+                                  // Then show your "NewMemberDialog" for a new partner
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => NewMemberDialog2(
+                                        isEditMode: false,
+                                        autoNumber: 0,
+                                        relationship: "",
+                                        title: "",
+                                        name: "",
+                                        surname: "",
+                                        dob: "",
+                                        gender: "",
+                                        current_member_index:
+                                            current_member_index,
+                                        canAddMember: false,
                                       ),
-                                    ],
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
+                                label: const Text(
+                                  'Add A New Member',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: 'YuGothic',
+                                    color: Colors.white,
                                   ),
-                                  child: NewMemberDialog2(
-                                    isEditMode: false,
-                                    autoNumber: 0,
-                                    relationship: "",
-                                    title: "",
-                                    name: "",
-                                    surname: "",
-                                    dob: "",
-                                    gender: "",
-                                    current_member_index: current_member_index,
-                                    canAddMember: false,
-                                  ),
+                                ),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Colors.teal,
+                                  backgroundColor: Constants.ctaColorLight,
                                 ),
                               ),
                             ),
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                        ),
-                        label: const Text(
-                          'Add A New Member',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'YuGothic',
-                            color: Colors.white,
-                          ),
-                        ),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.teal,
-                          backgroundColor: Constants.ctaColorLight,
+                            const SizedBox(height: 16),
+                          ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
-        ),
-      ),
-    );
+            ));
   }
 
   Widget buildBeneficiariesList1() {
@@ -8982,15 +8176,9 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
     // ----------------------------------------------------------------
     // 5) Build a GridView for the beneficiaries
     // ----------------------------------------------------------------
-    return GridView.builder(
+    return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3, // 3 columns
-        crossAxisSpacing: 16.0, // space between columns
-        mainAxisSpacing: 16.0, // space between rows
-        mainAxisExtent: 130, // fixed height for each grid cell
-      ),
       itemCount: combinedBeneficiaries.length,
       itemBuilder: (context, index) {
         final member = combinedBeneficiaries[index];
@@ -9008,189 +8196,193 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
           child: AnimatedScale(
             scale: 1.0,
             duration: const Duration(milliseconds: 200),
-            child: CustomCard2(
-              elevation: 8,
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              boderRadius: 12,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.transparent),
-                ),
-                padding: EdgeInsets.zero,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Left side: an avatar in a colored container
-                    Column(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            width: 100,
-                            decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(12),
-                                bottomLeft: Radius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: CustomCard2(
+                elevation: 8,
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                boderRadius: 12,
+                child: Container(
+                  height: 150,
+                  padding: EdgeInsets.zero,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Left side: an avatar in a colored container
+                      Column(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              width: 90,
+                              decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(12),
+                                  bottomLeft: Radius.circular(12),
+                                ),
+                                color:
+                                    Constants.ctaColorLight.withOpacity(0.15),
                               ),
-                              color: Constants.ftaColorLight.withOpacity(0.15),
-                            ),
-                            child: Center(
-                              child: CircleAvatar(
-                                radius: 30,
-                                backgroundColor: Colors.grey.withOpacity(0.65),
-                                child: Icon(
-                                  member.gender.toLowerCase() == "female"
-                                      ? Icons.female
-                                      : Icons.male,
-                                  size: 20,
-                                  color: Colors.white,
+                              child: Center(
+                                child: CircleAvatar(
+                                  radius: 30,
+                                  backgroundColor:
+                                      Colors.grey.withOpacity(0.65),
+                                  child: Icon(
+                                    member.gender.toLowerCase() == "female"
+                                        ? Icons.female
+                                        : Icons.male,
+                                    size: 20,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
 
-                    const SizedBox(width: 16.0),
+                      const SizedBox(width: 16.0),
 
-                    // Right side: beneficiary info + remove icon
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Row: DoB + remove icon
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    member.dob.isEmpty
-                                        ? 'DoB: -'
-                                        : 'DoB: '
-                                            '${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      fontFamily: 'YuGothic',
-                                      color: Colors.black,
+                      // Right side: beneficiary info + remove icon
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Row: DoB + remove icon
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      member.dob.isEmpty
+                                          ? 'DoB: -'
+                                          : 'DoB: '
+                                              '${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: 'YuGothic',
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    Map<String, dynamic> m3 = Constants
-                                        .currentleadAvailable!
-                                        .policies[current_member_index]
-                                        .members
-                                        .where((memberMap) =>
-                                            memberMap["additional_member_id"] ==
-                                            member.autoNumber)
-                                        .first;
-
-                                    Member removedMember = Member.fromJson(m3);
-                                    removeBeneficiaryMember(
-                                        removedMember, currentReference);
-                                    setState(() {
-                                      print("gfghgg ${policy.members}");
-                                      // (1) Remove from policy.members
-                                      policy.members.removeWhere((m) {
-                                        if (m is Map<String, dynamic>) {
-                                          final isBeneficiary =
-                                              (m['type'] as String?)
-                                                      ?.toLowerCase() ==
-                                                  'beneficiary';
-                                          final isSameRef = m['reference'] ==
-                                              currentReference;
-                                          final isSameAutoNumber =
-                                              (m['additional_member_id'] ??
-                                                      -1) ==
-                                                  member.autoNumber;
-                                          return isBeneficiary &&
-                                              isSameRef &&
-                                              isSameAutoNumber;
-                                        } else if (m is Member) {
-                                          final isBeneficiary =
-                                              (m.type ?? '').toLowerCase() ==
-                                                  'beneficiary';
-                                          final isSameRef =
-                                              m.reference == currentReference;
-                                          final isSameAutoNumber =
-                                              (m.autoNumber ?? -1) ==
-                                                  member.autoNumber;
-                                          return isBeneficiary &&
-                                              isSameRef &&
-                                              isSameAutoNumber;
-                                        }
-                                        return false;
-                                      });
-
-                                      // (2) Remove from policiesSelectedBeneficiaries
-                                      //     if you're storing them in that list
-                                      policiesSelectedBeneficiaries
-                                          .removeWhere((entry) {
-                                        final ref = entry['reference'];
-                                        final type =
-                                            (entry['type'] ?? '').toLowerCase();
-                                        final autoNum =
-                                            entry['autoNumber'] ?? -1;
-                                        return ref == currentReference &&
-                                            type == 'beneficiary' &&
-                                            autoNum == member.autoNumber;
-                                      });
-                                      Constants
+                                  InkWell(
+                                    onTap: () {
+                                      Map<String, dynamic> m3 = Constants
                                           .currentleadAvailable!
                                           .policies[current_member_index]
                                           .members
-                                          .removeWhere((m2) =>
-                                              m2["additional_member_id"] ==
-                                                  member.autoNumber &&
-                                              m2["type"] == "beneficiary");
+                                          .where((memberMap) =>
+                                              memberMap[
+                                                  "additional_member_id"] ==
+                                              member.autoNumber)
+                                          .first;
 
-                                      // (3) Remove from combinedBeneficiaries
-                                      combinedBeneficiaries.removeAt(index);
+                                      Member removedMember =
+                                          Member.fromJson(m3);
+                                      removeBeneficiaryMember(
+                                          removedMember, currentReference);
+                                      setState(() {
+                                        print("gfghgg ${policy.members}");
+                                        // (1) Remove from policy.members
+                                        policy.members.removeWhere((m) {
+                                          if (m is Map<String, dynamic>) {
+                                            final isBeneficiary =
+                                                (m['type'] as String?)
+                                                        ?.toLowerCase() ==
+                                                    'beneficiary';
+                                            final isSameRef = m['reference'] ==
+                                                currentReference;
+                                            final isSameAutoNumber =
+                                                (m['additional_member_id'] ??
+                                                        -1) ==
+                                                    member.autoNumber;
+                                            return isBeneficiary &&
+                                                isSameRef &&
+                                                isSameAutoNumber;
+                                          } else if (m is Member) {
+                                            final isBeneficiary =
+                                                (m.type ?? '').toLowerCase() ==
+                                                    'beneficiary';
+                                            final isSameRef =
+                                                m.reference == currentReference;
+                                            final isSameAutoNumber =
+                                                (m.autoNumber ?? -1) ==
+                                                    member.autoNumber;
+                                            return isBeneficiary &&
+                                                isSameRef &&
+                                                isSameAutoNumber;
+                                          }
+                                          return false;
+                                        });
 
-                                      // (4) Recalculate or refresh your premium logic
-                                      calculatePolicyPremiumCal();
-                                    });
-                                  },
-                                  child: const Icon(Icons.close),
+                                        // (2) Remove from policiesSelectedBeneficiaries
+                                        //     if you're storing them in that list
+                                        policiesSelectedBeneficiaries
+                                            .removeWhere((entry) {
+                                          final ref = entry['reference'];
+                                          final type = (entry['type'] ?? '')
+                                              .toLowerCase();
+                                          final autoNum =
+                                              entry['autoNumber'] ?? -1;
+                                          return ref == currentReference &&
+                                              type == 'beneficiary' &&
+                                              autoNum == member.autoNumber;
+                                        });
+                                        Constants
+                                            .currentleadAvailable!
+                                            .policies[current_member_index]
+                                            .members
+                                            .removeWhere((m2) =>
+                                                m2["additional_member_id"] ==
+                                                    member.autoNumber &&
+                                                m2["type"] == "beneficiary");
+
+                                        // (3) Remove from combinedBeneficiaries
+                                        combinedBeneficiaries.removeAt(index);
+
+                                        // (4) Recalculate or refresh your premium logic
+                                        calculatePolicyPremiumCal();
+                                      });
+                                    },
+                                    child: const Icon(Icons.close),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 8.0),
+
+                              // Name
+                              Text(
+                                '${member.title} ${member.name} ${member.surname}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 1.2,
                                 ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 8.0),
-
-                            // Name
-                            Text(
-                              '${member.title} ${member.name} ${member.surname}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 1.2,
                               ),
-                            ),
-                            const SizedBox(height: 4.0),
+                              const SizedBox(height: 4.0),
 
-                            // Percentage
-                            Text(
-                              '${beneficiary_percentage.toStringAsFixed(2)}%',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 1.2,
+                              // Percentage
+                              Text(
+                                '${beneficiary_percentage.toStringAsFixed(2)}%',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                  letterSpacing: 1.2,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -9455,8 +8647,8 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
 
     // Prepare the form data
     final Map<String, String> formData = {
-      'onolo_employerid': employerId,
-      'onololeadid': leadId,
+      'onolo_employerid': employerId.toString(),
+      'onololeadid': leadId.toString(),
       'employer_name': employerNameController.text,
       'occupation': occupationController.text,
       'employee_number': employeeNumberController.text,
@@ -9486,10 +8678,27 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
       if (response.statusCode == 200) {
         final responseBody = json.decode(response.body);
         print("sdffgf2 $responseBody ${responseBody.runtimeType}");
-        Constants.currentleadAvailable!.employer = Employer.fromJson(formData);
 
-        // Assuming the response body contains { "status": 1 } or { "status": 0 }
-        if (responseBody == "1") {
+        // If responseBody is a Map (JSON object), use it to update employer
+        if (responseBody is Map<String, dynamic>) {
+          Constants.currentleadAvailable!.employer =
+              Employer.fromJson(responseBody);
+        } else {
+          // If it's just a status code, update employer from formData
+          // Convert string values to appropriate types for Employer model
+          final employerData = Map<String, dynamic>.from(formData);
+          employerData['onolo_employerid'] = int.tryParse(employerId) ?? 0;
+          employerData['onololeadid'] = int.tryParse(leadId) ?? 0;
+          employerData['updated_by'] = Constants.cec_employeeid;
+          Constants.currentleadAvailable!.employer =
+              Employer.fromJson(employerData);
+        }
+
+        // Handle response: 0 = success, 1 = success (for backward compatibility)
+        if (responseBody == 0 ||
+            responseBody == "0" ||
+            responseBody == 1 ||
+            responseBody == "1") {
           Constants.isEmployerDetailsSaved = true;
           if (Constants.fieldSaleType == "Field Sale") {
             fieldSalesActiveStep++;
@@ -9514,13 +8723,19 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
             width: 300,
             onClose: () {},
             description: Text(
-              "Update Successful",
+              "Successfully updated",
               style: TextStyle(color: Colors.white),
             ),
           ).show(context);
         } else {
-          // Handle the case where the update failed silently
-          print("Update failed: Response status is 0.");
+          // Handle the case where the update failed
+          print("Update failed: Response status is $responseBody");
+          MotionToast.error(
+            description: Text(
+              "Update failed. Please try again.",
+              style: TextStyle(color: Colors.white),
+            ),
+          ).show(context);
         }
       } else {
         print("Server error: ${response.statusCode}");
@@ -10236,7 +9451,18 @@ class _AddBeneficiaryMemberState extends State<AddBeneficiaryMember> {
                         controller: percentageTxt,
                         hintText: "Enter percentage",
                         integersOnly: true,
-                        onChanged: (val) {},
+                        onChanged: (val) {
+                          if (val.isNotEmpty) {
+                            int? value = int.tryParse(val);
+                            if (value != null && value > 100) {
+                              percentageTxt.text = '100';
+                              percentageTxt.selection =
+                                  TextSelection.fromPosition(
+                                TextPosition(offset: percentageTxt.text.length),
+                              );
+                            }
+                          }
+                        },
                         onSubmitted: (val) {},
                         focusNode: FocusNode(),
                         textInputAction: TextInputAction.next,
@@ -10385,7 +9611,17 @@ class _AddBeneficiaryMemberState extends State<AddBeneficiaryMember> {
                     controller: percentageTxt,
                     hintText: "Enter percentage",
                     integersOnly: true,
-                    onChanged: (val) {},
+                    onChanged: (val) {
+                      if (val.isNotEmpty) {
+                        int? value = int.tryParse(val);
+                        if (value != null && value > 100) {
+                          percentageTxt.text = '100';
+                          percentageTxt.selection = TextSelection.fromPosition(
+                            TextPosition(offset: percentageTxt.text.length),
+                          );
+                        }
+                      }
+                    },
                     onSubmitted: (val) {},
                     focusNode: FocusNode(),
                     textInputAction: TextInputAction.next,
@@ -10610,34 +9846,6 @@ class _AdvancedPremiumPayerMemberMemberCardState
                 crossAxisAlignment:
                     CrossAxisAlignment.stretch, // Stretch to tallest child
                 children: [
-                  // Left container with CircleAvatar
-                  Container(
-                    width: 145,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        bottomLeft: Radius.circular(12),
-                      ),
-                      color: widget.isSelected == true
-                          ? Constants.ftaColorLight.withOpacity(0.95)
-                          : Constants.ftaColorLight.withOpacity(0.15),
-                    ),
-                    child: Center(
-                      child: CircleAvatar(
-                        radius: 40,
-                        backgroundColor: widget.isSelected == true
-                            ? Colors.grey.withOpacity(0.65)
-                            : Constants.ftaColorLight,
-                        child: Icon(
-                          widget.gender.toLowerCase() == "female"
-                              ? Icons.female
-                              : Icons.male,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
                   const SizedBox(width: 16.0),
                   // Member information (flexible middle section)
                   Expanded(
@@ -10715,78 +9923,6 @@ class _AdvancedPremiumPayerMemberMemberCardState
                     ),
                   ),
                   // Edit button column
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(top: 16.0, bottom: 16, right: 16),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) => StatefulBuilder(
-                                builder: (context, setState) => Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(64),
-                                  ),
-                                  elevation: 0.0,
-                                  backgroundColor: Colors.transparent,
-                                  child: Container(
-                                    constraints: BoxConstraints(
-                                      maxWidth: (Constants
-                                              .currentleadAvailable!
-                                              .leadObject
-                                              .documentsIndexed
-                                              .isEmpty)
-                                          ? 750
-                                          : 1200,
-                                    ),
-                                    margin: const EdgeInsets.only(top: 16),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.rectangle,
-                                      borderRadius: BorderRadius.circular(16),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          blurRadius: 10.0,
-                                          offset: Offset(0.0, 10.0),
-                                        ),
-                                      ],
-                                    ),
-                                    child: NewMemberDialog2(
-                                        isEditMode: widget.isEditing!,
-                                        autoNumber: widget.autoNumber,
-                                        relationship: "Self/Payer",
-                                        title: widget.title,
-                                        name: widget.name,
-                                        surname: widget.surname,
-                                        dob: widget.dob,
-                                        phone: widget.contact,
-                                        sourceOfIncome: widget.sourceOfIncome,
-                                        sourceOfWealth: widget.sourceOfWealth,
-                                        idNumber: widget.id,
-                                        is_self_or_payer:
-                                            widget.is_self_or_payer,
-                                        canAddMember: true,
-                                        gender: widget.gender,
-                                        current_member_index: 0),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                          child: Icon(
-                            Icons.edit,
-                            color: Constants.ftaColorLight,
-                            size: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),

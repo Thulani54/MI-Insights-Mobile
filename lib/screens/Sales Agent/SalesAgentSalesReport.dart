@@ -11,6 +11,7 @@ import "package:google_fonts/google_fonts.dart";
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:mi_insights/constants/Constants.dart';
+import 'package:mi_insights/HomePage.dart';
 import 'package:mi_insights/models/SalesByAgent.dart';
 import 'package:mi_insights/services/Sales%20Agent/sales_agent_sales_report_service.dart';
 import 'package:motion_toast/motion_toast.dart';
@@ -299,7 +300,11 @@ class _SalesAgentReportState extends State<SalesAgentReport>
             shadowColor: Colors.black.withOpacity(0.6),
             leading: InkWell(
                 onTap: () {
-                  Navigator.of(context).pop();
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHomePage()),
+                    (route) => false,
+                  );
                 },
                 child: Icon(
                   Icons.arrow_back,

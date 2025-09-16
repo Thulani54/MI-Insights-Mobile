@@ -36,6 +36,9 @@ class _FieldSaleBasicInformationState extends State<FieldSaleBasicInformation> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(
+          height: 16,
+        ),
 
         // Tips Heading
         Padding(

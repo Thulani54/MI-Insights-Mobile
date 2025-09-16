@@ -9,7 +9,7 @@ import '../../../constants/Constants.dart';
 import '../../../models/map_class.dart';
 import '../../customwidgets/moving_circle.dart';
 import '../../services/callCenterService.dart';
-import 'FieldSalesAffinity.dart';
+import 'FieldSalesAffinity.dart' hide EndCallDialog2;
 import 'endcalldialog2.dart';
 
 // CustomPainter that draws the moving line along the border

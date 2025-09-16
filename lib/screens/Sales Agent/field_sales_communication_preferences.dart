@@ -28,7 +28,7 @@ class _FieldSalesCommunicationPreferenceState
 
   final intl.DateFormat formatter = intl.DateFormat('yyyy-MM-dd');
 
-  List<String> commList = ["EmailPost", "Post", "Email"];
+  List<String> commList = ["SMS", "Email", "Post", "Email"];
 
   List<String> preferenceList = [
     "Cellphone",

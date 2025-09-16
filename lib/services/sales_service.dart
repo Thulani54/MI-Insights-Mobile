@@ -214,13 +214,30 @@ class SalesService {
       print(url);
     }
 
-    final response = await http.get(Uri.parse(url));
+    try {
+      final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return ScriptConfig.fromJson(data);
-    } else {
-      throw Exception('Failed to load script config');
+      if (response.statusCode == 200) {
+        // Check if response body looks like HTML (error page)
+        if (response.body.trim().startsWith('<!DOCTYPE html') || 
+            response.body.trim().startsWith('<html')) {
+          print('Error: Received HTML error page instead of JSON');
+          throw Exception('Server returned HTML error page instead of JSON data');
+        }
+        
+        final data = json.decode(response.body);
+        return ScriptConfig.fromJson(data);
+      } else {
+        throw Exception('Failed to load script config. Status: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (e is FormatException) {
+        print('Error: Invalid JSON format in response: $e');
+        throw Exception('Invalid JSON response from server');
+      } else {
+        print('Error fetching script config: $e');
+        rethrow;
+      }
     }
   }
 

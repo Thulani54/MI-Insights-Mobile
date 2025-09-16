@@ -231,7 +231,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                           focusNode: phone_number_focus_node,
                           textInputAction: TextInputAction.next,
                           integersOnly: true,
-                          maxLines: 10,
+                          maxInputs: 10,
                           isPasswordField: false),
                     ),
                   ],
@@ -260,7 +260,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                       primary: Constants
                           .ctaColorLight, // Influences the selected date background but also affects the header
                       onPrimary: Colors
-                          .black, // Ensures header text is visible against a lighter header background
+                          .white, // Text color on selected date with primary background
                       onSurface: Colors.black,
                     ),
                     textButtonTheme: TextButtonThemeData(
@@ -304,7 +304,10 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 12.0),
-                        child: Text(agent_sale_date),
+                        child: Text(
+                          agent_sale_date,
+                          style: TextStyle(color: Colors.black),
+                        ),
                       )
                     ],
                   ),
@@ -1399,7 +1402,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
         Map product = value;
         product.forEach((planName, planDetails) {
           if (kDebugMode) {
-            print('Selected ${key} ${planName}');
+            print('Selected $key $planName');
           }
           displayed_parlour_rates.add(ParlourRatesExtras2a(key, planName));
         });
@@ -1486,7 +1489,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
       "call_back_date": "",
       "call_back_time": "",
       "agent_sale_date": agent_sale_date,
-      "hang_up_reason": "Transfered",
+      "hang_up_reason": "",
       "notes": notesController.text,
       "product": _selectedDisplayedProduct!.product,
       "abbr": _selectedDisplayedProduct!.product.substring(0, 2),
@@ -1621,7 +1624,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
       'onololeadid': '${result}',
       'documents_indexed_field_form_uploaded': 'yes',
       'notes': notesController.text,
-      'created_by': "0",
+      'created_by': Constants.cec_employeeid.toString(),
     };
 
     var uri = Uri.parse('${Constants.insightsBackendBaseUrl}fieldV6/saveIndex');
@@ -1678,6 +1681,9 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
         final responseData = jsonDecode(response.body);
         Constants.currentleadAvailable = Lead.fromJson(responseData[0]);
 
+        // Close loading dialog first
+        Navigator.of(context).pop();
+
         // Navigate to FieldSalesAffinity after successful lead fetch
         Navigator.push(
           context,
@@ -1687,10 +1693,12 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
           ),
         );
       } else {
+        Navigator.of(context).pop(); // Close loading dialog
         print("Failed to fetch lead by ID: ${response.statusCode}");
         showErrorDialog(context, "Failed to fetch lead details");
       }
     } catch (error) {
+      Navigator.of(context).pop(); // Close loading dialog
       print("Error fetching lead by ID: $error");
       showErrorDialog(context, "Error fetching lead details: $error");
     }
@@ -1716,16 +1724,16 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
       "surname": surname_controller.text,
       "product_type": _selectedDisplayedProduct!.prod_type,
       "branch_id": Constants.organo_id,
-      "created_by": selected_agent!.cecEmployeeId,
-      "user": selected_agent!.cecEmployeeId,
+      "created_by": Constants.cec_employeeid,
+      "user": Constants.cec_employeeid,
       "call_back_date": "",
       "call_back_time": "",
       "agent_sale_date": agent_sale_date,
-      "hang_up_reason": "Transfered",
+      "hang_up_reason": "",
       "notes": notesController.text,
       "product": _selectedDisplayedProduct!.product,
       "abbr": _selectedDisplayedProduct!.product.substring(0, 2),
-      "type": Constants.fieldSaleType
+      //"type": Constants.fieldSaleType
     });
 
     if (kDebugMode) {
@@ -1734,6 +1742,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
 
     var request = http.Request('POST',
         Uri.parse('${Constants.insightsBackendBaseUrl}fieldV6/newLead'));
+
     request.headers.addAll(headers);
     request.body = body;
 

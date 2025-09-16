@@ -2428,30 +2428,6 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
               children: [
                 SizedBox(height: 24),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16.0, right: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        widget.isEditMode == true
-                            ? 'Edit Member To Cover'
-                            : 'Add Member To Cover',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'YuGothic',
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16.0, right: 16),
-                  child: Divider(color: Colors.grey.withOpacity(0.55)),
-                ),
-                SizedBox(height: 24),
-                Padding(
                   padding: const EdgeInsets.only(left: 24, right: 16),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -2463,455 +2439,481 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 8),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Relationship',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: 'YuGothic',
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                DropdownButtonHideUnderline(
-                                    child: DropdownButton2<String>(
-                                      isExpanded: true,
-                                      hint: Row(
-                                        children: [
-                                          const SizedBox(width: 4),
-                                          Flexible(
-                                            child: Text(
-                                              'Select A Relationship',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.normal,
-                                                color: Colors.grey,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      // Build a list of dropdown items.
-                                      items: _buildRelationshipItems(),
-                                      value: _selectedRelationship,
-                                      onChanged: (String? value) {
-                                        setState(() {
-                                          _selectedRelationship = value;
-                                        });
-                                      },
-                                      buttonStyleData: ButtonStyleData(
-                                        height: 50,
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 14,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(32),
-                                          border:
-                                              Border.all(color: Colors.black26),
-                                          color: Colors.transparent,
-                                        ),
-                                        elevation: 0,
-                                      ),
-                                      iconStyleData: const IconStyleData(
-                                        icon: Icon(
-                                            Icons.arrow_forward_ios_outlined),
-                                        iconSize: 14,
-                                        iconEnabledColor: Colors.black,
-                                        iconDisabledColor: Colors.transparent,
-                                      ),
-                                      dropdownStyleData: DropdownStyleData(
-                                        elevation: 2,
-                                        maxHeight: 200,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(32),
-                                          color: Colors.white,
-                                        ),
-                                        offset: const Offset(0, 5),
-                                        scrollbarTheme: ScrollbarThemeData(
-                                          radius: const Radius.circular(40),
-                                          thickness:
-                                              WidgetStateProperty.all<double>(
-                                            6,
-                                          ),
-                                          thumbVisibility:
-                                              WidgetStateProperty.all<bool>(
-                                                  true),
-                                        ),
-                                      ),
-                                      menuItemStyleData:
-                                          const MenuItemStyleData(
-                                        overlayColor: null,
-                                        height: 40,
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 14),
-                                      ),
+                                const SizedBox(height: 12),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: const Text(
+                                    'Relationship',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'YuGothic',
+                                      color: Colors.black,
                                     ),
                                   ),
-                                ],
+                                ),
+                                const SizedBox(height: 12),
+                                DropdownButtonHideUnderline(
+                                  child: DropdownButton2<String>(
+                                    isExpanded: true,
+                                    hint: Row(
+                                      children: [
+                                        const SizedBox(width: 4),
+                                        Flexible(
+                                          child: Text(
+                                            'Select A Relationship',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.normal,
+                                              color: Colors.grey,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    // Build a list of dropdown items.
+                                    items: _buildRelationshipItems(),
+                                    value: _selectedRelationship,
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        _selectedRelationship = value;
+                                      });
+                                    },
+                                    buttonStyleData: ButtonStyleData(
+                                      height: 50,
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 14,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(32),
+                                        border:
+                                            Border.all(color: Colors.black26),
+                                        color: Colors.transparent,
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                    iconStyleData: const IconStyleData(
+                                      icon: Icon(
+                                          Icons.arrow_forward_ios_outlined),
+                                      iconSize: 14,
+                                      iconEnabledColor: Colors.black,
+                                      iconDisabledColor: Colors.transparent,
+                                    ),
+                                    dropdownStyleData: DropdownStyleData(
+                                      elevation: 2,
+                                      maxHeight: 200,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(32),
+                                        color: Colors.white,
+                                      ),
+                                      offset: const Offset(0, 5),
+                                      scrollbarTheme: ScrollbarThemeData(
+                                        radius: const Radius.circular(40),
+                                        thickness:
+                                            WidgetStateProperty.all<double>(
+                                          6,
+                                        ),
+                                        thumbVisibility:
+                                            WidgetStateProperty.all<bool>(true),
+                                      ),
+                                    ),
+                                    menuItemStyleData: const MenuItemStyleData(
+                                      overlayColor: null,
+                                      height: 40,
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 14),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                             SizedBox(height: 16),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Title',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: 'YuGothic',
-                                    color: Colors.black,
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: const Text(
+                                    'Title',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'YuGothic',
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 12),
                                 DropdownButtonHideUnderline(
-                                    child: DropdownButton2<String>(
-                                      isExpanded: true,
-                                      hint: const Row(
-                                        children: [
-                                          /*Icon(
+                                  child: DropdownButton2<String>(
+                                    isExpanded: true,
+                                    hint: const Row(
+                                      children: [
+                                        /*Icon(
                                                     Icons.list,
                                                     size: 16,
                                                     color: Colors.grey,
                                                   ),*/
-                                          SizedBox(width: 4),
-                                          Expanded(
+                                        SizedBox(width: 4),
+                                        Expanded(
+                                          child: Text(
+                                            'Select A Title',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.normal,
+                                              color: Colors.grey,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    items: Constants.titleList
+                                        .map(
+                                          (String item) =>
+                                              DropdownMenuItem<String>(
+                                            value: item,
                                             child: Text(
-                                              'Select A Title',
-                                              style: TextStyle(
+                                              item,
+                                              style: const TextStyle(
                                                 fontSize: 14,
-                                                fontWeight: FontWeight.normal,
-                                                color: Colors.grey,
+                                                fontWeight: FontWeight.w500,
+                                                fontFamily: 'YuGothic',
+                                                color: Colors.black,
                                               ),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
-                                        ],
-                                      ),
-                                      items: Constants.titleList
-                                          .map(
-                                            (String item) =>
-                                                DropdownMenuItem<String>(
-                                              value: item,
-                                              child: Text(
-                                                item,
-                                                style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontFamily: 'YuGothic',
-                                                  color: Colors.black,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          )
-                                          .toList(),
-                                      value: _selectedTitle,
-                                      onChanged: (String? value) {
-                                        setState(() {
-                                          _selectedTitle = value;
-                                        });
-                                        String? mismatchMessage =
-                                            getGenderTitleMismatchMessage(
-                                          _selectedGender,
-                                          _selectedTitle,
-                                        );
+                                        )
+                                        .toList(),
+                                    value: _selectedTitle,
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        _selectedTitle = value;
+                                      });
+                                      String? mismatchMessage =
+                                          getGenderTitleMismatchMessage(
+                                        _selectedGender,
+                                        _selectedTitle,
+                                      );
 
-                                        if (mismatchMessage != null) {
-                                          MotionToast.error(
-                                            // You might need to adjust height/width for longer messages
-                                            height: 45,
-                                            width: 700,
-                                            description: Text(
-                                              mismatchMessage, // <-- Use the dynamic message here!
-                                              style: TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                          ).show(context);
-                                          return; // Stop further processing
-                                        }
-                                      },
-                                      buttonStyleData: ButtonStyleData(
-                                        height: 50,
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        padding: const EdgeInsets.only(
-                                          left: 14,
-                                          right: 14,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(32),
-                                          border:
-                                              Border.all(color: Colors.black26),
-                                          color: Colors.transparent,
-                                        ),
-                                        elevation: 0,
-                                      ),
-                                      iconStyleData: const IconStyleData(
-                                        icon: Icon(
-                                            Icons.arrow_forward_ios_outlined),
-                                        iconSize: 14,
-                                        iconEnabledColor: Colors.black,
-                                        iconDisabledColor: Colors.transparent,
-                                      ),
-                                      dropdownStyleData: DropdownStyleData(
-                                        elevation: 0,
-                                        maxHeight: 200,
-                                        width: 200,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(32),
-                                          color: Colors.white,
-                                        ),
-                                        offset: const Offset(-20, 0),
-                                        scrollbarTheme: ScrollbarThemeData(
-                                          radius: const Radius.circular(40),
-                                          thickness:
-                                              WidgetStateProperty.all<double>(
-                                            6,
+                                      if (mismatchMessage != null) {
+                                        MotionToast.error(
+                                          // You might need to adjust height/width for longer messages
+                                          height: 45,
+                                          width: 700,
+                                          description: Text(
+                                            mismatchMessage, // <-- Use the dynamic message here!
+                                            style:
+                                                TextStyle(color: Colors.white),
                                           ),
-                                          thumbVisibility:
-                                              WidgetStateProperty.all<bool>(
-                                                  true),
-                                        ),
+                                        ).show(context);
+                                        return; // Stop further processing
+                                      }
+                                    },
+                                    buttonStyleData: ButtonStyleData(
+                                      height: 50,
+                                      width: MediaQuery.of(context).size.width,
+                                      padding: const EdgeInsets.only(
+                                        left: 14,
+                                        right: 14,
                                       ),
-                                      menuItemStyleData:
-                                          const MenuItemStyleData(
-                                        overlayColor: null,
-                                        height: 40,
-                                        padding: EdgeInsets.only(
-                                            left: 14, right: 14),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(32),
+                                        border:
+                                            Border.all(color: Colors.black26),
+                                        color: Colors.transparent,
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                    iconStyleData: const IconStyleData(
+                                      icon: Icon(
+                                          Icons.arrow_forward_ios_outlined),
+                                      iconSize: 14,
+                                      iconEnabledColor: Colors.black,
+                                      iconDisabledColor: Colors.transparent,
+                                    ),
+                                    dropdownStyleData: DropdownStyleData(
+                                      elevation: 0,
+                                      maxHeight: 200,
+                                      width: 200,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(32),
+                                        color: Colors.white,
+                                      ),
+                                      offset: const Offset(-20, 0),
+                                      scrollbarTheme: ScrollbarThemeData(
+                                        radius: const Radius.circular(40),
+                                        thickness:
+                                            WidgetStateProperty.all<double>(
+                                          6,
+                                        ),
+                                        thumbVisibility:
+                                            WidgetStateProperty.all<bool>(true),
                                       ),
                                     ),
+                                    menuItemStyleData: const MenuItemStyleData(
+                                      overlayColor: null,
+                                      height: 40,
+                                      padding:
+                                          EdgeInsets.only(left: 14, right: 14),
+                                    ),
                                   ),
-                                ],
+                                ),
+                              ],
                             ),
                             SizedBox(height: 16),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Name',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: 'YuGothic',
-                                    color: Colors.black,
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: const Text(
+                                    'Name',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'YuGothic',
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 4),
                                 CustomInputTransparent3(
-                                    controller: CADNameController,
-                                    hintText: "Name",
-                                    isName: true,
-                                    onChanged: (String) {},
-                                    onSubmitted: (String) {},
-                                    focusNode: nameFocusNode,
-                                    //suffix: Icon(CupertinoIcons.person_fill, size: 22, color: Color(0xFFEF601B).withOpacity(0.45),),
-                                    textInputAction: TextInputAction.next,
-                                    isPasswordField: false,
-                                  ),
-                                ],
+                                  controller: CADNameController,
+                                  hintText: "Name",
+                                  isName: true,
+                                  onChanged: (String) {},
+                                  onSubmitted: (String) {},
+                                  focusNode: nameFocusNode,
+                                  //suffix: Icon(CupertinoIcons.person_fill, size: 22, color: Color(0xFFEF601B).withOpacity(0.45),),
+                                  textInputAction: TextInputAction.next,
+                                  isPasswordField: false,
+                                ),
+                              ],
                             ),
                             SizedBox(height: 16),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'Surname',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: 'YuGothic',
-                                    color: Colors.black,
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: const Text(
+                                    'Surname',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'YuGothic',
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                const SizedBox(height: 4),
                                 CustomInputTransparent3(
-                                    controller: CADSurnameController,
-                                    hintText: "Surname",
-                                    isName: true,
-                                    onChanged: (String) {},
-                                    onSubmitted: (String) {},
-                                    focusNode: surnameFocusNode,
-                                    //suffix: Icon(CupertinoIcons.person_fill, size: 22, color: Color(0xFFEF601B).withOpacity(0.45),),
-                                    textInputAction: TextInputAction.next,
-                                    isPasswordField: false,
-                                  ),
-                                ],
+                                  controller: CADSurnameController,
+                                  hintText: "Surname",
+                                  isName: true,
+                                  onChanged: (String) {},
+                                  onSubmitted: (String) {},
+                                  focusNode: surnameFocusNode,
+                                  //suffix: Icon(CupertinoIcons.person_fill, size: 22, color: Color(0xFFEF601B).withOpacity(0.45),),
+                                  textInputAction: TextInputAction.next,
+                                  isPasswordField: false,
+                                ),
+                              ],
                             ),
-                            SizedBox(height: 24),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            SizedBox(height: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Container(
-                                  height: 40,
-                                  width: 130,
-                                  child: Row(
-                                    children: [
-                                      const Text(
-                                        'ID Number',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'YuGothic',
-                                          color: Colors.black,
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Container(
+                                    height: 40,
+                                    width: 130,
+                                    child: Row(
+                                      children: [
+                                        const Text(
+                                          'ID Number',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: 'YuGothic',
+                                            color: Colors.black,
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Row(
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .start, //CADDateOfBirthController
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
                                         children: [
-                                          Expanded(
-                                            child: CustomInputTransparentID2(
-                                              controller: CADIDController,
-                                              hintText: "ID Number",
-                                              onChanged: (value) {
-                                                if (CADIDController
-                                                        .text.length ==
-                                                    13) {
-                                                  extractDobFromIdNumber(
-                                                    CADIDController.text,
-                                                  );
-                                                  _selectedGender =
-                                                      getGenderFromSouthAfricanId(
-                                                    CADIDController.text,
-                                                  ).toString().toLowerCase();
-                                                  setState(() {});
-                                                  bool isMemberExists =
-                                                      Constants
-                                                          .currentleadAvailable!
-                                                          .additionalMembers
-                                                          .any(
-                                                    (member) =>
-                                                        member.id ==
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .start, //CADDateOfBirthController
+                                            children: [
+                                              Expanded(
+                                                child:
+                                                    CustomInputTransparentID2(
+                                                  controller: CADIDController,
+                                                  hintText: "ID Number",
+                                                  onChanged: (value) {
+                                                    if (CADIDController
+                                                            .text.length ==
+                                                        13) {
+                                                      extractDobFromIdNumber(
                                                         CADIDController.text,
-                                                  );
+                                                      );
+                                                      _selectedGender =
+                                                          getGenderFromSouthAfricanId(
+                                                        CADIDController.text,
+                                                      )
+                                                              .toString()
+                                                              .toLowerCase();
+                                                      setState(() {});
+                                                      bool isMemberExists =
+                                                          Constants
+                                                              .currentleadAvailable!
+                                                              .additionalMembers
+                                                              .any(
+                                                        (member) =>
+                                                            member.id ==
+                                                            CADIDController
+                                                                .text,
+                                                      );
 
-                                                  if (isMemberExists &&
-                                                      widget.isEditMode ==
-                                                          false) {
-                                                    selectedDateOfBirth = "";
-                                                    CADIDController.clear();
+                                                      if (isMemberExists &&
+                                                          widget.isEditMode ==
+                                                              false) {
+                                                        selectedDateOfBirth =
+                                                            "";
+                                                        CADIDController.clear();
 
-                                                    MotionToast.error(
-                                                      //   title: Text("Error"),
-                                                      description: Center(
-                                                        child: Text(
-                                                          "Member Already Exists!",
-                                                          style: TextStyle(
-                                                            fontSize: 13,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            fontFamily:
-                                                                'YuGothic',
-                                                            color: Colors.white,
+                                                        MotionToast.error(
+                                                          //   title: Text("Error"),
+                                                          description: Center(
+                                                            child: Text(
+                                                              "Member Already Exists!",
+                                                              style: TextStyle(
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontFamily:
+                                                                    'YuGothic',
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ),
-                                                      layoutOrientation:
-                                                          TextDirection.ltr,
-                                                      animationType:
-                                                          AnimationType.fromTop,
-                                                      width: 350,
-                                                      height: 55,
-                                                      animationDuration:
-                                                          const Duration(
-                                                        milliseconds: 2500,
-                                                      ),
-                                                    ).show(context);
-                                                  }
-                                                }
-                                              },
-                                              onSubmitted: (value) {
-                                                extractDobFromIdNumber(
-                                                  CADIDController.text,
-                                                );
-                                                for (int i = 0;
-                                                    i <
-                                                        Constants
-                                                                .additionalMember
-                                                                .length -
-                                                            1;
-                                                    i++) {
-                                                  if (Constants
-                                                          .additionalMember[i]
-                                                          .id !=
-                                                      CADIDController.text) {
-                                                    selectedDateOfBirth =
-                                                        Constants.dateOfBirth;
-                                                  } else {
-                                                    selectedDateOfBirth = "";
-                                                    CADIDController.clear();
-                                                    MotionToast.error(
-                                                      //    title: Text("Error"),
-                                                      description: Center(
-                                                        child: Text(
-                                                          "Member with same ID already exist!",
-                                                          style: TextStyle(
-                                                            fontSize: 13,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            fontFamily:
-                                                                'YuGothic',
-                                                            color: Colors.white,
+                                                          layoutOrientation:
+                                                              TextDirection.ltr,
+                                                          animationType:
+                                                              AnimationType
+                                                                  .fromTop,
+                                                          width: 350,
+                                                          height: 55,
+                                                          animationDuration:
+                                                              const Duration(
+                                                            milliseconds: 2500,
                                                           ),
-                                                        ),
-                                                      ),
-                                                      layoutOrientation:
-                                                          TextDirection.ltr,
-                                                      animationType:
-                                                          AnimationType.fromTop,
-                                                      width: 400,
-                                                      height: 55,
-                                                      animationDuration:
-                                                          const Duration(
-                                                        milliseconds: 2500,
-                                                      ),
-                                                    ).show(context);
-                                                  }
-                                                }
-                                              },
-                                              focusNode: idFocusNode,
-                                              //suffix: Icon(CupertinoIcons.person_fill, size: 22, color: Color(0xFFEF601B).withOpacity(0.45),),
-                                              textInputAction:
-                                                  TextInputAction.next,
-                                              isPasswordField: false,
-                                              onIsSAIDChanged: (val) {
-                                                isSAID = val;
-                                              },
-                                            ),
+                                                        ).show(context);
+                                                      }
+                                                    }
+                                                  },
+                                                  onSubmitted: (value) {
+                                                    extractDobFromIdNumber(
+                                                      CADIDController.text,
+                                                    );
+                                                    for (int i = 0;
+                                                        i <
+                                                            Constants
+                                                                    .additionalMember
+                                                                    .length -
+                                                                1;
+                                                        i++) {
+                                                      if (Constants
+                                                              .additionalMember[
+                                                                  i]
+                                                              .id !=
+                                                          CADIDController
+                                                              .text) {
+                                                        selectedDateOfBirth =
+                                                            Constants
+                                                                .dateOfBirth;
+                                                      } else {
+                                                        selectedDateOfBirth =
+                                                            "";
+                                                        CADIDController.clear();
+                                                        MotionToast.error(
+                                                          //    title: Text("Error"),
+                                                          description: Center(
+                                                            child: Text(
+                                                              "Member with same ID already exist!",
+                                                              style: TextStyle(
+                                                                fontSize: 13,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontFamily:
+                                                                    'YuGothic',
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          layoutOrientation:
+                                                              TextDirection.ltr,
+                                                          animationType:
+                                                              AnimationType
+                                                                  .fromTop,
+                                                          width: 400,
+                                                          height: 55,
+                                                          animationDuration:
+                                                              const Duration(
+                                                            milliseconds: 2500,
+                                                          ),
+                                                        ).show(context);
+                                                      }
+                                                    }
+                                                  },
+                                                  focusNode: idFocusNode,
+                                                  //suffix: Icon(CupertinoIcons.person_fill, size: 22, color: Color(0xFFEF601B).withOpacity(0.45),),
+                                                  textInputAction:
+                                                      TextInputAction.next,
+                                                  isPasswordField: false,
+                                                  onIsSAIDChanged: (val) {
+                                                    isSAID = val;
+                                                  },
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                            ],
                                           ),
-                                          const SizedBox(width: 8),
                                         ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -2948,8 +2950,8 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                                       backgroundColor: Constants.ftaColorLight,
                                       shape: const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(16),
-                                          bottomLeft: Radius.circular(16),
+                                          topLeft: Radius.circular(24),
+                                          bottomLeft: Radius.circular(24),
                                         ),
                                       ),
                                     ),
@@ -2967,28 +2969,30 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                               ],
                             ),
                             SizedBox(height: 16),
+                            Container(
+                              height: 45,
+                              width: 130,
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: const Text(
+                                      'Date of Birth',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: 'YuGothic',
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
-                                  height: 45,
-                                  width: 130,
-                                  child: Row(
-                                    children: [
-                                      const Text(
-                                        'Date of Birth',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'YuGothic',
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
                                 Expanded(
                                   child: Padding(
                                     padding: const EdgeInsets.only(
@@ -3078,28 +3082,30 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                               ],
                             ),
                             SizedBox(height: 16),
+                            Container(
+                              height: 40,
+                              width: 130,
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: const Text(
+                                      'Gender',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        fontFamily: 'YuGothic',
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Container(
-                                  height: 40,
-                                  width: 130,
-                                  child: Row(
-                                    children: [
-                                      const Text(
-                                        'Gender',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'YuGothic',
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
                                 Expanded(
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton2<String>(
@@ -3232,32 +3238,31 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                             if (_selectedRelationship == "Self/Payer")
                               SizedBox(height: 16),
                             if (_selectedRelationship == "Self/Payer")
+                              Container(
+                                height: 40,
+                                width: 130,
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: const Text(
+                                        'Contact Number',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: 'YuGothic',
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            if (_selectedRelationship == "Self/Payer")
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Container(
-                                    height: 40,
-                                    width: 130,
-                                    child: Row(
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 8.0),
-                                          child: const Text(
-                                            'Contact Number',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                              fontFamily: 'YuGothic',
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
@@ -3294,197 +3299,218 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                                   ),
                                 ],
                               ),
-                            SizedBox(height: 16),
+                            if (_selectedRelationship == "Self/Payer")
+                              SizedBox(height: 8),
                             if (_selectedRelationship == "Self/Payer" &&
                                 (widget.showSourceOfIncome == true ||
                                     widget.showSourceOfIncome == null))
-                              Row(
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Container(
                                     height: 40,
-                                    width: 130,
+                                    width: 150,
                                     child: Row(
                                       children: [
-                                        const Text(
-                                          'Source of Income',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: 'YuGothic',
-                                            color: Colors.black,
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
+                                          child: const Text(
+                                            'Source of Income',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                              color: Colors.black,
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
                                   const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Row(
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
                                           children: [
-                                            Expanded(
-                                              child:
-                                                  DropdownButtonHideUnderline(
-                                                child: DropdownButton2<String>(
-                                                  isExpanded: true,
-                                                  hint: const Row(
-                                                    children: [
-                                                      /* Icon(
-                                                              Icons.list,
-                                                              size: 16,
-                                                              color: Colors.grey,
-                                                            ),*/
-                                                      SizedBox(width: 4),
-                                                      Expanded(
-                                                        child: Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                            left: 8.0,
-                                                          ),
-                                                          child: Text(
-                                                            'Select a source of income',
-                                                            style:
-                                                                const TextStyle(
-                                                              fontSize: 13,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontFamily:
-                                                                  'YuGothic',
-                                                              color:
-                                                                  Colors.grey,
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  child:
+                                                      DropdownButtonHideUnderline(
+                                                    child:
+                                                        DropdownButton2<String>(
+                                                      isExpanded: true,
+                                                      hint: const Row(
+                                                        children: [
+                                                          /* Icon(
+                                                                  Icons.list,
+                                                                  size: 16,
+                                                                  color: Colors.grey,
+                                                                ),*/
+                                                          SizedBox(width: 4),
+                                                          Expanded(
+                                                            child: Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .only(
+                                                                left: 8.0,
+                                                              ),
+                                                              child: Text(
+                                                                'Select a source of income',
+                                                                style:
+                                                                    const TextStyle(
+                                                                  fontSize: 13,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontFamily:
+                                                                      'YuGothic',
+                                                                  color: Colors
+                                                                      .grey,
+                                                                ),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
                                                             ),
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
                                                           ),
+                                                        ],
+                                                      ),
+                                                      items: incomeList
+                                                          .map(
+                                                            (
+                                                              String item,
+                                                            ) =>
+                                                                DropdownMenuItem<
+                                                                    String>(
+                                                              value: item,
+                                                              child: Text(
+                                                                item,
+                                                                style:
+                                                                    const TextStyle(
+                                                                  fontSize: 14,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  fontFamily:
+                                                                      'YuGothic',
+                                                                  color: Colors
+                                                                      .black,
+                                                                ),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                            ),
+                                                          )
+                                                          .toList(),
+                                                      value: _selectedIncome,
+                                                      onChanged:
+                                                          (String? value) {
+                                                        setState(() {
+                                                          _selectedIncome =
+                                                              value;
+                                                        });
+                                                      },
+                                                      buttonStyleData:
+                                                          ButtonStyleData(
+                                                        height: 50,
+                                                        width: MediaQuery.of(
+                                                          context,
+                                                        ).size.width,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                          left: 14,
+                                                          right: 14,
+                                                        ),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(32),
+                                                          border: Border.all(
+                                                            color:
+                                                                Colors.black26,
+                                                          ),
+                                                          color: Colors
+                                                              .transparent,
+                                                        ),
+                                                        elevation: 0,
+                                                      ),
+                                                      iconStyleData:
+                                                          const IconStyleData(
+                                                        icon: Icon(
+                                                          Icons
+                                                              .arrow_forward_ios_outlined,
+                                                        ),
+                                                        iconSize: 14,
+                                                        iconEnabledColor:
+                                                            Colors.black,
+                                                        iconDisabledColor:
+                                                            Colors.transparent,
+                                                      ),
+                                                      dropdownStyleData:
+                                                          DropdownStyleData(
+                                                        elevation: 0,
+                                                        maxHeight: 200,
+                                                        width: 200,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(14),
+                                                          color: Colors.white,
+                                                        ),
+                                                        offset: const Offset(
+                                                            -20, 0),
+                                                        scrollbarTheme:
+                                                            ScrollbarThemeData(
+                                                          radius: const Radius
+                                                              .circular(
+                                                            40,
+                                                          ),
+                                                          thickness:
+                                                              WidgetStateProperty
+                                                                  .all<double>(
+                                                                      6),
+                                                          thumbVisibility:
+                                                              WidgetStateProperty
+                                                                  .all<bool>(
+                                                                      true),
                                                         ),
                                                       ),
-                                                    ],
-                                                  ),
-                                                  items: incomeList
-                                                      .map(
-                                                        (
-                                                          String item,
-                                                        ) =>
-                                                            DropdownMenuItem<
-                                                                String>(
-                                                          value: item,
-                                                          child: Text(
-                                                            item,
-                                                            style:
-                                                                const TextStyle(
-                                                              fontSize: 14,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              fontFamily:
-                                                                  'YuGothic',
-                                                              color:
-                                                                  Colors.black,
-                                                            ),
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
+                                                      menuItemStyleData:
+                                                          const MenuItemStyleData(
+                                                        overlayColor: null,
+                                                        height: 40,
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                          left: 14,
+                                                          right: 14,
                                                         ),
-                                                      )
-                                                      .toList(),
-                                                  value: _selectedIncome,
-                                                  onChanged: (String? value) {
-                                                    setState(() {
-                                                      _selectedIncome = value;
-                                                    });
-                                                  },
-                                                  buttonStyleData:
-                                                      ButtonStyleData(
-                                                    height: 50,
-                                                    width: MediaQuery.of(
-                                                      context,
-                                                    ).size.width,
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                      left: 14,
-                                                      right: 14,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              32),
-                                                      border: Border.all(
-                                                        color: Colors.black26,
                                                       ),
-                                                      color: Colors.transparent,
-                                                    ),
-                                                    elevation: 0,
-                                                  ),
-                                                  iconStyleData:
-                                                      const IconStyleData(
-                                                    icon: Icon(
-                                                      Icons
-                                                          .arrow_forward_ios_outlined,
-                                                    ),
-                                                    iconSize: 14,
-                                                    iconEnabledColor:
-                                                        Colors.black,
-                                                    iconDisabledColor:
-                                                        Colors.transparent,
-                                                  ),
-                                                  dropdownStyleData:
-                                                      DropdownStyleData(
-                                                    elevation: 0,
-                                                    maxHeight: 200,
-                                                    width: 200,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              14),
-                                                      color: Colors.white,
-                                                    ),
-                                                    offset:
-                                                        const Offset(-20, 0),
-                                                    scrollbarTheme:
-                                                        ScrollbarThemeData(
-                                                      radius:
-                                                          const Radius.circular(
-                                                        40,
-                                                      ),
-                                                      thickness:
-                                                          WidgetStateProperty
-                                                              .all<double>(6),
-                                                      thumbVisibility:
-                                                          WidgetStateProperty
-                                                              .all<bool>(true),
-                                                    ),
-                                                  ),
-                                                  menuItemStyleData:
-                                                      const MenuItemStyleData(
-                                                    overlayColor: null,
-                                                    height: 40,
-                                                    padding: EdgeInsets.only(
-                                                      left: 14,
-                                                      right: 14,
                                                     ),
                                                   ),
                                                 ),
-                                              ),
+                                                const SizedBox(width: 8),
+                                              ],
                                             ),
-                                            const SizedBox(width: 8),
                                           ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -3496,7 +3522,7 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                                 _selectedIncome == "Other" &&
                                 (widget.showSourceOfIncome == true ||
                                     widget.showSourceOfIncome == null))
-                              Row(
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -3507,7 +3533,7 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                                       children: [
                                         Padding(
                                           padding:
-                                              const EdgeInsets.only(top: 8.0),
+                                              const EdgeInsets.only(left: 8.0),
                                           child: const Text(
                                             'Income Description',
                                             style: TextStyle(
@@ -3522,40 +3548,45 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                                     ),
                                   ),
                                   const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Row(
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
                                           children: [
-                                            Expanded(
-                                              child: CustomInputTransparent3(
-                                                controller:
-                                                    CADIncomeDescriptionController,
-                                                hintText:
-                                                    "Type source of Income Description here",
-                                                onChanged: (String) {},
-                                                onSubmitted: (String) {},
-                                                focusNode:
-                                                    incomeDescriptionFocusNode,
-                                                //suffix: Icon(CupertinoIcons.person_fill, size: 22, color: Color(0xFFEF601B).withOpacity(0.45),),
-                                                textInputAction:
-                                                    TextInputAction.next,
-                                                isPasswordField: false,
-                                              ),
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  child:
+                                                      CustomInputTransparent3(
+                                                    controller:
+                                                        CADIncomeDescriptionController,
+                                                    hintText:
+                                                        "Type source of Income Description here",
+                                                    onChanged: (String) {},
+                                                    onSubmitted: (String) {},
+                                                    focusNode:
+                                                        incomeDescriptionFocusNode,
+                                                    //suffix: Icon(CupertinoIcons.person_fill, size: 22, color: Color(0xFFEF601B).withOpacity(0.45),),
+                                                    textInputAction:
+                                                        TextInputAction.next,
+                                                    isPasswordField: false,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                              ],
                                             ),
-                                            const SizedBox(width: 8),
                                           ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -3567,7 +3598,7 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                             if (_selectedRelationship == "Self/Payer" &&
                                 (widget.showSourceOfIncome == true ||
                                     widget.showSourceOfIncome == null))
-                              Row(
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -3576,133 +3607,148 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                                     width: 130,
                                     child: Row(
                                       children: [
-                                        const Text(
-                                          'Source of Wealth',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: 'YuGothic',
-                                            color: Colors.black,
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
+                                          child: const Text(
+                                            'Source of Wealth',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'YuGothic',
+                                              color: Colors.black,
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
                                   const SizedBox(width: 8),
-                                  Expanded(
-                                    child: DropdownButtonHideUnderline(
-                                      child: DropdownButton2<String>(
-                                        isExpanded: true,
-                                        hint: const Row(
-                                          children: [
-                                            /* Icon(
-                                                    Icons.list,
-                                                    size: 16,
-                                                    color: Colors.grey,
-                                                  ),*/
-                                            SizedBox(width: 4),
-                                            Expanded(
-                                              child: Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 8.0),
-                                                child: Text(
-                                                  'Select a source of wealth',
-                                                  style: const TextStyle(
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontFamily: 'YuGothic',
-                                                    color: Colors.grey,
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: DropdownButtonHideUnderline(
+                                          child: DropdownButton2<String>(
+                                            isExpanded: true,
+                                            hint: const Row(
+                                              children: [
+                                                /* Icon(
+                                                        Icons.list,
+                                                        size: 16,
+                                                        color: Colors.grey,
+                                                      ),*/
+                                                SizedBox(width: 4),
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 8.0),
+                                                    child: Text(
+                                                      'Select a source of wealth',
+                                                      style: const TextStyle(
+                                                        fontSize: 13,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontFamily: 'YuGothic',
+                                                        color: Colors.grey,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
                                                   ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
                                                 ),
+                                              ],
+                                            ),
+                                            items: wealthList
+                                                .map(
+                                                  (
+                                                    String item,
+                                                  ) =>
+                                                      DropdownMenuItem<String>(
+                                                    value: item,
+                                                    child: Text(
+                                                      item,
+                                                      style: const TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontFamily: 'YuGothic',
+                                                        color: Colors.black,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                )
+                                                .toList(),
+                                            value: _selectedWealth,
+                                            onChanged: (String? value) {
+                                              setState(() {
+                                                _selectedWealth = value;
+                                              });
+                                            },
+                                            buttonStyleData: ButtonStyleData(
+                                              height: 50,
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              padding: const EdgeInsets.only(
+                                                left: 14,
+                                                right: 14,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(32),
+                                                border: Border.all(
+                                                    color: Colors.black26),
+                                                color: Colors.transparent,
+                                              ),
+                                              elevation: 0,
+                                            ),
+                                            iconStyleData: const IconStyleData(
+                                              icon: Icon(
+                                                Icons
+                                                    .arrow_forward_ios_outlined,
+                                              ),
+                                              iconSize: 14,
+                                              iconEnabledColor: Colors.black,
+                                              iconDisabledColor:
+                                                  Colors.transparent,
+                                            ),
+                                            dropdownStyleData:
+                                                DropdownStyleData(
+                                              elevation: 0,
+                                              maxHeight: 200,
+                                              width: 200,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(32),
+                                                color: Colors.white,
+                                              ),
+                                              offset: const Offset(-20, 0),
+                                              scrollbarTheme:
+                                                  ScrollbarThemeData(
+                                                radius:
+                                                    const Radius.circular(40),
+                                                thickness: WidgetStateProperty
+                                                    .all<double>(6),
+                                                thumbVisibility:
+                                                    WidgetStateProperty.all<
+                                                        bool>(true),
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                        items: wealthList
-                                            .map(
-                                              (
-                                                String item,
-                                              ) =>
-                                                  DropdownMenuItem<String>(
-                                                value: item,
-                                                child: Text(
-                                                  item,
-                                                  style: const TextStyle(
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontFamily: 'YuGothic',
-                                                    color: Colors.black,
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
+                                            menuItemStyleData:
+                                                const MenuItemStyleData(
+                                              overlayColor: null,
+                                              height: 40,
+                                              padding: EdgeInsets.only(
+                                                left: 14,
+                                                right: 14,
                                               ),
-                                            )
-                                            .toList(),
-                                        value: _selectedWealth,
-                                        onChanged: (String? value) {
-                                          setState(() {
-                                            _selectedWealth = value;
-                                          });
-                                        },
-                                        buttonStyleData: ButtonStyleData(
-                                          height: 50,
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          padding: const EdgeInsets.only(
-                                            left: 14,
-                                            right: 14,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(32),
-                                            border: Border.all(
-                                                color: Colors.black26),
-                                            color: Colors.transparent,
-                                          ),
-                                          elevation: 0,
-                                        ),
-                                        iconStyleData: const IconStyleData(
-                                          icon: Icon(
-                                            Icons.arrow_forward_ios_outlined,
-                                          ),
-                                          iconSize: 14,
-                                          iconEnabledColor: Colors.black,
-                                          iconDisabledColor: Colors.transparent,
-                                        ),
-                                        dropdownStyleData: DropdownStyleData(
-                                          elevation: 0,
-                                          maxHeight: 200,
-                                          width: 200,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(32),
-                                            color: Colors.white,
-                                          ),
-                                          offset: const Offset(-20, 0),
-                                          scrollbarTheme: ScrollbarThemeData(
-                                            radius: const Radius.circular(40),
-                                            thickness:
-                                                WidgetStateProperty.all<double>(
-                                                    6),
-                                            thumbVisibility:
-                                                WidgetStateProperty.all<bool>(
-                                                    true),
-                                          ),
-                                        ),
-                                        menuItemStyleData:
-                                            const MenuItemStyleData(
-                                          overlayColor: null,
-                                          height: 40,
-                                          padding: EdgeInsets.only(
-                                            left: 14,
-                                            right: 14,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                   const SizedBox(width: 8),
                                 ],
@@ -3990,7 +4036,7 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                                             CADPhoneController.text.length !=
                                                 12) {
                                           MotionToast.error(
-                                            height: 45,
+                                            height: 60,
                                             description: Text(
                                               "Phone number length must be 10 digits long",
                                               style: TextStyle(
@@ -4081,11 +4127,11 @@ class _NewMemberDialog2State extends State<NewMemberDialog2> {
                                         }
                                       } else if (_selectedRelationship ==
                                           "Child") {
-                                        if (userAge < 0 || userAge > 24) {
+                                        if (userAge < 0 || userAge > 21) {
                                           MotionToast.error(
-                                            height: 45,
+                                            height: 55,
                                             description: Text(
-                                              "Child’s age must be between 0 and 24 years",
+                                              "Child’s age must be between 0 and 21 years",
                                               style: TextStyle(
                                                   color: Colors.white),
                                             ),

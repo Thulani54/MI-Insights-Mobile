@@ -1,10 +1,23 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:mi_insights/customwidgets/CustomCard.dart';
+import 'package:mi_insights/screens/Sales%20Agent/universal_premium_calculator.dart';
 import 'package:styled_text/tags/styled_text_tag.dart';
 import 'package:styled_text/widgets/styled_text.dart';
 
 import '../../../../constants/Constants.dart';
 import '../../../../models/map_class.dart';
+import '../../../models/Parlour.dart';
+import '../../services/MyNoyifier.dart';
+import 'field_premium_calculator.dart' show MemberPremium;
+
+int activeQuoteStep = 0;
+MyNotifier? myNotifier1;
+final myConfirmPremiumClearValues = ValueNotifier<int>(0);
+List<YesOrNoDialogue> dailogueList3 = [
+  YesOrNoDialogue(stringValue: "Yes"),
+  YesOrNoDialogue(stringValue: "No")
+];
 
 class ConfirmPremium extends StatefulWidget {
   const ConfirmPremium({
@@ -15,17 +28,13 @@ class ConfirmPremium extends StatefulWidget {
   State<ConfirmPremium> createState() => _ConfirmPremiumState();
 }
 
-List<ParentsFuneral> parentsFuneralList = [
-  ParentsFuneral(1, 0.00, "2024-03-29", 56, 0.00),
-];
-List<Raiders> raidersList = [
-  Raiders(1, "Raider 1", "Main Member", "Athandwe1", 0.00),
-];
+double TotalPayableAmount = 0.00;
+double TotalBenefitAmountAmount = 0.00;
+double TotalCoverAmount = 0.00;
+bool isAtleastOnePolicyAccepted = false;
 
-List<YesOrNoDialogue> dailogueList3 = [
-  YesOrNoDialogue(stringValue: "Yes"),
-  YesOrNoDialogue(stringValue: "No")
-];
+final List<Policy> policies = Constants.currentleadAvailable!.policies ?? [];
+
 List<YesOrNoDialogue> dailogueList4 = [
   YesOrNoDialogue(stringValue: "Yes"),
   YesOrNoDialogue(stringValue: "No")
@@ -47,7 +56,7 @@ class _ConfirmPremiumState extends State<ConfirmPremium> {
   bool boolColor4 = false;
   bool isHover = false; //ParentsFuneral
 
-  List<ConfirmPrem> premList = [
+  List<ConfirmPrem> testPremList = [
     ConfirmPrem(
         productName: "Individual Funeral",
         sumAssured: "R 0.00",
@@ -79,2039 +88,1684 @@ class _ConfirmPremiumState extends State<ConfirmPremium> {
         premium: "R 0.00",
         isExpanded: false),
   ];
+  List<ConfirmPrem> premList = [];
+
+  // In your State class:
+  Map<String, bool> expandedStates =
+      {}; // Keyed by policy.reference or policy.id
+  void refreshSelectionOptions() {
+    bool nextStep = false;
+    Constants.trueOrFalseStringValueJ = "";
+
+    Constants.trueOrFalseStringValueL = "";
+    dailogueList3[0].stateValue = false;
+    dailogueList3[1].stateValue = false;
+
+    dailogueList4[0].stateValue = false;
+    dailogueList4[1].stateValue = false;
+
+    // Properly initialize your loop variable i = 0
+    for (int i = 0; i < Constants.currentleadAvailable!.policies.length; i++) {
+      if (Constants.currentleadAvailable!.policies[i].quote.acceptPolicy ==
+          "yes") {
+        nextStep = true;
+        break;
+      }
+    }
+    isAtleastOnePolicyAccepted = nextStep;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      constraints: BoxConstraints(maxWidth: 1400),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 70,
-              width: MediaQuery.of(context).size.width,
-              child: Material(
-                elevation: 12,
-                animationDuration: Duration(seconds: 5),
-                shadowColor: Colors.black.withOpacity(0.35),
-                surfaceTintColor: Colors.white,
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(0.0)),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Total Payable Amount : ${Constants.currentleadAvailable!.policies[0].quote.totalAmountPayable}",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'YuGothic',
-                            letterSpacing: 0,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black54),
-                      ),
-                      Expanded(child: Container()),
-                      InkWell(
-                        child: Container(
-                          height: 35,
-                          width: 120,
-                          padding: EdgeInsets.only(left: 16, right: 16),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(360),
-                              color: Constants.ctaColorLight),
-                          child: Center(
-                            child: Text(
-                              "Close",
-                              style: TextStyle(
-                                  fontSize: 13,
-                                  fontFamily: 'YuGothic',
-                                  letterSpacing: 0,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white),
-                            ),
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          setState(() {});
-                        },
-                      ),
-                      SizedBox(
-                        width: 16,
-                      ),
-                      Constants.trueOrFalseStringValueL == "Yes"
-                          ? InkWell(
-                              child: Container(
-                                height: 35,
-                                width: 120,
-                                padding: EdgeInsets.only(left: 16, right: 16),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(360),
-                                  color: Constants.ftaColorLight,
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "Accept",
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        fontFamily: 'YuGothic',
-                                        letterSpacing: 0,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                              onTap: () {
-                                setState(() {});
-                              },
-                            )
-                          : Container(),
-                    ],
-                  ),
-                ),
-              ),
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            title: Text("Confirm Premium"),
+            surfaceTintColor: Colors.white,
+            shadowColor: Colors.black.withOpacity(0.65),
+
+            //Back Button
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
-            SizedBox(
-              height: 12,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16),
-              child: Text(
-                "You have taken cover at a total premium of ${Constants.currentleadAvailable!.policies[0].quote.totalPremium}",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: 'YuGothic',
-                    letterSpacing: 0,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black),
-              ),
-            ),
-            SizedBox(
-              height: 24,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16),
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                //height: 60,
-                padding:
-                    EdgeInsets.only(left: 16, top: 8, right: 16, bottom: 8),
-                decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: checkBoxValue3 == true
-                        ? const BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12))
-                        : BorderRadius.circular(12),
-                    border: checkBoxValue3 == true
-                        ? Border(
-                            bottom: BorderSide(
-                            width: 2.6,
-                            color: Constants.ftaColorLight,
-                          ))
-                        : Border(
-                            top: BorderSide.none,
-                            bottom: BorderSide.none,
-                            left: BorderSide.none,
-                            right: BorderSide.none)),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Material(
-                      elevation: 7,
-                      surfaceTintColor: Constants.ctaColorLight,
-                      color: Constants.ftaColorLight,
-                      shadowColor: Colors.black54,
+          ),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 70,
+                    width: MediaQuery.of(context).size.width,
+                    child: Material(
+                      elevation: 12,
+                      animationDuration: Duration(seconds: 5),
+                      shadowColor: Colors.black.withOpacity(0.35),
+                      surfaceTintColor: Colors.white,
+                      color: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Container(
-                        height: 45,
-                        padding: EdgeInsets.only(left: 16, right: 16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Constants.ftaColorLight,
+                          borderRadius: BorderRadius.circular(32.0)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          right: 16,
                         ),
-                        child: Center(
-                          child: Text(
-                            Constants.currentleadAvailable!.policies[0].quote
-                                .productType,
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'YuGothic',
-                                letterSpacing: 0,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.white),
-                          ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Total Payable Amount : " +
+                                  "R${(TotalPayableAmount + TotalBenefitAmountAmount).toStringAsFixed(2)}",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  letterSpacing: 0,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black),
+                            ),
+                            Expanded(child: Container()),
+                            SizedBox(
+                              width: 16,
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 16,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Text(
-                              "${Constants.currentleadAvailable!.leadObject.title} ${Constants.currentleadAvailable!.leadObject.firstName} ${Constants.currentleadAvailable!.leadObject.lastName}",
-                              style: TextStyle(
-                                fontSize: 14,
-                                letterSpacing: 0,
-                                fontFamily: 'YuGothic',
-                                fontWeight: FontWeight.w400,
-                                color: Constants.ftaColorLight,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          Center(
-                            child: Text(
-                              "FUNERAL COVER ${Constants.currentleadAvailable!.policies[0].quote.productType.toUpperCase()}",
-                              style: TextStyle(
-                                  fontSize: 13,
-                                  fontFamily: 'YuGothic',
-                                  letterSpacing: 0,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      width: 22,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Text(
-                              Constants.currentleadAvailable!.policies[0].quote
-                                  .totalBenefitPremium
-                                  .toString(),
-                              style: TextStyle(
-                                fontSize: 14,
-                                letterSpacing: 0,
-                                fontFamily: 'YuGothic',
-                                fontWeight: FontWeight.w400,
-                                color: Constants.ftaColorLight,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          Center(
-                            child: Text(
-                              "TOTAL BENEFIT PREMIUM",
-                              style: TextStyle(
-                                  fontSize: 13,
-                                  fontFamily: 'YuGothic',
-                                  letterSpacing: 0,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      width: 22,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: Text(
-                              Constants.currentleadAvailable!.policies[0].quote
-                                  .totalPremium
-                                  .toString(),
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontFamily: 'YuGothic',
-                                letterSpacing: 0,
-                                fontWeight: FontWeight.w400,
-                                color: Constants.ftaColorLight,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          Center(
-                            child: Text(
-                              "TOTAL MONTHLY AMOUNT",
-                              style: TextStyle(
-                                  fontSize: 13,
-                                  fontFamily: 'YuGothic',
-                                  letterSpacing: 0,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      width: 22,
-                    ),
-                    Transform.scale(
-                      scaleX: 1.7,
-                      scaleY: 1.7,
-                      child: Checkbox(
-                          splashRadius: 0.0,
-                          value: checkBoxValue3,
-                          side: BorderSide(
-                            width: 1.0,
-                            color: Constants.ftaColorLight,
-                          ),
-                          activeColor: Constants.ctaColorLight,
-                          checkColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(360)),
-                          onChanged: (bool? newValue) {
-                            isTickMarked = 1;
-                            checkBoxValue3 = newValue!;
-                            setState(() {
-                              checkBoxValue3 != newValue!;
-                            });
-                          }),
-                    ),
-                    Spacer()
-                  ],
-                ),
-              ),
-            ),
-            checkBoxValue3 == true
-                ? Padding(
+                  ),
+                  SizedBox(
+                    height: 24,
+                  ),
+                  Padding(
                     padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Material(
-                          elevation: 7,
-                          surfaceTintColor: Colors.white,
-                          color: Colors.white,
-                          shadowColor: Colors.black,
-                          //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12),),
-                          child: Container(
-                            height: 40,
-                            width: MediaQuery.of(context).size.width,
-                            color: Colors.white,
-                            padding: EdgeInsets.all(8),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
+                    child: Text(
+                      "You have taken cover at a total premium of " +
+                          "R${(TotalPayableAmount + TotalBenefitAmountAmount).toStringAsFixed(2)}",
+                      style: TextStyle(
+                          fontSize: 18,
+                          letterSpacing: 0,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 24,
+                  ),
+                  // Policy Cards - Mobile Layout
+                  for (var policy
+                      in Constants.currentleadAvailable!.policies) ...[
+                    // Policy Card
+                    CustomCard(
+                      elevation: 4,
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Policy Header
+                          Container(
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                                topRight: Radius.circular(16),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: const Text(
-                                    "Product",
+                                // Product Type Badge
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Constants.ftaColorLight,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    policiesSelectedProdTypes[Constants
+                                        .currentleadAvailable!.policies
+                                        .indexOf(policy)],
                                     style: TextStyle(
-                                        fontSize: 13,
-                                        fontFamily: 'YuGothic',
-                                        letterSpacing: 0,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black),
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
-                                Expanded(
-                                  child: const Text(
-                                    "Sum Assured",
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        letterSpacing: 0,
-                                        fontFamily: 'YuGothic',
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: const Text(
-                                    "Premium",
-                                    style: TextStyle(
-                                        fontSize: 13,
-                                        fontFamily: 'YuGothic',
-                                        letterSpacing: 0,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 22,
-                                ),
-                                const Text(
-                                  "Details",
+                                SizedBox(height: 12),
+                                // Main Life Assured Name
+                                Text(
+                                  "${mainMembers[Constants.currentleadAvailable!.policies.indexOf(policy)].title} "
+                                  "${mainMembers[Constants.currentleadAvailable!.policies.indexOf(policy)].name} "
+                                  "${mainMembers[Constants.currentleadAvailable!.policies.indexOf(policy)].surname}",
                                   style: TextStyle(
-                                      fontSize: 13,
-                                      fontFamily: 'YuGothic',
-                                      letterSpacing: 0,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.black),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Constants.ftaColorLight,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                // Product Info
+                                Text(
+                                  "${policiesSelectedProducts[Constants.currentleadAvailable!.policies.indexOf(policy)]} (R${(policy.quote.sumAssuredFamilyCover ?? 0).toStringAsFixed(2)})",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black87,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                // height: 50,
-                                //width: MediaQuery.of(context).size.width,
-                                color: Colors.grey.withOpacity(0.1),
-                                padding: EdgeInsets.all(8),
-                                child: ExpansionPanelList(
-                                  dividerColor: Constants.ftaColorLight,
-                                  materialGapSize: 0.0,
-                                  expansionCallback:
-                                      (int index, bool isExpanded) {
-                                    setState(() {
-                                      premList[index].isExpanded = !isExpanded;
-                                      // Close other panels if they are open
-                                      for (int i = 0;
-                                          i < premList.length;
-                                          i++) {
-                                        if (i != index) {
-                                          premList[i].isExpanded = false;
-                                        } else {
-                                          premList[i].isExpanded = isExpanded;
-                                        }
-                                      }
-                                    });
-                                  },
-                                  children: premList
-                                      .map<ExpansionPanel>((ConfirmPrem prem) {
-                                    int index = premList.indexOf(prem);
-                                    expandedIndex = index;
-                                    return ExpansionPanel(
-                                      canTapOnHeader: true,
-                                      backgroundColor: Colors.white,
-                                      headerBuilder: (BuildContext context,
-                                          bool isExpanded) {
-                                        return Container(
-                                          // height: 50,
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          color: Colors.grey.withOpacity(0.04),
-                                          padding: EdgeInsets.all(8),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
+                          // Premium Details
+                          Container(
+                            padding: EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                // Premium breakdown rows
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Additional Benefits:",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    Text(
+                                      "R${TotalBenefitAmountAmount.toStringAsFixed(2)}",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Constants.ftaColorLight,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 8),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Premium:",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    Text(
+                                      "R${TotalPayableAmount.toStringAsFixed(2)}",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Constants.ftaColorLight,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Divider(height: 24, thickness: 1),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Total Monthly Premium:",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    Text(
+                                      "R${(TotalPayableAmount + TotalBenefitAmountAmount).toStringAsFixed(2)}",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: Constants.ftaColorLight,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 16),
+                                // Accept/Expand buttons row
+                                Row(
+                                  children: [
+                                    // Accept Quote Button
+                                    Expanded(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          color: Constants.ctaColorLight,
+                                          borderRadius:
+                                              BorderRadius.circular(25),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "Accept Quote",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Transform.scale(
+                                              scale: 1.2,
+                                              child: Checkbox(
+                                                fillColor:
+                                                    MaterialStateProperty.all(
+                                                        Colors.white),
+                                                value: Constants
+                                                        .currentleadAvailable!
+                                                        .policies[Constants
+                                                            .currentleadAvailable!
+                                                            .policies
+                                                            .indexOf(policy)]
+                                                        .quote
+                                                        .acceptPolicy ==
+                                                    "yes",
+                                                side: BorderSide(
+                                                    color: Colors.white),
+                                                activeColor:
+                                                    Constants.ftaColorLight,
+                                                checkColor:
+                                                    Constants.ctaColorLight,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                ),
+                                                onChanged: (bool? newValue) {
+                                                  setState(() {
+                                                    isTickMarked = 1;
+                                                    final index = Constants
+                                                        .currentleadAvailable!
+                                                        .policies
+                                                        .indexWhere((element) =>
+                                                            element == policy);
+                                                    checkBoxValue3 =
+                                                        newValue ?? false;
+                                                    if (checkBoxValue3) {
+                                                      Constants
+                                                          .currentleadAvailable!
+                                                          .policies[index]
+                                                          .quote
+                                                          .acceptPolicy = "yes";
+                                                    } else {
+                                                      Constants
+                                                          .currentleadAvailable!
+                                                          .policies[index]
+                                                          .quote
+                                                          .acceptPolicy = "no";
+                                                    }
+                                                    refreshSelectionOptions();
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    // Expand button
+                                    Container(
+                                      padding: EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[100],
+                                        borderRadius: BorderRadius.circular(25),
+                                        border: Border.all(
+                                            color: Constants.ctaColorLight),
+                                      ),
+                                      child: InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            final ref = policy.reference;
+                                            expandedStates[ref] =
+                                                !(expandedStates[ref] ?? false);
+                                          });
+                                        },
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              (expandedStates[
+                                                          policy.reference] ??
+                                                      false)
+                                                  ? "Collapse"
+                                                  : "Expand",
+                                              style: TextStyle(
+                                                color: Constants.ctaColorLight,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            SizedBox(width: 4),
+                                            Icon(
+                                              (expandedStates[
+                                                          policy.reference] ??
+                                                      false)
+                                                  ? Icons.keyboard_arrow_up
+                                                  : Icons.keyboard_arrow_down,
+                                              color: Constants.ctaColorLight,
+                                              size: 20,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Members Details Section (Expandable)
+                          // Replace the placeholder section in your expandable area with this code:
+                          if (expandedStates[policy.reference] ?? false)
+                            Container(
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(16),
+                                  bottomRight: Radius.circular(16),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Lives Covered in Your Policy",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  SizedBox(height: 16),
+
+                                  // Main Life Assured
+                                  Container(
+                                    padding: EdgeInsets.all(12),
+                                    margin: EdgeInsets.only(bottom: 8),
+                                    decoration: BoxDecoration(
+                                      color: Constants.ftaColorLight
+                                          .withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                          color: Constants.ftaColorLight
+                                              .withOpacity(0.3)),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 8, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: Constants.ftaColorLight,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: Text(
+                                                "Main Life Assured",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          "${mainMembers[Constants.currentleadAvailable!.policies.indexOf(policy)].title} "
+                                          "${mainMembers[Constants.currentleadAvailable!.policies.indexOf(policy)].name} "
+                                          "${mainMembers[Constants.currentleadAvailable!.policies.indexOf(policy)].surname}",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "Cover Amount: ",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                            Text(
+                                              "R${(policy.quote.sumAssuredFamilyCover ?? 0).toStringAsFixed(2)}",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                                color: Constants.ftaColorLight,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  // Spouse/Partner (if exists)
+                                  if (policy.quote.partnerCovered == true)
+                                    Container(
+                                      padding: EdgeInsets.all(12),
+                                      margin: EdgeInsets.only(bottom: 8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                            color:
+                                                Colors.blue.withOpacity(0.3)),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
                                             children: [
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Expanded(
-                                                    flex: 2,
-                                                    child: Text(
-                                                      prem.productName,
-                                                      style: TextStyle(
-                                                          fontSize: 13,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                          letterSpacing: 0,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color: hoverColor ==
-                                                                  expandedIndex
-                                                              ? Constants
-                                                                  .ftaColorLight
-                                                              : Colors.black),
-                                                    ),
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.blue,
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Text(
+                                                  "Partner",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w600,
                                                   ),
-                                                  Expanded(
-                                                    child: Text(
-                                                      prem.sumAssured,
-                                                      style: TextStyle(
-                                                          fontSize: 13,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                          letterSpacing: 0,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color: hoverColor ==
-                                                                  expandedIndex
-                                                              ? Constants
-                                                                  .ftaColorLight
-                                                              : Colors.black),
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: Text(
-                                                      prem.premium,
-                                                      style: TextStyle(
-                                                          fontSize: 13,
-                                                          fontFamily:
-                                                              'YuGothic',
-                                                          letterSpacing: 0,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color: hoverColor ==
-                                                                  expandedIndex
-                                                              ? Constants
-                                                                  .ftaColorLight
-                                                              : Colors.black),
-                                                    ),
-                                                  ),
-                                                  /*Expanded(
-                                                  child: Icon(hoverColor == prem?Icons.keyboard_arrow_up_outlined :Icons.keyboard_arrow_down, size: 32,color:hoverColor == prem?Colors.redAccent: Colors.black,),
-                                                ),*/
-                                                ],
+                                                ),
                                               ),
                                             ],
                                           ),
-                                        );
-                                      },
-                                      body: expandedIndex == 0 &&
-                                              prem.isExpanded == true
-                                          ? Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 8, bottom: 8),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      Expanded(
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Center(
-                                                              child: Text(
-                                                                Constants
-                                                                    .mainDOB,
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'YuGothic',
-                                                                    letterSpacing:
-                                                                        0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400,
-                                                                    color: Colors
-                                                                        .black),
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 8,
-                                                            ),
-                                                            Center(
-                                                              child: Text(
-                                                                "DATE OF BIRTH",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'YuGothic',
-                                                                    letterSpacing:
-                                                                        0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400,
-                                                                    color: Colors
-                                                                        .black),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 22,
-                                                      ),
-                                                      Expanded(
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Center(
-                                                              child: Text(
-                                                                Constants
-                                                                    .mainAGE
-                                                                    .toString(),
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'YuGothic',
-                                                                    letterSpacing:
-                                                                        0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400,
-                                                                    color: Colors
-                                                                        .black),
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 8,
-                                                            ),
-                                                            Center(
-                                                              child: Text(
-                                                                "MAIN INSURED AGE",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'YuGothic',
-                                                                    letterSpacing:
-                                                                        0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400,
-                                                                    color: Colors
-                                                                        .black),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 22,
-                                                      ),
-                                                      Expanded(
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Center(
-                                                              child: Text(
-                                                                "No",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'YuGothic',
-                                                                    letterSpacing:
-                                                                        0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400,
-                                                                    color: Constants
-                                                                        .ftaColorLight),
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 8,
-                                                            ),
-                                                            Center(
-                                                              child: Text(
-                                                                "POLICY HOLDER = MAIN INSURED?",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'YuGothic',
-                                                                    letterSpacing:
-                                                                        0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400,
-                                                                    color: Colors
-                                                                        .black),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 22,
-                                                      ),
-                                                      Expanded(
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Center(
-                                                              child: Text(
-                                                                Constants
-                                                                    .currentleadAvailable!
-                                                                    .policies[0]
-                                                                    .quote
-                                                                    .inceptionDate
-                                                                    .toString(),
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'YuGothic',
-                                                                    letterSpacing:
-                                                                        0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400,
-                                                                    color: Colors
-                                                                        .black),
-                                                              ),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 8,
-                                                            ),
-                                                            Center(
-                                                              child: Text(
-                                                                "INCEPTION DATE",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        13,
-                                                                    fontFamily:
-                                                                        'YuGothic',
-                                                                    letterSpacing:
-                                                                        0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400,
-                                                                    color: Constants
-                                                                        .ftaColorLight),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )
-                                                ],
+                                          SizedBox(height: 8),
+                                          Text(
+                                            // You'll need to access spouse/partner details from your data structure
+                                            "Spouse/Partner Details", // Replace with actual spouse/partner name
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Cover Amount: ",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey[600],
+                                                ),
                                               ),
-                                            )
-                                          : expandedIndex == 1 &&
-                                                  prem.isExpanded == true
-                                              ? Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 8, bottom: 8),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Expanded(
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Center(
-                                                                  child: Text(
-                                                                    Constants
-                                                                        .partnerDOB,
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            13,
-                                                                        fontFamily:
-                                                                            'YuGothic',
-                                                                        letterSpacing:
-                                                                            0,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w400,
-                                                                        color: Colors
-                                                                            .black),
-                                                                  ),
-                                                                ),
-                                                                SizedBox(
-                                                                  height: 8,
-                                                                ),
-                                                                Center(
-                                                                  child: Text(
-                                                                    "PARTNER DATE OF BIRTH",
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            13,
-                                                                        fontFamily:
-                                                                            'YuGothic',
-                                                                        letterSpacing:
-                                                                            0,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w400,
-                                                                        color: Colors
-                                                                            .black),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            width: 22,
-                                                          ),
-                                                          Expanded(
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Center(
-                                                                  child: Text(
-                                                                    Constants
-                                                                        .partnerAGE
-                                                                        .toString(),
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            13,
-                                                                        fontFamily:
-                                                                            'YuGothic',
-                                                                        letterSpacing:
-                                                                            0,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w400,
-                                                                        color: Constants
-                                                                            .ctaColorLight),
-                                                                  ),
-                                                                ),
-                                                                SizedBox(
-                                                                  height: 8,
-                                                                ),
-                                                                Center(
-                                                                  child: Text(
-                                                                    "PARTNER AGE",
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            13,
-                                                                        fontFamily:
-                                                                            'YuGothic',
-                                                                        letterSpacing:
-                                                                            0,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w400,
-                                                                        color: Colors
-                                                                            .black),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            width: 22,
-                                                          ),
-                                                          Expanded(
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Center(
-                                                                  child: Text(
-                                                                    Constants
-                                                                        .currentleadAvailable!
-                                                                        .policies[
-                                                                            0]
-                                                                        .quote
-                                                                        .partnerFuneralSumAssured
-                                                                        .toString(),
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            13,
-                                                                        fontFamily:
-                                                                            'YuGothic',
-                                                                        letterSpacing:
-                                                                            0,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w400,
-                                                                        color: Constants
-                                                                            .ftaColorLight),
-                                                                  ),
-                                                                ),
-                                                                SizedBox(
-                                                                  height: 8,
-                                                                ),
-                                                                Center(
-                                                                  child: Text(
-                                                                    "PARTNER SUM ASSURED",
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            13,
-                                                                        fontFamily:
-                                                                            'YuGothic',
-                                                                        letterSpacing:
-                                                                            0,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w400,
-                                                                        color: Colors
-                                                                            .black),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            width: 22,
-                                                          ),
-                                                          Expanded(
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Center(
-                                                                  child: Text(
-                                                                    Constants
-                                                                        .currentleadAvailable!
-                                                                        .policies[
-                                                                            0]
-                                                                        .quote
-                                                                        .childrenSumAssured
-                                                                        .toString(),
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            13,
-                                                                        fontFamily:
-                                                                            'YuGothic',
-                                                                        letterSpacing:
-                                                                            0,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w400,
-                                                                        color: Constants
-                                                                            .ftaColorLight),
-                                                                  ),
-                                                                ),
-                                                                SizedBox(
-                                                                  height: 8,
-                                                                ),
-                                                                Center(
-                                                                  child: Text(
-                                                                    "CHILDREN SUM ASSURED",
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            13,
-                                                                        fontFamily:
-                                                                            'YuGothic',
-                                                                        letterSpacing:
-                                                                            0,
-                                                                        fontWeight:
-                                                                            FontWeight
-                                                                                .w400,
-                                                                        color: Colors
-                                                                            .black),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      )
-                                                    ],
+                                              Text(
+                                                "R${(policy.quote.partnerFuneralSumAssured ?? 0).toStringAsFixed(2)}",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.blue,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                  // Children (if any)
+                                  if ((policy.quote.childrenCount ?? 0) > 0)
+                                    Container(
+                                      padding: EdgeInsets.all(12),
+                                      margin: EdgeInsets.only(bottom: 8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.green.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                            color:
+                                                Colors.green.withOpacity(0.3)),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.green,
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Text(
+                                                  "Children",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w600,
                                                   ),
-                                                )
-                                              : expandedIndex == 2 &&
-                                                      prem.isExpanded == true
-                                                  ? Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 8,
-                                                              bottom: 8),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Row(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .center,
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Expanded(
-                                                                child: Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    Center(
-                                                                      child:
-                                                                          Text(
-                                                                        "0",
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                13,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            letterSpacing:
-                                                                                0,
-                                                                            fontWeight:
-                                                                                FontWeight.w400,
-                                                                            color: Colors.black),
-                                                                      ),
-                                                                    ),
-                                                                    SizedBox(
-                                                                      height: 8,
-                                                                    ),
-                                                                    Center(
-                                                                      child:
-                                                                          Text(
-                                                                        "ADDITIONAL CHILDREN COVERED",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              13,
-                                                                          letterSpacing:
-                                                                              0,
-                                                                          fontFamily:
-                                                                              'YuGothic',
-                                                                          fontWeight:
-                                                                              FontWeight.w400,
-                                                                          color:
-                                                                              Constants.ftaColorLight,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                width: 22,
-                                                              ),
-                                                              Expanded(
-                                                                child: Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    Center(
-                                                                      child:
-                                                                          Text(
-                                                                        "0",
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                13,
-                                                                            letterSpacing:
-                                                                                0,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            fontWeight:
-                                                                                FontWeight.w400,
-                                                                            color: Constants.ctaColorLight),
-                                                                      ),
-                                                                    ),
-                                                                    SizedBox(
-                                                                      height: 8,
-                                                                    ),
-                                                                    Center(
-                                                                      child:
-                                                                          Text(
-                                                                        "CHILDREN SUM ASSURED",
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                13,
-                                                                            letterSpacing:
-                                                                                0,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            fontWeight:
-                                                                                FontWeight.w400,
-                                                                            color: Colors.black),
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              SizedBox(
-                                                                width: 22,
-                                                              ),
-                                                              Expanded(
-                                                                child: Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    Center(
-                                                                      child:
-                                                                          Text(
-                                                                        "R NaN",
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                13,
-                                                                            letterSpacing:
-                                                                                0,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            fontWeight:
-                                                                                FontWeight.w400,
-                                                                            color: Constants.ftaColorLight),
-                                                                      ),
-                                                                    ),
-                                                                    SizedBox(
-                                                                      height: 8,
-                                                                    ),
-                                                                    Center(
-                                                                      child:
-                                                                          Text(
-                                                                        "CHILDREN PREMIUM",
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                13,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            letterSpacing:
-                                                                                0,
-                                                                            fontWeight:
-                                                                                FontWeight.w400,
-                                                                            color: Colors.black),
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          )
-                                                        ],
-                                                      ),
-                                                    )
-                                                  : expandedIndex == 3 &&
-                                                          prem.isExpanded ==
-                                                              true
-                                                      ? Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  top: 8,
-                                                                  bottom: 8),
-                                                          child: Column(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Container(
-                                                                height: 40,
-                                                                width: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .all(8),
-                                                                decoration: BoxDecoration(
-                                                                    color: Colors.white,
-                                                                    border: Border(
-                                                                        bottom: BorderSide(
-                                                                      width:
-                                                                          1.0,
-                                                                      color: Constants
-                                                                          .ftaColorLight,
-                                                                    ))),
-                                                                child: Row(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .center,
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .start,
-                                                                  children: [
-                                                                    Expanded(
-                                                                      child:
-                                                                          Text(
-                                                                        "#",
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                13,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            letterSpacing:
-                                                                                0,
-                                                                            fontWeight:
-                                                                                FontWeight.w600,
-                                                                            color: Colors.black),
-                                                                      ),
-                                                                    ),
-                                                                    Expanded(
-                                                                      child:
-                                                                          Text(
-                                                                        "Sum Assured",
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                13,
-                                                                            letterSpacing:
-                                                                                0,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            fontWeight:
-                                                                                FontWeight.w600,
-                                                                            color: Colors.black),
-                                                                      ),
-                                                                    ),
-                                                                    Expanded(
-                                                                      child:
-                                                                          Text(
-                                                                        "Date of Birth",
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                13,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            letterSpacing:
-                                                                                0,
-                                                                            fontWeight:
-                                                                                FontWeight.w600,
-                                                                            color: Colors.black),
-                                                                      ),
-                                                                    ),
-                                                                    Expanded(
-                                                                      child:
-                                                                          Text(
-                                                                        "Age",
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                13,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            letterSpacing:
-                                                                                0,
-                                                                            fontWeight:
-                                                                                FontWeight.w600,
-                                                                            color: Colors.black),
-                                                                      ),
-                                                                    ),
-                                                                    Expanded(
-                                                                      child:
-                                                                          Text(
-                                                                        "Premium",
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                13,
-                                                                            fontFamily:
-                                                                                'YuGothic',
-                                                                            letterSpacing:
-                                                                                0,
-                                                                            fontWeight:
-                                                                                FontWeight.w600,
-                                                                            color: Colors.black),
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              ListView.builder(
-                                                                  itemCount:
-                                                                      parentsFuneralList
-                                                                          .length,
-                                                                  shrinkWrap:
-                                                                      true,
-                                                                  itemBuilder:
-                                                                      (context,
-                                                                          index) {
-                                                                    return Container(
-                                                                      //height: 40,
-                                                                      width: MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .width,
-                                                                      color: Colors
-                                                                          .white,
-                                                                      padding:
-                                                                          EdgeInsets.all(
-                                                                              8),
-                                                                      child:
-                                                                          Row(
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment.center,
-                                                                        mainAxisAlignment:
-                                                                            MainAxisAlignment.start,
-                                                                        children: [
-                                                                          Expanded(
-                                                                            child:
-                                                                                Text(
-                                                                              parentsFuneralList[index].id.toString(),
-                                                                              style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                            ),
-                                                                          ),
-                                                                          Expanded(
-                                                                            child:
-                                                                                Text(
-                                                                              parentsFuneralList[index].sumAssured.toString(),
-                                                                              style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                            ),
-                                                                          ),
-                                                                          Expanded(
-                                                                            child:
-                                                                                Text(
-                                                                              parentsFuneralList[index].dateOfBirth,
-                                                                              style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                            ),
-                                                                          ),
-                                                                          Expanded(
-                                                                            child:
-                                                                                Text(
-                                                                              parentsFuneralList[index].age.toString(),
-                                                                              style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                            ),
-                                                                          ),
-                                                                          Expanded(
-                                                                            child:
-                                                                                Text(
-                                                                              parentsFuneralList[index].premium.toString(),
-                                                                              style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    );
-                                                                  })
-                                                            ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            "${policy.quote.childrenCount} Children Covered",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Cover Amount (each): ",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey[600],
+                                                ),
+                                              ),
+                                              Text(
+                                                "R${(policy.quote.childrenSumAssured ?? 0).toStringAsFixed(2)}",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.green,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                  // Parents (if included)
+                                  if (policy.quote.parentsInsured == true)
+                                    Container(
+                                      padding: EdgeInsets.all(12),
+                                      margin: EdgeInsets.only(bottom: 8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.purple.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                            color:
+                                                Colors.purple.withOpacity(0.3)),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.purple,
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Text(
+                                                  "Parents",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            "Parent(s) Covered",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Cover Amount (each): ",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey[600],
+                                                ),
+                                              ),
+                                              Text(
+                                                "R${(policy.quote.mainIsuredCover ?? 0).toStringAsFixed(2)}",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.purple,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                  // Extended Family (if any)
+                                  if (policy.quote.extendedFamilysInsured ==
+                                      true)
+                                    Container(
+                                      padding: EdgeInsets.all(12),
+                                      margin: EdgeInsets.only(bottom: 8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.orange.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                            color:
+                                                Colors.orange.withOpacity(0.3)),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.orange,
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Text(
+                                                  "Extended Family",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            "Extended Family Member(s)",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Cover Amount (each): ",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey[600],
+                                                ),
+                                              ),
+                                              Text(
+                                                "R${(policy.quote.mainIsuredCover ?? 0).toStringAsFixed(2)}",
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.orange,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                  // Additional Riders (if any)
+                                  if (policyPremiums[Constants
+                                              .currentleadAvailable!.policies
+                                              .indexOf(policy)]
+                                          .selectedRidersDetail
+                                          ?.isNotEmpty ==
+                                      true)
+                                    Container(
+                                      padding: EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                            color: Colors.red.withOpacity(0.3)),
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 8, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red,
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Text(
+                                                  "Additional Riders",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 8),
+                                          // Loop through selected riders
+                                          ...policyPremiums[Constants
+                                                  .currentleadAvailable!
+                                                  .policies
+                                                  .indexOf(policy)]
+                                              .selectedRidersDetail!
+                                              .map((rider) => Padding(
+                                                    padding: EdgeInsets.only(
+                                                        bottom: 4),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Expanded(
+                                                          child: Text(
+                                                            rider.riderName ??
+                                                                "Additional Benefit",
+                                                            style: TextStyle(
+                                                              fontSize: 12,
+                                                              color: Colors
+                                                                  .black87,
+                                                            ),
                                                           ),
-                                                        )
-                                                      : expandedIndex == 4 &&
-                                                              prem.isExpanded ==
-                                                                  true
-                                                          ? Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .only(
-                                                                      top: 8,
-                                                                      bottom:
-                                                                          8),
-                                                              child: Column(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .start,
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .start,
-                                                                children: [
-                                                                  Container(
-                                                                    height: 40,
-                                                                    width: MediaQuery.of(
-                                                                            context)
-                                                                        .size
-                                                                        .width,
-                                                                    padding:
-                                                                        EdgeInsets
-                                                                            .all(8),
-                                                                    decoration: BoxDecoration(
-                                                                        color: Colors.white,
-                                                                        border: Border(
-                                                                            bottom: BorderSide(
-                                                                          width:
-                                                                              1.0,
-                                                                          color:
-                                                                              Constants.ftaColorLight,
-                                                                        ))),
-                                                                    child: Row(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .center,
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .start,
-                                                                      children: [
-                                                                        Expanded(
-                                                                          child:
-                                                                              Text(
-                                                                            "#",
-                                                                            style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                fontFamily: 'YuGothic',
-                                                                                letterSpacing: 0,
-                                                                                fontWeight: FontWeight.w600,
-                                                                                color: Colors.black),
-                                                                          ),
-                                                                        ),
-                                                                        Expanded(
-                                                                          child:
-                                                                              Text(
-                                                                            "Sum Assured",
-                                                                            style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                fontFamily: 'YuGothic',
-                                                                                letterSpacing: 0,
-                                                                                fontWeight: FontWeight.w600,
-                                                                                color: Colors.black),
-                                                                          ),
-                                                                        ),
-                                                                        Expanded(
-                                                                          child:
-                                                                              Text(
-                                                                            "Date of Birth",
-                                                                            style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                fontFamily: 'YuGothic',
-                                                                                letterSpacing: 0,
-                                                                                fontWeight: FontWeight.w600,
-                                                                                color: Colors.black),
-                                                                          ),
-                                                                        ),
-                                                                        Expanded(
-                                                                          child:
-                                                                              Text(
-                                                                            "Age",
-                                                                            style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                fontFamily: 'YuGothic',
-                                                                                letterSpacing: 0,
-                                                                                fontWeight: FontWeight.w600,
-                                                                                color: Colors.black),
-                                                                          ),
-                                                                        ),
-                                                                        Expanded(
-                                                                          child:
-                                                                              Text(
-                                                                            "Premium",
-                                                                            style: TextStyle(
-                                                                                fontSize: 13,
-                                                                                fontFamily: 'YuGothic',
-                                                                                letterSpacing: 0,
-                                                                                fontWeight: FontWeight.w600,
-                                                                                color: Colors.black),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                  ListView.builder(
-                                                                      itemCount: parentsFuneralList.length,
-                                                                      shrinkWrap: true,
-                                                                      itemBuilder: (context, index) {
-                                                                        return Container(
-                                                                          //height: 40,
-                                                                          width: MediaQuery.of(context)
-                                                                              .size
-                                                                              .width,
-                                                                          color:
-                                                                              Colors.white,
-                                                                          padding:
-                                                                              EdgeInsets.all(8),
-                                                                          child:
-                                                                              Row(
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.center,
-                                                                            mainAxisAlignment:
-                                                                                MainAxisAlignment.start,
-                                                                            children: [
-                                                                              Expanded(
-                                                                                child: Text(
-                                                                                  parentsFuneralList[index].id.toString(),
-                                                                                  style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                ),
-                                                                              ),
-                                                                              Expanded(
-                                                                                child: Text(
-                                                                                  parentsFuneralList[index].sumAssured.toString(),
-                                                                                  style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                ),
-                                                                              ),
-                                                                              Expanded(
-                                                                                child: Text(
-                                                                                  parentsFuneralList[index].dateOfBirth,
-                                                                                  style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                ),
-                                                                              ),
-                                                                              Expanded(
-                                                                                child: Text(
-                                                                                  parentsFuneralList[index].age.toString(),
-                                                                                  style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                ),
-                                                                              ),
-                                                                              Expanded(
-                                                                                child: Text(
-                                                                                  parentsFuneralList[index].premium.toString(),
-                                                                                  style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        );
-                                                                      })
-                                                                ],
-                                                              ),
-                                                            )
-                                                          : expandedIndex ==
-                                                                      5 &&
-                                                                  prem.isExpanded ==
-                                                                      true
-                                                              ? Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                          .only(
-                                                                          top:
-                                                                              8,
-                                                                          bottom:
-                                                                              8),
-                                                                  child: Column(
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .start,
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .start,
-                                                                    children: [
-                                                                      Container(
-                                                                        height:
-                                                                            40,
-                                                                        width: MediaQuery.of(context)
-                                                                            .size
-                                                                            .width,
-                                                                        padding:
-                                                                            EdgeInsets.all(8),
-                                                                        decoration: BoxDecoration(
-                                                                            color:
-                                                                                Colors.white,
-                                                                            border: Border(bottom: BorderSide(width: 1.0, color: Colors.blue))),
-                                                                        child:
-                                                                            Row(
-                                                                          crossAxisAlignment:
-                                                                              CrossAxisAlignment.center,
-                                                                          mainAxisAlignment:
-                                                                              MainAxisAlignment.start,
-                                                                          children: [
-                                                                            Expanded(
-                                                                              child: Text(
-                                                                                "#",
-                                                                                style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w600, color: Colors.black),
-                                                                              ),
-                                                                            ),
-                                                                            Expanded(
-                                                                              child: Text(
-                                                                                "Rider Type",
-                                                                                style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w600, color: Colors.black),
-                                                                              ),
-                                                                            ),
-                                                                            Expanded(
-                                                                              child: Text(
-                                                                                "Member Type",
-                                                                                style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w600, color: Colors.black),
-                                                                              ),
-                                                                            ),
-                                                                            Expanded(
-                                                                              child: Text(
-                                                                                "Cover",
-                                                                                style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w600, color: Colors.black),
-                                                                              ),
-                                                                            ),
-                                                                            Expanded(
-                                                                              child: Text(
-                                                                                "Premium",
-                                                                                style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w600, color: Colors.black),
-                                                                              ),
-                                                                            ),
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                      ListView.builder(
-                                                                          itemCount: raidersList.length,
-                                                                          shrinkWrap: true,
-                                                                          itemBuilder: (context, index) {
-                                                                            return Container(
-                                                                              //height: 40,
-                                                                              width: MediaQuery.of(context).size.width,
-                                                                              color: Colors.white,
-                                                                              padding: EdgeInsets.all(8),
-                                                                              child: Row(
-                                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                                children: [
-                                                                                  Expanded(
-                                                                                    child: Text(
-                                                                                      raidersList[index].id.toString(),
-                                                                                      style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                    ),
-                                                                                  ),
-                                                                                  Expanded(
-                                                                                    child: Text(
-                                                                                      raidersList[index].riderType,
-                                                                                      style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                    ),
-                                                                                  ),
-                                                                                  Expanded(
-                                                                                    child: Text(
-                                                                                      raidersList[index].memberType,
-                                                                                      style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                    ),
-                                                                                  ),
-                                                                                  Expanded(
-                                                                                    child: Text(
-                                                                                      raidersList[index].cover,
-                                                                                      style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                    ),
-                                                                                  ),
-                                                                                  Expanded(
-                                                                                    child: Text(
-                                                                                      raidersList[index].premium.toString(),
-                                                                                      style: TextStyle(fontSize: 13, fontFamily: 'YuGothic', letterSpacing: 0, fontWeight: FontWeight.w400, color: Colors.black),
-                                                                                    ),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            );
-                                                                          })
-                                                                    ],
-                                                                  ),
-                                                                )
-                                                              : Container(),
-                                      isExpanded: premList[index].isExpanded,
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                : Container(),
-            SizedBox(
-              height: 24,
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 16, right: 16),
-              child: StyledText(
-                text: "Is this affordable to you?",
-                tags: {
-                  'bold': StyledTextTag(
-                    style: TextStyle(
-                      //fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                      //   fontFamily: 'YuGothic',
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  'green': StyledTextTag(
-                    style: TextStyle(
-                      //   fontFamily: 'YuGothic',
-                      fontWeight: FontWeight.w500,
-                      color: Colors.green,
-                    ),
-                  ),
-                },
-                style: TextStyle(
-                  fontSize: 18.0,
-                  color: Colors.black,
-                  //  fontFamily: 'YuGothic',
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 16, right: 16),
-              child: Container(
-                height: 60,
-                child: ListView.builder(
-                    itemCount: dailogueList3.length,
-                    scrollDirection: Axis.horizontal,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return Row(
-                        children: [
-                          Container(
-                            height: 60,
-                            width: 99,
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                  width: 1.0,
-                                  color: dailogueList3[index].stateValue == true
-                                      ? Constants.ftaColorLight
-                                      : Colors.grey.withOpacity(0.35)),
-                              color: Colors.transparent,
-                            ),
-                            child: Center(
-                              child: Row(
-                                children: [
-                                  Transform.scale(
-                                    scaleX: 1.7,
-                                    scaleY: 1.7,
-                                    child: Checkbox(
-                                        value: dailogueList3[index].stateValue,
-                                        side: BorderSide(
-                                          width: 1.4,
-                                          color: Constants.ftaColorLight,
+                                                        ),
+                                                        Text(
+                                                          "R${(rider.premium ?? 0).toStringAsFixed(2)}",
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            color: Colors.red,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ))
+                                              .toList(),
+                                        ],
+                                      ),
+                                    ),
+
+                                  SizedBox(height: 12),
+
+                                  // Total Summary
+                                  Container(
+                                    padding: EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Constants.ftaColorLight
+                                          .withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                          color: Constants.ftaColorLight),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Total Lives Covered:",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.black87,
+                                          ),
                                         ),
-                                        activeColor: Constants.ctaColorLight,
-                                        checkColor: Colors.white,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(360)),
-                                        onChanged: (newValue) {
-                                          dailogueList3[index].stateValue =
-                                              newValue!;
-                                          setState(() {
-                                            for (int i = 0;
-                                                i < dailogueList3.length;
-                                                i++) {
-                                              if (i != index) {
-                                                dailogueList3[i].stateValue =
-                                                    false;
-                                                //Constants.trueOrFalseStringValue = dailogueList[i].stringValue;
-                                              } else {
-                                                dailogueList3[i].stateValue =
-                                                    newValue!;
-                                                Constants
-                                                        .trueOrFalseStringValueJ =
-                                                    dailogueList3[i]
-                                                        .stringValue;
-                                                Constants.isAffordable =
-                                                    dailogueList3[i]
-                                                        .stringValue;
-                                              }
-                                            }
-                                            print(
-                                                "hhhhhhhh ${Constants.trueOrFalseStringValue}");
-                                          });
-                                        }),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    dailogueList3[index].stringValue,
-                                    style: TextStyle(
-                                        color:
-                                            dailogueList3[index].stateValue ==
-                                                    true
-                                                ? Constants.ftaColorLight
-                                                : Colors.grey.withOpacity(0.35),
-                                        fontSize: 18,
-                                        fontFamily: 'YuGothic',
-                                        fontWeight: FontWeight.w600),
+                                        Text(
+                                          "${1 + (policy.quote.partnerCovered == true ? 1 : 0) + (policy.quote.childrenCount ?? 0)}",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                            color: Constants.ftaColorLight,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                          SizedBox(
-                            width: 16,
-                          )
                         ],
-                      );
-                    }),
-              ),
-            ),
-            SizedBox(
-              height: 32,
-            ),
-            Constants.trueOrFalseStringValueJ == "Yes"
-                ? Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: FadeInLeftBig(
-                      duration: Duration(milliseconds: 500),
-                      curve: Curves.linearToEaseOut,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          StyledText(
-                            text:
-                                "Can I proceed in arranging this product(s) for you?",
-                            tags: {
-                              'bold': StyledTextTag(
-                                style: TextStyle(
-                                  //fontWeight: FontWeight.bold,
-                                  color: Colors.green,
-                                  //   fontFamily: 'YuGothic',
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              'green': StyledTextTag(
-                                style: TextStyle(
-                                  //   fontFamily: 'YuGothic',
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.green,
-                                ),
-                              ),
-                            },
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                  ],
+                  SizedBox(height: 16),
+                  if (isAtleastOnePolicyAccepted == true)
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 16),
+                      child: StyledText(
+                        text: "Is this affordable for you?",
+                        tags: {
+                          'bold': StyledTextTag(
                             style: TextStyle(
-                              fontSize: 18.0,
-                              color: Colors.black,
-                              //  fontFamily: 'YuGothic',
+                              //fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                              //   fontFamily: 'YuGothic',
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          SizedBox(
-                            height: 8,
+                          'green': StyledTextTag(
+                            style: TextStyle(
+                              //   fontFamily: 'YuGothic',
+                              fontWeight: FontWeight.w500,
+                              color: Colors.green,
+                            ),
                           ),
-                          Container(
-                            height: 60,
-                            child: ListView.builder(
-                                itemCount: dailogueList4.length,
-                                scrollDirection: Axis.horizontal,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemBuilder: (context, index) {
-                                  return Row(
-                                    children: [
-                                      Container(
-                                        height: 60,
-                                        width: 99,
-                                        padding: EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          border: Border.all(
-                                              width: 1.0,
-                                              color: dailogueList4[index]
-                                                          .stateValue ==
-                                                      true
-                                                  ? Constants.ftaColorLight
-                                                  : Colors.grey
-                                                      .withOpacity(0.35)),
-                                          color: Colors.transparent,
-                                        ),
-                                        child: Center(
-                                          child: Row(
-                                            children: [
-                                              Transform.scale(
-                                                scaleX: 1.7,
-                                                scaleY: 1.7,
-                                                child: Checkbox(
-                                                    value: dailogueList4[index]
-                                                        .stateValue,
-                                                    side: BorderSide(
-                                                      width: 1.4,
-                                                      color: Constants
-                                                          .ftaColorLight,
-                                                    ),
-                                                    activeColor:
-                                                        Constants.ctaColorLight,
-                                                    checkColor: Colors.white,
-                                                    shape:
-                                                        RoundedRectangleBorder(
+                        },
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.black,
+                          //  fontFamily: 'YuGothic',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  if (isAtleastOnePolicyAccepted == true)
+                    SizedBox(
+                      height: 8,
+                    ),
+                  if (isAtleastOnePolicyAccepted == true)
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 0),
+                      child: Container(
+                        height: 60,
+                        child: ListView.builder(
+                            itemCount: dailogueList3.length,
+                            scrollDirection: Axis.horizontal,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return Row(
+                                children: [
+                                  Container(
+                                    height: 60,
+                                    width: 120,
+                                    padding: EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                          width: 1.0,
+                                          color: dailogueList3[index]
+                                                      .stateValue ==
+                                                  true
+                                              ? Constants.ftaColorLight
+                                              : Colors.grey.withOpacity(0.35)),
+                                      color: Colors.transparent,
+                                    ),
+                                    child: Center(
+                                      child: Row(
+                                        children: [
+                                          Transform.scale(
+                                            scaleX: 1.7,
+                                            scaleY: 1.7,
+                                            child: Checkbox(
+                                                value: dailogueList3[index]
+                                                    .stateValue,
+                                                side: BorderSide(
+                                                  width: 1.4,
+                                                  color:
+                                                      Constants.ftaColorLight,
+                                                ),
+                                                activeColor:
+                                                    Constants.ctaColorLight,
+                                                checkColor: Colors.white,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            360)),
+                                                onChanged: (newValue) {
+                                                  dailogueList3[index]
+                                                      .stateValue = newValue!;
+                                                  setState(() {
+                                                    for (int i = 0;
+                                                        i <
+                                                            dailogueList3
+                                                                .length;
+                                                        i++) {
+                                                      if (i != index) {
+                                                        dailogueList3[i]
+                                                            .stateValue = false;
+                                                        //Constants.trueOrFalseStringValue = dailogueList[i].stringValue;
+                                                      } else {
+                                                        dailogueList3[i]
+                                                                .stateValue =
+                                                            newValue!;
+                                                        Constants
+                                                                .trueOrFalseStringValueJ =
+                                                            dailogueList3[i]
+                                                                .stringValue;
+                                                        Constants.isAffordable =
+                                                            dailogueList3[i]
+                                                                .stringValue;
+                                                      }
+                                                    }
+                                                    print(
+                                                        "hhhhhhhh ${Constants.trueOrFalseStringValue}");
+                                                  });
+                                                }),
+                                          ),
+                                          SizedBox(width: 8),
+                                          Text(
+                                            dailogueList3[index].stringValue,
+                                            style: TextStyle(
+                                                color: dailogueList3[index]
+                                                            .stateValue ==
+                                                        true
+                                                    ? Constants.ftaColorLight
+                                                    : Colors.grey
+                                                        .withOpacity(0.35),
+                                                fontSize: 18,
+                                                fontFamily: 'YuGothic',
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 16,
+                                  )
+                                ],
+                              );
+                            }),
+                      ),
+                    ),
+                  if (isAtleastOnePolicyAccepted == true)
+                    SizedBox(
+                      height: 32,
+                    ),
+                  (isAtleastOnePolicyAccepted == true &&
+                          Constants.trueOrFalseStringValueJ.toLowerCase() ==
+                              "yes")
+                      ? Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16, right: 16, top: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Constants.trueOrFalseStringValueJ == "Yes"
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 0, right: 16),
+                                      child: FadeInLeftBig(
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.linearToEaseOut,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            StyledText(
+                                              text:
+                                                  "Can I proceed in arranging this product(s) for you?",
+                                              tags: {
+                                                'bold': StyledTextTag(
+                                                  style: TextStyle(
+                                                    //fontWeight: FontWeight.bold,
+                                                    color: Colors.green,
+                                                    //   fontFamily: 'YuGothic',
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                'green': StyledTextTag(
+                                                  style: TextStyle(
+                                                    //   fontFamily: 'YuGothic',
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.green,
+                                                  ),
+                                                ),
+                                              },
+                                              style: TextStyle(
+                                                fontSize: 18.0,
+                                                color: Colors.black,
+                                                //  fontFamily: 'YuGothic',
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 16,
+                                            ),
+                                            Container(
+                                              height: 60,
+                                              child: ListView.builder(
+                                                  itemCount:
+                                                      dailogueList4.length,
+                                                  scrollDirection:
+                                                      Axis.horizontal,
+                                                  physics:
+                                                      NeverScrollableScrollPhysics(),
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return Row(
+                                                      children: [
+                                                        Container(
+                                                          height: 60,
+                                                          width: 120,
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  12),
+                                                          decoration:
+                                                              BoxDecoration(
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
-                                                                        360)),
-                                                    onChanged: (newValue) {
-                                                      dailogueList4[index]
-                                                              .stateValue =
-                                                          newValue!;
-                                                      setState(() {
-                                                        for (int i = 0;
-                                                            i <
-                                                                dailogueList4
-                                                                    .length;
-                                                            i++) {
-                                                          if (i != index) {
-                                                            dailogueList4[i]
-                                                                    .stateValue =
-                                                                false;
-                                                            //Constants.trueOrFalseStringValue = dailogueList[i].stringValue;
-                                                          } else {
-                                                            dailogueList4[i]
-                                                                    .stateValue =
-                                                                newValue!;
-                                                            Constants
-                                                                    .trueOrFalseStringValueL =
-                                                                dailogueList4[i]
-                                                                    .stringValue;
-                                                            Constants
-                                                                    .proceedProduct =
-                                                                dailogueList4[i]
-                                                                    .stringValue;
-                                                          }
-                                                        }
-                                                        print(
-                                                            "hhhhhhhh ${Constants.trueOrFalseStringValueL}");
-                                                      });
-                                                    }),
+                                                                        16),
+                                                            border: Border.all(
+                                                                width: 1.0,
+                                                                color: dailogueList4[index]
+                                                                            .stateValue ==
+                                                                        true
+                                                                    ? Constants
+                                                                        .ftaColorLight
+                                                                    : Colors
+                                                                        .grey
+                                                                        .withOpacity(
+                                                                            0.35)),
+                                                            color: Colors
+                                                                .transparent,
+                                                          ),
+                                                          child: Center(
+                                                            child: Row(
+                                                              children: [
+                                                                Transform.scale(
+                                                                  scaleX: 1.7,
+                                                                  scaleY: 1.7,
+                                                                  child: Checkbox(
+                                                                      value: dailogueList4[index].stateValue,
+                                                                      side: BorderSide(
+                                                                        width:
+                                                                            1.4,
+                                                                        color: Constants
+                                                                            .ftaColorLight,
+                                                                      ),
+                                                                      activeColor: Constants.ctaColorLight,
+                                                                      checkColor: Colors.white,
+                                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(360)),
+                                                                      onChanged: (newValue) {
+                                                                        dailogueList4[index].stateValue =
+                                                                            newValue!;
+                                                                        setState(
+                                                                            () {
+                                                                          for (int i = 0;
+                                                                              i < dailogueList4.length;
+                                                                              i++) {
+                                                                            if (i !=
+                                                                                index) {
+                                                                              dailogueList4[i].stateValue = false;
+                                                                              //Constants.trueOrFalseStringValue = dailogueList[i].stringValue;
+                                                                            } else {
+                                                                              dailogueList4[i].stateValue = newValue!;
+                                                                              Constants.trueOrFalseStringValueL = dailogueList4[i].stringValue;
+                                                                              Constants.proceedProduct = dailogueList4[i].stringValue;
+                                                                            }
+                                                                          }
+                                                                          print(
+                                                                              "hhhhhhhh ${Constants.trueOrFalseStringValueL}");
+                                                                        });
+                                                                      }),
+                                                                ),
+                                                                SizedBox(
+                                                                    width: 8),
+                                                                Text(
+                                                                  dailogueList4[
+                                                                          index]
+                                                                      .stringValue,
+                                                                  style: TextStyle(
+                                                                      color: dailogueList3[index]
+                                                                                  .stateValue ==
+                                                                              true
+                                                                          ? Constants
+                                                                              .ftaColorLight
+                                                                          : Colors.grey.withOpacity(
+                                                                              0.35),
+                                                                      fontSize:
+                                                                          18,
+                                                                      fontFamily:
+                                                                          'YuGothic',
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w600),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 16,
+                                                        )
+                                                      ],
+                                                    );
+                                                  }),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  : Container(),
+                              SizedBox(
+                                height: 32,
+                              ),
+                              Constants.trueOrFalseStringValueL == "Yes"
+                                  ? Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 0, right: 16),
+                                      child: FadeInLeftBig(
+                                        duration: Duration(milliseconds: 500),
+                                        curve: Curves.linearToEaseOut,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            StyledText(
+                                              text: "Your total premium is " +
+                                                  "R${(TotalPayableAmount + TotalBenefitAmountAmount).toStringAsFixed(2)}",
+                                              tags: {
+                                                'bold': StyledTextTag(
+                                                  style: TextStyle(
+                                                    //fontWeight: FontWeight.bold,
+                                                    color: Colors.green,
+                                                    //   fontFamily: 'YuGothic',
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                'green': StyledTextTag(
+                                                  style: TextStyle(
+                                                    //   fontFamily: 'YuGothic',
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.green,
+                                                  ),
+                                                ),
+                                              },
+                                              style: TextStyle(
+                                                fontSize: 20.0,
+                                                color: Constants.ctaColorLight,
+                                                //  fontFamily: 'YuGothic',
+                                                fontWeight: FontWeight.w500,
                                               ),
-                                              SizedBox(width: 8),
-                                              Text(
-                                                dailogueList4[index]
-                                                    .stringValue,
-                                                style: TextStyle(
-                                                    color: dailogueList3[index]
-                                                                .stateValue ==
-                                                            true
-                                                        ? Constants
-                                                            .ftaColorLight
-                                                        : Colors.grey
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  : Container(),
+                              Constants.trueOrFalseStringValueL == "No"
+                                  ? Padding(
+                                      padding: EdgeInsets.only(
+                                        left: 16,
+                                        right: 16,
+                                      ),
+                                      child: Container(
+                                        constraints:
+                                            BoxConstraints(maxWidth: 700),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                    border: Border.all(
+                                                        color: Colors.grey)),
+                                                height: 180,
+
+                                                //width: 1000,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      height: 40,
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 0,
+                                                              right: 16),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            const BorderRadius
+                                                                .only(
+                                                                topLeft: Radius
+                                                                    .circular(
+                                                                        16),
+                                                                topRight: Radius
+                                                                    .circular(
+                                                                        8)),
+                                                        color: Colors.grey
                                                             .withOpacity(0.35),
-                                                    fontSize: 18,
-                                                    fontFamily: 'YuGothic',
-                                                    fontWeight:
-                                                        FontWeight.w600),
+                                                      ),
+                                                      child: Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Expanded(
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                      left:
+                                                                          12.0),
+                                                              child: Text(
+                                                                'Note!',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        18,
+                                                                    fontFamily:
+                                                                        'YuGothic',
+                                                                    color: Constants
+                                                                        .ftaColorLight,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      child: Container(
+                                                        //height: 180,
+                                                        width: MediaQuery.of(
+                                                                context)
+                                                            .size
+                                                            .width,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                          left: 16,
+                                                          right: 16,
+                                                        ),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius.only(
+                                                                  bottomLeft: Radius
+                                                                      .circular(
+                                                                          16),
+                                                                  bottomRight: Radius
+                                                                      .circular(
+                                                                          16)),
+                                                          //color: Colors.grey
+                                                        ),
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            SizedBox(
+                                                              height: 16,
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  child:
+                                                                      Padding(
+                                                                    padding: EdgeInsets.only(
+                                                                        left:
+                                                                            16,
+                                                                        right:
+                                                                            16,
+                                                                        bottom:
+                                                                            16),
+                                                                    child:
+                                                                        StyledText(
+                                                                      text:
+                                                                          'Proceed to Handle Objections',
+                                                                      tags: {
+                                                                        'bold':
+                                                                            StyledTextTag(
+                                                                          style:
+                                                                              TextStyle(
+                                                                            //fontWeight: FontWeight.bold,
+                                                                            color:
+                                                                                Colors.green,
+                                                                            //   fontFamily: 'YuGothic',
+                                                                            fontWeight:
+                                                                                FontWeight.w500,
+                                                                          ),
+                                                                        ),
+                                                                        'green':
+                                                                            StyledTextTag(
+                                                                          style:
+                                                                              TextStyle(
+                                                                            //   fontFamily: 'YuGothic',
+                                                                            fontWeight:
+                                                                                FontWeight.w500,
+                                                                            color:
+                                                                                Colors.green,
+                                                                          ),
+                                                                        ),
+                                                                      },
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontSize:
+                                                                            18.0,
+                                                                        color: Colors
+                                                                            .black,
+                                                                        //  fontFamily: 'YuGothic',
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            SizedBox(
+                                                              height: 16,
+                                                            ),
+                                                            Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      left: 24,
+                                                                      right:
+                                                                          24),
+                                                              child: InkWell(
+                                                                child:
+                                                                    Container(
+                                                                  height: 40,
+                                                                  width: 190,
+                                                                  padding: EdgeInsets
+                                                                      .only(
+                                                                          left:
+                                                                              16,
+                                                                          right:
+                                                                              16),
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                            360),
+                                                                    color: Constants
+                                                                        .ftaColorLight,
+                                                                  ),
+                                                                  child: Center(
+                                                                    child: Text(
+                                                                      "Handle Objections",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13,
+                                                                          fontFamily:
+                                                                              'YuGothic',
+                                                                          letterSpacing:
+                                                                              0,
+                                                                          fontWeight: FontWeight
+                                                                              .w400,
+                                                                          color:
+                                                                              Colors.white),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                onTap: () {
+                                                                  activeQuoteStep =
+                                                                      1;
+                                                                  setState(
+                                                                      () {});
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  : Container(),
+                            ],
+                          ),
+                        )
+                      : Container(),
+                  Constants.trueOrFalseStringValueJ == "No"
+                      ? Container(
+                          child: Container(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(color: Colors.grey)),
+                                    height: 180,
+
+                                    //width: 1000,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          height: 40,
+                                          padding: const EdgeInsets.only(
+                                              left: 0, right: 16),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                const BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(16),
+                                                    topRight:
+                                                        Radius.circular(8)),
+                                            color:
+                                                Colors.grey.withOpacity(0.35),
+                                          ),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 12.0),
+                                                  child: Text(
+                                                    'Note!',
+                                                    style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontFamily: 'YuGothic',
+                                                        color: Constants
+                                                            .ftaColorLight,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
+                                                ),
                                               ),
                                             ],
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        width: 16,
-                                      )
-                                    ],
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : Container(),
-            Constants.trueOrFalseStringValueJ == "No"
-                ? Padding(
-                    padding: EdgeInsets.only(
-                      left: 16,
-                      right: 16,
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 100,
-                            //width: 1000,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  height: 50,
-                                  padding: const EdgeInsets.only(
-                                      left: 16, right: 16),
-                                  decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(16),
-                                        topRight: Radius.circular(8)),
-                                    color: Constants.ftaColorLight,
-                                  ),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          'Note!',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontFamily: 'YuGothic',
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    //height: 180,
-                                    width: MediaQuery.of(context).size.width,
-                                    padding: const EdgeInsets.only(
-                                      left: 16,
-                                      right: 16,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                          left: BorderSide(
-                                            color: Constants.ftaColorLight,
-                                          ),
-                                          right: BorderSide(
-                                            color: Constants.ftaColorLight,
-                                          ),
-                                          bottom: BorderSide(
-                                            color: Constants.ftaColorLight,
-                                          )),
-                                      borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(16),
-                                          bottomRight: Radius.circular(16)),
-                                      //color: Colors.grey
-                                    ),
-                                    child: Row(
-                                      children: [
                                         Expanded(
-                                          child: Text(
-                                            'Closing Message Needed',
-                                            style: TextStyle(
-                                                fontSize: 13,
-                                                fontFamily: 'YuGothic',
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w400),
+                                          child: Container(
+                                            //height: 180,
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            padding: const EdgeInsets.only(
+                                              left: 16,
+                                              right: 16,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.only(
+                                                  bottomLeft:
+                                                      Radius.circular(16),
+                                                  bottomRight:
+                                                      Radius.circular(16)),
+                                              //color: Colors.grey
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                  height: 16,
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 16,
+                                                                right: 16,
+                                                                bottom: 16),
+                                                        child: StyledText(
+                                                          text:
+                                                              'Proceed to Handle Objections',
+                                                          tags: {
+                                                            'bold':
+                                                                StyledTextTag(
+                                                              style: TextStyle(
+                                                                //fontWeight: FontWeight.bold,
+                                                                color: Colors
+                                                                    .green,
+                                                                //   fontFamily: 'YuGothic',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                              ),
+                                                            ),
+                                                            'green':
+                                                                StyledTextTag(
+                                                              style: TextStyle(
+                                                                //   fontFamily: 'YuGothic',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                color: Colors
+                                                                    .green,
+                                                              ),
+                                                            ),
+                                                          },
+                                                          style: TextStyle(
+                                                            fontSize: 18.0,
+                                                            color: Colors.black,
+                                                            //  fontFamily: 'YuGothic',
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                SizedBox(
+                                                  height: 16,
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.only(
+                                                      left: 24, right: 24),
+                                                  child: InkWell(
+                                                    child: Container(
+                                                      height: 40,
+                                                      width: 190,
+                                                      padding: EdgeInsets.only(
+                                                          left: 16, right: 16),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(360),
+                                                        color: Constants
+                                                            .ftaColorLight,
+                                                      ),
+                                                      child: Center(
+                                                        child: Text(
+                                                          "Handle Objections",
+                                                          style: TextStyle(
+                                                              fontSize: 13,
+                                                              fontFamily:
+                                                                  'YuGothic',
+                                                              letterSpacing: 0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              color:
+                                                                  Colors.white),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    onTap: () {
+                                                      activeQuoteStep = 1;
+                                                      setState(() {});
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -2121,155 +1775,163 @@ class _ConfirmPremiumState extends State<ConfirmPremium> {
                               ],
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Container(),
-            SizedBox(
-              height: 32,
-            ),
-            Constants.trueOrFalseStringValueL == "Yes"
-                ? Padding(
-                    padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: FadeInLeftBig(
-                      duration: Duration(milliseconds: 500),
-                      curve: Curves.linearToEaseOut,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          StyledText(
-                            text: "Your total premium is R 0.00.",
-                            tags: {
-                              'bold': StyledTextTag(
-                                style: TextStyle(
-                                  //fontWeight: FontWeight.bold,
-                                  color: Colors.green,
-                                  //   fontFamily: 'YuGothic',
-                                  fontWeight: FontWeight.w500,
-                                ),
+                        )
+                      : Container(),
+
+                  // Confirm Premium Button
+                  if (isAtleastOnePolicyAccepted == true &&
+                      Constants.trueOrFalseStringValueJ == "Yes" &&
+                      Constants.trueOrFalseStringValueL == "Yes")
+                    Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Container(
+                        width: double.infinity,
+                        height: 56,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Add your confirm premium logic here
+                            // This is where you'd typically navigate to the next step
+                            // or submit the premium confirmation
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content:
+                                    Text('Premium Confirmed Successfully!'),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 2),
                               ),
-                              'green': StyledTextTag(
-                                style: TextStyle(
-                                  //   fontFamily: 'YuGothic',
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.green,
-                                ),
-                              ),
-                            },
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              color: Colors.black,
-                              //  fontFamily: 'YuGothic',
-                              fontWeight: FontWeight.w500,
+                            );
+
+                            // Example: Navigate back or to next screen
+                            // Navigator.pop(context);
+                            // or Navigator.pushNamed(context, '/next-screen');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Constants.ftaColorLight,
+                            foregroundColor: Colors.white,
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                        ],
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.check_circle, size: 24),
+                              SizedBox(width: 12),
+                              Text(
+                                'Confirm Premium',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  )
-                : Container(),
-            Constants.trueOrFalseStringValueL == "No"
-                ? Padding(
-                    padding: EdgeInsets.only(
-                      left: 16,
-                      right: 16,
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 100,
-                            //width: 1000,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  height: 50,
-                                  padding: const EdgeInsets.only(
-                                      left: 16, right: 16),
-                                  decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(16),
-                                        topRight: Radius.circular(16)),
-                                    color: Constants.ftaColorLight,
-                                  ),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          'Note!',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontFamily: 'YuGothic',
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    //height: 180,
-                                    width: MediaQuery.of(context).size.width,
-                                    padding: const EdgeInsets.only(
-                                      left: 16,
-                                      right: 16,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                          left: BorderSide(
-                                            color: Constants.ftaColorLight,
-                                          ),
-                                          right: BorderSide(
-                                            color: Constants.ftaColorLight,
-                                          ),
-                                          bottom: BorderSide(
-                                            color: Constants.ftaColorLight,
-                                          )),
-                                      borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(16),
-                                          bottomRight: Radius.circular(16)),
-                                      //color: Colors.grey
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            'Closing Message Needed',
-                                            style: TextStyle(
-                                                fontSize: 13,
-                                                fontFamily: 'YuGothic',
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w400),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Container(),
-            SizedBox(
-              height: 32,
+
+                  SizedBox(
+                    height: 32,
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getPremiumsList();
+    myNotifier1 = MyNotifier(myConfirmPremiumClearValues, context);
+    /*myConfirmPremiumClearValues.addListener(() {
+      if (Constants.currentleadAvailable != null) {
+        for (final pol in Constants.currentleadAvailable!.policies) {
+          expandedStates[pol.reference] = false; // start collapsed
+          int index = Constants.currentleadAvailable!.policies.indexOf(pol);
+          Constants.currentleadAvailable!.policies[index].quote.acceptPolicy =
+              "no";
+
+          print(
+              "shgshjs1 $index ${Constants.currentleadAvailable!.policies[index].quote.acceptPolicy}");
+
+          setState(() {});
+        }
+      }
+      isAtleastOnePolicyAccepted = false;
+
+      Constants.trueOrFalseStringValueJ = "";
+      Constants.trueOrFalseStringValueL = "";
+      dailogueList3[0].stateValue = false;
+      dailogueList3[1].stateValue = false;
+
+      dailogueList4[0].stateValue = false;
+      dailogueList4[1].stateValue = false;
+      setState(() {});
+    });*/
+  }
+
+  getPremiumsList() {
+    TotalPayableAmount = 0;
+    TotalBenefitAmountAmount = 0;
+    TotalCoverAmount = 0;
+    premList = [];
+    if (policyPremiums.isEmpty) {
+      policyPremiums = List.generate(
+          Constants.currentleadAvailable!.policies.length,
+          (index) => CalculatePolicyPremiumResponse(
+                cecClientId: Constants.cec_client_id,
+                totalPremium: 0,
+                joiningFee: 0.0,
+                partnersDobs: [],
+                memberPremiums: [
+                  MemberPremium(
+                      role: "",
+                      age: 0,
+                      rateId: 0,
+                      premium: 0,
+                      coverAmount: 0,
+                      comment: "")
+                ],
+                reference: '',
+                childrensDobs: [],
+                extendedMembersDobs: [],
+                selectedRidersIds: [],
+                selectedRidersDetail: [],
+                allRiders: [],
+                allMainRates: [],
+                applicableMainRates: [],
+                applicableMRiders: [],
+                errors: [],
+                mainInsuredDob: '',
+              ));
+    }
+    for (int i = 0; i < Constants.currentleadAvailable!.policies.length; i++) {
+      TotalBenefitAmountAmount = policyPremiums[i].selectedRidersTotal ?? 0;
+      premList.add(ConfirmPrem(
+          productName:
+              Constants.currentleadAvailable!.policies[i].quote.product,
+          sumAssured: Constants
+              .currentleadAvailable!.policies[i].quote.sumAssuredFamilyCover
+              .toString(),
+          premium: Constants
+              .currentleadAvailable!.policies[i].quote.totalAmountPayable
+              .toString(),
+          isExpanded: false));
+      if (Constants.currentleadAvailable!.policies[i].quote.totalAmountPayable
+              .toString() !=
+          "null") {
+        TotalPayableAmount += Constants
+            .currentleadAvailable!.policies[i].quote.totalAmountPayable!;
+        TotalCoverAmount += Constants
+            .currentleadAvailable!.policies[i].quote.sumAssuredFamilyCover!;
+      }
+    }
+
+    setState(() {});
   }
 }
 
@@ -2305,4 +1967,47 @@ class Raiders {
   double premium;
 
   Raiders(this.id, this.riderType, this.memberType, this.cover, this.premium);
+}
+
+const footnote =
+    "A child means an unmarried, financially dependent biological Child of the Main Life Assured "
+    "or Spouse who has not yet attained the age of 21 and will include a posthumous Child, a stepchild, "
+    "a legally fostered Child and an adopted Child. All ages referred to in this Policy are Age Next Birthday. "
+    "Cover will cease at the age of 23 years.";
+
+class _TableHeaderCell extends StatelessWidget {
+  final String text;
+
+  const _TableHeaderCell({Key? key, required this.text}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.only(left: 8, right: 8),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+          ),
+        ));
+  }
+}
+
+class _TableDataCell extends StatelessWidget {
+  final String text;
+
+  const _TableDataCell({Key? key, required this.text}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.only(left: 8, right: 8),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 13,
+          ),
+        ));
+  }
 }

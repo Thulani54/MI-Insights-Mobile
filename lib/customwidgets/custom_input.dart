@@ -491,6 +491,7 @@ class CustomInputTransparent4 extends StatefulWidget {
   final Widget? prefix;
   Widget? suffix;
   final int? maxLines;
+  final int? maxInputs;
   final bool? integersOnly;
   final String? labelText;
   final bool? isEditable;
@@ -505,6 +506,7 @@ class CustomInputTransparent4 extends StatefulWidget {
     this.controller,
     this.prefix,
     this.maxLines,
+    this.maxInputs,
     this.suffix,
     this.integersOnly,
     this.labelText,
@@ -552,7 +554,7 @@ class _CustomInputTransparentID2State extends State<CustomInputTransparentID2> {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: Colors.grey.withOpacity(0.55)),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(32),
       ),
       child: Row(
         children: [
@@ -592,7 +594,7 @@ class _CustomInputTransparentID2State extends State<CustomInputTransparentID2> {
             ),
           ),
           InkWell(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(32),
             onTap: () {
               setState(() {
                 isSAID = !isSAID;
@@ -604,11 +606,11 @@ class _CustomInputTransparentID2State extends State<CustomInputTransparentID2> {
               width: 74,
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
+                  topRight: Radius.circular(32),
+                  bottomRight: Radius.circular(32),
                 ),
                 color:
-                    isSAID ? Constants.ftaColorLight : Constants.ctaColorLight,
+                    isSAID ? Constants.ctaColorLight : Constants.ftaColorLight,
               ),
               child: Center(
                 child: Text(
@@ -733,15 +735,15 @@ class _CustomInputTransparent3State extends State<CustomInputTransparent3> {
           contentPadding: EdgeInsets.only(left: 16, top: 16),
           disabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey.withOpacity(0.35)),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(36),
           ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey.withOpacity(0.55)),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(36),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Color(0xffED7D32)),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(36),
           ),
         ),
         style: TextStyle(
@@ -771,7 +773,8 @@ class _CustomInputTransparent4State extends State<CustomInputTransparent4> {
         onChanged: widget.onChanged,
         onSubmitted: widget.onSubmitted,
         controller: widget.controller,
-        maxLines: 1,
+        maxLines: widget.maxLines ?? 1,
+        maxLength: widget.maxInputs,
         textInputAction: widget.textInputAction,
         inputFormatters: widget.integersOnly == true
             ? <TextInputFormatter>[
@@ -782,6 +785,7 @@ class _CustomInputTransparent4State extends State<CustomInputTransparent4> {
           border: InputBorder.none,
           hintText: widget.hintText,
           labelText: widget.labelText,
+          counterText: "",
           prefixIcon: widget.prefix,
           suffixIcon: widget.suffix != null
               ? widget.suffix

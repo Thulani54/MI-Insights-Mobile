@@ -30,6 +30,7 @@ import '../../screens/Sales Agent/SalesAgentCommisionsReport.dart';
 import '../../screens/Sales Agent/SalesAgentSalesReport.dart';
 import '../../utils/image_utils.dart';
 import '../../screens/Valuetainment/Valuetainment.dart';
+import '../sales_service.dart';
 
 // Define a class to model the quote data
 List<sectionmodel> sectionsList = [
@@ -293,7 +294,7 @@ class _SalesAgentHomePageState extends State<SalesAgentHomePage>
                     ),
                   ),
                 ),
-/*                Padding(
+                /*                Padding(
                   padding: const EdgeInsets.only(right: 18.0),
                   child: ListTile(
                     title: Text(
@@ -320,8 +321,10 @@ class _SalesAgentHomePageState extends State<SalesAgentHomePage>
                 Constants.isAdmin
                     ? InkWell(
                         onTap: () {
-                          */ /*   Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => admin()));*/ /*
+                          */
+                /*   Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => admin()));*/
+                /*
                         },
                         child: ListTile(
                           title: Text(
@@ -736,295 +739,26 @@ class _SalesAgentHomePageState extends State<SalesAgentHomePage>
             SizedBox(
               height: 10,
             ),
-            Container(
-              height: 120,
-              width: MediaQuery.of(context).size.width,
-              child: SvgPicture.asset(
-                "assets/logo_main.svg",
-                fit: BoxFit.cover,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 120,
+                width: MediaQuery.of(context).size.width,
+                child: Image.asset(
+                  "assets/logos/MI AnalytiX 2 Tone.png",
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                child: carousel_slider.CarouselSlider(
-                  disableGesture: true,
-                  carouselController: _controller,
-                  options: carousel_slider.CarouselOptions(
-                      autoPlay: true,
-                      viewportFraction: 1.0,
-                      clipBehavior: Clip.antiAlias,
-                      padEnds: false,
-                      aspectRatio: 16 / 9.5,
-                      enlargeStrategy:
-                          carousel_slider.CenterPageEnlargeStrategy.height,
-                      enlargeCenterPage: false,
-                      onPageChanged: (index, reason) {
-                        setState(() {
-                          _current = index;
-                        });
-                      }),
-                  items: Constants.cec_client_id == 379
-                      ? imgList_everest
-                          .map((item) => Builder(
-                                builder: (BuildContext context) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Card(
-                                      elevation: 6,
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(16)),
-                                      surfaceTintColor: Colors.white,
-                                      color: Colors.white,
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 0.0),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              bottom: 1.0),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            child: Container(
-                                              child: _isAssetPath(item)
-                                                  ? Image.asset(
-                                                      item,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder: (context,
-                                                          error, stackTrace) {
-                                                        return Container(
-                                                          color:
-                                                              Colors.grey[300],
-                                                          child: Center(
-                                                            child: Icon(
-                                                              Icons
-                                                                  .image_not_supported,
-                                                              color: Colors
-                                                                  .grey[600],
-                                                              size: 40,
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
-                                                    )
-                                                  : Image.network(
-                                                      item,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder: (context,
-                                                          error, stackTrace) {
-                                                        return Container(
-                                                          color:
-                                                              Colors.grey[300],
-                                                          child: Center(
-                                                            child: Icon(
-                                                              Icons
-                                                                  .image_not_supported,
-                                                              color: Colors
-                                                                  .grey[600],
-                                                              size: 40,
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
-                                                      loadingBuilder: (context,
-                                                          child,
-                                                          loadingProgress) {
-                                                        if (loadingProgress ==
-                                                            null) return child;
-                                                        return Center(
-                                                          child:
-                                                              CircularProgressIndicator(
-                                                            value: loadingProgress
-                                                                        .expectedTotalBytes !=
-                                                                    null
-                                                                ? loadingProgress
-                                                                        .cumulativeBytesLoaded /
-                                                                    loadingProgress
-                                                                        .expectedTotalBytes!
-                                                                : null,
-                                                          ),
-                                                        );
-                                                      },
-                                                    ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ))
-                          .toList()
-                      : !Constants.currentBusinessInfo.logo.isEmpty
-                          ? imgList1
-                              .map((item) => Builder(
-                                    builder: (BuildContext context) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(0.0),
-                                        child: Card(
-                                          elevation: 6,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(16)),
-                                          surfaceTintColor: Colors.white,
-                                          color: Colors.white,
-                                          child: Container(
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 0.0),
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 1.0),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                                child: Container(
-                                                  child: _isAssetPath(item)
-                                                      ? Image.asset(
-                                                          item,
-                                                          fit: BoxFit.cover,
-                                                          errorBuilder:
-                                                              (context, error,
-                                                                  stackTrace) {
-                                                            return Container(
-                                                              color: Colors
-                                                                  .grey[300],
-                                                              child: Center(
-                                                                child: Icon(
-                                                                  Icons
-                                                                      .image_not_supported,
-                                                                  color: Colors
-                                                                          .grey[
-                                                                      600],
-                                                                  size: 40,
-                                                                ),
-                                                              ),
-                                                            );
-                                                          },
-                                                        )
-                                                      : Image.network(
-                                                          item,
-                                                          fit: BoxFit.cover,
-                                                          errorBuilder:
-                                                              (context, error,
-                                                                  stackTrace) {
-                                                            return Container(
-                                                              color: Colors
-                                                                  .grey[300],
-                                                              child: Center(
-                                                                child: Icon(
-                                                                  Icons
-                                                                      .image_not_supported,
-                                                                  color: Colors
-                                                                          .grey[
-                                                                      600],
-                                                                  size: 40,
-                                                                ),
-                                                              ),
-                                                            );
-                                                          },
-                                                          loadingBuilder: (context,
-                                                              child,
-                                                              loadingProgress) {
-                                                            if (loadingProgress ==
-                                                                null)
-                                                              return child;
-                                                            return Center(
-                                                              child:
-                                                                  CircularProgressIndicator(
-                                                                value: loadingProgress
-                                                                            .expectedTotalBytes !=
-                                                                        null
-                                                                    ? loadingProgress
-                                                                            .cumulativeBytesLoaded /
-                                                                        loadingProgress
-                                                                            .expectedTotalBytes!
-                                                                    : null,
-                                                              ),
-                                                            );
-                                                          },
-                                                        ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ))
-                              .toList()
-                          : imgList
-                              .map((item) => Builder(
-                                    builder: (BuildContext context) {
-                                      return Container(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 5.0),
-                                        child: _isAssetPath(item)
-                                            ? ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                child: Image.asset(
-                                                  item,
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder: (context, error,
-                                                      stackTrace) {
-                                                    return Container(
-                                                      color: Colors.grey[300],
-                                                      child: Center(
-                                                        child: Icon(
-                                                          Icons
-                                                              .image_not_supported,
-                                                          color:
-                                                              Colors.grey[600],
-                                                          size: 40,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              )
-                                            : ImageUtils.buildCachedImage(
-                                                imageUrl: item,
-                                                baseUrl: Constants.insightsBackendBaseUrl,
-                                                fit: BoxFit.cover,
-                                              ),
-                                      );
-                                    },
-                                  ))
-                              .toList(),
-                ),
+              child: ImageUtils.buildNetworkImageWithFallback(
+                imageUrls: imgList,
+                baseUrl: Constants.insightsBackendBaseUrl,
+                height: MediaQuery.of(context).size.width / (16 / 9.5),
+                showFallbackWhenAllFail: true,
               ),
             ),
-            if (imgList.isNotEmpty)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: imgList.asMap().entries.map((entry) {
-                  return GestureDetector(
-                    onTap: () => _controller.animateToPage(entry.key),
-                    child: Container(
-                      width: 8.0,
-                      height: 8.0,
-                      margin:
-                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: (Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black)
-                              .withOpacity(_current == entry.key ? 0.9 : 0.4)),
-                    ),
-                  );
-                }).toList(),
-              ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: LayoutBuilder(
@@ -1257,11 +991,38 @@ class _SalesAgentHomePageState extends State<SalesAgentHomePage>
     Constants.pageLevel = 1;
     startInactivityTimer();
     _getLocation();
+    refreshScripConfig();
 
     Future.delayed(Duration(seconds: 3)).then((value) {
       _showMoodDialog(context);
     });
     super.initState();
+  }
+
+  void refreshScripConfig() {
+    SalesService salesService = SalesService();
+    salesService.fetchScriptConfig().then((val) {
+      //Constants.currentConfigAvailable = val;
+
+      if (kDebugMode) {
+        print("gghhghg ${val.paragraphs.length}");
+      }
+      //filterPageData();
+
+      setState(() {});
+    }).catchError((error) {
+      print('Error loading script config: $error');
+      // Continue without script config - don't block the user
+    });
+    salesService.fetchParlourConfig(Constants.cec_client_id).then((val) {
+      if (val != null) {
+        if (kDebugMode) {
+          // if (val.mainRates.isNotEmpty)
+          // print("Parlour config main rate: ${val.mainRates[0].amount}");
+        }
+        Constants.currentParlourConfig = val;
+      }
+    });
   }
 
   void _getLocation() async {

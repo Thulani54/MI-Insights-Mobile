@@ -62,4 +62,15 @@ class ParlourRatesExtras2a {
   );
   final String product;
   final String prod_type;
+  
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ParlourRatesExtras2a &&
+          runtimeType == other.runtimeType &&
+          product == other.product &&
+          prod_type == other.prod_type;
+
+  @override
+  int get hashCode => product.hashCode ^ prod_type.hashCode;
 }
