@@ -85,8 +85,6 @@ class _NeedAnalysisState extends State<NeedAnalysis> {
                 SizedBox(
                   height: 16,
                 ),
-                Text(Constants.currentleadAvailable!.additionalMembers.length
-                    .toString()),
                 Center(
                   child: InkWell(
                     child: Container(

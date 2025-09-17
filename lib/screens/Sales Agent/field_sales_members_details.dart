@@ -1510,7 +1510,7 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
 
           // If this member is "self", try to update premium and cover
           // using the values from the main_member if needed.
-          if ((memberData["type"]?.toString().toLowerCase() ?? "") == "self") {
+          if ((memberData["type"]?.toString().toLowerCase() ?? "") != "self") {
             if (premium == 0.0 && cover == 0.0) {
               // Look for a member with type "main_member" in the same policy.
               var mainMemberData = policy.members.firstWhere(
@@ -1519,10 +1519,8 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                     "main_member",
                 orElse: () => null,
               );
+              print("ggfghhj $cover $memberData");
               if (mainMemberData != null) {
-                premium = double.tryParse(
-                        mainMemberData["premium"]?.toString() ?? "") ??
-                    premium;
                 cover = double.tryParse(
                         mainMemberData["cover"]?.toString() ?? "") ??
                     cover;
@@ -4741,6 +4739,8 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                                           .leadObject
                                                           .paymentType = value!;
 
+                                                      print("ddfgffg $value");
+
                                                       // Auto-fill account holder name when Debit Order is selected
                                                       if (value.toLowerCase() ==
                                                               "Debit Order"
@@ -4954,6 +4954,21 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                                             var policy = Constants
                                                                 .currentleadAvailable!
                                                                 .policies[i];
+                                                            print(
+                                                                "dgfgfgh ${policy.quote.inceptionDate}");
+                                                            if (policy.quote
+                                                                    .inceptionDate ==
+                                                                null) {
+                                                              final now =
+                                                                  DateTime
+                                                                      .now();
+                                                              policy.quote
+                                                                      .inceptionDate =
+                                                                  DateTime(
+                                                                      now.year,
+                                                                      now.month,
+                                                                      1);
+                                                            }
                                                             var incDate = DateTime
                                                                 .parse((policy
                                                                             .quote
@@ -5119,229 +5134,232 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                         const SizedBox(height: 24),
                                       ],
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 24, right: 24),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            flex: 2,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 8.0, top: 8),
-                                                  child: Text(
-                                                    "Combine Premium",
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontFamily: 'YuGothic',
+                                    if (_selectedPaymentType == "Debit Order")
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 24, right: 24),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                              flex: 2,
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 8.0, top: 8),
+                                                    child: Text(
+                                                      "Combine Premium",
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontFamily: 'YuGothic',
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                                const SizedBox(height: 0),
-                                                Row(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 1,
-                                                      child: Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                top: 8.0,
-                                                                bottom: 4.0),
-                                                        child:
-                                                            DropdownButtonHideUnderline(
-                                                          child:
-                                                              DropdownButton2<
-                                                                  String>(
-                                                            isExpanded: true,
-                                                            alignment:
-                                                                AlignmentDirectional
-                                                                    .center,
-                                                            hint: const Row(
-                                                              children: [
-                                                                SizedBox(
-                                                                  width: 4,
-                                                                ),
-                                                                Expanded(
-                                                                  child: Text(
-                                                                    ' Combine Premium',
-                                                                    style:
-                                                                        TextStyle(
-                                                                      color: Colors
-                                                                          .grey,
-                                                                      fontSize:
-                                                                          14,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w500,
-                                                                      fontFamily:
-                                                                          'YuGothic',
-                                                                    ),
-                                                                    overflow:
-                                                                        TextOverflow
-                                                                            .ellipsis,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            items: Constants
-                                                                .yesNoOptionsList
-                                                                .map((String
-                                                                        item) =>
-                                                                    DropdownMenuItem<
-                                                                        String>(
-                                                                      value:
-                                                                          item,
-                                                                      child:
-                                                                          Text(
-                                                                        item,
-                                                                        style:
-                                                                            const TextStyle(
-                                                                          fontSize:
-                                                                              14,
-                                                                          fontWeight:
-                                                                              FontWeight.w500,
-                                                                          fontFamily:
-                                                                              'YuGothic',
-                                                                          color:
-                                                                              Colors.black,
-                                                                        ),
-                                                                        overflow:
-                                                                            TextOverflow.ellipsis,
-                                                                      ),
-                                                                    ))
-                                                                .toList(),
-                                                            value:
-                                                                _selectedCombinePremium,
-                                                            onChanged: (String?
-                                                                value) {
-                                                              setState(() {
-                                                                _selectedCombinePremium =
-                                                                    value;
-                                                                Constants
-                                                                    .currentleadAvailable!
-                                                                    .policies
-                                                                    .first
-                                                                    .premiumPayer
-                                                                    .combinePremium = value!;
-                                                              });
-                                                            },
-                                                            buttonStyleData:
-                                                                ButtonStyleData(
-                                                              height: 50,
-                                                              width:
-                                                                  MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .width,
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .only(
-                                                                      left: 14,
-                                                                      right:
-                                                                          14),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            360),
-                                                                border:
-                                                                    Border.all(
-                                                                  color: Colors
-                                                                      .black26,
-                                                                ),
-                                                                color: Colors
-                                                                    .transparent,
-                                                              ),
-                                                              elevation: 0,
-                                                            ),
-                                                            iconStyleData:
-                                                                const IconStyleData(
-                                                              icon: Icon(
-                                                                Icons
-                                                                    .arrow_forward_ios_outlined,
-                                                              ),
-                                                              iconSize: 14,
-                                                              iconEnabledColor:
-                                                                  Colors.black,
-                                                              iconDisabledColor:
-                                                                  Colors
-                                                                      .transparent,
-                                                            ),
-                                                            dropdownStyleData:
-                                                                DropdownStyleData(
-                                                              elevation: 0,
-                                                              maxHeight: 200,
-                                                              width: 200,
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            16),
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                              offset:
-                                                                  const Offset(
-                                                                      -5, 0),
-                                                              scrollbarTheme:
-                                                                  ScrollbarThemeData(
-                                                                radius:
-                                                                    const Radius
-                                                                        .circular(
-                                                                        40),
-                                                                thickness:
-                                                                    WidgetStateProperty
-                                                                        .all<double>(
-                                                                            6),
-                                                                thumbVisibility:
-                                                                    WidgetStateProperty
-                                                                        .all<bool>(
-                                                                            true),
-                                                              ),
-                                                            ),
-                                                            menuItemStyleData:
-                                                                const MenuItemStyleData(
-                                                              overlayColor:
-                                                                  null,
-                                                              height: 40,
-                                                              padding: EdgeInsets
+                                                  const SizedBox(height: 0),
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        flex: 1,
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
                                                                   .only(
-                                                                      left: 14,
-                                                                      right:
-                                                                          14),
+                                                                  top: 8.0,
+                                                                  bottom: 4.0),
+                                                          child:
+                                                              DropdownButtonHideUnderline(
+                                                            child:
+                                                                DropdownButton2<
+                                                                    String>(
+                                                              isExpanded: true,
+                                                              alignment:
+                                                                  AlignmentDirectional
+                                                                      .center,
+                                                              hint: const Row(
+                                                                children: [
+                                                                  SizedBox(
+                                                                    width: 4,
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      ' Combine Premium',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .grey,
+                                                                        fontSize:
+                                                                            14,
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                        fontFamily:
+                                                                            'YuGothic',
+                                                                      ),
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              items: Constants
+                                                                  .yesNoOptionsList
+                                                                  .map((String
+                                                                          item) =>
+                                                                      DropdownMenuItem<
+                                                                          String>(
+                                                                        value:
+                                                                            item,
+                                                                        child:
+                                                                            Text(
+                                                                          item,
+                                                                          style:
+                                                                              const TextStyle(
+                                                                            fontSize:
+                                                                                14,
+                                                                            fontWeight:
+                                                                                FontWeight.w500,
+                                                                            fontFamily:
+                                                                                'YuGothic',
+                                                                            color:
+                                                                                Colors.black,
+                                                                          ),
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                        ),
+                                                                      ))
+                                                                  .toList(),
+                                                              value:
+                                                                  _selectedCombinePremium,
+                                                              onChanged:
+                                                                  (String?
+                                                                      value) {
+                                                                setState(() {
+                                                                  _selectedCombinePremium =
+                                                                      value;
+                                                                  Constants
+                                                                      .currentleadAvailable!
+                                                                      .policies
+                                                                      .first
+                                                                      .premiumPayer
+                                                                      .combinePremium = value!;
+                                                                });
+                                                              },
+                                                              buttonStyleData:
+                                                                  ButtonStyleData(
+                                                                height: 50,
+                                                                width: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width,
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        left:
+                                                                            14,
+                                                                        right:
+                                                                            14),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              360),
+                                                                  border: Border
+                                                                      .all(
+                                                                    color: Colors
+                                                                        .black26,
+                                                                  ),
+                                                                  color: Colors
+                                                                      .transparent,
+                                                                ),
+                                                                elevation: 0,
+                                                              ),
+                                                              iconStyleData:
+                                                                  const IconStyleData(
+                                                                icon: Icon(
+                                                                  Icons
+                                                                      .arrow_forward_ios_outlined,
+                                                                ),
+                                                                iconSize: 14,
+                                                                iconEnabledColor:
+                                                                    Colors
+                                                                        .black,
+                                                                iconDisabledColor:
+                                                                    Colors
+                                                                        .transparent,
+                                                              ),
+                                                              dropdownStyleData:
+                                                                  DropdownStyleData(
+                                                                elevation: 0,
+                                                                maxHeight: 200,
+                                                                width: 200,
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              16),
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                                offset:
+                                                                    const Offset(
+                                                                        -5, 0),
+                                                                scrollbarTheme:
+                                                                    ScrollbarThemeData(
+                                                                  radius: const Radius
+                                                                      .circular(
+                                                                      40),
+                                                                  thickness:
+                                                                      WidgetStateProperty
+                                                                          .all<double>(
+                                                                              6),
+                                                                  thumbVisibility:
+                                                                      WidgetStateProperty.all<
+                                                                              bool>(
+                                                                          true),
+                                                                ),
+                                                              ),
+                                                              menuItemStyleData:
+                                                                  const MenuItemStyleData(
+                                                                overlayColor:
+                                                                    null,
+                                                                height: 40,
+                                                                padding: EdgeInsets
+                                                                    .only(
+                                                                        left:
+                                                                            14,
+                                                                        right:
+                                                                            14),
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 24),
-                                              ],
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 24),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: 16,
-                                    ),
+                                    if (_selectedPaymentType == "Debit Order")
+                                      SizedBox(
+                                        height: 16,
+                                      ),
                                     if (_selectedPaymentType == "Debit Order")
                                       Padding(
                                         padding: const EdgeInsets.only(

@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mi_insights/constants/Constants.dart';
 import 'package:mi_insights/customwidgets/custom_input.dart';
+import 'package:mi_insights/screens/Sales Agent/SalesAgentSalesReport.dart';
 import 'package:mi_insights/services/inactivitylogoutmixin.dart';
 import 'package:mime/mime.dart';
 import 'package:motion_toast/motion_toast.dart';
@@ -1266,7 +1267,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                     ).show(context);
                   } else {
                     // First add the new lead
-                    await add_new_lead_and_continue();
+                    await add_new_lead();
                   }
                 },
                 child: Container(
@@ -1593,8 +1594,10 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
         Navigator.of(context).pop(); // Close loading dialog
 
         if (trimmedResponseBody == "Success") {
-          // Fetch lead details by ID before navigating
-          await fetchLeadById2(result.toString());
+          // Show success dialog instead of navigating
+          showSuccessDialog(
+            context,
+          );
         } else {
           showErrorDialog(
               context, "Upload completed but received: $responseBody");
@@ -1890,6 +1893,14 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                     setState(() {});
 
                     Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                    
+                    // Navigate to SalesAgentSalesReport and call init2()
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => SalesAgentReport(refreshOnInit: true),
+                      ),
+                    );
                   },
                   child: Text(
                     "OK",
@@ -1919,6 +1930,71 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
           child: errorContentBox(context, errorMessage),
         );
       },
+    );
+  }
+
+  Widget successContentBox(BuildContext context, String successMessage) {
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.topCenter,
+      children: <Widget>[
+        Container(
+          padding: EdgeInsets.only(top: 50, bottom: 16, left: 16, right: 16),
+          margin: EdgeInsets.only(top: 45),
+          decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black, offset: Offset(0, 10), blurRadius: 10),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                "Success",
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.green),
+              ),
+              SizedBox(height: 15),
+              Text(
+                successMessage,
+                style: TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 22),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    "OK",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          top: -60,
+          child: CircleAvatar(
+            backgroundColor: Colors.green,
+            radius: 45,
+            child: Icon(
+              Icons.check,
+              color: Colors.white,
+              size: 90,
+            ),
+          ),
+        ),
+      ],
     );
   }
 

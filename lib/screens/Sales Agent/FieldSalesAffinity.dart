@@ -202,9 +202,9 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
                                 else if (step.stepNameId ==
                                     "premium_calculator")
                                   UniversalPremiumCalculator()
-                                else if (step.stepNameId ==
-                                    "communication_preferences")
-                                  FieldSalesCommunicationPreference()
+                                // else if (step.stepNameId ==
+                                //     "communication_preferences")
+                                //   FieldSalesCommunicationPreference()
                                 // else if (step.stepNameId == "call_client")
                                 //   FieldSalesCallClientPage()
                                 else if (step.stepNameId == "conclusion")
@@ -384,7 +384,7 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
         CreateLeads("Needs Analysis", "needs_analysis"),
         CreateLeads("Premium Calculator", "premium_calculator"),
         CreateLeads("Member Details", "member_details"),
-        CreateLeads("Communication Preferences", "communication_preferences"),
+        // CreateLeads("Communication Preferences", "communication_preferences"), // Hidden as requested
         CreateLeads("Conclusion", "conclusion"),
       ];
     } else {
@@ -393,7 +393,7 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
         CreateLeads("Needs Analysis", "needs_analysis"),
         CreateLeads("Premium Calculator", "premium_calculator"),
         CreateLeads("Member Details", "member_details"),
-        CreateLeads("Communication Preferences", "communication_preferences"),
+        // CreateLeads("Communication Preferences", "communication_preferences"), // Hidden as requested
         CreateLeads("Client Signature", "client_signature"),
         CreateLeads("OTP Verification", "otp_verification"),
       ];
@@ -416,7 +416,7 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
         CreateLeads("Needs Analysis", "needs_analysis"),
         CreateLeads("Premium Calculator", "premium_calculator"),
         CreateLeads("Member Details", "member_details"),
-        CreateLeads("Communication Preferences", "communication_preferences"),
+        // CreateLeads("Communication Preferences", "communication_preferences"), // Hidden as requested
         // CreateLeads("Call Client", "call_client"),
         CreateLeads("Conclusion", "conclusion"),
         // CreateLeads("Summary", "summary"), // Summary section hidden as requested
@@ -427,7 +427,7 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
         CreateLeads("Needs Analysis", "needs_analysis"),
         CreateLeads("Premium Calculator", "premium_calculator"),
         CreateLeads("Member Details", "member_details"),
-        CreateLeads("Communication Preferences", "communication_preferences"),
+        // CreateLeads("Communication Preferences", "communication_preferences"), // Hidden as requested
         CreateLeads("Client Signature", "client_signature"),
         CreateLeads("OTP Verification", "otp_verification"),
         // CreateLeads("Summary", "summary"), // Summary section hidden as requested
@@ -500,9 +500,9 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
       } else if (stepId == "member_details") {
         Constants.currentleadAvailable!.leadObject.lastPosition =
             "Member Details";
-      } else if (stepId == "communication_preferences") {
-        Constants.currentleadAvailable!.leadObject.lastPosition =
-            "Communication Preference";
+      // } else if (stepId == "communication_preferences") {
+      //   Constants.currentleadAvailable!.leadObject.lastPosition =
+      //       "Communication Preference";
         // } else if (stepId == "call_client") {
         //   Constants.currentleadAvailable!.leadObject.lastPosition = "Call Client";
       } else if (stepId == "conclusion") {
@@ -535,10 +535,10 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
         if (!validatePremiumCalculator()) {
           return; // Stop if validation fails
         }
-      } else if (stepId == "communication_preferences") {
-        if (!validateCommunicationPreferences()) {
-          return; // Stop if validation fails
-        }
+      // } else if (stepId == "communication_preferences") {
+      //   if (!validateCommunicationPreferences()) {
+      //     return; // Stop if validation fails
+      //   }
         // } else if (stepId == "call_client") {
         //   if (!validateCallClient()) {
         //     return; // Stop if validation fails

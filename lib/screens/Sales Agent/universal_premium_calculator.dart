@@ -10533,58 +10533,58 @@ class _UniversalPremiumCalculatorState
               borderRadius: BorderRadius.circular(36),
             ),
             child: StatefulBuilder(
-              builder: (context, setState1) => SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Spacer(),
-                        InkWell(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Icon(
-                              Icons.close,
-                              color: Colors.grey,
-                            )),
-                        SizedBox(
-                          width: 24,
-                        )
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Center(
-                      child: Text(
-                        "Select a Child",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: Constants.ftaColorLight,
-                        ),
+              builder: (context, setState1) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Spacer(),
+                      InkWell(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.grey,
+                          )),
+                      SizedBox(
+                        width: 24,
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Center(
+                    child: Text(
+                      "Select a Child",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: Constants.ftaColorLight,
                       ),
                     ),
-                    const SizedBox(height: 12),
-
-                    const Center(
-                      child: Text(
-                        "Click on a member below to select them as a child",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'YuGothic',
-                          color: Colors.grey,
-                        ),
-                        textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  const Center(
+                    child: Text(
+                      "Click on a member below to select them as a child",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'YuGothic',
+                        color: Colors.grey,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 16),
-                    // -------------------- List of potential children --------------------
-                    ListView.builder(
+                  ),
+                  const SizedBox(height: 16),
+                  // -------------------- Scrollable List of potential children --------------------
+                  Expanded(
+                    child: ListView.builder(
                       shrinkWrap: true,
-                      physics: const AlwaysScrollableScrollPhysics(),
+                      physics:
+                          const BouncingScrollPhysics(), // Enable scrolling
                       itemCount: allChildrenList.length,
                       itemBuilder: (context, index) {
                         final member = allChildrenList[index];
@@ -10817,53 +10817,53 @@ class _UniversalPremiumCalculatorState
                         );
                       },
                     ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: TextButton.icon(
-                        onPressed: () {
-                          activeStep1 = 2;
+                  ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: TextButton.icon(
+                      onPressed: () {
+                        activeStep1 = 2;
 
-                          updateSalesStepsValueNotifier3.value++;
-                          Navigator.of(context).pop();
+                        updateSalesStepsValueNotifier3.value++;
+                        Navigator.of(context).pop();
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NewMemberDialog2(
-                                isEditMode: false,
-                                autoNumber: 0,
-                                relationship: "Child",
-                                title: "",
-                                name: "",
-                                surname: "",
-                                dob: "",
-                                gender: "",
-                                current_member_index: current_member_index,
-                                canAddMember: canAddMember,
-                              ),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NewMemberDialog2(
+                              isEditMode: false,
+                              autoNumber: 0,
+                              relationship: "Child",
+                              title: "",
+                              name: "",
+                              surname: "",
+                              dob: "",
+                              gender: "",
+                              current_member_index: current_member_index,
+                              canAddMember: canAddMember,
                             ),
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                        ),
-                        label: const Text(
-                          'Add New Member',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'YuGothic',
-                              color: Colors.white),
-                        ),
-                        style: TextButton.styleFrom(
-                            foregroundColor: Colors.teal,
-                            backgroundColor: Constants.ctaColorLight),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.add,
+                        color: Colors.white,
                       ),
+                      label: const Text(
+                        'Add New Member',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'YuGothic',
+                            color: Colors.white),
+                      ),
+                      style: TextButton.styleFrom(
+                          foregroundColor: Colors.teal,
+                          backgroundColor: Constants.ctaColorLight),
                     ),
-                    const SizedBox(height: 16),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
               ),
             ),
           ),
@@ -10939,58 +10939,59 @@ class _UniversalPremiumCalculatorState
               borderRadius: BorderRadius.circular(36),
             ),
             child: StatefulBuilder(
-              builder: (context, setState1) => SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Spacer(),
-                        InkWell(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Icon(
-                              Icons.close,
-                              color: Colors.grey,
-                            )),
-                        SizedBox(
-                          width: 24,
-                        )
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Center(
-                      child: Text(
-                        "Add An Extended Member",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: Constants.ftaColorLight,
-                        ),
-                        textAlign: TextAlign.center,
+              builder: (context, setState1) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Spacer(),
+                      InkWell(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.grey,
+                          )),
+                      SizedBox(
+                        width: 24,
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Center(
+                    child: Text(
+                      "Add An Extended Member",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: Constants.ftaColorLight,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 12),
-                    const Center(
-                      child: Text(
-                        "Click on a member below to select them as an extended member",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'YuGothic',
-                          color: Colors.grey,
-                        ),
-                        textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  const Center(
+                    child: Text(
+                      "Click on a member below to select them as an extended member",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'YuGothic',
+                        color: Colors.grey,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 16),
+                  ),
+                  const SizedBox(height: 16),
 
-                    // -------------------- List of potential extended members --------------------
-                    ListView.builder(
+                  // -------------------- Scrollable List of potential extended members --------------------
+                  Expanded(
+                    child: ListView.builder(
                       shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
                       itemCount: allExtendedList.length,
                       itemBuilder: (context, index) {
                         final member = allExtendedList[index];
@@ -11000,7 +11001,7 @@ class _UniversalPremiumCalculatorState
                           child: Container(
                             margin: const EdgeInsets.symmetric(
                               vertical: 12.0,
-                              horizontal: 16.0,
+                              horizontal: 8.0,
                             ),
                             padding: const EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
@@ -11218,57 +11219,57 @@ class _UniversalPremiumCalculatorState
                         );
                       },
                     ),
-                    const SizedBox(height: 16),
-                    // Optionally, a button to add a new partner manually.
-                    Center(
-                      child: TextButton.icon(
-                        onPressed: () {
-                          // activeStep = 2;
-                          activeStep1 = 2;
-                          updateSalesStepsValueNotifier3.value++;
-                          Navigator.of(context).pop();
+                  ),
+                  const SizedBox(height: 16),
+                  // Optionally, a button to add a new partner manually.
+                  Center(
+                    child: TextButton.icon(
+                      onPressed: () {
+                        // activeStep = 2;
+                        activeStep1 = 2;
+                        updateSalesStepsValueNotifier3.value++;
+                        Navigator.of(context).pop();
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => NewMemberDialog2(
-                                isEditMode: false,
-                                autoNumber: 0,
-                                relationship: "",
-                                title: "",
-                                name: "",
-                                surname: "",
-                                dob: "",
-                                gender: "",
-                                current_member_index: current_member_index,
-                                canAddMember: canAddMember,
-                                is_self_or_payer: false,
-                              ),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NewMemberDialog2(
+                              isEditMode: false,
+                              autoNumber: 0,
+                              relationship: "",
+                              title: "",
+                              name: "",
+                              surname: "",
+                              dob: "",
+                              gender: "",
+                              current_member_index: current_member_index,
+                              canAddMember: canAddMember,
+                              is_self_or_payer: false,
                             ),
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.add,
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                      label: const Text(
+                        'Add New Member',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'YuGothic',
                           color: Colors.white,
                         ),
-                        label: const Text(
-                          'Add New Member',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'YuGothic',
-                            color: Colors.white,
-                          ),
-                        ),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.teal,
-                          backgroundColor: Constants.ctaColorLight,
-                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.teal,
+                        backgroundColor: Constants.ctaColorLight,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
               ),
             ),
           ),
@@ -11785,57 +11786,58 @@ class _UniversalPremiumCalculatorState
                     borderRadius: BorderRadius.circular(36),
                   ),
                   child: StatefulBuilder(
-                    builder: (context, setState1) => SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              const Spacer(),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Icon(
-                                  Icons.close,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              const SizedBox(width: 24),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Center(
-                            child: Text(
-                              "Add A Partner",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                                color: Constants.ftaColorLight,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          const Center(
-                            child: Text(
-                              "Click on a member below to add them as partner",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'YuGothic',
+                    builder: (context, setState1) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            const Spacer(),
+                            InkWell(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Icon(
+                                Icons.close,
                                 color: Colors.grey,
                               ),
-                              textAlign: TextAlign.center,
                             ),
+                            const SizedBox(width: 24),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Center(
+                          child: Text(
+                            "Add A Partner",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
+                              color: Constants.ftaColorLight,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 16),
+                        ),
+                        const SizedBox(height: 12),
+                        const Center(
+                          child: Text(
+                            "Click on a member below to add them as partner",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'YuGothic',
+                              color: Colors.grey,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
 
-                          // -------------------- List of potential partner members --------------------
-                          ListView.builder(
+                        // -------------------- Scrollable List of potential partner members --------------------
+                        Expanded(
+                          child: ListView.builder(
                             shrinkWrap: true,
+                            physics: const BouncingScrollPhysics(),
                             itemCount: allPartnerList.length,
                             itemBuilder: (context, index) {
                               final member = allPartnerList[index];
@@ -11845,7 +11847,7 @@ class _UniversalPremiumCalculatorState
                                 child: Container(
                                   margin: const EdgeInsets.symmetric(
                                     vertical: 12.0,
-                                    horizontal: 16.0,
+                                    horizontal: 8.0,
                                   ),
                                   padding: const EdgeInsets.all(16.0),
                                   decoration: BoxDecoration(
@@ -12093,58 +12095,57 @@ class _UniversalPremiumCalculatorState
                               );
                             },
                           ),
+                        ),
 
-                          const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                          // -------------------- Add a new partner manually --------------------
-                          Center(
-                            child: TextButton.icon(
-                              onPressed: () {
-                                // If you want to close the current dialog first:
-                                Navigator.of(context).pop();
+                        // -------------------- Add a new partner manually --------------------
+                        Center(
+                          child: TextButton.icon(
+                            onPressed: () {
+                              // If you want to close the current dialog first:
+                              Navigator.of(context).pop();
 
-                                // Then show your "NewMemberDialog" for a new partner
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => NewMemberDialog2(
-                                      isEditMode: false,
-                                      autoNumber: 0,
-                                      relationship: "Partner",
-                                      title: "",
-                                      name: "",
-                                      surname: "",
-                                      dob: "",
-                                      gender: "",
-                                      current_member_index:
-                                          current_member_index,
-                                      canAddMember: true,
-                                    ),
+                              // Then show your "NewMemberDialog" for a new partner
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => NewMemberDialog2(
+                                    isEditMode: false,
+                                    autoNumber: 0,
+                                    relationship: "Partner",
+                                    title: "",
+                                    name: "",
+                                    surname: "",
+                                    dob: "",
+                                    gender: "",
+                                    current_member_index: current_member_index,
+                                    canAddMember: true,
                                   ),
-                                );
-                              },
-                              icon: const Icon(
-                                Icons.add,
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.add,
+                              color: Colors.white,
+                            ),
+                            label: const Text(
+                              'Add New Partner',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'YuGothic',
                                 color: Colors.white,
                               ),
-                              label: const Text(
-                                'Add New Partner',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: 'YuGothic',
-                                  color: Colors.white,
-                                ),
-                              ),
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.teal,
-                                backgroundColor: Constants.ctaColorLight,
-                              ),
+                            ),
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.teal,
+                              backgroundColor: Constants.ctaColorLight,
                             ),
                           ),
-                          const SizedBox(height: 16),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                     ),
                   ),
                 ),
