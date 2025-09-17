@@ -48,7 +48,7 @@ class _CustomScriptTextState extends State<CustomScriptText> {
           text: actual_text,
           tags: Constants.scriptTextTags,
           style: TextStyle(
-            fontSize: 22.0,
+            fontSize: 18.0,
             color: Colors.black,
             fontWeight: FontWeight.w500,
             // Add text shadow when hovering

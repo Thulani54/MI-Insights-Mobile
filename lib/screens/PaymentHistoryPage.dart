@@ -656,30 +656,27 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
       print(Constants.cec_client_id);
     }
 
-    String urlPath = "/collection/payment_history/";
-    String apiUrl = Constants.baseUrl + urlPath;
-    DateTime now = DateTime.now();
-
-    // Construct the request body
-    Map<String, dynamic> requestBody = {
+    var headers = {'Content-Type': 'application/json'};
+    var request = http.Request(
+        'POST',
+        Uri.parse(
+            'https://miinsightsapps.net/apibus/api/collection/payment_history/'));
+    request.body = json.encode({
       "token": "kjhjguytuyghjgjhg765764tyfu",
       "policy_number": widget.policiynumber,
-      "cec_client_id": Constants.cec_client_id,
-    };
+      "cec_client_id": Constants.cec_client_id
+    });
+    request.headers.addAll(headers);
 
     try {
-      var response = await http.post(
-        Uri.parse(apiUrl),
-        body: jsonEncode(requestBody),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      );
-      // Simulating transaction processing with a delay
+      http.StreamedResponse response = await request.send();
 
-      // Navigator.of(context).pop();
       if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
+        String responseBody = await response.stream.bytesToString();
+        if (kDebugMode) {
+          print(responseBody);
+        }
+        var data = jsonDecode(responseBody);
         List<dynamic> dataList = data;
 
         for (var element in dataList) {
@@ -712,9 +709,8 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
         setState(() {});
         //print("datax ${c.runtimeType}");
       } else {
-        var data = jsonDecode(response.body);
         if (kDebugMode) {
-          print("data $data");
+          print(response.reasonPhrase);
         }
         isLoading = false;
         setState(() {});
@@ -727,6 +723,8 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
       // Close the dialog
     } catch (error) {
       print("Error: $error");
+      isLoading = false;
+      if (mounted) setState(() {});
     }
   }
 

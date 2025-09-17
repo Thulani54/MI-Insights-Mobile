@@ -208,7 +208,7 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
                                 // else if (step.stepNameId == "call_client")
                                 //   FieldSalesCallClientPage()
                                 else if (step.stepNameId == "conclusion")
-                                  Conclusion5a()
+                                  InforcePolicyDialog2()
                                 else if (step.stepNameId == "client_signature")
                                   FieldClientSignature()
                                 else if (step.stepNameId == "otp_verification")
@@ -312,49 +312,7 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
                                                 ),
                                               ),
                                             )
-                                          : SizedBox(
-                                              width: 120,
-                                              height: 36,
-                                              child: ElevatedButton(
-                                                onPressed: () {
-                                                  // Navigate back to SalesAgentReport and refresh data
-                                                  Navigator.pushAndRemoveUntil(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) => SalesAgentReport(refreshOnInit: true),
-                                                    ),
-                                                    (route) => false,
-                                                  );
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Colors.green,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            36),
-                                                  ),
-                                                ),
-                                                child: const Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      "Finish",
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                    SizedBox(width: 4),
-                                                    Icon(Icons.check,
-                                                        color: Colors.white,
-                                                        size: 18),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
+                                          : Container(),
                                     ],
                                   ),
                                 ),
@@ -398,7 +356,7 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
         CreateLeads("OTP Verification", "otp_verification"),
       ];
     }
-    
+
     // Set the first step as active/expanded by default
     activeStep = 0;
 
@@ -500,9 +458,9 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
       } else if (stepId == "member_details") {
         Constants.currentleadAvailable!.leadObject.lastPosition =
             "Member Details";
-      // } else if (stepId == "communication_preferences") {
-      //   Constants.currentleadAvailable!.leadObject.lastPosition =
-      //       "Communication Preference";
+        // } else if (stepId == "communication_preferences") {
+        //   Constants.currentleadAvailable!.leadObject.lastPosition =
+        //       "Communication Preference";
         // } else if (stepId == "call_client") {
         //   Constants.currentleadAvailable!.leadObject.lastPosition = "Call Client";
       } else if (stepId == "conclusion") {
@@ -535,10 +493,10 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
         if (!validatePremiumCalculator()) {
           return; // Stop if validation fails
         }
-      // } else if (stepId == "communication_preferences") {
-      //   if (!validateCommunicationPreferences()) {
-      //     return; // Stop if validation fails
-      //   }
+        // } else if (stepId == "communication_preferences") {
+        //   if (!validateCommunicationPreferences()) {
+        //     return; // Stop if validation fails
+        //   }
         // } else if (stepId == "call_client") {
         //   if (!validateCallClient()) {
         //     return; // Stop if validation fails
@@ -569,31 +527,21 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
   }
 
   bool validateMemberDetails() {
-    // Employment Status validation
+    // Employment Status validation - Check if currently employed
     String employmentStatus =
         Constants.currentleadAvailable!.employer!.employmentStatus;
-    if (employmentStatus == "Employed") {
-      if (Constants.currentleadAvailable!.employer!.employerName.isEmpty) {
-        MotionToast.error(
-            height: 45,
-            description: Text(
-              "Please enter the employer name.",
-              style: TextStyle(color: Colors.white),
-            )).show(context);
-        return false;
-      }
-      if (Constants.currentleadAvailable!.employer!.occupation.isEmpty) {
-        MotionToast.error(
-            height: 45,
-            description: Text(
-              "Please select the occupation.",
-              style: TextStyle(color: Colors.white),
-            )).show(context);
-        return false;
-      }
-      // Add more employment validations as needed
-    }
 
+    if (Constants.currentleadAvailable!.employer!.employmentStatus ==
+            "Employed" &&
+        Constants.isEmployerDetailsSaved == false) {
+      MotionToast.error(
+          height: 45,
+          description: Text(
+            "Please enter employee details.",
+            style: TextStyle(color: Colors.white),
+          )).show(context);
+      return false;
+    }
     // Payment Type validation
     String paymentType = Constants.currentleadAvailable!.leadObject.paymentType;
     if (paymentType.isEmpty) {
@@ -615,20 +563,6 @@ class _FieldsalesaffinityState extends State<Fieldsalesaffinity> {
           height: 45,
           description: Text(
             "Please select the debit day.",
-            style: TextStyle(color: Colors.white),
-          )).show(context);
-      return false;
-    }
-
-    String combinePremium = premiumPayer.combinePremium;
-
-    if (combinePremium.isEmpty &&
-        Constants.currentleadAvailable!.leadObject.paymentType ==
-            "Debit Order") {
-      MotionToast.error(
-          height: 55,
-          description: Text(
-            "Please select the option to combine premium.",
             style: TextStyle(color: Colors.white),
           )).show(context);
       return false;
@@ -1987,7 +1921,9 @@ class _EndCallDialog2State extends State<EndCallDialog2> {
                   // Close the FieldSalesAffinity screen and go to SalesAgentReport
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => SalesAgentReport(refreshOnInit: true)),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            SalesAgentReport(refreshOnInit: true)),
                     (route) => false,
                   );
                 }

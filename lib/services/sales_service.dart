@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:motion_toast/motion_toast.dart';
 
 import '../constants/Constants.dart';
 import '../models/Parlour.dart';
@@ -219,16 +220,18 @@ class SalesService {
 
       if (response.statusCode == 200) {
         // Check if response body looks like HTML (error page)
-        if (response.body.trim().startsWith('<!DOCTYPE html') || 
+        if (response.body.trim().startsWith('<!DOCTYPE html') ||
             response.body.trim().startsWith('<html')) {
           print('Error: Received HTML error page instead of JSON');
-          throw Exception('Server returned HTML error page instead of JSON data');
+          throw Exception(
+              'Server returned HTML error page instead of JSON data');
         }
-        
+
         final data = json.decode(response.body);
         return ScriptConfig.fromJson(data);
       } else {
-        throw Exception('Failed to load script config. Status: ${response.statusCode}');
+        throw Exception(
+            'Failed to load script config. Status: ${response.statusCode}');
       }
     } catch (e) {
       if (e is FormatException) {
@@ -445,6 +448,33 @@ class SalesService {
       }
 
       if (response.statusCode == 200) {
+        // Check if response contains "Max Cover Reached For"
+        if (response.body.contains("Max Cover Reached For")) {
+          // Extract only the member information after "Max Cover Reached For"
+          String fullMessage = response.body.toString().replaceAll("\"", "");
+          String memberInfo = fullMessage;
+
+          // Find and extract the part after "Max Cover Reached For"
+          if (fullMessage.contains("Max Cover Reached For")) {
+            int startIndex = fullMessage.indexOf("Max Cover Reached For") +
+                "Max Cover Reached For".length;
+            memberInfo = fullMessage.substring(startIndex).trim();
+          }
+
+          MotionToast.success(
+            height: 60,
+            width: 280,
+            onClose: () {},
+            description: Text(
+              memberInfo,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'YuGothic',
+              ),
+            ),
+          ).show(context);
+        }
         /*  MotionToast.success(
           height: 45,
           width: 280,

@@ -5714,68 +5714,34 @@ class _AdvancedMemberCardState extends State<AdvancedMemberCard> {
                               if (kDebugMode) {
                                 print("dfgfhg " + widget.relationship);
                               }
-                              showDialog(
-                                context: context,
-                                barrierDismissible: false,
-                                builder: (context) => StatefulBuilder(
-                                  builder: (context, setState) => Dialog(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(64),
-                                    ),
-                                    elevation: 0.0,
-                                    backgroundColor: Colors.transparent,
-                                    child: Container(
-                                      constraints: BoxConstraints(
-                                        maxWidth: (Constants
-                                                    .currentleadAvailable!
-                                                    .leadObject
-                                                    .documentsIndexed
-                                                    .isEmpty ||
-                                                widget.showIndexedDocuments ==
-                                                    false)
-                                            ? 750
-                                            : 1200,
-                                      ),
-                                      margin: const EdgeInsets.only(top: 16),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.rectangle,
-                                        borderRadius: BorderRadius.circular(16),
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.black26,
-                                            blurRadius: 10.0,
-                                            offset: Offset(0.0, 10.0),
-                                          ),
-                                        ],
-                                      ),
-                                      child: NewMemberDialog(
-                                          isEditMode: true,
-                                          autoNumber: widget.autoNumber,
-                                          relationship:
-                                              widget.relationship.isEmpty
-                                                  ? "Self/Payer"
-                                                  : widget.relationship,
-                                          title: widget.title,
-                                          name: widget.name,
-                                          surname: widget.surname,
-                                          dob: widget.dob,
-                                          phone: widget.contact,
-                                          sourceOfIncome: widget.sourceOfIncome,
-                                          sourceOfWealth: widget.sourceOfWealth,
-                                          idNumber: widget.id,
-                                          is_self_or_payer:
-                                              widget.is_self_or_payer,
-                                          canAddMember: true,
-                                          gender: widget.gender,
-                                          onAfterEdit: widget.onAfterEdit,
-                                          showIndexedDocuments:
-                                              widget.showIndexedDocuments,
-                                          showSourceOfIncome:
-                                              widget.showSourceOfIncome,
-                                          current_member_index: 0),
-                                    ),
-                                  ),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => NewMemberDialog2(
+                                      isEditMode: true,
+                                      autoNumber: widget.autoNumber,
+                                      relationship:
+                                          widget.relationship.isEmpty
+                                              ? "Self/Payer"
+                                              : widget.relationship,
+                                      title: widget.title,
+                                      name: widget.name,
+                                      surname: widget.surname,
+                                      dob: widget.dob,
+                                      phone: widget.contact,
+                                      sourceOfIncome: widget.sourceOfIncome,
+                                      sourceOfWealth: widget.sourceOfWealth,
+                                      idNumber: widget.id,
+                                      is_self_or_payer:
+                                          widget.is_self_or_payer,
+                                      canAddMember: true,
+                                      gender: widget.gender,
+                                      onAfterEdit: widget.onAfterEdit,
+                                      showIndexedDocuments:
+                                          widget.showIndexedDocuments,
+                                      showSourceOfIncome:
+                                          widget.showSourceOfIncome,
+                                      current_member_index: 0),
                                 ),
                               );
                             },

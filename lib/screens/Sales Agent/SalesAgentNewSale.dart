@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:mi_insights/constants/Constants.dart';
 import 'package:mi_insights/customwidgets/custom_input.dart';
 import 'package:mi_insights/screens/Sales Agent/SalesAgentSalesReport.dart';
+import 'package:mi_insights/screens/Sales%20Agent/universal_premium_calculator.dart';
 import 'package:mi_insights/services/inactivitylogoutmixin.dart';
 import 'package:mime/mime.dart';
 import 'package:motion_toast/motion_toast.dart';
@@ -530,6 +532,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                           onSubmitted: (val) {},
                           focusNode: name_focus_node,
                           textInputAction: TextInputAction.next,
+                          lettersOnly: true,
                           isPasswordField: false),
                     ),
                   ],
@@ -562,6 +565,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                           onSubmitted: (val) {},
                           focusNode: surname_focus_node,
                           textInputAction: TextInputAction.next,
+                          lettersOnly: true,
                           isPasswordField: false),
                     ),
                   ],
@@ -1188,6 +1192,21 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                       ),
                     ).show(context);
                   } else {
+                    Constants.currentleadAvailable = null;
+
+                    additionalMembers = [];
+                    mainMembers = [];
+                    commencementDates = [];
+                    selectedRiderIds = [];
+
+                    policiescoverAmounts = [];
+                    policiesSelectedCoverAmounts = [];
+                    policiesSelectedProducts = [];
+                    policiesSelectedProdTypes = [];
+                    allRates = [];
+                    distinctProducts = [];
+                    distinctProdTypes = [];
+                    distinctCoverAmounts = [];
                     add_new_lead();
                   }
                 },
@@ -1267,7 +1286,8 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
                     ).show(context);
                   } else {
                     // First add the new lead
-                    await add_new_lead();
+                    Constants.currentleadAvailable = null;
+                    await add_new_lead_and_continue();
                   }
                 },
                 child: Container(
@@ -1490,7 +1510,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
       "call_back_date": "",
       "call_back_time": "",
       "agent_sale_date": agent_sale_date,
-      "hang_up_reason": "",
+      "hang_up_reason": "Transfered",
       "notes": notesController.text,
       "product": _selectedDisplayedProduct!.product,
       "abbr": _selectedDisplayedProduct!.product.substring(0, 2),
@@ -1508,11 +1528,15 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
 
     try {
       http.StreamedResponse response = await request.send();
-      print("Response status code: ${response.statusCode}");
+      if (kDebugMode) {
+        print("Response status code: ${response.statusCode}");
+      }
 
       if (response.statusCode == 200) {
         String responseBody = await response.stream.bytesToString();
-        print("Response body: $responseBody");
+        if (kDebugMode) {
+          print("Response body: $responseBody");
+        }
         var decodedResponse = json.decode(responseBody);
 
         // Assuming the response directly returns an integer
@@ -1520,20 +1544,26 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
         if (result > 0) {
           await uploadDocs(result);
         } else {
-          Navigator.of(context).pop();
-          showErrorDialog(context, "Invalid response from server");
+          if (mounted) {
+            Navigator.of(context).pop();
+            showErrorDialog(context, "Invalid response from server");
+          }
         }
       } else {
-        Navigator.of(context).pop();
         String errorBody = await response.stream.bytesToString();
         print("Error response: $errorBody");
-        showErrorDialog(
-            context, "Failed to create lead: ${response.reasonPhrase}");
+        if (mounted) {
+          Navigator.of(context).pop();
+          showErrorDialog(
+              context, "Failed to create lead: ${response.reasonPhrase}");
+        }
       }
     } catch (e) {
-      Navigator.of(context).pop();
       print("Network error: $e");
-      showErrorDialog(context, "Network error: $e");
+      if (mounted) {
+        Navigator.of(context).pop();
+        showErrorDialog(context, "Network error: $e");
+      }
     }
   }
   //1414
@@ -1591,26 +1621,33 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
         print("Files and data uploaded successfully");
         String trimmedResponseBody = responseBody.replaceAll('"', '');
 
-        Navigator.of(context).pop(); // Close loading dialog
+        if (mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
 
-        if (trimmedResponseBody == "Success") {
-          // Show success dialog instead of navigating
-          showSuccessDialog(
-            context,
-          );
-        } else {
-          showErrorDialog(
-              context, "Upload completed but received: $responseBody");
+          if (trimmedResponseBody == "Success") {
+            // Show success dialog
+            showSuccessDialog(
+              context,
+              "The lead was successfully uploaded.",
+            );
+          } else {
+            showErrorDialog(
+                context, "Upload completed but received: $responseBody");
+          }
         }
       } else {
-        Navigator.of(context).pop(); // Close loading dialog
-        showErrorDialog(context, "Upload failed: ${response.reasonPhrase}");
+        if (mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+          showErrorDialog(context, "Upload failed: ${response.reasonPhrase}");
+        }
         print("Failed to upload files and data: ${response.reasonPhrase}");
       }
     } catch (e) {
-      Navigator.of(context).pop(); // Close loading dialog
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        showErrorDialog(context, "Upload error: $e");
+      }
       print("Upload error: $e");
-      showErrorDialog(context, "Upload error: $e");
     }
   }
 
@@ -1652,25 +1689,40 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
 
     _files = [];
 
-    var response = await request.send();
-    print("Response status code: ${response.statusCode}");
-    String responseBody = await response.stream.bytesToString();
-    print("Response body: $responseBody");
+    try {
+      var response = await request.send();
+      print("Response status code: ${response.statusCode}");
+      String responseBody = await response.stream.bytesToString();
+      print("Response body: $responseBody");
 
-    if (response.statusCode == 201) {
-      print("Files and data uploaded successfully");
-      // Handle success
-      String trimmedResponseBody = responseBody.replaceAll('"', '');
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        print("Files and data uploaded successfully");
+        // Handle success
+        String trimmedResponseBody = responseBody.replaceAll('"', '');
 
-      if (trimmedResponseBody == "Success") {
-        // Fetch lead details by ID before navigating
-        await fetchLeadById2(result.toString());
+        if (trimmedResponseBody == "Success") {
+          // Don't close loading dialog here - keep it open until navigation completes
+          // Fetch lead details by ID before navigating
+          await fetchLeadById2(result.toString());
+        } else {
+          if (mounted) {
+            Navigator.of(context).pop(); // Close loading dialog
+            showErrorDialog(context, responseBody);
+          }
+        }
       } else {
-        showErrorDialog(context, responseBody);
+        if (mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+          showErrorDialog(context, response.reasonPhrase!);
+        }
+        print("Failed to upload files and data: ${response.reasonPhrase}");
       }
-    } else {
-      showErrorDialog(context, response.reasonPhrase!);
-      print("Failed to upload files and data: ${response.reasonPhrase}");
+    } catch (e) {
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        print("Upload error: $e");
+        showErrorDialog(context, "Upload error: $e");
+      }
     }
   }
 
@@ -1684,26 +1736,31 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
         final responseData = jsonDecode(response.body);
         Constants.currentleadAvailable = Lead.fromJson(responseData[0]);
 
-        // Close loading dialog first
-        Navigator.of(context).pop();
-
-        // Navigate to FieldSalesAffinity after successful lead fetch
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                Fieldsalesaffinity(sale_type: Constants.fieldSaleType),
-          ),
-        );
+        if (mounted) {
+          // Close loading dialog just before navigation
+          Navigator.of(context).pop();
+          // Navigate to FieldSalesAffinity after successful lead fetch
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  Fieldsalesaffinity(sale_type: Constants.fieldSaleType),
+            ),
+          );
+        }
       } else {
-        Navigator.of(context).pop(); // Close loading dialog
-        print("Failed to fetch lead by ID: ${response.statusCode}");
-        showErrorDialog(context, "Failed to fetch lead details");
+        if (mounted) {
+          Navigator.of(context).pop(); // Close loading dialog
+          print("Failed to fetch lead by ID: ${response.statusCode}");
+          showErrorDialog(context, "Failed to fetch lead details");
+        }
       }
     } catch (error) {
-      Navigator.of(context).pop(); // Close loading dialog
-      print("Error fetching lead by ID: $error");
-      showErrorDialog(context, "Error fetching lead details: $error");
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+        print("Error fetching lead by ID: $error");
+        showErrorDialog(context, "Error fetching lead details: $error");
+      }
     }
   }
 
@@ -1763,20 +1820,26 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
         if (result > 0) {
           await uploadDocsContinue(result);
         } else {
-          Navigator.of(context).pop();
-          showErrorDialog(context, "Invalid response from server");
+          if (mounted) {
+            Navigator.of(context).pop();
+            showErrorDialog(context, "Invalid response from server");
+          }
         }
       } else {
-        Navigator.of(context).pop();
         String errorBody = await response.stream.bytesToString();
         print("Error response: $errorBody");
-        showErrorDialog(
-            context, "Failed to save lead: ${response.reasonPhrase}");
+        if (mounted) {
+          Navigator.of(context).pop();
+          showErrorDialog(
+              context, "Failed to save lead: ${response.reasonPhrase}");
+        }
       }
     } catch (e) {
-      Navigator.of(context).pop();
       print("Network error: $e");
-      showErrorDialog(context, "Network error: $e");
+      if (mounted) {
+        Navigator.of(context).pop();
+        showErrorDialog(context, "Network error: $e");
+      }
     }
   }
 
@@ -1823,7 +1886,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
       print("Response: $responseString");
     }
   }*/
-  void showSuccessDialog(BuildContext context) {
+  void showSuccessDialog(BuildContext context, String message) {
     showDialog(
       context: context,
       barrierDismissible: false, // User must tap button to close dialog
@@ -1834,13 +1897,13 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
           ), // Make dialog rounded
           elevation: 0,
           backgroundColor: Colors.transparent,
-          child: contentBox(context),
+          child: contentBox(context, message),
         );
       },
     );
   }
 
-  Widget contentBox(BuildContext context) {
+  Widget contentBox(BuildContext context, String message) {
     return Stack(
       clipBehavior: Clip.none,
       alignment: Alignment.topCenter,
@@ -1877,7 +1940,7 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
               ),
               SizedBox(height: 15),
               Text(
-                "The lead was successfully uploaded.",
+                message,
                 style: TextStyle(fontSize: 14),
                 textAlign: TextAlign.center,
               ),
@@ -1894,11 +1957,12 @@ class _SalesAgentNewSaleState extends State<SalesAgentNewSale>
 
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();
-                    
+
                     // Navigate to SalesAgentSalesReport and call init2()
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (context) => SalesAgentReport(refreshOnInit: true),
+                        builder: (context) =>
+                            SalesAgentReport(refreshOnInit: true),
                       ),
                     );
                   },
@@ -2547,6 +2611,7 @@ class _CombinedImageSelectorState extends State<CombinedImageSelector> {
   @override
   void initState() {
     super.initState();
+
     _attachCombinedImages();
   }
 

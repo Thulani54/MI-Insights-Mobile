@@ -134,6 +134,9 @@ class _FieldSalesCommunicationPreferenceState
                               onChanged: (newValue) {
                                 setState(() {
                                   _selectedPref = newValue!.toString();
+                                  // Immediately update the lead object
+                                  Constants.currentleadAvailable!.leadObject
+                                      .communicationPreference = _selectedPref;
                                 });
                               }),
                         ),
@@ -168,13 +171,14 @@ class _FieldSalesCommunicationPreferenceState
                     child: CustomInputTransparent4(
                       controller: CADPhoneController,
                       integersOnly: true,
+                      maxInputs: 10,
                       hintText: "Cellphone Number",
                       onChanged: (value) {
-                        Constants.currentleadAvailable!.leadObject
-                            .altCellNumber = value;
+                        Constants.currentleadAvailable!.leadObject.cellNumber =
+                            value;
                         print("dgffdfd $value");
                         print(
-                            "hhgghh ${Constants.currentleadAvailable!.leadObject.altCellNumber}");
+                            "hhgghh ${Constants.currentleadAvailable!.leadObject.cellNumber}");
                       },
                       onSubmitted: (String) {
                         Constants.cellNumber = CADPhoneController.text;
@@ -213,8 +217,12 @@ class _FieldSalesCommunicationPreferenceState
                     child: CustomInputTransparent4(
                       controller: CADTelephoneController,
                       hintText: "(Alt) Home Telephone",
-                      onChanged: (String) {
-                        Constants.altCellNumber = CADTelephoneController.text;
+                      maxInputs: 10,
+                      integersOnly: true,
+                      onChanged: (value) {
+                        Constants.altCellNumber = value;
+                        Constants.currentleadAvailable!.leadObject
+                            .altCellNumber = value;
                       },
                       onSubmitted: (String) {
                         Constants.altCellNumber = CADTelephoneController.text;
@@ -325,6 +333,8 @@ class _FieldSalesCommunicationPreferenceState
                       onChanged: (newValue) {
                         setState(() {
                           _selectedComm = newValue!.toString();
+                          Constants.currentleadAvailable!.leadObject
+                              .policyScheduleCommMethod = _selectedComm;
                         });
                       }),
                 ),
@@ -438,10 +448,11 @@ class _FieldSalesCommunicationPreferenceState
                       Constants.currentleadAvailable!.leadObject.clientEmail =
                           CADEmailController.text;
 
-                      // TODO: Save policy schedule communication preference
-                      // If LeadObject has a field for policy schedule communication, uncomment and update:
-                      // Constants.currentleadAvailable!.leadObject.policyScheduleCommMethod = _selectedComm;
-
+                      // Save policy schedule communication preference
+                      if (_selectedComm != null && _selectedComm!.isNotEmpty) {
+                        Constants.currentleadAvailable!.leadObject
+                            .policyScheduleCommMethod = _selectedComm!;
+                      }
                       // Only call the update function once
                       updateCommunicationPreferencesLeadObjectDetails(
                           Constants.currentleadAvailable!.leadObject);
@@ -476,6 +487,8 @@ class _FieldSalesCommunicationPreferenceState
           Constants.currentleadAvailable!.leadObject.clientEmail;
       CADTelephoneController.text =
           Constants.currentleadAvailable!.leadObject.altCellNumber;
+
+      // Load communication preference
       if (Constants
           .currentleadAvailable!.leadObject.communicationPreference.isEmpty) {
         _selectedPref = "Cellphone";
@@ -483,6 +496,16 @@ class _FieldSalesCommunicationPreferenceState
         _selectedPref =
             Constants.currentleadAvailable!.leadObject.communicationPreference;
       }
+
+      // Load policy schedule communication method
+      if (Constants.currentleadAvailable!.leadObject.policyScheduleCommMethod !=
+              null &&
+          Constants.currentleadAvailable!.leadObject.policyScheduleCommMethod!
+              .isNotEmpty) {
+        _selectedComm =
+            Constants.currentleadAvailable!.leadObject.policyScheduleCommMethod;
+      }
+
       setState(() {});
     }
   }

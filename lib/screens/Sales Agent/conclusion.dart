@@ -18,6 +18,7 @@ import '../../../../constants/Constants.dart';
 import '../../../../models/map_class.dart';
 import '../../customwidgets/custom_input.dart';
 import '../../services/sales_service.dart';
+import 'SalesAgentSalesReport.dart';
 
 // Example model for policy data
 class Conclusion5a extends StatefulWidget {
@@ -2681,110 +2682,92 @@ class _InforcePolicyDialog2State extends State<InforcePolicyDialog2> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        shadowColor: Colors.black.withOpacity(0.3),
-        elevation: 6,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
+    return Column(
+      children: [
+        // Content
+        Container(
+          child: _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.all(16),
+                  itemCount: _policyList.length,
+                  itemBuilder: (context, index) {
+                    return _buildMobilePolicyCard(_policyList[index], index);
+                  },
+                ),
         ),
-        title: Text(
-          "Accepted Policies",
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          // Content
-          Expanded(
-            child: _isLoading
-                ? Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    padding: EdgeInsets.all(16),
-                    itemCount: _policyList.length,
-                    itemBuilder: (context, index) {
-                      return _buildMobilePolicyCard(_policyList[index], index);
-                    },
-                  ),
-          ),
 
-          // Action Buttons
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.grey[50],
-              border: Border(
-                top: BorderSide(color: Colors.grey[300]!, width: 1),
-              ),
-            ),
-            child: Column(
-              children: [
-                if (_inforcePolicyResponseResultAvailable == false)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _canContinue ? _handleInforceAction : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _canContinue
-                            ? Constants.ftaColorLight
-                            : Colors.grey,
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(32),
-                        ),
-                      ),
-                      child: Text(
-                        _policyList.length == 1
-                            ? "Inforce Policy"
-                            : "Inforce Policies",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                if (_inforcePolicyResponseResultAvailable == true)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Constants.ftaColorLight,
-                        padding: EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(32),
-                        ),
-                      ),
-                      child: Text(
-                        "Done",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
+        // Action Buttons
+        Container(
+          padding: EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            border: Border(
+              top: BorderSide(color: Colors.grey[300]!, width: 1),
             ),
           ),
-        ],
-      ),
+          child: Column(
+            children: [
+              if (_inforcePolicyResponseResultAvailable == false)
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _canContinue ? _handleInforceAction : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          _canContinue ? Constants.ftaColorLight : Colors.grey,
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                    ),
+                    child: Text(
+                      _policyList.length == 1
+                          ? "Inforce Policy"
+                          : "Inforce Policies",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              if (_inforcePolicyResponseResultAvailable == true)
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SalesAgentReport(refreshOnInit: true),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Constants.ftaColorLight,
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(32),
+                      ),
+                    ),
+                    child: Text(
+                      "Done",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

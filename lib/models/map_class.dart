@@ -318,6 +318,7 @@ class LeadObject {
   int? month; // public Nullable<int> month
   int? day; // public Nullable<int> day
   int? isHidden; // public Nullable<int> isHidden
+  String? policyScheduleCommMethod;
 
   // ---------------------------------------------------------------------------------------------
   // Constructor
@@ -457,6 +458,7 @@ class LeadObject {
     this.month,
     this.day,
     this.isHidden,
+    this.policyScheduleCommMethod,
   });
 
   // ---------------------------------------------------------------------------------------------
@@ -621,6 +623,7 @@ class LeadObject {
       month: json['month'] as int?,
       day: json['day'] as int?,
       isHidden: json['isHidden'] as int?,
+      policyScheduleCommMethod: json['policyScheduleCommMethod'] as String? ?? '',
     );
   }
 
@@ -774,6 +777,7 @@ class LeadObject {
       'month': month,
       'day': day,
       'isHidden': isHidden,
+      'policyScheduleCommMethod': policyScheduleCommMethod,
     };
   }
 }
@@ -1212,15 +1216,14 @@ class BeneficiaryAddress {
   });
 
   factory BeneficiaryAddress.fromJson(Map<String, dynamic> json) {
-    print("dfgfgh $json");
     return BeneficiaryAddress(
       id: json['id'] ?? 0,
       onololeadid: json['onololeadid'] ?? 0,
-      physaddressLine1: json['physaddressLine1'] ?? '',
-      physaddressLine2: json['physaddressLine2'] ?? '',
-      physaddressLine3: json['physaddressLine3'] ?? '',
-      physaddressCode: json['physaddressCode'] ?? '',
-      physaddressProvince: json['physaddressProvince'] ?? '',
+      physaddressLine1: json['physaddress_line1'] ?? '',
+      physaddressLine2: json['physaddress_line2'] ?? '',
+      physaddressLine3: json['physaddress_line3'] ?? '',
+      physaddressCode: json['physaddress_code'] ?? '',
+      physaddressProvince: json['physaddress_province'] ?? '',
       timestamp: json['timestamp'] ?? '',
     );
   }
@@ -1229,11 +1232,11 @@ class BeneficiaryAddress {
     return {
       'id': id,
       'onololeadid': onololeadid,
-      'physaddressLine1': physaddressLine1,
-      'physaddressLine2': physaddressLine2,
-      'physaddressLine3': physaddressLine3,
-      'physaddressCode': physaddressCode,
-      'physaddressProvince': physaddressProvince,
+      'physaddress_line1': physaddressLine1,
+      'physaddress_line2': physaddressLine2,
+      'physaddress_line3': physaddressLine3,
+      'physaddress_code': physaddressCode,
+      'physaddress_province': physaddressProvince,
       'timestamp': timestamp,
     };
   }
@@ -1297,10 +1300,8 @@ class PremiumPayer {
   });
 
   factory PremiumPayer.fromJson(Map<String, dynamic> json) {
-    //  print("fgfgffg1a $json");
-
     return PremiumPayer(
-      autoNumber: json['autoNumber'] ?? 0,
+      autoNumber: json['auto_number'] ?? 0,
       bankname: json['bankname'] ?? '',
       branchname: json['branchname'] ?? '',
       branchcode: json['branchcode'] ?? '',
@@ -1315,8 +1316,8 @@ class PremiumPayer {
       lastUpdate: json['lastUpdate'] ?? '',
       reference: json['reference'] ?? '',
       onololeadid: json['onololeadid'] ?? 0,
-      acountHolder: json['acountHolder'] ?? '',
-      combinePremium: json['combinePremium'] ?? '',
+      acountHolder: json['acount_holder'] ?? '',
+      combinePremium: json['combine_premium'] ?? '',
       validated: json['validated'] ?? '',
       errorMessage: json['errorMessage'] ?? '',
       updatedBy: json['updated_by'] ?? 0,

@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:motion_toast/motion_toast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants/Constants.dart';
 
@@ -120,7 +121,9 @@ class _UniversalPremiumCalculatorState
                 .toLowerCase() ==
             "inforced") {
       isPolicyInforced = true;
-      print("Policy is inforced: $isPolicyInforced");
+      if (kDebugMode) {
+        print("Policy is inforced: $isPolicyInforced");
+      }
     }
 
     // Set inception date to null for each policy
@@ -1985,23 +1988,94 @@ class _UniversalPremiumCalculatorState
     fetchCommencementDates();
   }
 
-  void fetchCommencementDates() {
+  // Store commencement date with unique policy reference
+  Future<void> _storeCommencementDate(
+      int policyIndex, String commencementDate) async {
+    try {
+      if (Constants.currentleadAvailable == null ||
+          Constants.currentleadAvailable!.policies.length <= policyIndex) {
+        return;
+      }
+
+      final policy = Constants.currentleadAvailable!.policies[policyIndex];
+      final String? policyReference = policy.quote?.reference;
+
+      if (policyReference == null || policyReference.isEmpty) {
+        print("No policy reference found for index $policyIndex");
+        return;
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      final key = 'commencement_date_$policyReference';
+      await prefs.setString(key, commencementDate);
+      print(
+          "Stored commencement date for policy $policyReference: $commencementDate");
+    } catch (e) {
+      print("Error storing commencement date: $e");
+    }
+  }
+
+  // Retrieve commencement date for a specific policy
+  Future<String?> _getStoredCommencementDate(String policyReference) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = 'commencement_date_$policyReference';
+      return prefs.getString(key);
+    } catch (e) {
+      print("Error retrieving commencement date: $e");
+      return null;
+    }
+  }
+
+  // Clear stored commencement date for a specific policy
+  Future<void> _clearStoredCommencementDate(String policyReference) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = 'commencement_date_$policyReference';
+      await prefs.remove(key);
+      print("Cleared stored commencement date for policy $policyReference");
+    } catch (e) {
+      print("Error clearing commencement date: $e");
+    }
+  }
+
+  void fetchCommencementDates() async {
     commencementDates.clear();
 
     for (int i = 0; i < Constants.currentleadAvailable!.policies.length; i++) {
       var policy = Constants.currentleadAvailable!.policies[i];
+      final String? policyReference = policy.quote?.reference;
 
-      String? commencement = (policy.quote.inceptionDate != null)
-          ? Constants.formatter.format(policy.quote.inceptionDate!)
-          : null;
+      // First try to get from SharedPreferences
+      String? storedCommencement = null;
+      if (policyReference != null) {
+        storedCommencement = await _getStoredCommencementDate(policyReference);
+      }
 
-      // Check if the commencement date exists in the available list
-      // If not, set it to null to show the dropdown as invalid
-      if (commencement != null && commencementList.contains(commencement)) {
-        commencementDates.add(commencement);
+      // If we have a stored value and it's in the list, use it
+      if (storedCommencement != null &&
+          commencementList.contains(storedCommencement)) {
+        commencementDates.add(storedCommencement);
+        // Also update the policy object
+        policy.premiumPayer.commencementDate = storedCommencement;
+        DateTime? parsedDate = DateTime.tryParse(storedCommencement);
+        if (parsedDate != null) {
+          policy.quote.inceptionDate = parsedDate;
+        }
       } else {
-        // Date is not in the list or is null, so add null to make it invalid
-        commencementDates.add(null);
+        // Otherwise, check if the policy already has a commencement date
+        String? commencement = (policy.quote.inceptionDate != null)
+            ? Constants.formatter.format(policy.quote.inceptionDate!)
+            : null;
+
+        // Check if the commencement date exists in the available list
+        // If not, set it to null to show the dropdown as invalid
+        if (commencement != null && commencementList.contains(commencement)) {
+          commencementDates.add(commencement);
+        } else {
+          // Date is not in the list or is null, so add null to make it invalid
+          commencementDates.add(null);
+        }
       }
     }
 
@@ -2011,6 +2085,9 @@ class _UniversalPremiumCalculatorState
     }
 
     // Don't auto-set a default value - force user to select manually
+
+    // Update UI after loading stored values
+    if (mounted) setState(() {});
     // This ensures the dropdown shows as invalid (red border) when no valid selection exists
   }
 
@@ -3359,6 +3436,9 @@ class _UniversalPremiumCalculatorState
                                                                               if (parsedDate != null) {
                                                                                 Constants.currentleadAvailable!.policies[current_member_index].quote.inceptionDate = parsedDate;
                                                                               }
+
+                                                                              // Store commencement date with unique policy reference
+                                                                              _storeCommencementDate(current_member_index, newValue);
                                                                             });
                                                                             print("fghggh $newValue");
 
@@ -7967,7 +8047,7 @@ class _UniversalPremiumCalculatorState
     // -----------------------------
     return Container(
         child: ListView.builder(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: extendedMembersFromPolicy.length,
       itemBuilder: (context, index) {
@@ -8430,59 +8510,24 @@ class _UniversalPremiumCalculatorState
                                 ),
                                 InkWell(
                                   onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      builder: (context) => StatefulBuilder(
-                                        builder: (context, setState) => Dialog(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(64),
-                                          ),
-                                          elevation: 0.0,
-                                          backgroundColor: Colors.transparent,
-                                          child: Container(
-                                            constraints: BoxConstraints(
-                                              maxWidth: (Constants
-                                                      .currentleadAvailable!
-                                                      .leadObject
-                                                      .documentsIndexed
-                                                      .isEmpty)
-                                                  ? 750
-                                                  : 1200,
-                                            ),
-                                            margin:
-                                                const EdgeInsets.only(top: 16),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              shape: BoxShape.rectangle,
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                  color: Colors.black26,
-                                                  blurRadius: 10.0,
-                                                  offset: Offset(0.0, 10.0),
-                                                ),
-                                              ],
-                                            ),
-                                            child: NewMemberDialog2(
-                                              isEditMode: true,
-                                              autoNumber: member.autoNumber,
-                                              relationship: "Extended",
-                                              title: member.title,
-                                              name: member.name,
-                                              surname: member.surname,
-                                              dob: member.dob,
-                                              phone: member.contact,
-                                              idNumber: member.id,
-                                              is_self_or_payer: false,
-                                              gender: member.gender,
-                                              canAddMember: true,
-                                              current_member_index:
-                                                  current_member_index,
-                                            ),
-                                          ),
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => NewMemberDialog2(
+                                          isEditMode: true,
+                                          autoNumber: member.autoNumber,
+                                          relationship: "Extended",
+                                          title: member.title,
+                                          name: member.name,
+                                          surname: member.surname,
+                                          dob: member.dob,
+                                          phone: member.contact,
+                                          idNumber: member.id,
+                                          is_self_or_payer: false,
+                                          gender: member.gender,
+                                          canAddMember: true,
+                                          current_member_index:
+                                              current_member_index,
                                         ),
                                       ),
                                     );
@@ -9075,59 +9120,24 @@ class _UniversalPremiumCalculatorState
                               ),
                               InkWell(
                                 onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (context) => StatefulBuilder(
-                                      builder: (context, setState) => Dialog(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(64),
-                                        ),
-                                        elevation: 0.0,
-                                        backgroundColor: Colors.transparent,
-                                        child: Container(
-                                          constraints: BoxConstraints(
-                                            maxWidth: (Constants
-                                                    .currentleadAvailable!
-                                                    .leadObject
-                                                    .documentsIndexed
-                                                    .isEmpty)
-                                                ? 750
-                                                : 1200,
-                                          ),
-                                          margin:
-                                              const EdgeInsets.only(top: 16),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.rectangle,
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            boxShadow: const [
-                                              BoxShadow(
-                                                color: Colors.black26,
-                                                blurRadius: 10.0,
-                                                offset: Offset(0.0, 10.0),
-                                              ),
-                                            ],
-                                          ),
-                                          child: NewMemberDialog2(
-                                            isEditMode: true,
-                                            autoNumber: partner.autoNumber,
-                                            relationship: "Partner",
-                                            title: partner.title,
-                                            name: partner.name,
-                                            surname: partner.surname,
-                                            dob: partner.dob,
-                                            phone: partner.contact,
-                                            idNumber: partner.id,
-                                            is_self_or_payer: false,
-                                            gender: partner.gender,
-                                            canAddMember: true,
-                                            current_member_index:
-                                                current_member_index,
-                                          ),
-                                        ),
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => NewMemberDialog2(
+                                        isEditMode: true,
+                                        autoNumber: partner.autoNumber,
+                                        relationship: "Partner",
+                                        title: partner.title,
+                                        name: partner.name,
+                                        surname: partner.surname,
+                                        dob: partner.dob,
+                                        phone: partner.contact,
+                                        idNumber: partner.id,
+                                        is_self_or_payer: false,
+                                        gender: partner.gender,
+                                        canAddMember: true,
+                                        current_member_index:
+                                            current_member_index,
                                       ),
                                     ),
                                   );
@@ -9173,9 +9183,6 @@ class _UniversalPremiumCalculatorState
       ),
     );
   }
-
-  // Ensure this map is declared at the State class level:
-  Map<int, String> _selectedCoverChildrenAmounts = {};
 
   Widget buildChildrenGrid() {
     // Get the current policy and its reference.
@@ -9707,59 +9714,24 @@ class _UniversalPremiumCalculatorState
                                 ),
                                 InkWell(
                                   onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      builder: (context) => StatefulBuilder(
-                                        builder: (context, setState) => Dialog(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(64),
-                                          ),
-                                          elevation: 0.0,
-                                          backgroundColor: Colors.transparent,
-                                          child: Container(
-                                            constraints: BoxConstraints(
-                                              maxWidth: (Constants
-                                                      .currentleadAvailable!
-                                                      .leadObject
-                                                      .documentsIndexed
-                                                      .isEmpty)
-                                                  ? 750
-                                                  : 1200,
-                                            ),
-                                            margin:
-                                                const EdgeInsets.only(top: 16),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              shape: BoxShape.rectangle,
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                              boxShadow: const [
-                                                BoxShadow(
-                                                  color: Colors.black26,
-                                                  blurRadius: 10.0,
-                                                  offset: Offset(0.0, 10.0),
-                                                ),
-                                              ],
-                                            ),
-                                            child: NewMemberDialog2(
-                                              isEditMode: true,
-                                              autoNumber: child.autoNumber,
-                                              relationship: "Child",
-                                              title: child.title,
-                                              name: child.name,
-                                              surname: child.surname,
-                                              dob: child.dob,
-                                              phone: child.contact,
-                                              idNumber: child.id,
-                                              is_self_or_payer: false,
-                                              gender: child.gender,
-                                              canAddMember: true,
-                                              current_member_index:
-                                                  current_member_index,
-                                            ),
-                                          ),
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => NewMemberDialog2(
+                                          isEditMode: true,
+                                          autoNumber: child.autoNumber,
+                                          relationship: "Child",
+                                          title: child.title,
+                                          name: child.name,
+                                          surname: child.surname,
+                                          dob: child.dob,
+                                          phone: child.contact,
+                                          idNumber: child.id,
+                                          is_self_or_payer: false,
+                                          gender: child.gender,
+                                          canAddMember: true,
+                                          current_member_index:
+                                              current_member_index,
                                         ),
                                       ),
                                     );
@@ -10360,59 +10332,24 @@ class _UniversalPremiumCalculatorState
                               ),
                               InkWell(
                                 onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (context) => StatefulBuilder(
-                                      builder: (context, setState) => Dialog(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(64),
-                                        ),
-                                        elevation: 0.0,
-                                        backgroundColor: Colors.transparent,
-                                        child: Container(
-                                          constraints: BoxConstraints(
-                                            maxWidth: (Constants
-                                                    .currentleadAvailable!
-                                                    .leadObject
-                                                    .documentsIndexed
-                                                    .isEmpty)
-                                                ? 750
-                                                : 1200,
-                                          ),
-                                          margin:
-                                              const EdgeInsets.only(top: 16),
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.rectangle,
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            boxShadow: const [
-                                              BoxShadow(
-                                                color: Colors.black26,
-                                                blurRadius: 10.0,
-                                                offset: Offset(0.0, 10.0),
-                                              ),
-                                            ],
-                                          ),
-                                          child: NewMemberDialog2(
-                                            isEditMode: true,
-                                            autoNumber: extended.autoNumber,
-                                            relationship: "Extended",
-                                            title: extended.title,
-                                            name: extended.name,
-                                            surname: extended.surname,
-                                            dob: extended.dob,
-                                            phone: extended.contact,
-                                            idNumber: extended.id,
-                                            is_self_or_payer: false,
-                                            gender: extended.gender,
-                                            canAddMember: true,
-                                            current_member_index:
-                                                current_member_index,
-                                          ),
-                                        ),
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => NewMemberDialog2(
+                                        isEditMode: true,
+                                        autoNumber: extended.autoNumber,
+                                        relationship: "Extended",
+                                        title: extended.title,
+                                        name: extended.name,
+                                        surname: extended.surname,
+                                        dob: extended.dob,
+                                        phone: extended.contact,
+                                        idNumber: extended.id,
+                                        is_self_or_payer: false,
+                                        gender: extended.gender,
+                                        canAddMember: true,
+                                        current_member_index:
+                                            current_member_index,
                                       ),
                                     ),
                                   );
@@ -10457,8 +10394,6 @@ class _UniversalPremiumCalculatorState
       ),
     );
   }
-
-  Map<int, String> _selectedCoverExtendedAmounts = {};
 
   void showAddChildrenDialog(
       BuildContext context, int current_member_index, bool canAddMember) {
@@ -10690,7 +10625,7 @@ class _UniversalPremiumCalculatorState
                                             Container(
                                               height: 30,
                                               child: TextButton(
-                                                onPressed: () {
+                                                onPressed: () async {
                                                   // Close the dialog.
                                                   Navigator.of(context).pop();
 
@@ -10764,19 +10699,33 @@ class _UniversalPremiumCalculatorState
                                                     return false;
                                                   });
 
-                                                  if (existingIndex != -1) {
-                                                    // Replace the existing child.
+                                                  // 4) If the member doesn't exist, add it using the API and update the members list.
+                                                  if (existingIndex == -1) {
+                                                    SalesService salesService =
+                                                        SalesService();
+                                                    bool added =
+                                                        await salesService
+                                                            .addMemberToPolicy(
+                                                                newPolicyMember
+                                                                    .toJson(),
+                                                                context);
+
+                                                    if (added) {
+                                                      membersList.add(
+                                                          newPolicyMember
+                                                              .toJson());
+                                                    } else {
+                                                      // Optionally handle failure (e.g., show an error toast) and exit.
+                                                      return;
+                                                    }
+                                                  } else {
+                                                    // Member exists, update existing record.
                                                     membersList[existingIndex] =
                                                         newPolicyMember
                                                             .toJson();
-                                                  } else {
-                                                    // Otherwise, add the new child.
-                                                    membersList.add(
-                                                        newPolicyMember
-                                                            .toJson());
                                                   }
 
-                                                  // Update the policy's members list.
+                                                  // 5) Update the policy's members list.
                                                   policy.members = membersList;
 
                                                   // 3) Recalculate the premium and update the UI.
@@ -11096,7 +11045,7 @@ class _UniversalPremiumCalculatorState
                                           Container(
                                             height: 30,
                                             child: TextButton(
-                                              onPressed: () {
+                                              onPressed: () async {
                                                 // Close the dialog.
                                                 Navigator.of(context).pop();
 
@@ -11169,18 +11118,37 @@ class _UniversalPremiumCalculatorState
                                                   }
                                                   return false;
                                                 });
+                                                SalesService salesService =
+                                                    SalesService();
 
-                                                if (existingIndex != -1) {
-                                                  // Replace the existing extended member.
+                                                // 4) If the member doesn't exist, add it using the API and update the members list.
+                                                if (existingIndex == -1) {
+                                                  bool added =
+                                                      await salesService
+                                                          .addMemberToPolicy(
+                                                              newPolicyMember
+                                                                  .toJson(),
+                                                              context);
+
+                                                  if (added) {
+                                                    membersList.add(
+                                                        newPolicyMember
+                                                            .toJson());
+                                                  } else {
+                                                    // Optionally handle failure (e.g., show an error toast) and exit.
+                                                    return;
+                                                  }
+                                                } else {
+                                                  // Member exists, update existing record.
                                                   membersList[existingIndex] =
                                                       newPolicyMember.toJson();
-                                                } else {
-                                                  // Add new extended member.
-                                                  membersList.add(
-                                                      newPolicyMember.toJson());
                                                 }
-                                                // Update the current policy's members list.
+
+                                                // 5) Update the policy's members list.
                                                 policy.members = membersList;
+                                                print("dffgf $membersList");
+                                                onPolicyUpdated2(
+                                                    context, false);
 
                                                 // 3) Recalculate premium and update UI.
                                                 mySalesPremiumCalculatorValue
@@ -11631,62 +11599,24 @@ class _UniversalPremiumCalculatorState
                                 // activeStep = 2;
                                 activeStep1 = 2;
                                 updateSalesStepsValueNotifier3.value++;
-                                showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    // set to false if you want to force a rating
-                                    builder: (context) => StatefulBuilder(
-                                          builder: (context, setState) =>
-                                              Dialog(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(64),
-                                            ),
-                                            elevation: 0.0,
-                                            backgroundColor: Colors.transparent,
-                                            child: Container(
-                                              // width: MediaQuery.of(context).size.width,
-
-                                              constraints: BoxConstraints(
-                                                maxWidth: (Constants
-                                                        .currentleadAvailable!
-                                                        .leadObject
-                                                        .documentsIndexed
-                                                        .isEmpty)
-                                                    ? 750
-                                                    : 1200,
-                                              ),
-                                              margin: const EdgeInsets.only(
-                                                  top: 16),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                shape: BoxShape.rectangle,
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                                boxShadow: const [
-                                                  BoxShadow(
-                                                    color: Colors.black26,
-                                                    blurRadius: 10.0,
-                                                    offset: Offset(0.0, 10.0),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: NewMemberDialog2(
-                                                isEditMode: false,
-                                                autoNumber: 0,
-                                                relationship: "Partner",
-                                                title: "",
-                                                name: "",
-                                                surname: "",
-                                                dob: "",
-                                                gender: "",
-                                                current_member_index:
-                                                    current_member_index,
-                                                canAddMember: true,
-                                              ),
-                                            ),
-                                          ),
-                                        ));
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => NewMemberDialog2(
+                                      isEditMode: false,
+                                      autoNumber: 0,
+                                      relationship: "Partner",
+                                      title: "",
+                                      name: "",
+                                      surname: "",
+                                      dob: "",
+                                      gender: "",
+                                      current_member_index:
+                                          current_member_index,
+                                      canAddMember: true,
+                                    ),
+                                  ),
+                                );
                               },
                               icon: const Icon(
                                 Icons.add,
@@ -12153,394 +12083,6 @@ class _UniversalPremiumCalculatorState
             ));
   }
 
-  void showDoubleTapDialog4Old(BuildContext context, int current_member_index) {
-    List<AdditionalMember> allPartnersList = [];
-
-    if (Constants.currentleadAvailable != null) {
-      // 1. Get all additional members that are not 'self'
-      List<AdditionalMember> potentialPartners = Constants
-          .currentleadAvailable!.additionalMembers
-          .where((m) => m.relationship.toLowerCase() != "self")
-          .toList();
-
-      // 2. Keep only those with age > 15 (if dob is empty, assume age 19)
-      potentialPartners = potentialPartners.where((m) {
-        int age = m.dob.isEmpty ? 19 : calculateAge(DateTime.parse(m.dob));
-        return age > 15;
-      }).toList();
-
-      // 3. Remove duplicate entries (if any) by keying on autoNumber.
-      Map<int, AdditionalMember> uniquePartners = {};
-      for (var member in potentialPartners) {
-        uniquePartners[member.autoNumber] = member;
-      }
-      allPartnersList = uniquePartners.values.toList();
-    }
-
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        child: MovingLineDialog(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            padding: const EdgeInsets.all(16),
-            constraints: const BoxConstraints(maxWidth: 500, maxHeight: 630),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(36),
-            ),
-            child: StatefulBuilder(
-              builder: (context, setState1) => SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 32),
-                    Center(
-                      child: Text(
-                        "Select a Partner",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                          color: Constants.ftaColorLight,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    const Center(
-                      child: Text(
-                        "Click on a member below to select them as partner",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'YuGothic',
-                          color: Colors.grey,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // Partner List
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: allPartnersList.length,
-                      itemBuilder: (context, index) {
-                        final member = allPartnersList[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).pop();
-
-                            // 1) Get the current policy reference
-                            String? currentReference = Constants
-                                .currentleadAvailable!
-                                .policies[current_member_index]
-                                .reference;
-
-                            // 2) Convert AdditionalMember -> Member
-                            final newPolicyMember = Member(
-                              null,
-                              null,
-                              null,
-                              currentReference,
-                              member.autoNumber,
-                              null,
-                              // premium
-                              policiesSelectedCoverAmounts[
-                                  current_member_index],
-                              // cover
-                              "partner",
-                              // type
-                              0,
-                              // percentage
-                              null,
-                              // coverMembersCol
-                              "partner",
-                              // benRelationship
-                              null,
-                              // memberStatus
-                              null,
-                              // terminationDate
-                              3,
-                              // updatedBy
-                              null,
-                              // memberQueryType
-                              null,
-                              // memberQueryTypeOldNew
-                              null,
-                              // memberQueryTypeOldAutoNumber
-                              -1,
-                              // cecClientId
-                              3, // empId
-                            );
-
-                            // Get the list of members for the current policy
-                            final membersList = Constants.currentleadAvailable!
-                                .policies[current_member_index].members;
-                            print("membthhghjhj $membersList");
-
-                            // Collect members to remove
-                            List<dynamic> membersToRemove = [];
-
-                            for (var member in membersList) {
-                              // Debug prints
-                              print("j0ghhjhj0 ${member.toString()}");
-
-                              // Check if the member is a Map or a Member object
-                              if (member is Map<String, dynamic>) {
-                                final relationship = (member["type"] ?? "")
-                                    .toString()
-                                    .toLowerCase();
-                                print("Relationship345: $relationship");
-
-                                if (relationship == "partner") {
-                                  membersToRemove.add(member);
-                                }
-                              } else if (member is Member) {
-                                final relationship = (member.type ?? "")
-                                    .toString()
-                                    .toLowerCase();
-                                print("Relationship: $relationship");
-
-                                if (relationship == "partner") {
-                                  membersToRemove.add(member);
-                                }
-                              } else {
-                                print(
-                                    "Unknown member type: ${member.runtimeType}");
-                              }
-                            }
-
-                            // Remove the collected members
-                            membersToRemove.forEach((member) {
-                              Constants.currentleadAvailable!
-                                  .policies[current_member_index].members
-                                  .remove(member);
-                            });
-
-                            // Add the new partner member
-                            Constants.currentleadAvailable!
-                                .policies[current_member_index].members
-                                .add(newPolicyMember.toJson());
-
-                            // Recalculate premium
-                            mySalesPremiumCalculatorValue.value++;
-
-                            // Debug print final state of membersList
-                            print("Updated membersList: $membersList");
-
-                            // 3) Remove any existing partner
-
-                            // 6) Rebuild UI
-                            setState(() {});
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 12.0,
-                              horizontal: 16.0,
-                            ),
-                            padding: const EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Constants.ftaColorLight.withOpacity(0.9),
-                                  Constants.ftaColorLight,
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(12.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Profile Avatar
-                                CircleAvatar(
-                                  radius: 20,
-                                  backgroundColor: Colors.white,
-                                  child: Icon(
-                                    member.gender.toLowerCase() == "female"
-                                        ? Icons.female
-                                        : Icons.male,
-                                    size: 24,
-                                    color:
-                                        member.gender.toLowerCase() == "female"
-                                            ? Colors.pinkAccent
-                                            : Colors.blueAccent,
-                                  ),
-                                ),
-                                const SizedBox(width: 16.0),
-                                // Info
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        member.dob.isEmpty
-                                            ? "DoB: -"
-                                            : 'DoB: ${DateFormat('dd MMM yyyy').format(DateTime.parse(member.dob))}',
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4.0),
-                                      Text(
-                                        '${member.title} ${member.name} ${member.surname}',
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          letterSpacing: 1.2,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4.0),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.people_alt,
-                                            color: Colors.white70,
-                                            size: 15,
-                                          ),
-                                          const SizedBox(width: 4.0),
-                                          Text(
-                                            'Relationship: ${member.relationship}',
-                                            style: const TextStyle(
-                                              fontSize: 13,
-                                              color: Colors.white70,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: TextButton.icon(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              // set to false if you want to force a rating
-                              builder: (context) => StatefulBuilder(
-                                    builder: (context, setState) => Dialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(64),
-                                      ),
-                                      elevation: 0.0,
-                                      backgroundColor: Colors.transparent,
-                                      child: Container(
-                                        // width: MediaQuery.of(context).size.width,
-
-                                        constraints: BoxConstraints(
-                                          maxWidth: (Constants
-                                                  .currentleadAvailable!
-                                                  .leadObject
-                                                  .documentsIndexed
-                                                  .isEmpty)
-                                              ? 750
-                                              : 1200,
-                                        ),
-                                        margin: const EdgeInsets.only(top: 16),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.rectangle,
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Colors.black26,
-                                              blurRadius: 10.0,
-                                              offset: Offset(0.0, 10.0),
-                                            ),
-                                          ],
-                                        ),
-                                        child: NewMemberDialog2(
-                                          isEditMode: false,
-                                          autoNumber: 0,
-                                          relationship: "Partner",
-                                          title: "",
-                                          name: "",
-                                          surname: "",
-                                          dob: "",
-                                          gender: "",
-                                          current_member_index:
-                                              current_member_index,
-                                          canAddMember: true,
-                                        ),
-                                      ),
-                                    ),
-                                  ));
-                        },
-                        icon: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                        ),
-                        label: const Text(
-                          'Add New Member',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'YuGothic',
-                              color: Colors.white),
-                        ),
-                        style: TextButton.styleFrom(
-                            foregroundColor: Colors.teal,
-                            backgroundColor: Constants.ctaColorLight),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _scrollToSelected(int index) {
-    // Use a post-frame callback to ensure the widget positions are updated.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final keyContext = _buttonKeys[index].currentContext;
-      if (keyContext != null) {
-        // Get the RenderBox of the button.
-        final box = keyContext.findRenderObject() as RenderBox;
-        // Get its position relative to the scrollable container.
-        final position = box.localToGlobal(Offset.zero,
-            ancestor: context.findRenderObject());
-        // Calculate the new offset: current offset + the button's x position.
-        double offset = _scrollController.offset + position.dx - 16;
-        // Animate the scroll so that the selected button is at the left edge.
-        _scrollController.animateTo(
-          offset,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
-  }
-
   Widget getAllMembers() {
     // Ensure currentleadAvailable and the policy/members exist
     if (Constants.currentleadAvailable == null ||
@@ -12929,7 +12471,9 @@ class _UniversalPremiumCalculatorState
     // Update the policy's members list.
     Constants.currentleadAvailable!.policies[currentMemberIndex].members =
         membersList;
-    print("fdfgdgffg $membersList");
+    if (kDebugMode) {
+      print("fdfgdgffg $membersList");
+    }
   }
 
   String getOldPayerRelationship(String newPayerRelationship,

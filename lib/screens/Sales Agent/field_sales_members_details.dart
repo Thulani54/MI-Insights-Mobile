@@ -14,6 +14,7 @@ import '../../constants/Constants.dart';
 
 import '../../customwidgets/CustomCard.dart';
 import '../../customwidgets/custom_input.dart';
+import '../../customwidgets/custom_script_text.dart';
 import '../../models/BottomBar.dart';
 import '../../models/Parlour.dart';
 import '../../models/map_class.dart';
@@ -1256,6 +1257,7 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
     Addresses addresses1 = Addresses.fromJson(addressesMap);
     BeneficiaryAddress beneficiaryAddress1 =
         BeneficiaryAddress.fromJson(beneficiaryAddressMap);
+    Constants.currentleadAvailable!.beneficiaryAddress = beneficiaryAddress1;
 
     // Prepare the final payload as a JSON object.
     final Map<String, dynamic> payload = {
@@ -2635,7 +2637,235 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
                                         ],
                                       ),
                                     ),
-                                    SizedBox(height: 16),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 24.0, bottom: 24),
+                                            child: CustomScriptText(
+                                              text:
+                                                  "@ClientTitle @ClientSurname, are you currently employed?",
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    //const SizedBox(height: 8),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          // Yes Option
+                                          GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                Constants.currentlyEmployed =
+                                                    true;
+
+                                                Constants
+                                                        .currentleadAvailable!
+                                                        .employer!
+                                                        .employmentStatus =
+                                                    "Employed";
+
+                                                Constants
+                                                        .isEmployerDetailsSaved =
+                                                    false;
+
+                                                //  print("fgfghhggh ${Constants.currentlyEmployed}");
+                                              });
+                                            },
+                                            child: Container(
+                                              height: 45,
+                                              width: 150,
+                                              padding: EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  width: 1.0,
+                                                  color: Constants
+                                                              .currentlyEmployed ??
+                                                          false
+                                                      ? Constants.ftaColorLight
+                                                      : Colors.grey
+                                                          .withOpacity(0.35),
+                                                ),
+                                                color: Colors.transparent,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Transform.scale(
+                                                    scaleX: 1.3,
+                                                    scaleY: 1.3,
+                                                    child: Checkbox(
+                                                      value: Constants
+                                                              .currentlyEmployed ??
+                                                          false,
+                                                      side: BorderSide(
+                                                          width: 1.4,
+                                                          color: Constants
+                                                              .ftaColorLight),
+                                                      activeColor: Constants
+                                                          .ctaColorLight,
+                                                      checkColor: Colors.white,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          360)),
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          Constants
+                                                                  .currentlyEmployed =
+                                                              true;
+
+                                                          Constants
+                                                                  .currentleadAvailable!
+                                                                  .employer!
+                                                                  .employmentStatus =
+                                                              "Employed";
+                                                          Constants
+                                                                  .isEmployerDetailsSaved =
+                                                              false;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 8),
+                                                  Text(
+                                                    "Yes",
+                                                    style: TextStyle(
+                                                      fontFamily: 'YuGothic',
+                                                      color: Constants
+                                                                  .currentlyEmployed ??
+                                                              false
+                                                          ? Constants
+                                                              .ftaColorLight
+                                                          : Colors.grey
+                                                              .withOpacity(
+                                                                  0.35),
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 16),
+                                          // No Option
+                                          GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                Constants.currentlyEmployed =
+                                                    false;
+                                                Constants
+                                                        .currentleadAvailable!
+                                                        .employer!
+                                                        .employmentStatus =
+                                                    "Unemployed";
+                                                Constants
+                                                        .isEmployerDetailsSaved =
+                                                    false;
+                                              });
+                                            },
+                                            child: Container(
+                                              height: 45,
+                                              width: 150,
+                                              padding: EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  width: 1.0,
+                                                  color: !(Constants
+                                                              .currentlyEmployed ??
+                                                          true)
+                                                      ? Constants.ftaColorLight
+                                                      : Colors.grey
+                                                          .withOpacity(0.35),
+                                                ),
+                                                color: Colors.transparent,
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Transform.scale(
+                                                    scaleX: 1.3,
+                                                    scaleY: 1.3,
+                                                    child: Checkbox(
+                                                      value: !(Constants
+                                                              .currentlyEmployed ??
+                                                          true),
+                                                      side: BorderSide(
+                                                          width: 1.4,
+                                                          color: Constants
+                                                              .ftaColorLight),
+                                                      activeColor: Constants
+                                                          .ctaColorLight,
+                                                      checkColor: Colors.white,
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          360)),
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          Constants
+                                                                  .currentlyEmployed =
+                                                              false;
+                                                          Constants
+                                                                  .currentleadAvailable!
+                                                                  .employer!
+                                                                  .employmentStatus =
+                                                              "Unemployed";
+                                                          Constants
+                                                                  .isEmployerDetailsSaved =
+                                                              false;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 8),
+                                                  Text(
+                                                    "No",
+                                                    style: TextStyle(
+                                                      fontFamily: 'YuGothic',
+                                                      color: !(Constants
+                                                                  .currentlyEmployed ??
+                                                              true)
+                                                          ? Constants
+                                                              .ftaColorLight
+                                                          : Colors.grey
+                                                              .withOpacity(
+                                                                  0.35),
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
 
                                     // Employer Name Field
                                     Padding(
@@ -8682,7 +8912,15 @@ class _FieldSalesMembersDetailsState extends State<FieldSalesMembersDetails>
       if (response.statusCode == 200) {
         final responseBody = json.decode(response.body);
         print("sdffgf2 $responseBody ${responseBody.runtimeType}");
-
+        MotionToast.success(
+          height: 40,
+          width: 300,
+          onClose: () {},
+          description: Text(
+            "Successfully updated",
+            style: TextStyle(color: Colors.white),
+          ),
+        ).show(context);
         // If responseBody is a Map (JSON object), use it to update employer
         if (responseBody is Map<String, dynamic>) {
           Constants.currentleadAvailable!.employer =

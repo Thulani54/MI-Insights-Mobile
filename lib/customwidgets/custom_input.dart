@@ -493,6 +493,7 @@ class CustomInputTransparent4 extends StatefulWidget {
   final int? maxLines;
   final int? maxInputs;
   final bool? integersOnly;
+  final bool? lettersOnly;
   final String? labelText;
   final bool? isEditable;
 
@@ -509,6 +510,7 @@ class CustomInputTransparent4 extends StatefulWidget {
     this.maxInputs,
     this.suffix,
     this.integersOnly,
+    this.lettersOnly,
     this.labelText,
     this.isEditable,
   });
@@ -780,7 +782,11 @@ class _CustomInputTransparent4State extends State<CustomInputTransparent4> {
             ? <TextInputFormatter>[
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
               ]
-            : null,
+            : widget.lettersOnly == true
+                ? <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                  ]
+                : null,
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: widget.hintText,

@@ -871,6 +871,18 @@ Future<void> getSalesAgentLeadsReport(String date_from, String date_to,
               "fghgjh3 $selectedButton2 ${Constants.leadsByAgentSales1a.length} ${jsonResponse.length}");
         }
       }
+      
+      // Reset loading states based on selected button
+      if (selectedButton2 == 1) {
+        isSalesDataLoading1a = false;
+      } else if (selectedButton2 == 2) {
+        isSalesDataLoading2a = false;
+      } else if (selectedButton2 == 3 && days_difference <= 31) {
+        isSalesDataLoading3a = false;
+      } else if (selectedButton2 == 3 && days_difference > 31) {
+        isSalesDataLoading3b = false;
+      }
+      
       // Trigger UI update
       salesValue.value++;
     });
@@ -879,6 +891,15 @@ Future<void> getSalesAgentLeadsReport(String date_from, String date_to,
     if (kDebugMode) {
       print(exception.toString());
     }
+    
+    // Reset loading states in case of error
+    isSalesDataLoading1a = false;
+    isSalesDataLoading2a = false;
+    isSalesDataLoading3a = false;
+    isSalesDataLoading3b = false;
+    
+    // Still trigger UI update to show error state
+    salesValue.value++;
   }
 }
 

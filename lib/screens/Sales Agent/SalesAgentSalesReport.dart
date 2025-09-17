@@ -86,21 +86,24 @@ class _SalesAgentReportState extends State<SalesAgentReport>
     // Set loading state to true before starting data fetch
     isSalesDataLoading1a = true;
     setState(() {});
-    
+
     DateTime now = DateTime.now();
     DateTime firstDayOfMonth = DateTime(now.year, now.month, 1);
     DateTime lastDayOfMonth = DateTime(now.year, now.month + 1, 0);
-    
-    Constants.sales_formattedStartDate = DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
-    Constants.sales_formattedEndDate = DateFormat('yyyy-MM-dd').format(lastDayOfMonth);
-    
+
+    Constants.sales_formattedStartDate =
+        DateFormat('yyyy-MM-dd').format(firstDayOfMonth);
+    Constants.sales_formattedEndDate =
+        DateFormat('yyyy-MM-dd').format(lastDayOfMonth);
+
     // Calculate days difference for the current month
     days_difference = lastDayOfMonth.difference(firstDayOfMonth).inDays;
-    
+
     setState(() {});
-    print("Current month range: ${Constants.sales_formattedStartDate} to ${Constants.sales_formattedEndDate}");
+    print(
+        "Current month range: ${Constants.sales_formattedStartDate} to ${Constants.sales_formattedEndDate}");
     print("Days difference: $days_difference");
-    
+
     getSalesAgentSalesReport(Constants.sales_formattedStartDate,
             Constants.sales_formattedEndDate, 1, days_difference, context)
         .then((value) {
@@ -293,8 +296,10 @@ class _SalesAgentReportState extends State<SalesAgentReport>
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      color: Colors.white,
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
             elevation: 6,
             surfaceTintColor: Colors.white,
@@ -740,7 +745,7 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                           border: Border(
                                                               bottom: BorderSide(
                                                                   color: Constants
-                                                                      .ftaColorLight,
+                                                                      .ctaColorLight,
                                                                   width: 6))),
                                                       child: Column(
                                                         children: [
@@ -952,7 +957,7 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                                           border: Border(
                                                               bottom: BorderSide(
                                                                   color: Constants
-                                                                      .ftaColorLight,
+                                                                      .ctaColorLight,
                                                                   width: 6))),
                                                       child: Column(
                                                         children: [
@@ -1125,7 +1130,7 @@ class _SalesAgentReportState extends State<SalesAgentReport>
                                         decoration: InputDecoration(
                                           suffixIcon: InkWell(
                                             onTap: () {
-                                              _searchingPolicy = true;
+                                              //_searchingPolicy = true;
                                               restartInactivityTimer();
                                               isLoading = true;
                                               setState(() {});
@@ -1939,6 +1944,7 @@ class _SalesAgentReportState extends State<SalesAgentReport>
 
   @override
   void initState() {
+    _searchingPolicy = false;
     secureScreen();
     _animateButton(1);
     setState(() {});
@@ -2154,69 +2160,93 @@ class _SalesAgentReportState extends State<SalesAgentReport>
   }
 
   Future<void> getPolicyInfo2(String searchVal, String token) async {
-    _searchingPolicy == true;
+    // Prevent multiple simultaneous searches
+    if (_searchingPolicy) {
+      print("Search already in progress, ignoring duplicate request");
+      return;
+    }
+
+    // Set loading state
+    _searchingPolicy = true;
     isLoaded = true;
-    setState(() {});
+    isLoading = true;
+    if (mounted) {
+      setState(() {});
+    }
+
     restartInactivityTimer();
     Constants.selectedPolicydetails = [];
     policydetails = [];
-    String urlPath =
-        "onoloV6/getPoliciesMain?searchKey=${searchVal}&cec_client_id=${Constants.cec_client_id}&searchFrom=MOB&empid=${Constants.cec_employeeid}";
-    String apiUrl = Constants.InsightsAdminbaseUrl + urlPath;
-    print("cec_empid ${Constants.cec_employeeid}");
 
-    // Map<String, dynamic> requestBody = {
-    //   "empNum": Constants.cec_employeeid,
-    //   //"empNum": 1331018,
-    //   "searchVal": searchVal,
-    //   "token": token,
-    // };
-    var response = await http.get(
-      Uri.parse(apiUrl),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    );
-    print("fdgfh $apiUrl");
-    if (response.statusCode == 200) {
-      restartInactivityTimer();
-      isLoaded = true;
-      salesValue.value++;
-      setState(() {});
-      var data = jsonDecode(response.body);
-      List<dynamic> policies_list = data;
+    try {
+      String urlPath =
+          "onoloV6/getPoliciesMain?searchKey=${searchVal}&cec_client_id=${Constants.cec_client_id}&searchFrom=MOB&empid=${Constants.cec_employeeid}";
+      String apiUrl = Constants.InsightsAdminbaseUrl + urlPath;
 
-      if (policies_list.isEmpty) {
-        _searchingPolicy = false;
-        isLoaded = false;
-        print("msgtx $msgtx");
-        salesValue.value++;
-        MotionToast.error(
-          onClose: () {},
-          description: Text("Policy not found!"),
-        ).show(context);
-        setState(() {});
-      } else {
-        processElement(policies_list);
+      var response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      );
 
-        _searchingPolicy = false;
-        salesValue.value++;
-        isLoaded = true;
-        if (policydetails.isNotEmpty) {
-          _searchingPolicy = false;
-          salesValue.value++;
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => SinglePolicyOverview2()));
+      print("API Response: $apiUrl ${response.body}");
+
+      if (response.statusCode == 200) {
+        restartInactivityTimer();
+
+        var data = jsonDecode(response.body);
+        List<dynamic> policies_list = data;
+
+        if (policies_list.isEmpty) {
+          // No policies found
+          _showErrorToast("Policy not found!");
         } else {
-          MotionToast.error(
-            onClose: () {},
-            description: Text("Policy not found!"),
-          ).show(context);
+          print("Policies found: ${policies_list}");
+          processElement(policies_list);
+
+          if (policydetails.isNotEmpty) {
+            if (mounted) {
+              salesValue.value++;
+            }
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => SinglePolicyOverview2()));
+          } else {
+            _showErrorToast("Policy not found!");
+          }
         }
+      } else {
+        // Handle API error
+        _showErrorToast(
+            "Failed to fetch policy information. Please try again.");
+        print("API Error: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e) {
+      print("Error in getPolicyInfo2: $e");
+      _showErrorToast(
+          "An error occurred. Please check your connection and try again.");
+    } finally {
+      // Always reset loading states
+      _searchingPolicy = false;
+      isLoaded = false;
+      isLoading = false;
+
+      if (mounted) {
+        setState(() {});
       }
     }
+  }
 
-    setState(() {});
+  void _showErrorToast(String message) {
+    if (mounted) {
+      salesValue.value++;
+      MotionToast.error(
+        onClose: () {},
+        description: Text(message),
+      ).show(context);
+    }
   }
 
   void processElement(dynamic elements) {
@@ -2265,20 +2295,62 @@ class _SalesAgentReportState extends State<SalesAgentReport>
     try {
       Map mxcf = policy;
 
-      String plantype = mxcf['product_type'];
-      String policynumber = mxcf["policy_number"];
-      String status = mxcf["quote_status"];
-      double totalAmountPayable = mxcf["totalAmountPayable"];
-      String inceptionDate = mxcf["inceptionDate"];
-      String inforce_date = mxcf["inforce_date"];
-      String main_member_id = mxcf["customer_id_number"];
-      String main_member_name = mxcf["first_name"];
-      String main_member_surname = mxcf["last_name"];
+      print("DEBUG: Processing policy data: $mxcf");
+
+      print("DEBUG: Extracting product_type: ${mxcf['product_type']}");
+      String plantype = mxcf['product_type'] ?? "";
+
+      print("DEBUG: Extracting policy_number: ${mxcf["policy_number"]}");
+      String policynumber = mxcf["policy_number"] ?? "";
+
+      print("DEBUG: Extracting quote_status: ${mxcf["quote_status"]}");
+      String status = mxcf["quote_status"] ?? "";
+
+      print(
+          "DEBUG: Extracting totalAmountPayable: ${mxcf["totalAmountPayable"]}");
+      double totalAmountPayable = mxcf["totalAmountPayable"] ?? 0.0;
+
+      print("DEBUG: Extracting inceptionDate: ${mxcf["inceptionDate"]}");
+      String inceptionDate = mxcf["inceptionDate"] ?? "";
+
+      print("DEBUG: Extracting inforce_date: ${mxcf["inforce_date"]}");
+      String inforce_date = mxcf["inforce_date"] ?? "";
+
+      print(
+          "DEBUG: Extracting customer_id_number: ${mxcf["customer_id_number"]}");
+      String main_member_id = mxcf["customer_id_number"] ?? "";
+
+      print("DEBUG: Extracting first_name: ${mxcf["first_name"]}");
+      String main_member_name = mxcf["first_name"] ?? "";
+
+      print("DEBUG: Extracting last_name: ${mxcf["last_name"]}");
+      String main_member_surname = mxcf["last_name"] ?? "";
+
+      print(
+          "DEBUG: Extracting sumAssuredFamilyCover: ${mxcf["sumAssuredFamilyCover"]}");
       double sumAssuredFamilyCover = mxcf["sumAssuredFamilyCover"] ?? 0;
-      String customer_contact = mxcf["cell_number"];
+
+      print("DEBUG: Extracting cell_number: ${mxcf["cell_number"]}");
+      String customer_contact = mxcf["cell_number"] ?? "";
+
+      print("DEBUG: All fields extracted successfully");
       if (kDebugMode) {
         print("policy $policynumber main_member_name");
       }
+
+      print("DEBUG: Creating PolicyDetails object...");
+      print("DEBUG: policyNumber: $policynumber");
+      print("DEBUG: planType: $plantype");
+      print("DEBUG: status: $status");
+      print("DEBUG: monthlyPremium: $totalAmountPayable");
+      print("DEBUG: benefitAmount: $sumAssuredFamilyCover");
+      print("DEBUG: inforce_date: $inforce_date");
+      print("DEBUG: customer_id_number: $main_member_id");
+      print("DEBUG: customer_first_name: $main_member_name");
+      print("DEBUG: customer_last_name: $main_member_surname");
+      print("DEBUG: customer_contact: $customer_contact");
+      print("DEBUG: inceptionDate: $inceptionDate");
+
       policydetails.add(PolicyDetails(
         policyNumber: policynumber,
         planType: plantype,
@@ -2297,11 +2369,14 @@ class _SalesAgentReportState extends State<SalesAgentReport>
         inceptionDate: inceptionDate,
       ));
 
+      print("DEBUG: PolicyDetails added successfully");
+
       Future.delayed(Duration(milliseconds: 100)).then((value) {
         // Your code to be executed after the delay
       });
     } catch (e) {
       print('Error processing policy: $e');
+      print('Stack trace: ${StackTrace.current}');
     }
   }
 
@@ -3009,18 +3084,24 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
   @override
   Widget build(BuildContext context) {
     // Safety check for empty lists during data refresh
-    final currentList = (_selectedButton == 1) 
-        ? (widget.target_index == 0 ? Constants.salesByAgentSales1a 
-           : widget.target_index == 1 ? Constants.salesByAgentSales1b 
-           : Constants.salesByAgentSales1c)
-        : (_selectedButton == 2) 
-            ? (widget.target_index == 0 ? Constants.salesByAgentSales2a 
-               : widget.target_index == 1 ? Constants.salesByAgentSales2b 
-               : Constants.salesByAgentSales2c)
-            : (widget.target_index == 0 ? Constants.salesByAgentSales3a 
-               : widget.target_index == 1 ? Constants.salesByAgentSales3b 
-               : Constants.salesByAgentSales3c);
-    
+    final currentList = (_selectedButton == 1)
+        ? (widget.target_index == 0
+            ? Constants.salesByAgentSales1a
+            : widget.target_index == 1
+                ? Constants.salesByAgentSales1b
+                : Constants.salesByAgentSales1c)
+        : (_selectedButton == 2)
+            ? (widget.target_index == 0
+                ? Constants.salesByAgentSales2a
+                : widget.target_index == 1
+                    ? Constants.salesByAgentSales2b
+                    : Constants.salesByAgentSales2c)
+            : (widget.target_index == 0
+                ? Constants.salesByAgentSales3a
+                : widget.target_index == 1
+                    ? Constants.salesByAgentSales3b
+                    : Constants.salesByAgentSales3c);
+
     if (widget.index >= currentList.length) {
       return Dialog(
         child: Container(
@@ -3029,7 +3110,7 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
         ),
       );
     }
-    
+
     return Padding(
         padding: const EdgeInsets.all(8.0),
         child: Dialog(
@@ -3344,8 +3425,7 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
                 SizedBox(
                   height: 12,
                 ),
-                currentList[widget.index].totalAmountPayable ==
-                        0
+                currentList[widget.index].totalAmountPayable == 0
                     ? Container()
                     : Padding(
                         padding: const EdgeInsets.only(
@@ -3418,8 +3498,7 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
                           ],
                         ),
                       ),
-                currentList[widget.index].totalAmountPayable ==
-                        0
+                currentList[widget.index].totalAmountPayable == 0
                     ? Container()
                     : Padding(
                         padding: const EdgeInsets.only(left: 8.0, right: 8),
@@ -3508,8 +3587,7 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
                       Expanded(
                           child: Text((_selectedButton == 1
                               ? widget.target_index == 0
-                                  ? currentList[widget.index]
-                                      .product_type
+                                  ? currentList[widget.index].product_type
                                   : widget.target_index == 1
                                       ? Constants
                                           .salesByAgentSales1b[widget.index]
@@ -3566,8 +3644,7 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
                       Expanded(
                           child: Text((_selectedButton == 1
                               ? widget.target_index == 0
-                                  ? currentList[widget.index]
-                                      .payment_type
+                                  ? currentList[widget.index].payment_type
                                   : widget.target_index == 1
                                       ? Constants
                                           .salesByAgentSales1b[widget.index]
@@ -3616,14 +3693,13 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
                             ? Constants
                                 .salesByAgentSales1a[widget.index].description
                             : widget.target_index == 1
-                                ? currentList[widget.index]
-                                    .description
+                                ? currentList[widget.index].description
                                 : currentList[widget.index]
-                                    .description.isNotEmpty
+                                    .description
+                                    .isNotEmpty
                         : _selectedButton == 2
                             ? widget.target_index == 2
-                                ? currentList[widget.index]
-                                    .description
+                                ? currentList[widget.index].description
                                 : widget.target_index == 1
                                     ? Constants
                                         .salesByAgentSales2b[widget.index]
@@ -3632,8 +3708,7 @@ class _SinglePolicyOverviewState extends State<SinglePolicyOverview> {
                                         .salesByAgentSales2c[widget.index]
                                         .payment_type
                             : widget.target_index == 0
-                                ? currentList[widget.index]
-                                    .description
+                                ? currentList[widget.index].description
                                 : widget.target_index == 1
                                     ? Constants
                                         .salesByAgentSales3b[widget.index]
@@ -4034,6 +4109,7 @@ class _SinglePolicyOverview2State extends State<SinglePolicyOverview2> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text("Search results"),
           elevation: 6,
@@ -4047,6 +4123,8 @@ class _SinglePolicyOverview2State extends State<SinglePolicyOverview2> {
                 color: Colors.black,
               )),
           backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
+          shadowColor: Colors.black.withOpacity(0.6),
         ),
         body: ListView.builder(
             shrinkWrap: true,
@@ -4191,8 +4269,11 @@ class _SinglePolicyOverview2State extends State<SinglePolicyOverview2> {
                             ),
                             Expanded(
                                 child: Text(
-                              DateFormat('EEE, dd MMM').format(DateTime.parse(
-                                  policydetails[index].inforce_date)),
+                              policydetails[index].inforce_date.isNotEmpty
+                                  ? DateFormat('EEE, dd MMM').format(
+                                      DateTime.parse(
+                                          policydetails[index].inforce_date))
+                                  : "Not Set",
                               style: TextStyle(fontWeight: FontWeight.w500),
                             )),
                           ],
@@ -4247,12 +4328,12 @@ class _SinglePolicyOverview2State extends State<SinglePolicyOverview2> {
                                   onTap: () {},
                                   child: Container(
                                       decoration: BoxDecoration(
-                                          color: Color(0xffED7D32),
+                                          color: Constants.ctaColorLight,
                                           borderRadius:
                                               BorderRadius.circular(360),
                                           border: Border.all(
                                             width: 1.2,
-                                            color: Color(0xffED7D32),
+                                            color: Constants.ctaColorLight,
                                           )),
                                       padding:
                                           EdgeInsets.only(left: 0, right: 16),
@@ -4280,7 +4361,7 @@ class _SinglePolicyOverview2State extends State<SinglePolicyOverview2> {
                                         style: TextStyle(
                                           fontWeight: FontWeight.w500,
                                           fontSize: 16,
-                                          color: Color(0xffED7D32),
+                                          color: Constants.ctaColorLight,
                                         ),
                                       )),*/
                           ],
@@ -4366,7 +4447,7 @@ class _SinglePolicyOverview2State extends State<SinglePolicyOverview2> {
                                       borderRadius: BorderRadius.circular(360),
                                       border: Border.all(
                                         width: 1.2,
-                                        color: Color(0xffED7D32),
+                                        color: Constants.ctaColorLight,
                                       )),
                                   child: Padding(
                                     padding: const EdgeInsets.all(10.0),
@@ -4374,7 +4455,7 @@ class _SinglePolicyOverview2State extends State<SinglePolicyOverview2> {
                                       child: Text(
                                         "Payment Management",
                                         style: TextStyle(
-                                            color: Color(0xffED7D32),
+                                            color: Constants.ctaColorLight,
                                             fontWeight: FontWeight.w500),
                                       ),
                                     ),
