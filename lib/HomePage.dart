@@ -1031,34 +1031,47 @@ class _MyHomePageState extends State<MyHomePage> with InactivityLogoutMixin {
                             return InkWell(
                               onTap: () {
                                 print("index " + index.toString());
-                                if (sectionsList[index].id == "Sales" || sectionsList[index].id == "My Sales") {
+                                if (sectionsList[index].id == "Sales" ||
+                                    sectionsList[index].id == "My Sales") {
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => sectionsList[index].map)
-                                  ).then((_) {
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  sectionsList[index].map))
+                                      .then((_) {
                                     Constants.pageLevel = 1;
                                   });
-                                } else if (sectionsList[index].id == "Collections" || sectionsList[index].id == "My Collect") {
+                                } else if (sectionsList[index].id ==
+                                        "Collections" ||
+                                    sectionsList[index].id == "My Collect") {
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => sectionsList[index].map)
-                                  ).then((_) {
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  sectionsList[index].map))
+                                      .then((_) {
                                     Constants.pageLevel = 1;
                                   });
-                                } else if (sectionsList[index].id == "My Chats") {
+                                } else if (sectionsList[index].id ==
+                                    "My Chats") {
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => sectionsList[index].map)
-                                  ).then((_) {
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  sectionsList[index].map))
+                                      .then((_) {
                                     Constants.pageLevel = 1;
                                   });
-                                } else if (sectionsList[index].id == "My Comm") {
+                                } else if (sectionsList[index].id ==
+                                    "My Comm") {
                                   _showCommissionsDialog(); // Since this requires password protection
-                                } else if (sectionsList[index].id == "Micro-Learn") {
+                                } else if (sectionsList[index].id ==
+                                    "Micro-Learn") {
                                   Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => sectionsList[index].map)
-                                  );
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              sectionsList[index].map));
                                 } else if (sectionsList[index].id ==
                                     "Cust. Profile") {
                                   Navigator.push(

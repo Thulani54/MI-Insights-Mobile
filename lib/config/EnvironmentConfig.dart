@@ -48,7 +48,7 @@ class AppConfig {
 
   static final Map<EnvironmentType, EnvironmentConfig> _environments = {
     EnvironmentType.dev: EnvironmentConfig(
-      insightsReportsBaseUrl: "http://102.210.146.67:8022/",
+      insightsReportsBaseUrl: "http://102.210.146.67:8029/",
       insightsBaseUrl: "https://miinsightsapps.net/",
       insightsBackendBaseUrl: "https://mi.ngrok.pizza/api/",
       blackBrokerUrl: "http://localhost:8009/api/",

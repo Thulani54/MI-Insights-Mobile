@@ -3058,6 +3058,7 @@ class _UniversalPremiumCalculatorState
                                       .autoNumber,
                                   isSelected: true,
                                   isEditing: true,
+                                  allowEditMember: null,
                                   current_member_index: current_member_index,
                                   is_self_or_payer: true,
                                   noOfMembers: 0,

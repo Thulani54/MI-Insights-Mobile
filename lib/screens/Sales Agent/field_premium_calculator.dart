@@ -5452,6 +5452,7 @@ class AdvancedMemberCard extends StatefulWidget {
   final bool? showIndexedDocuments;
   final bool? showSourceOfIncome;
   final bool? allowToDeleteMember;
+  final bool? allowEditMember;
 
   const AdvancedMemberCard({
     Key? key,
@@ -5484,6 +5485,7 @@ class AdvancedMemberCard extends StatefulWidget {
     this.showIndexedDocuments,
     this.showSourceOfIncome,
     this.allowToDeleteMember,
+    this.allowEditMember,
   }) : super(key: key);
 
   @override
@@ -5703,7 +5705,7 @@ class _AdvancedMemberCardState extends State<AdvancedMemberCard> {
                       ),
                     ),
                     // Edit button column
-                    Padding(
+                    if(widget.allowEditMember== null || widget.allowEditMember== true)Padding(
                       padding: const EdgeInsets.only(
                           top: 16.0, bottom: 16, right: 16),
                       child: Column(

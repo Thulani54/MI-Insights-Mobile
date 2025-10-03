@@ -27,7 +27,6 @@ Future<void> main() async {
       FirebaseAnalyticsObserver(analytics: Constants.analytics_instance!);
   await Constants.analytics_instance!.logAppOpen();
 */
-  AppConfig.setEnvironment(EnvironmentType.uat);
 
   runApp(const MyApp());
 
@@ -45,6 +44,7 @@ Future<void> main() async {
   Constants.myAppVersion = currentVersion;
   print("Current version0: $currentVersion");
   generateRandomDigits(14);
+  AppConfig.setEnvironment(EnvironmentType.prod);
   // Constants.isAdmin = true;
 }
 

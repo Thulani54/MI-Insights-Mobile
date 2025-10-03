@@ -219,5 +219,6 @@ void navigateToAppropriateScreen(BuildContext context, List<String> roles) {
 }
 
 bool hasTemporaryTesterRole(List<String> roles) {
+  print("Roles2: $roles");
   return roles.any((role) => role.toLowerCase().contains('temporary_tester'));
 }

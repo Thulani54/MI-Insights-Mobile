@@ -539,7 +539,7 @@ Future<void> signInUser(
           Future.delayed(Duration(seconds: 3), () async {
             Navigator.of(context).pop(); // Close the loading dialog
             print("sdffds-1 ${Constants.myUserRoleLevel.toLowerCase()}");
-            print("sdffds0 ${roles}");
+            print("sdffds0 ${hasTemporaryTesterRole(roles)} ${roles}");
 
             if (hasTemporaryTesterRole(roles)) {
               Navigator.push(

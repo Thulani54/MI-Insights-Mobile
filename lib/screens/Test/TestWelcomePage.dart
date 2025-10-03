@@ -98,7 +98,7 @@ class _LeadInformationPageState extends State<LeadInformationPage> {
   @override
   void initState() {
     super.initState();
-    _checkIfCompleted();
+    //  _checkIfCompleted();
   }
 
   Future<void> _checkIfCompleted() async {
