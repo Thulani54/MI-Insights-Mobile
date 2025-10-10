@@ -98,6 +98,7 @@ Map<String, dynamic> collections_jsonResponse1a = {};
 Map<String, dynamic> collections_jsonResponse2a = {};
 Map<String, dynamic> collections_jsonResponse3a = {};
 Map<String, dynamic> collections_jsonResponse4a = {};
+UniqueKey ukey1 = UniqueKey();
 List samplecolors = [
   Color(0xFF2196F3),
   Color(0xFFFFC300),
@@ -241,6 +242,10 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
   List<int> showingTooltipOnSpots = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   List<OrdinalGroup> ordinalGroup = [];
 
+  // Add state variables for date range
+  DateTime? _currentStartDate;
+  DateTime? _currentEndDate;
+
   List<FlSpot> spots1ca = [];
   List<FlSpot> spots1ca_amount = [];
   List<FlSpot> spots1b = [];
@@ -320,6 +325,10 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
         startDate = DateTime(now.year - 1, now.month, now.day);
         endDate = DateTime.now();
       }
+
+      // Update state variables for date range
+      _currentStartDate = startDate;
+      _currentEndDate = endDate;
 
       formattedStartDate = DateFormat('yyyy-MM-dd').format(startDate);
       formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
@@ -462,7 +471,7 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
           surfaceTintColor: Colors.white,
           shadowColor: Colors.black.withOpacity(0.6),
           title: const Text(
-            "Collections Report",
+            "Executive Payments Report",
             style: TextStyle(
               color: Colors.black,
               fontSize: 18,
@@ -579,6 +588,10 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                         setState(() {
                                           endDate = end;
                                           startDate = start;
+                                          // Update state variables for date range
+                                          _currentStartDate = startDate;
+                                          _currentEndDate = endDate;
+                                          ukey1 = UniqueKey();
                                           _animateButton2(1);
                                           Future.delayed(Duration(seconds: 2))
                                               .then((value) {
@@ -705,6 +718,9 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                 setState(() {
                                                   endDate = end;
                                                   startDate = start;
+                                                  // Update state variables for date range
+                                                  _currentStartDate = startDate;
+                                                  _currentEndDate = endDate;
                                                 });
                                                 formattedStartDate =
                                                     DateFormat('yyyy-MM-dd')
@@ -739,7 +755,7 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                   //print("days_difference ${days_difference}");
                                                   // print("formattedEndDate9 ${formattedEndDate}");
                                                 }
-
+                                                ukey1 = UniqueKey();
                                                 getCollectionsReport(
                                                     context,
                                                     formattedStartDate,
@@ -1452,16 +1468,30 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                         SizedBox(
                           height: 24,
                         ),
+
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: CustomCard(
-                              elevation: 3,
-                              color: Colors.white,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: PayoverChartView(),
-                              )),
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child:
+                              Text("Generate Bordereaux and Register Payment"),
                         ),
+                        Container(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CustomCard(
+                                elevation: 3,
+                                color: Colors.white,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: PayoverChartView(
+                                    key: ValueKey(
+                                        '${_currentStartDate?.toString()}-${_currentEndDate?.toString()}'),
+                                    startDate: _currentStartDate,
+                                    endDate: _currentEndDate,
+                                  ),
+                                )),
+                          ),
+                        ),
+
                         SizedBox(
                           height: 24,
                         ),
@@ -1629,6 +1659,7 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                             ),
                           ),
                         ),
+
                         // GestureDetector(
                         //   onTap: () {
                         //     restartInactivityTimer();
@@ -3039,7 +3070,8 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                         ),
                         _selectedButton == 1
                             ? Padding(
-                                padding: const EdgeInsets.only(left: 16.0),
+                                padding:
+                                    const EdgeInsets.only(left: 16.0, top: 6),
                                 child: Text(
                                     "Collections Overview (MTD - ${getMonthAbbreviation(DateTime.now().month)})"),
                               )
@@ -3056,7 +3088,8 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                   ),
 
                         Padding(
-                          padding: const EdgeInsets.only(left: 4, right: 4.0),
+                          padding: const EdgeInsets.only(
+                              left: 4, right: 4.0, top: 8),
                           child: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -3139,12 +3172,30 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                                     .maxWidth /
                                                                 200;
 
+                                                        // Calculate max value from barChartData1
+                                                        double maxValue = 0;
+                                                        for (var group
+                                                            in barChartData1) {
+                                                          for (var rod in group
+                                                              .barRods) {
+                                                            if (rod.toY >
+                                                                maxValue) {
+                                                              maxValue =
+                                                                  rod.toY;
+                                                            }
+                                                          }
+                                                        }
+                                                        double chartMaxY =
+                                                            maxValue * 1.1;
+
                                                         return Padding(
                                                           padding:
                                                               const EdgeInsets
                                                                   .all(8.0),
                                                           child: BarChart(
                                                             BarChartData(
+                                                              minY: 0,
+                                                              maxY: chartMaxY,
                                                               alignment:
                                                                   BarChartAlignment
                                                                       .center,
@@ -3348,162 +3399,187 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                           top: 8.0,
                                                           left: 12,
                                                           right: 12),
-                                                  child: CustomCard(
-                                                    elevation: 6,
-                                                    surfaceTintColor:
-                                                        Colors.white,
-                                                    shape:
-                                                        RoundedRectangleBorder(
+                                                  child: LayoutBuilder(
+                                                    builder:
+                                                        (context, constraints) {
+                                                      final double barsSpace =
+                                                          8.0;
+
+                                                      // Calculate max value from barChartData2
+                                                      double maxValue = 0;
+                                                      for (var group
+                                                          in barChartData2) {
+                                                        for (var rod
+                                                            in group.barRods) {
+                                                          if (rod.toY >
+                                                              maxValue) {
+                                                            maxValue = rod.toY;
+                                                          }
+                                                        }
+                                                      }
+                                                      double chartMaxY =
+                                                          maxValue * 1.1;
+
+                                                      return CustomCard(
+                                                        elevation: 6,
+                                                        surfaceTintColor:
+                                                            Colors.white,
+                                                        shape: RoundedRectangleBorder(
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
                                                                         16)),
-                                                    color: Colors.white,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: BarChart(
-                                                        BarChartData(
-                                                          alignment:
-                                                              BarChartAlignment
-                                                                  .center,
-                                                          barTouchData:
-                                                              BarTouchData(
-                                                                  enabled:
-                                                                      false),
-                                                          gridData: FlGridData(
-                                                            show: true,
-                                                            drawVerticalLine:
-                                                                false,
-                                                            getDrawingHorizontalLine:
-                                                                (value) {
-                                                              return FlLine(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .withOpacity(
-                                                                        0.10),
-                                                                strokeWidth: 1,
-                                                              );
-                                                            },
-                                                            getDrawingVerticalLine:
-                                                                (value) {
-                                                              return FlLine(
-                                                                color:
-                                                                    Colors.grey,
-                                                                strokeWidth: 1,
-                                                              );
-                                                            },
-                                                          ),
-                                                          titlesData:
-                                                              FlTitlesData(
-                                                            bottomTitles:
-                                                                AxisTitles(
-                                                              sideTitles:
-                                                                  SideTitles(
-                                                                showTitles:
-                                                                    true,
-                                                                interval: 1,
-                                                                getTitlesWidget:
-                                                                    (value,
-                                                                        meta) {
-                                                                  return Padding(
-                                                                    padding:
-                                                                        const EdgeInsets
-                                                                            .all(
-                                                                            0.0),
-                                                                    child: Text(
-                                                                      getMonthAbbreviation(
-                                                                              value.toInt())
-                                                                          .toString(),
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              9.5),
-                                                                    ),
+                                                        color: Colors.white,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: BarChart(
+                                                            BarChartData(
+                                                              minY: 0,
+                                                              maxY: chartMaxY,
+                                                              alignment:
+                                                                  BarChartAlignment
+                                                                      .center,
+                                                              barTouchData:
+                                                                  BarTouchData(
+                                                                      enabled:
+                                                                          false),
+                                                              gridData:
+                                                                  FlGridData(
+                                                                show: true,
+                                                                drawVerticalLine:
+                                                                    false,
+                                                                getDrawingHorizontalLine:
+                                                                    (value) {
+                                                                  return FlLine(
+                                                                    color: Colors
+                                                                        .grey
+                                                                        .withOpacity(
+                                                                            0.10),
+                                                                    strokeWidth:
+                                                                        1,
+                                                                  );
+                                                                },
+                                                                getDrawingVerticalLine:
+                                                                    (value) {
+                                                                  return FlLine(
+                                                                    color: Colors
+                                                                        .grey,
+                                                                    strokeWidth:
+                                                                        1,
                                                                   );
                                                                 },
                                                               ),
-                                                              axisNameWidget:
-                                                                  Padding(
-                                                                padding:
-                                                                    const EdgeInsets
+                                                              titlesData:
+                                                                  FlTitlesData(
+                                                                bottomTitles:
+                                                                    AxisTitles(
+                                                                  sideTitles:
+                                                                      SideTitles(
+                                                                    showTitles:
+                                                                        true,
+                                                                    interval: 1,
+                                                                    getTitlesWidget:
+                                                                        (value,
+                                                                            meta) {
+                                                                      return Padding(
+                                                                        padding: const EdgeInsets
+                                                                            .all(
+                                                                            0.0),
+                                                                        child:
+                                                                            Text(
+                                                                          getMonthAbbreviation(value.toInt())
+                                                                              .toString(),
+                                                                          style:
+                                                                              TextStyle(fontSize: 9.5),
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                  axisNameWidget:
+                                                                      Padding(
+                                                                    padding: const EdgeInsets
                                                                         .only(
                                                                         top:
                                                                             0.0),
-                                                                child: Text(
-                                                                  'Months of the Year',
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          11,
-                                                                      fontWeight:
-                                                                          FontWeight
+                                                                    child: Text(
+                                                                      'Months of the Year',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              11,
+                                                                          fontWeight: FontWeight
                                                                               .w500,
-                                                                      color: Colors
-                                                                          .black),
+                                                                          color:
+                                                                              Colors.black),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                topTitles:
+                                                                    AxisTitles(
+                                                                  sideTitles:
+                                                                      SideTitles(
+                                                                    showTitles:
+                                                                        true,
+                                                                    reservedSize:
+                                                                        15,
+                                                                    getTitlesWidget:
+                                                                        (value,
+                                                                            meta) {
+                                                                      return Container();
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                                rightTitles:
+                                                                    AxisTitles(
+                                                                  sideTitles:
+                                                                      SideTitles(
+                                                                    showTitles:
+                                                                        true,
+                                                                    reservedSize:
+                                                                        15,
+                                                                    getTitlesWidget:
+                                                                        (value,
+                                                                            meta) {
+                                                                      return Container();
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                                leftTitles:
+                                                                    AxisTitles(
+                                                                  sideTitles:
+                                                                      SideTitles(
+                                                                    showTitles:
+                                                                        true,
+                                                                    reservedSize:
+                                                                        32,
+                                                                    getTitlesWidget:
+                                                                        (value,
+                                                                            meta) {
+                                                                      return Text(
+                                                                        formatLargeNumber4(value
+                                                                            .toInt()
+                                                                            .toString()),
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                7.5),
+                                                                      );
+                                                                    },
+                                                                  ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                            topTitles:
-                                                                AxisTitles(
-                                                              sideTitles:
-                                                                  SideTitles(
-                                                                showTitles:
-                                                                    true,
-                                                                reservedSize:
-                                                                    15,
-                                                                getTitlesWidget:
-                                                                    (value,
-                                                                        meta) {
-                                                                  return Container();
-                                                                },
-                                                              ),
-                                                            ),
-                                                            rightTitles:
-                                                                AxisTitles(
-                                                              sideTitles:
-                                                                  SideTitles(
-                                                                showTitles:
-                                                                    true,
-                                                                reservedSize:
-                                                                    15,
-                                                                getTitlesWidget:
-                                                                    (value,
-                                                                        meta) {
-                                                                  return Container();
-                                                                },
-                                                              ),
-                                                            ),
-                                                            leftTitles:
-                                                                AxisTitles(
-                                                              sideTitles:
-                                                                  SideTitles(
-                                                                showTitles:
-                                                                    true,
-                                                                reservedSize:
-                                                                    32,
-                                                                getTitlesWidget:
-                                                                    (value,
-                                                                        meta) {
-                                                                  return Text(
-                                                                    formatLargeNumber4(value
-                                                                        .toInt()
-                                                                        .toString()),
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            7.5),
-                                                                  );
-                                                                },
-                                                              ),
+                                                              borderData:
+                                                                  FlBorderData(
+                                                                      show:
+                                                                          false),
+                                                              groupsSpace: 15,
+                                                              barGroups:
+                                                                  barChartData2,
                                                             ),
                                                           ),
-                                                          borderData:
-                                                              FlBorderData(
-                                                                  show: false),
-                                                          barGroups:
-                                                              barChartData2,
                                                         ),
-                                                      ),
-                                                    ),
+                                                      );
+                                                    },
                                                   ),
                                                 )
                                           : _selectedButton == 3 &&
@@ -3591,6 +3667,27 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                                             .maxWidth /
                                                                         200;
 
+                                                                // Calculate max value from barChartData3
+                                                                double
+                                                                    maxValue =
+                                                                    0;
+                                                                for (var group
+                                                                    in barChartData3) {
+                                                                  for (var rod
+                                                                      in group
+                                                                          .barRods) {
+                                                                    if (rod.toY >
+                                                                        maxValue) {
+                                                                      maxValue =
+                                                                          rod.toY;
+                                                                    }
+                                                                  }
+                                                                }
+                                                                double
+                                                                    chartMaxY =
+                                                                    maxValue *
+                                                                        1.1;
+
                                                                 return Padding(
                                                                   padding:
                                                                       const EdgeInsets
@@ -3599,6 +3696,9 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                                   child:
                                                                       BarChart(
                                                                     BarChartData(
+                                                                      minY: 0,
+                                                                      maxY:
+                                                                          chartMaxY,
                                                                       alignment:
                                                                           BarChartAlignment
                                                                               .center,
@@ -3806,6 +3906,27 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                                             constraints.maxWidth /
                                                                             200;
 
+                                                                    // Calculate max value from barChartData4
+                                                                    double
+                                                                        maxValue =
+                                                                        0;
+                                                                    for (var group
+                                                                        in barChartData4) {
+                                                                      for (var rod
+                                                                          in group
+                                                                              .barRods) {
+                                                                        if (rod.toY >
+                                                                            maxValue) {
+                                                                          maxValue =
+                                                                              rod.toY;
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                    double
+                                                                        chartMaxY =
+                                                                        maxValue *
+                                                                            1.1;
+
                                                                     return Column(
                                                                       children: [
                                                                         Expanded(
@@ -3816,6 +3937,8 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                                             child:
                                                                                 BarChart(
                                                                               BarChartData(
+                                                                                minY: 0,
+                                                                                maxY: chartMaxY,
                                                                                 alignment: BarChartAlignment.center,
                                                                                 barTouchData: BarTouchData(enabled: false),
                                                                                 gridData: FlGridData(
@@ -3889,7 +4012,7 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                                                   ),
                                                                                 ),
                                                                                 borderData: FlBorderData(show: false),
-                                                                                groupsSpace: barsSpace,
+                                                                                groupsSpace: 15,
                                                                                 barGroups: barChartData4,
                                                                               ),
                                                                             ),
@@ -4142,7 +4265,7 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                 : Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Container(
-                                      height: 400,
+                                      height: 370,
                                       width: MediaQuery.of(context).size.width,
                                       child: Padding(
                                         padding: const EdgeInsets.only(
@@ -4204,12 +4327,12 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                   : Padding(
                                                       padding:
                                                           const EdgeInsets.only(
-                                                              top: 0,
+                                                              top: 8,
                                                               bottom: 8,
                                                               left: 8.0,
                                                               right: 8),
                                                       child: Container(
-                                                        height: 320,
+                                                        height: 300,
                                                         child: PieChart(
                                                           PieChartData(
                                                             centerSpaceRadius:
@@ -4229,12 +4352,12 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                                           0]
                                                                       .pecentage,
                                                                   title:
-                                                                      '${Constants.customers_segment_1a[0].pecentage.toStringAsFixed(1)}',
+                                                                      '${Constants.customers_segment_1a[0].pecentage.toStringAsFixed(1)}%',
                                                                   radius: (MediaQuery.of(context)
                                                                               .size
                                                                               .width /
                                                                           2) -
-                                                                      86,
+                                                                      60,
                                                                   titleStyle: TextStyle(
                                                                       fontSize:
                                                                           11,
@@ -4258,12 +4381,12 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                                           1]
                                                                       .pecentage,
                                                                   title:
-                                                                      '${Constants.customers_segment_1a[1].pecentage.toStringAsFixed(1)}',
+                                                                      '${Constants.customers_segment_1a[1].pecentage.toStringAsFixed(1)}%',
                                                                   radius: (MediaQuery.of(context)
                                                                               .size
                                                                               .width /
                                                                           2) -
-                                                                      86,
+                                                                      60,
                                                                   titleStyle: TextStyle(
                                                                       fontSize:
                                                                           11,
@@ -4287,12 +4410,12 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                                           2]
                                                                       .pecentage,
                                                                   title:
-                                                                      '${Constants.customers_segment_1a[2].pecentage.toStringAsFixed(1)}',
+                                                                      '${Constants.customers_segment_1a[2].pecentage.toStringAsFixed(1)}%',
                                                                   radius: (MediaQuery.of(context)
                                                                               .size
                                                                               .width /
                                                                           2) -
-                                                                      86,
+                                                                      60,
                                                                   titleStyle: TextStyle(
                                                                       fontSize:
                                                                           11,
@@ -4316,12 +4439,12 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                                           3]
                                                                       .pecentage,
                                                                   title:
-                                                                      '${Constants.customers_segment_1a[3].pecentage.toStringAsFixed(1)}',
+                                                                      '${Constants.customers_segment_1a[3].pecentage.toStringAsFixed(1)}%',
                                                                   radius: (MediaQuery.of(context)
                                                                               .size
                                                                               .width /
                                                                           2) -
-                                                                      86,
+                                                                      60,
                                                                   titleStyle: TextStyle(
                                                                       fontSize:
                                                                           11,
@@ -4339,7 +4462,7 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                               Container(
                                                   height: 28,
                                                   child: CollectionsTypeGrid()),
-                                              SizedBox(height: 16),
+                                              SizedBox(height: 0),
                                             ],
                                           ),
                                         ),
@@ -4416,7 +4539,7 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                             ),
                                           )
                                         : Container(
-                                            height: 400,
+                                            height: 300,
                                             child: Padding(
                                               padding: const EdgeInsets.only(
                                                   top: 12.0,
@@ -5613,249 +5736,6 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
       content: Text('Image saved to $imagePath'),
     ));
   }
-
-  Widget _buildMonthCollectedAllocatedWidget() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 14.0, right: 14.0, top: 16.0),
-      child: Card(
-        elevation: 6,
-        surfaceTintColor: Colors.white,
-        color: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Month Collected',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        SizedBox(height: 12),
-                        Container(
-                          width: 235,
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Color(0xFF2C4356),
-                            borderRadius: BorderRadius.circular(32),
-                          ),
-                          child: _buildMonthDropdown(),
-                        ),
-                        SizedBox(height: 16),
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Constants.ctaColorLight,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                'Total Collected',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'R0',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Month Allocated',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        SizedBox(height: 60),
-                        Container(
-                          height: 120,
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.info_outline,
-                                  color: Colors.grey[400],
-                                  size: 32,
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Failed to load data',
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Handle Generate Bordereaux action
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Constants.ctaColorLight,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                      child: Text(
-                        'Generate Bordereaux',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Handle Register Payment action
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Constants.ctaColorLight,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                      ),
-                      child: Text(
-                        'Register Payment',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMonthDropdown() {
-    // Get current date and create dropdown options
-    DateTime now = DateTime.now();
-    List<String> monthOptions = [];
-
-    // Add "All" as first option
-    monthOptions.add("All");
-
-    // Add current month and past 11 months (total 12 months)
-    for (int i = 0; i < 12; i++) {
-      DateTime monthDate = DateTime(now.year, now.month - i, 1);
-      String monthYear =
-          "${getMonthAbbreviation(monthDate.month)} ${monthDate.year}";
-      monthOptions.add(monthYear);
-    }
-
-    // Default selected value (current month)
-    String selectedMonth = "${getMonthAbbreviation(now.month)} ${now.year}";
-
-    return DropdownButton<String>(
-      value: selectedMonth,
-      isExpanded: true,
-      underline: Container(),
-      dropdownColor: Colors.white,
-      icon: Icon(
-        Icons.keyboard_arrow_down,
-        color: Colors.white,
-        size: 20,
-      ),
-      selectedItemBuilder: (BuildContext context) {
-        return monthOptions.map<Widget>((String item) {
-          return Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              item,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          );
-        }).toList();
-      },
-      onChanged: (String? newValue) {
-        // Handle dropdown selection change
-        if (newValue != null) {
-          setState(() {
-            // You can add logic here to handle the selected month
-            print("Selected month: $newValue");
-          });
-        }
-      },
-      items: monthOptions.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(
-            value,
-            style: TextStyle(
-              color: Colors.black87,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
 }
 
 class SalesCollectionAgentWidget extends StatelessWidget {
@@ -6213,40 +6093,6 @@ class SalesCollectionAgentWidget extends StatelessWidget {
             style: TextStyle(fontSize: 11, color: Colors.grey[700]),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildAgentDetailsCard(EmployeeRate agent) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              agent.employeeName,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Constants.ctaColorLight,
-              ),
-            ),
-            SizedBox(height: 12),
-            _buildMetricRow(
-                'Total Sales', '${agent.totalSales}', Icons.shopping_cart),
-            _buildMetricRow(
-                'Total Collected',
-                'R ${formatLargeNumber(agent.totalCollected.toStringAsFixed(1))}',
-                Icons.account_balance_wallet),
-            _buildMetricRow('NTU Rate', '${agent.ntuRate.toStringAsFixed(1)}%',
-                Icons.trending_up),
-            _buildMetricRow('Lapse Rate',
-                '${agent.lapseRate.toStringAsFixed(1)}%', Icons.trending_down),
-          ],
-        ),
       ),
     );
   }
@@ -7943,49 +7789,6 @@ class _AgentPersistencyWidgetState extends State<AgentPersistencyWidget> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildAgentCard(EmployeeRate agent) {
-    return Padding(
-      padding: const EdgeInsets.all(0.0),
-      child: Card(
-        elevation: 6,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        surfaceTintColor: Colors.white,
-        color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 4.0, left: 4),
-                child: Text(agent.employeeName),
-              ),
-              SizedBox(height: 6),
-              Text(
-                ' • Total Sales: ${agent.totalSales}',
-                style: TextStyle(fontSize: 11),
-              ),
-              Text(
-                ' • Total Collected: R ${formatLargeNumber(agent.totalCollected.toStringAsFixed(1))}',
-                style: TextStyle(fontSize: 11),
-              ),
-              Text(
-                ' • NTU Rate: ${agent.ntuRate.toStringAsFixed(1)}%',
-                style: TextStyle(fontSize: 11),
-              ),
-              Text(
-                ' • Lapse Rate: ${agent.lapseRate.toStringAsFixed(1)}%',
-                style: TextStyle(fontSize: 11),
-              ),
-              SizedBox(height: 6),
-            ],
-          ),
-        ),
-      ),
     );
   }
 

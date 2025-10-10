@@ -233,6 +233,9 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
       Constants.sales_formattedStartDate = formattedStartDate;
       Constants.sales_formattedEndDate = formattedEndDate;
 
+      // Update the selected end date for month dropdown
+      Constants.selectedEndDate = endDate;
+
       // Call getExecutiveSalesReport
       getExecutiveSalesReport(
               formattedStartDate,
@@ -301,6 +304,9 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
               DateFormat('yyyy-MM-dd').format(start);
           Constants.sales_formattedEndDate =
               DateFormat('yyyy-MM-dd').format(end);
+
+          // Update the selected end date for month dropdown
+          Constants.selectedEndDate = end;
 
           setState(() {});
           getExecutiveSalesReport(
@@ -1123,7 +1129,17 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                           center: Text(
                               "${Constants.currentSalesDataResponse.percentageWithExtPolicy.toStringAsFixed(1)}%"),
                           barRadius: ui.Radius.circular(12),
-                          progressColor: Colors.green,
+                          progressColor: (Constants.currentSalesDataResponse
+                                          .percentageWithExtPolicy /
+                                      100) <
+                                  0.5
+                              ? Colors.red
+                              : (Constants.currentSalesDataResponse
+                                              .percentageWithExtPolicy /
+                                          100) <
+                                      0.8
+                                  ? Colors.amber
+                                  : Colors.green,
                         ),
                       ),
                       SizedBox(
@@ -4660,7 +4676,6 @@ class AveragePremiumChartWidget extends StatelessWidget {
                 if (barData.isEmpty) {
                   return _buildNoDataMessage();
                 }
-
                 double barsSpace = 0;
                 if (selectedButton == 1 ||
                     (selectedButton == 3 && daysDifference < 30)) {
@@ -7526,21 +7541,30 @@ class _AgentDataWidgetState extends State<AgentDataWidget> {
               ],
             ),
           ),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                _buildEmployeeInfoCard(employee),
-                SizedBox(height: 24),
-                _buildCollectionPieChart(employee),
-                SizedBox(height: 32),
-                Container(
-                  height: 35,
-                  width: MediaQuery.of(context).size.width,
-                  child: CollectionsTypeGrid(),
+          content: Builder(
+            builder: (context) {
+              final hasPieChartData =
+                  _buildPieChartSections(employee).isNotEmpty;
+
+              return SingleChildScrollView(
+                child: ListBody(
+                  children: [
+                    _buildEmployeeInfoCard(employee),
+                    if (hasPieChartData) ...[
+                      SizedBox(height: 24),
+                      _buildCollectionPieChart(employee),
+                      SizedBox(height: 32),
+                      Container(
+                        height: 35,
+                        width: MediaQuery.of(context).size.width,
+                        child: CollectionsTypeGrid(),
+                      ),
+                      SizedBox(height: 12),
+                    ],
+                  ],
                 ),
-                SizedBox(height: 12),
-              ],
-            ),
+              );
+            },
           ),
         );
       },
@@ -7618,13 +7642,20 @@ class _AgentDataWidgetState extends State<AgentDataWidget> {
   }
 
   Widget _buildCollectionPieChart(EmployeeRate employee) {
+    final sections = _buildPieChartSections(employee);
+
+    // Return empty widget if no data
+    if (sections.isEmpty) {
+      return SizedBox.shrink();
+    }
+
     return Container(
       height: 240,
       width: MediaQuery.of(context).size.width,
       child: PieChart(
         PieChartData(
           centerSpaceRadius: 0,
-          sections: _buildPieChartSections(employee),
+          sections: sections,
         ),
       ),
     );

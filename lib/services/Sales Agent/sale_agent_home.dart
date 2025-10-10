@@ -76,6 +76,7 @@ class _SalesAgentHomePageState extends State<SalesAgentHomePage>
     'assets/everest_images/WhatsApp Image 2024-04-10 at 15.17.10 (2).jpeg',
     'assets/everest_images/WhatsApp-Image-2023-08-07-at-16.41.43.jpeg',
   ];
+
   final TextEditingController _passwordController = TextEditingController();
 
   int _passwordAttempts = 0;

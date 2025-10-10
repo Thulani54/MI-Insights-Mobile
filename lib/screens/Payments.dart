@@ -54,11 +54,24 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
   }).reversed.toList(); // Generate last 12 months
   ValueNotifier<int> paymentsValue = ValueNotifier<int>(0);
 
+  // Password protection variables
+  final TextEditingController _passwordController = TextEditingController();
+  bool _obscureText = true;
+  String _errorMessage = '';
+  int _passwordAttempts = 0;
+  DateTime? _lockoutEndTime;
+
   @override
   void initState() {
     super.initState();
     _selectedMonth = widget.selectedMonth; // Initialize with widget value
     _loadInitialData();
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
   }
 
   void _loadInitialData() {
@@ -306,9 +319,9 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
   String formatLargeNumber4(String amountStr) {
     double amount = double.tryParse(amountStr) ?? 0;
     if (amount >= 1000000) {
-      return '${(amount / 1000000).toStringAsFixed(1)}M';
+      return '${(amount / 1000000).toStringAsFixed(1)}m';
     } else if (amount >= 1000) {
-      return '${(amount / 1000).toStringAsFixed(1)}K';
+      return '${(amount / 1000).toStringAsFixed(1)}k';
     } else {
       return amount.toStringAsFixed(0);
     }
@@ -335,13 +348,279 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
     });
   }
 
+  // Helper method to check if user is locked out
+  bool _isLockedOut() {
+    if (_lockoutEndTime == null) return false;
+    return DateTime.now().isBefore(_lockoutEndTime!);
+  }
+
+  // Helper method to get remaining lockout time
+  Duration? _getRemainingLockoutTime() {
+    if (_lockoutEndTime == null) return null;
+    return _lockoutEndTime!.difference(DateTime.now());
+  }
+
+  // Show password dialog for Register Payment
+  void _showRegisterPaymentDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            buttonPadding: EdgeInsets.only(top: 0.0, left: 0, right: 0),
+            insetPadding: EdgeInsets.only(left: 16.0, right: 16),
+            titlePadding: EdgeInsets.only(right: 0),
+            surfaceTintColor: Colors.white,
+            backgroundColor: Colors.white,
+            contentPadding: const EdgeInsets.only(left: 0.0),
+            title: Padding(
+              padding: const EdgeInsets.only(top: 14.0, left: 0, right: 0),
+              child: Text(
+                'THIS VIEW IS PASSWORD PROTECTED',
+                style: TextStyle(fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 8,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 12, right: 12, top: 0.0, bottom: 0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Color(0xff44556a)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            "Private and Confidential",
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0, right: 8),
+                            child: Text(
+                              "Confidential record of premiums paid to the Insurer. Entries must comply with FSCA timelines and reflect accurate payment information.",
+                              style: TextStyle(
+                                  fontSize: 12.5, color: Colors.white),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Center(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(top: 0.0, left: 0, right: 12),
+                    child: Text(
+                      'Please Enter Your Pin And Press Continue',
+                      style: TextStyle(fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 0.0,
+                    ),
+                    child: Container(
+                      width: 250,
+                      child: TextField(
+                        controller: _passwordController,
+                        obscureText: _obscureText,
+                        decoration: InputDecoration(
+                          hintText: 'Pin',
+                          hintStyle: TextStyle(
+                            color: Colors.grey.withOpacity(0.75),
+                          ),
+                          contentPadding: EdgeInsets.only(top: 18),
+                          errorText:
+                              _errorMessage.isEmpty ? null : _errorMessage,
+                          suffixIconConstraints: BoxConstraints(maxHeight: 18),
+                          suffixIcon: IconButton(
+                            style: ElevatedButton.styleFrom(
+                              splashFactory: NoSplash.splashFactory,
+                            ),
+                            icon: Padding(
+                              padding: const EdgeInsets.only(
+                                right: (8.0),
+                              ),
+                              child: Icon(
+                                _obscureText
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.grey.withOpacity(0.75),
+                              ),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Row(
+                  children: [
+                    Spacer(),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(
+                            0.35,
+                          ),
+                          borderRadius: BorderRadius.circular(360)),
+                      width: 125,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Container(
+                            width: 125,
+                            height: 38,
+                            decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.35),
+                                borderRadius: BorderRadius.circular(360)),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 14.0, right: 14, top: 5, bottom: 5),
+                              child: Center(
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                      color: Constants.ctaColorLight,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                            )),
+                      ),
+                    ),
+                    SizedBox(width: 5),
+                    Container(
+                      child: InkWell(
+                        onTap: () {
+                          // Check if user is locked out
+                          if (_isLockedOut()) {
+                            final remaining = _getRemainingLockoutTime();
+                            Fluttertoast.showToast(
+                              msg:
+                                  "Account Locked - Try again in ${remaining!.inMinutes} minutes",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.BOTTOM,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                            );
+                            return;
+                          }
+
+                          // Check password
+                          if (_passwordController.text ==
+                              Constants.cec_employeeid.toString()) {
+                            Navigator.of(context).pop();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RegisterPayment(),
+                              ),
+                            );
+                            _passwordAttempts = 0;
+                            _lockoutEndTime = null;
+                          } else {
+                            setState(() {
+                              _passwordAttempts++;
+
+                              if (_passwordAttempts >= 5) {
+                                _lockoutEndTime =
+                                    DateTime.now().add(Duration(hours: 1));
+                                Fluttertoast.showToast(
+                                  msg:
+                                      "Account Locked - Too many failed attempts. Locked for 1 hour.",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.BOTTOM,
+                                  backgroundColor: Colors.red,
+                                  textColor: Colors.white,
+                                );
+                              } else if (_passwordAttempts >= 3) {
+                                final remaining = 5 - _passwordAttempts;
+                                Fluttertoast.showToast(
+                                  msg:
+                                      "Warning - $remaining more attempt${remaining > 1 ? 's' : ''} remaining",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  backgroundColor: Colors.orange,
+                                  textColor: Colors.white,
+                                );
+                                _errorMessage =
+                                    "Incorrect Pin - $remaining attempts left";
+                              } else {
+                                _errorMessage = "Incorrect Pin";
+                              }
+                            });
+                          }
+                          _passwordController.clear();
+                        },
+                        child: Container(
+                            width: 125,
+                            height: 38,
+                            decoration: BoxDecoration(
+                                color: Constants.ctaColorLight,
+                                borderRadius: BorderRadius.circular(360)),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 14.0, right: 14, top: 5, bottom: 5),
+                              child: Center(
+                                child: const Text(
+                                  'Continue',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            )),
+                      ),
+                    ),
+                    Spacer(),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+              ],
+            ),
+            actions: null,
+          );
+        });
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Always show the dropdown and total amount section
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: Container(
-        height: 260,
+        height: 220,
         width: 400,
         child: Column(
           children: [
@@ -350,248 +629,381 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
                 children: [
                   Expanded(
                     flex: 3,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Center(
-                          child: Text("Month Collected",
-                              style: TextStyle(
-                                  fontSize: 13, fontWeight: FontWeight.w600)),
-                        ),
-                        // Dropdown - always visible and functional
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 0,
+                          ),
+                          /* Center(
+                            child: Text("Month Collected",
+                                style: TextStyle(
+                                    fontSize: 13, fontWeight: FontWeight.w600)),
+                          ),*/
+                          // Dropdown - always visible and functional
 
-                        SizedBox(
-                          height: 12,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 4.0),
-                          child: Container(
-                            height: 33,
-                            decoration: BoxDecoration(
-                                color: Constants.ctaColorLight,
-                                borderRadius: BorderRadius.circular(360)),
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 24.0, top: 0),
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  value: _selectedMonth,
-                                  onChanged: (String? newValue) {
-                                    if (newValue != null &&
-                                        newValue != _selectedMonth) {
-                                      setState(() {
-                                        _selectedMonth = newValue;
-                                        print(
-                                            "Selected month changed to: $_selectedMonth");
-                                      });
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Container(
+                              height: 33,
+                              decoration: BoxDecoration(
+                                  color: Constants.ctaColorLight,
+                                  borderRadius: BorderRadius.circular(360)),
+                              child: Center(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 24.0, top: 0),
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    value: _selectedMonth,
+                                    onChanged: (String? newValue) {
+                                      if (newValue != null &&
+                                          newValue != _selectedMonth) {
+                                        setState(() {
+                                          _selectedMonth = newValue;
+                                          print(
+                                              "Selected month changed to: $_selectedMonth");
+                                        });
 
-                                      // Refresh data for the new selected month
-                                      _refreshDataForSelectedMonth(newValue);
+                                        // Refresh data for the new selected month
+                                        _refreshDataForSelectedMonth(newValue);
 
-                                      // Update key for refresh
-                                      keyrr1 = UniqueKey();
-                                    }
-                                  },
-                                  selectedItemBuilder: (BuildContext ctxt) {
-                                    return _last12Months.map<Widget>((item) {
-                                      return DropdownMenuItem(
-                                          child: Center(
-                                            child: Text("${item}",
-                                                style: TextStyle(
-                                                    color: Colors.white)),
-                                          ),
-                                          value: item);
-                                    }).toList();
-                                  },
-                                  items: _last12Months
-                                      .map<DropdownMenuItem<String>>(
-                                          (String monthName) {
-                                    return DropdownMenuItem<String>(
-                                      value: monthName,
-                                      child: Center(
-                                        child: Text(
-                                          monthName,
-                                          overflow: TextOverflow.ellipsis,
-                                          softWrap: false,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.normal,
-                                            fontSize: 14,
-                                            color: Colors
-                                                .black, // Dropdown items text color
+                                        // Update key for refresh
+                                        keyrr1 = UniqueKey();
+                                      }
+                                    },
+                                    selectedItemBuilder: (BuildContext ctxt) {
+                                      return _last12Months.map<Widget>((item) {
+                                        return DropdownMenuItem(
+                                            child: Center(
+                                              child: Text("${item}",
+                                                  style: TextStyle(
+                                                      color: Colors.white)),
+                                            ),
+                                            value: item);
+                                      }).toList();
+                                    },
+                                    items: _last12Months
+                                        .map<DropdownMenuItem<String>>(
+                                            (String monthName) {
+                                      return DropdownMenuItem<String>(
+                                        value: monthName,
+                                        child: Center(
+                                          child: Text(
+                                            monthName,
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.normal,
+                                              fontSize: 14,
+                                              color: Colors
+                                                  .black, // Dropdown items text color
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  underline:
-                                      Container(), // Removes underline if not needed
-                                  dropdownColor:
-                                      Colors.white, // Dropdown background color
-                                  style: TextStyle(
-                                    color: Colors
-                                        .white, // This sets the selected item text color
-                                  ),
-                                  iconEnabledColor: Colors
-                                      .white, // Changes the dropdown icon color
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        SizedBox(height: 8),
-
-                        // Total Collection Sum Display - always visible
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              top: 8.0, right: 8, left: 8),
-                          child: Container(
-                            height: 110,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Constants.ftaColorLight,
-                              ),
-                              child: ClipPath(
-                                clipper: ShapeBorderClipper(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16))),
-                                child: Column(
-                                  children: [
-                                    Spacer(),
-                                    Center(
-                                        child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        "Total Collected",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600),
-                                        textAlign: TextAlign.center,
-                                        maxLines: 1,
-                                      ),
-                                    )),
-                                    SizedBox(height: 0),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        _hasError
-                                            ? "R0"
-                                            : "R${formatLargeNumber2b(totalCollectionSum.toString())}",
-                                        style: TextStyle(
-                                            fontSize: 16.5,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w500),
-                                        textAlign: TextAlign.center,
-                                        maxLines: 2,
-                                      ),
-                                    ),
-                                    Spacer(),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 35,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    generateBordereaux();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Constants.ctaColorLight,
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 8, horizontal: 12),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(25),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Generate Bordereaux',
+                                      );
+                                    }).toList(),
+                                    underline:
+                                        Container(), // Removes underline if not needed
+                                    dropdownColor: Colors
+                                        .white, // Dropdown background color
                                     style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
+                                      color: Colors
+                                          .white, // This sets the selected item text color
                                     ),
+                                    iconEnabledColor: Colors
+                                        .white, // Changes the dropdown icon color
                                   ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                        SizedBox(height: 12),
-                      ],
+                          ),
+
+                          SizedBox(height: 8),
+
+                          // Total Collection Sum Display - always visible
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12.0),
+                            child: Container(
+                              height: 120,
+                              child: InkWell(
+                                  onTap: () {
+                                    // restartInactivityTimer();
+                                  },
+                                  child: Container(
+                                    height: 120,
+                                    width:
+                                        MediaQuery.of(context).size.width / 2.9,
+                                    child: Stack(
+                                      children: [
+                                        InkWell(
+                                          onTap: () {},
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 4.0, right: 8),
+                                            child: Card(
+                                              surfaceTintColor: Colors.white,
+                                              elevation: 6,
+                                              color: Colors.white,
+                                              shape: RoundedRectangleBorder(
+                                                side: BorderSide(
+                                                    color: Colors.white70,
+                                                    width: 0),
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                              ),
+                                              child: ClipPath(
+                                                clipper: ShapeBorderClipper(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        16))),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          bottom: BorderSide(
+                                                              color: Constants
+                                                                  .ftaColorLight,
+                                                              width: 6))),
+                                                  child: Column(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Container(
+                                                          decoration: BoxDecoration(
+                                                              color: Colors.grey
+                                                                  .withOpacity(
+                                                                      0.05),
+                                                              border: Border.all(
+                                                                  color: Colors
+                                                                      .grey
+                                                                      .withOpacity(
+                                                                          0.0)),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8)),
+                                                          child: Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            14),
+                                                              ),
+                                                              width:
+                                                                  MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width,
+                                                              height: 290,
+                                                              /*     decoration: BoxDecoration(
+                                                                                                     color:Colors.white,
+                                                                                                     borderRadius:
+                                                                                                     BorderRadius.circular(
+                                                                                                         8),
+                                                                                                     border: Border.all(
+                                                                                                         width: 1,
+                                                                                                         color: Colors
+                                                                                                             .grey.withOpacity(0.2))),*/
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      right: 0,
+                                                                      left: 0,
+                                                                      bottom:
+                                                                          4),
+                                                              child:
+                                                                  _hasError ==
+                                                                          true
+                                                                      ? Center(
+                                                                          child:
+                                                                              Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.all(8.0),
+                                                                            child:
+                                                                                Container(
+                                                                              width: 18,
+                                                                              height: 18,
+                                                                              child: CircularProgressIndicator(
+                                                                                color: Constants.ctaColorLight,
+                                                                                strokeWidth: 1.8,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                      : Column(
+                                                                          children: [
+                                                                            SizedBox(
+                                                                              height: 8,
+                                                                            ),
+                                                                            Expanded(
+                                                                              child: Center(
+                                                                                  child: Padding(
+                                                                                padding: const EdgeInsets.all(8.0),
+                                                                                child: Text(
+                                                                                  _hasError ? "R0" : "R${formatLargeNumber2b(totalCollectionSum.toString())}",
+                                                                                  style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
+                                                                                  textAlign: TextAlign.center,
+                                                                                  maxLines: 2,
+                                                                                ),
+                                                                              )),
+                                                                            ),
+                                                                            Center(
+                                                                                child: Padding(
+                                                                              padding: const EdgeInsets.all(6.0),
+                                                                              child: Text(
+                                                                                "Total Collected",
+                                                                                style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500),
+                                                                                textAlign: TextAlign.center,
+                                                                                maxLines: 1,
+                                                                              ),
+                                                                            )),
+                                                                          ],
+                                                                        )),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )),
+                            ),
+                          ),
+
+                          SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 4.0),
+                                  child: Container(
+                                    height: 35,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        generateBordereaux();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Constants.ctaColorLight,
+                                        foregroundColor: Colors.white,
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 8, horizontal: 12),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(25),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Generate Bordereaux',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                        ],
+                      ),
                     ),
                   ),
 
                   // Chart Display - conditional based on loading/error state
                   Expanded(
                     flex: 4,
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Center(
-                          child: Text("Month Allocated",
-                              style: TextStyle(
-                                  fontSize: 13, fontWeight: FontWeight.w600)),
-                        ),
-                        Expanded(child: Container(child: _buildChartSection())),
-                        SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12.0),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Row(
+                            children: [
+                              Spacer(),
+                              Container(
+                                height: 32,
+                                decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius: BorderRadius.circular(360)),
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 36.0, right: 36),
+                                    child: Text("Month Allocated",
+                                        style: TextStyle(
+                                            color: Constants.ctaColorLight,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.normal)),
+                                  ),
+                                ),
+                              ),
+                              Spacer(),
+                            ],
+                          ),
+                          Container(
+                              height: 135,
                               child: Container(
-                                height: 35,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 16.0, right: 16),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              RegisterPayment(),
+                                  child: Padding(
+                                padding: const EdgeInsets.only(left: 4.0),
+                                child: _buildChartSection(),
+                              ))),
+                          SizedBox(height: 7),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  height: 35,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 16.0, right: 16),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        _showRegisterPaymentDialog();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Constants.ctaColorLight,
+                                        foregroundColor: Colors.white,
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 8, horizontal: 12),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(25),
                                         ),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Constants.ctaColorLight,
-                                      foregroundColor: Colors.white,
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 8, horizontal: 12),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(25),
                                       ),
-                                    ),
-                                    child: Text(
-                                      'Register Payment',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
+                                      child: Text(
+                                        'Register Payment',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 16),
-                      ],
+                            ],
+                          ),
+                          SizedBox(height: 7),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -670,6 +1082,12 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
         data: _salesData!,
         labelAccessorFn: (SalesData1 sd, _) =>
             'R${formatLargeNumber4(sd.amount.toString())}',
+        colorFn: (_, __) => charts.Color(
+          r: 158,
+          g: 158,
+          b: 158,
+          a: 255,
+        ),
       )
     ];
 
@@ -681,17 +1099,27 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
       defaultInteractions: false,
       barGroupingType: charts.BarGroupingType.grouped,
       barRendererDecorator: charts.BarLabelDecorator<String>(
+        insideLabelStyleSpec: const charts.TextStyleSpec(
+          fontSize: 6,
+        ),
         outsideLabelStyleSpec: const charts.TextStyleSpec(
-          fontSize: 7,
-          fontWeight: "bold",
+          fontSize: 6,
         ),
       ),
-      domainAxis: const charts.OrdinalAxisSpec(
+      domainAxis: charts.OrdinalAxisSpec(
         renderSpec: charts.SmallTickRendererSpec(
           labelStyle: charts.TextStyleSpec(
-            fontSize: 6,
+            fontSize: 5,
             color: charts.MaterialPalette.black,
-            fontWeight: "bold",
+            // fontWeight: "bold",
+          ),
+          lineStyle: charts.LineStyleSpec(
+            color: charts.Color(
+              r: Constants.ftaColorLight.red,
+              g: Constants.ftaColorLight.green,
+              b: Constants.ftaColorLight.blue,
+              a: Constants.ftaColorLight.alpha,
+            ),
           ),
         ),
       ),
@@ -739,7 +1167,8 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
   }
 
   String formatWithCommas(double value) {
-    final format = NumberFormat("#,##0", "en_US"); // Updated pattern
+    final format =
+        NumberFormat("#,##0.00", "en_US"); // Updated pattern to show 1 decimal
     return format.format(value);
   }
 
@@ -789,19 +1218,20 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
       );
 
       // Generate CSV URL for bordereaux
-      String csvUrl = generateBordereauxUrl(_selectedMonth ?? widget.selectedMonth);
-      
+      String csvUrl =
+          generateBordereauxUrl(_selectedMonth ?? widget.selectedMonth);
+
       if (kDebugMode) {
         print("Downloading bordereaux from: $csvUrl");
       }
 
       // Download CSV data
       final response = await http.get(Uri.parse(csvUrl));
-      
+
       if (response.statusCode == 200) {
         // Request storage permission
         bool hasPermission = await requestStoragePermission();
-        
+
         if (!hasPermission) {
           Fluttertoast.showToast(
             msg: "Storage permission denied",
@@ -814,17 +1244,19 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
         }
 
         // Let user select directory
-        String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-        
+        String? selectedDirectory =
+            await FilePicker.platform.getDirectoryPath();
+
         if (selectedDirectory != null) {
           // Create filename with timestamp
-          String fileName = 'bordereaux_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.csv';
+          String fileName =
+              'bordereaux_${DateFormat('yyyyMMdd_HHmmss').format(DateTime.now())}.csv';
           String filePath = '$selectedDirectory/$fileName';
-          
+
           // Save file
           File file = File(filePath);
           await file.writeAsString(response.body);
-          
+
           // Show success message
           Fluttertoast.showToast(
             msg: "Bordereaux saved to: $fileName",
@@ -833,7 +1265,7 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
             backgroundColor: Colors.green,
             textColor: Colors.white,
           );
-          
+
           if (kDebugMode) {
             print("File saved to: $filePath");
           }
@@ -847,7 +1279,8 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
           );
         }
       } else {
-        throw Exception('Failed to download bordereaux: ${response.statusCode}');
+        throw Exception(
+            'Failed to download bordereaux: ${response.statusCode}');
       }
     } catch (e) {
       print("Error generating bordereaux: $e");
@@ -886,7 +1319,8 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
     if (Platform.isAndroid) {
       try {
         final String version = Platform.operatingSystemVersion;
-        final int sdkInt = int.parse(version.split(' ').last.replaceAll(')', ''));
+        final int sdkInt =
+            int.parse(version.split(' ').last.replaceAll(')', ''));
         return sdkInt;
       } catch (e) {
         return 29; // Default to Android 10
@@ -899,7 +1333,6 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
 // Helper function to generate URL for payover data (same structure as your getOneMonthUrl)
 String getOneMonthUrl(String selectedMonth) {
   int clientId = Constants.cec_client_id;
-
   // Parse the selected month string using the format "MMM yyyy".
   // If parsing fails, fallback to the current month.
   DateTime selectedDate;
@@ -934,7 +1367,7 @@ String getOneMonthUrl(String selectedMonth) {
   String formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
 
   String url =
-      "${Constants.analitixAppBaseUrl}sales/get_payover_chart_data/?client_id=$clientId&start_date=$formattedStartDate&end_date=$formattedEndDate&with_underwriter_only=1&underwriter=1";
+      "${Constants.analitixAppBaseUrl}sales/get_payover_chart_data/?client_id=$clientId&start_date=$formattedStartDate&end_date=$formattedEndDate&with_underwriter_only=2&underwriter=1";
 
   print("Final URL 0000: $url");
   return url;
@@ -945,10 +1378,24 @@ String getPayoverUrl(String selectedMonth, {int? clientId}) {
   return getOneMonthUrl(selectedMonth);
 }
 
+// Generate URL with exact date range
+String getPayoverUrlWithDateRange(DateTime startDate, DateTime endDate) {
+  int clientId = Constants.cec_client_id;
+
+  String formattedStartDate = DateFormat('yyyy-MM-dd').format(startDate);
+  String formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
+
+  String url =
+      "${Constants.analitixAppBaseUrl}sales/get_payover_chart_data/?client_id=$clientId&start_date=$formattedStartDate&end_date=$formattedEndDate&with_underwriter_only=2&underwriter=1";
+
+  print("PayoverChartView URL: $url");
+  return url;
+}
+
 // Generate URL for bordereaux CSV download
 String generateBordereauxUrl(String selectedMonth) {
   int clientId = Constants.cec_client_id;
-  
+
   DateTime selectedDate;
   try {
     selectedDate = DateFormat("MMM yyyy").parse(selectedMonth);
@@ -956,40 +1403,122 @@ String generateBordereauxUrl(String selectedMonth) {
     print("Error parsing date: $e");
     selectedDate = DateTime.now();
   }
-  
+
   DateTime startDate = DateTime(
     selectedDate.year,
     selectedDate.month,
     1,
   );
-  
+
   DateTime endDate = DateTime(
     selectedDate.year,
     selectedDate.month + 1,
     0,
   );
-  
+
   String formattedStartDate = DateFormat('yyyy-MM-dd').format(startDate);
   String formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
-  
-  // CSV export endpoint
-  String url = "${Constants.analitixAppBaseUrl}sales/export_bordereaux_csv/?client_id=$clientId&start_date=$formattedStartDate&end_date=$formattedEndDate&with_underwriter_only=1&underwriter=1";
-  
+
+  // CSV export endpoint - generate_payover_data endpoint
+  String url =
+      "https://miinsightsapps.net/files/generate_payover_data/?client_id=$clientId&start_date=$formattedStartDate&end_date=$formattedEndDate&with_underwriter_only=0&underwriter=1";
+
   print("Bordereaux CSV URL: $url");
   return url;
 }
 
-class PayoverChartView extends StatelessWidget {
+class PayoverChartView extends StatefulWidget {
+  final DateTime? startDate;
+  final DateTime? endDate;
+
+  const PayoverChartView({Key? key, this.startDate, this.endDate})
+      : super(key: key);
+
+  @override
+  _PayoverChartViewState createState() => _PayoverChartViewState();
+}
+
+class _PayoverChartViewState extends State<PayoverChartView> {
+  late String dataUrl;
+  late String selectedMonth;
+
+  @override
+  void initState() {
+    super.initState();
+    _updateDataUrl();
+  }
+
+  @override
+  void didUpdateWidget(PayoverChartView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Check if the date range has changed
+    if (kDebugMode) {
+      print("PayoverChartView didUpdateWidget called");
+      print(
+          "Old startDate: ${oldWidget.startDate}, New startDate: ${widget.startDate}");
+      print(
+          "Old endDate: ${oldWidget.endDate}, New endDate: ${widget.endDate}");
+    }
+
+    if (oldWidget.startDate != widget.startDate ||
+        oldWidget.endDate != widget.endDate) {
+      if (kDebugMode) {
+        print("Date range changed, updating data URL");
+      }
+      _updateDataUrl();
+    }
+  }
+
+  void _updateDataUrl() {
+    setState(() {
+      // Use provided dates or fallback to current date
+      DateTime startDate = widget.startDate ?? DateTime.now();
+      DateTime endDate =
+          widget.endDate ?? Constants.selectedEndDate ?? DateTime.now();
+
+      if (kDebugMode) {
+        print(
+            "PayoverChartView _updateDataUrl - startDate: $startDate, endDate: $endDate");
+      }
+
+      // Check if the date range spans multiple months
+      bool isMultipleMonths =
+          startDate.year != endDate.year || startDate.month != endDate.month;
+
+      if (isMultipleMonths) {
+        // Multiple months: use exact start and end dates
+        // Only use the first month for the dropdown to avoid the duplicate value error
+        selectedMonth = DateFormat("MMM yyyy").format(startDate);
+        dataUrl = getPayoverUrlWithDateRange(startDate, endDate);
+        if (kDebugMode) {
+          print(
+              "Multiple months detected - selectedMonth: $selectedMonth (showing first month only)");
+          print(
+              "Actual range: ${DateFormat("MMM yyyy").format(startDate)} - ${DateFormat("MMM yyyy").format(endDate)}");
+        }
+      } else {
+        // Less than a month: use full month (1st to last day)
+        DateTime monthStart = DateTime(endDate.year, endDate.month, 1);
+        DateTime monthEnd = DateTime(endDate.year, endDate.month + 1, 0);
+        selectedMonth = DateFormat("MMM yyyy").format(endDate);
+        dataUrl = getPayoverUrlWithDateRange(monthStart, monthEnd);
+        if (kDebugMode) {
+          print(
+              "Single month detected - selectedMonth: $selectedMonth, monthStart: $monthStart, monthEnd: $monthEnd");
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    String selectedMonth = DateFormat("MMM yyyy").format(DateTime.now());
-    String dataUrl = getPayoverUrl(selectedMonth, clientId: 140);
-
     return Container(
       child: Center(
         child: Column(
           children: [
             PayoverBarChart2(
+              key: ValueKey(
+                  '$selectedMonth-${widget.startDate}-${widget.endDate}'),
               dataUrl: dataUrl,
               selectedMonth: selectedMonth,
             ),

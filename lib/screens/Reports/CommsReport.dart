@@ -899,7 +899,25 @@ class _CommsReportState extends State<CommsReport> with InactivityLogoutMixin {
                                     "${((_selectedButton == 1 ? Constants.percentage_delivered1a : _selectedButton == 2 ? Constants.percentage_delivered2a : _selectedButton == 3 && days_difference <= 31 ? Constants.percentage_delivered3a : Constants.percentage_delivered3a) * 100).toStringAsFixed(1)}%"),
                                 barRadius: ui.Radius.circular(12),
                                 //linearStrokeCap: LinearStrokeCap.roundAll,
-                                progressColor: Colors.green,
+                                progressColor: (_selectedButton == 1
+                                        ? Constants.percentage_delivered1a
+                                        : _selectedButton == 2
+                                            ? Constants.percentage_delivered2a
+                                            : _selectedButton == 3 &&
+                                                    days_difference <= 31
+                                                ? Constants.percentage_delivered3a
+                                                : Constants.percentage_delivered3a) < 0.5
+                                    ? Colors.red
+                                    : (_selectedButton == 1
+                                        ? Constants.percentage_delivered1a
+                                        : _selectedButton == 2
+                                            ? Constants.percentage_delivered2a
+                                            : _selectedButton == 3 &&
+                                                    days_difference <= 31
+                                                ? Constants.percentage_delivered3a
+                                                : Constants.percentage_delivered3a) < 0.8
+                                    ? Colors.amber
+                                    : Colors.green,
                               ),
                             ),
                             SizedBox(

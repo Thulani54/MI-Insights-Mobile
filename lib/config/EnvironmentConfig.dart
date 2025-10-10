@@ -62,7 +62,7 @@ class AppConfig {
       premiumCollectorUrl: "https://uat.miinsightsapps.net/collector_api/api/",
       underwriterEndpoint: "https://uat.miinsightsapps.net/underwriter_config",
       hygieneBaseUrl: "https://uat.miinsightsapps.net/underwriter_config",
-      analytixBaseUrl: "http://102.210.146.67:8026/",
+      analytixBaseUrl: "http://102.210.146.67:8066/",
     ),
     EnvironmentType.uat: EnvironmentConfig(
       insightsReportsBaseUrl: "https://uat.reportsapp.miinsightsapps.net/",

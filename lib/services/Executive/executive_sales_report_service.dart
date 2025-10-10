@@ -324,21 +324,6 @@ Future<void> getExecutiveLeadsReport(String dateFrom, String dateTo,
           Constants.d_leads_spots1a.sort((a, b) => a.x.compareTo(b.x));
           Constants.d_leads_spots1b.sort((a, b) => a.x.compareTo(b.x));
 
-          // Convert the summed leads data to FlSpots and add them to the lists
-          dailyLeadsSubmittedSum.forEach((day, totalSubmitted) {
-            Constants.d_leads_spots1a
-                .add(FlSpot(day.toDouble(), totalSubmitted.toDouble()));
-          });
-
-          dailyLeadsCompletedSum.forEach((day, totalCompleted) {
-            Constants.d_leads_spots1b
-                .add(FlSpot(day.toDouble(), totalCompleted.toDouble()));
-          });
-
-          // Sort the FlSpot lists by the x value (hour)
-          Constants.d_leads_spots1a.sort((a, b) => a.x.compareTo(b.x));
-          Constants.d_leads_spots1b.sort((a, b) => a.x.compareTo(b.x));
-
           List top_employees1a = jsonResponse["agent_stats"] ?? [];
           Constants.field_leadbyagent1a = [];
           for (var value in top_employees1a) {
@@ -491,90 +476,51 @@ Future<void> getExecutiveLeadsReport(String dateFrom, String dateTo,
           Constants.leads_spots2a.sort((a, b) => a.x.compareTo(b.x));
           Constants.leads_spots2b.sort((a, b) => a.x.compareTo(b.x));
 
-          // Process daily summary
+          // Process daily summary - aggregate by MONTH for 12-month view
           List<dynamic> daily_leads_summary =
               jsonResponse["daily_summary"] ?? [];
           Constants.d_leads_spots2a.clear();
           Constants.d_leads_spots2b.clear();
 
-          Map<int, int> dailyLeadsSubmittedSum = {};
-          Map<int, int> dailyLeadsCompletedSum = {};
+          // For 12-month view, aggregate by month instead of day
+          Map<int, int> monthlyLeadsSubmittedSum = {};
+          Map<int, int> monthlyLeadsCompletedSum = {};
 
-          // First pass: Collect all daily data
           for (var entry in daily_leads_summary) {
             DateTime entryDate = DateTime.parse(entry["date"]);
-            int day = entryDate.day;
+            int month = entryDate.month; // Use month (1-12) as the key
             int leadsSubmittedCount =
                 int.parse(entry["leads_submitted_count"].toString());
             int leadsCompletedCount =
                 int.parse(entry["leads_completed_count"].toString());
 
-            dailyLeadsSubmittedSum[day] =
-                (dailyLeadsSubmittedSum[day] ?? 0) + leadsSubmittedCount;
-            dailyLeadsCompletedSum[day] =
-                (dailyLeadsCompletedSum[day] ?? 0) + leadsCompletedCount;
+            monthlyLeadsSubmittedSum[month] =
+                (monthlyLeadsSubmittedSum[month] ?? 0) + leadsSubmittedCount;
+            monthlyLeadsCompletedSum[month] =
+                (monthlyLeadsCompletedSum[month] ?? 0) + leadsCompletedCount;
           }
 
-          // Second pass: Handle weekend aggregation (push weekend leads to next Monday)
-          Map<int, int> adjustedLeadsSubmittedSum = {};
-          Map<int, int> adjustedLeadsCompletedSum = {};
-
-          // Copy all weekday data first
-          for (var entry in daily_leads_summary) {
-            DateTime entryDate = DateTime.parse(entry["date"]);
-            int day = entryDate.day;
-            int weekday = entryDate.weekday; // 1=Monday, 7=Sunday
-
-            // If it's a weekday (Monday=1 to Friday=5), keep the data
-            if (weekday >= 1 && weekday <= 5) {
-              adjustedLeadsSubmittedSum[day] = dailyLeadsSubmittedSum[day] ?? 0;
-              adjustedLeadsCompletedSum[day] = dailyLeadsCompletedSum[day] ?? 0;
-            }
-          }
-
-          // Now handle weekend data - add to following Monday
-          for (var entry in daily_leads_summary) {
-            DateTime entryDate = DateTime.parse(entry["date"]);
-            int day = entryDate.day;
-            int weekday = entryDate.weekday; // 1=Monday, 7=Sunday
-
-            // If it's a weekend (Saturday=6 or Sunday=7)
-            if (weekday == 6 || weekday == 7) {
-              // Find the next Monday
-              DateTime nextMonday = entryDate;
-              while (nextMonday.weekday != 1) {
-                nextMonday = nextMonday.add(Duration(days: 1));
-              }
-
-              int mondayDay = nextMonday.day;
-
-              // Add weekend leads to Monday
-              int weekendSubmitted = dailyLeadsSubmittedSum[day] ?? 0;
-              int weekendCompleted = dailyLeadsCompletedSum[day] ?? 0;
-
-              adjustedLeadsSubmittedSum[mondayDay] =
-                  (adjustedLeadsSubmittedSum[mondayDay] ?? 0) + weekendSubmitted;
-              adjustedLeadsCompletedSum[mondayDay] =
-                  (adjustedLeadsCompletedSum[mondayDay] ?? 0) + weekendCompleted;
-            }
-          }
-
-          // Create FlSpots using the adjusted data (without weekends)
-          for (int day in adjustedLeadsSubmittedSum.keys) {
+          // Create FlSpots using monthly aggregated data
+          for (int month in monthlyLeadsSubmittedSum.keys) {
             Constants.d_leads_spots2a.add(FlSpot(
-                day.toDouble(), adjustedLeadsSubmittedSum[day]!.toDouble()));
+                month.toDouble(), monthlyLeadsSubmittedSum[month]!.toDouble()));
           }
-          for (int day in adjustedLeadsCompletedSum.keys) {
+          for (int month in monthlyLeadsCompletedSum.keys) {
             Constants.d_leads_spots2b.add(FlSpot(
-                day.toDouble(), adjustedLeadsCompletedSum[day]!.toDouble()));
+                month.toDouble(), monthlyLeadsCompletedSum[month]!.toDouble()));
           }
 
-          // Sort the FlSpots by x value (day) to ensure proper order
+          // Sort the FlSpots by x value (month) to ensure proper order
           Constants.d_leads_spots2a.sort((a, b) => a.x.compareTo(b.x));
           Constants.d_leads_spots2b.sort((a, b) => a.x.compareTo(b.x));
 
           if (kDebugMode) {
-            // Debug prints
+            print("📊 Button 2 Monthly Data (for Daily View):");
+            print("   daily_leads_summary count: ${daily_leads_summary.length}");
+            print("   monthlyLeadsSubmittedSum: $monthlyLeadsSubmittedSum");
+            print("   monthlyLeadsCompletedSum: $monthlyLeadsCompletedSum");
+            print("   d_leads_spots2a length: ${Constants.d_leads_spots2a.length}");
+            print("   d_leads_spots2b length: ${Constants.d_leads_spots2b.length}");
           }
         } else if (selectedButton1 == 3) {
           // Extract lead status counts with null fallback

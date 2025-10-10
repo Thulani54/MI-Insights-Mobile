@@ -1196,14 +1196,15 @@ class _ClaimsReportState extends State<ClaimsReport>
                                                                                     child: Padding(
                                                                                   padding: const EdgeInsets.only(top: 0.0),
                                                                                   child: Text(
-                                                                                    (_selectedButton == 1
-                                                                                            ? Constants.claims_by_category1a["In Progress"] ?? 0
-                                                                                            : _selectedButton == 2
-                                                                                                ? Constants.claims_by_category2a["In Progress"] ?? 0
-                                                                                                : _selectedButton == 3 && days_difference <= 31
-                                                                                                    ? Constants.claims_by_category3a["In Progress"] ?? 0
-                                                                                                    : Constants.claims_by_category3b["In Progress"] ?? 0)
-                                                                                        .toStringAsFixed(0),
+                                                                                    ((_selectedButton == 1
+                                                                                                ? Constants.claims_by_category1a["In Progress"]
+                                                                                                : _selectedButton == 2
+                                                                                                    ? Constants.claims_by_category2a["In Progress"]
+                                                                                                    : _selectedButton == 3 && days_difference <= 31
+                                                                                                        ? Constants.claims_by_category3a["In Progress"]
+                                                                                                        : Constants.claims_by_category3b["In Progress"]) ??
+                                                                                            0)
+                                                                                        .toString(),
                                                                                     style: TextStyle(fontSize: 12.5),
                                                                                     textAlign: TextAlign.center,
                                                                                     maxLines: 1,
@@ -1622,16 +1623,20 @@ class _ClaimsReportState extends State<ClaimsReport>
                                       animation: true,
                                       lineHeight: 20.0,
                                       animationDuration: 500,
-                                      percent: _selectedButton == 1
-                                          ? (Constants.claims_ratio1a / 100)
-                                          : _selectedButton == 2
-                                              ? (Constants.claims_ratio2a / 100)
-                                              : _selectedButton == 3 &&
-                                                      days_difference <= 31
-                                                  ? (Constants.claims_ratio3a /
+                                      percent: (_selectedButton == 1
+                                              ? (Constants.claims_ratio1a / 100)
+                                              : _selectedButton == 2
+                                                  ? (Constants.claims_ratio2a /
                                                       100)
-                                                  : (Constants.claims_ratio3b /
-                                                      100),
+                                                  : _selectedButton == 3 &&
+                                                          days_difference <= 31
+                                                      ? (Constants
+                                                              .claims_ratio3a /
+                                                          100)
+                                                      : (Constants
+                                                              .claims_ratio3b /
+                                                          100))
+                                          .clamp(0.0, 1.0),
                                       center: Text(
                                           "${_selectedButton == 1 ? (Constants.claims_ratio1a).toStringAsFixed(1) : _selectedButton == 2 ? (Constants.claims_ratio2a).toStringAsFixed(1) : _selectedButton == 3 && days_difference <= 31 ? (Constants.claims_ratio3a).toStringAsFixed(1) : (Constants.claims_ratio3b).toStringAsFixed(1)}%"),
                                       barRadius: ui.Radius.circular(12),
@@ -1790,7 +1795,7 @@ class _ClaimsReportState extends State<ClaimsReport>
                                                                             16.0,
                                                                         top: 0),
                                                                 child: Text(
-                                                                  "MTD Paid Claims = R ${formatLargeNumber((Constants.myClaimsSumOfPremiums1).toString())}",
+                                                                  "MTD Paid Claims = R ${formatLargeNumber((Constants.claims_sum_paid1a).toString())}",
                                                                   style: TextStyle(
                                                                       fontWeight:
                                                                           FontWeight
@@ -1820,7 +1825,8 @@ class _ClaimsReportState extends State<ClaimsReport>
                                                                       "R " +
                                                                           formatLargeNumber(((Constants.myClaimsSumOfPremiums1 ?? 0) // Default to 0 if the value is null
                                                                                           -
-                                                                                          (Constants.myClaimsSumOfPremiums1))
+                                                                                          (Constants.claims_sum_paid1a))
+                                                                                      .abs()
                                                                                       .toString() // Default to 0 if the value is null
                                                                                   )
                                                                               .toString(),
@@ -4381,7 +4387,7 @@ class _ClaimsReportState extends State<ClaimsReport>
                                                                             flex:
                                                                                 4,
                                                                             child:
-                                                                                Text("${extractFirstAndLastName(_selectedButton == 1 ? Constants.claims_details1a[index].policy_number : _selectedButton == 2 ? Constants.claims_details2a[index].policy_number.trimLeft() : Constants.claims_details3a[index].policy_number.trimLeft())}")),
+                                                                                Text("${_selectedButton == 1 ? Constants.claims_details1a[index].policy_number : _selectedButton == 2 ? Constants.claims_details2a[index].policy_number.trimLeft() : Constants.claims_details3a[index].policy_number.trimLeft()}")),
                                                                         Container(
                                                                           width:
                                                                               120,
@@ -6184,13 +6190,15 @@ class _ClaimsReport2State extends State<ClaimsReportGraph2> {
                         ),
                       ),
                       minY: 0,
-                      maxY: claims_maxY2.toDouble(),
+                      maxY: claims_maxY2.toDouble() > 100
+                          ? claims_maxY2.toDouble()
+                          : 100,
                       minX: claims_spots2.length < 1
                           ? 0
                           : claims_spots2[0].x.toDouble(),
                       maxX: claims_spots2.length < 1
-                          ? 0
-                          : claims_spots2[claims_spots2.length - 1].x,
+                          ? 12
+                          : claims_spots2[0].x.toDouble() + 12,
                       borderData: FlBorderData(
                         show: true,
                         border: Border(
@@ -6214,29 +6222,77 @@ class _ClaimsReport2State extends State<ClaimsReportGraph2> {
       Map m1 = Constants.jsonMonthlyClaimsData1;
       //print("gffgfddf ${m1}");
 
+      // Get the end date (today or the selected end date)
+      DateTime endDate = DateTime.now();
+
+      // Calculate start date as 12 months before end date
+      DateTime startDate = DateTime(endDate.year - 1, endDate.month, 1);
+
+      // Map to store monthly grouped data: key = monthIndex (year*12+month), value = list of values
+      Map<int, List<double>> monthlyData = {};
+
+      // Initialize all 12 months with empty lists to ensure all months appear
+      DateTime currentMonth = DateTime(startDate.year, startDate.month, 1);
+      for (int i = 0; i < 12; i++) {
+        int monthIndex = currentMonth.year * 12 + currentMonth.month;
+        monthlyData[monthIndex] = [];
+        currentMonth = DateTime(currentMonth.year, currentMonth.month + 1, 1);
+      }
+
       m1.forEach((key, value) {
-        //print("e_dshvalue ${key} ${value}");
+        try {
+          DateTime dt1 = DateTime.parse(key);
 
-        DateTime dt1 = DateTime.parse(key);
-        int year = dt1.year;
-        int month = dt1.month;
-        double new_value = double.parse(value.toString()) * 100;
+          // Only include data points within the last 12 months
+          if (dt1.isAfter(startDate.subtract(Duration(days: 1))) &&
+              dt1.isBefore(endDate.add(Duration(days: 1)))) {
+            int year = dt1.year;
+            int month = dt1.month;
+            int monthIndex = year * 12 + month;
 
-        claims_spots2.add(FlSpot((year * 12 + month).toDouble(), new_value));
-        if (new_value != 0)
-          salesSpots.add(FlSpot((year * 12 + month).toDouble(), new_value));
-        claims_maxY2 = max(new_value.round(), 100);
-        claimsValue.value++;
-        // print("spot added");
+            double new_value = double.parse(value.toString());
+
+            // Group values by month
+            if (!monthlyData.containsKey(monthIndex)) {
+              monthlyData[monthIndex] = [];
+            }
+            monthlyData[monthIndex]!.add(new_value);
+          }
+        } catch (e) {
+          // Skip invalid entries
+        }
       });
+
+      // Sort month indices
+      List<int> sortedMonthIndices = monthlyData.keys.toList()..sort();
+
+      // Calculate average for each month and create spots
+      for (int monthIndex in sortedMonthIndices) {
+        List<double> values = monthlyData[monthIndex]!;
+
+        // Calculate average (0 if no data for the month)
+        double averagePercent = 0.0;
+        if (values.isNotEmpty) {
+          double sum = values.reduce((a, b) => a + b);
+          double average = sum / values.length;
+          averagePercent = average * 100;
+        }
+
+        claims_spots2.add(FlSpot(monthIndex.toDouble(), averagePercent));
+        salesSpots.add(FlSpot(monthIndex.toDouble(), averagePercent));
+        claims_maxY2 = max(averagePercent.round(), claims_maxY2);
+
+        // print("spot added for month $monthIndex: $averagePercent (${values.length} values)");
+      }
+
+      claimsValue.value++;
 
       setState(() {
         claims_spots2a = salesSpots;
-        print(claims_spots2a);
+        print("Final spots: $claims_spots2a");
       });
     } catch (exception) {
-      //print("Error: $exception");
-      // print("Stack Trace: $exception");
+      print("Error in getClaimsGraphData: $exception");
     }
   }
 }

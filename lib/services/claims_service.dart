@@ -21,7 +21,8 @@ Future<void> getClaimsReport(
   int selectedButton1,
   BuildContext context,
 ) async {
-  String baseUrl = "${Constants.analitixAppBaseUrl}sales/get_claims_data/";
+  String baseUrl =
+      "${Constants.analitixAppBaseUrl}sales/view_normalized_claims_data/";
 
   if (Constants.myUserRoleLevel.toLowerCase() == "tester") {
     baseUrl = "${Constants.analitixAppBaseUrl}sales/get_claims_data_test/";
@@ -31,11 +32,11 @@ Future<void> getClaimsReport(
     Map<String, String>? payload = {
       "client_id": Constants.cec_client_id.toString(),
       // "client_id": Constants.cec_client_id.toString(),
-      "start_date": "2025-08-01",
+      "start_date": date_from,
       "end_date": date_to,
     };
     if (kDebugMode) {
-      print("baseUrl_claims $baseUrl ${selectedButton1}");
+      print("baseUrl_claims $baseUrl ${selectedButton1} $payload");
     }
     List<Map<String, dynamic>> sales = [];
     isLoadingClaimsData = true;
@@ -450,8 +451,7 @@ Future<void> getClaimsReport(
             Constants.claims_maxY5a = 0;
             if (jsonResponse["claims_ratio_dict"] != null) {
               if (jsonResponse["claims_ratio_dict"][formattedDate] != null) {
-                Constants.claims_ratio1a =
-                    double.parse(
+                Constants.claims_ratio1a = double.parse(
                       (jsonResponse["claims_ratio_dict"][formattedDate])
                           .toStringAsFixed(2),
                     ) *
@@ -642,8 +642,7 @@ Future<void> getClaimsReport(
 
             int indexbar1 = 0;
             predefinedCategories.forEach((category, value) {
-              final color =
-                  categoryColors[category] ??
+              final color = categoryColors[category] ??
                   Colors.lightBlueAccent; // Fallback color
               final barGroup = BarChartGroupData(
                 x: indexbar1,
@@ -835,8 +834,9 @@ Future<void> getClaimsReport(
               ),
               claims_sections_gridmodel("After 12 Hours", ("0").toString()),
             ];
+            print("claims_by_type for 12 months: ${jsonResponse["claims_by_type"]}");
             Constants.claims_droupedChartData2 = processDataForClaimsGroups1(
-              jsonResponse["claims_by_type"] ?? [],
+              jsonResponse["claims_by_type"] ?? {},
             );
             print("dgjhsd2 ${Constants.claims_droupedChartData2}");
             claimsValue.value++;
@@ -905,8 +905,7 @@ Future<void> getClaimsReport(
             String formattedDate =
                 "${thisMonth.year}-${thisMonth.month.toString().padLeft(2, '0')}-01";
 
-            Constants.claims_ratio3a =
-                double.parse(
+            Constants.claims_ratio3a = double.parse(
                   (jsonResponse["claims_ratio_dict"][formattedDate])
                       .toStringAsFixed(2),
                 ) *
@@ -935,8 +934,7 @@ Future<void> getClaimsReport(
 
             int indexbar1 = 0;
             predefinedCategories.forEach((category, value) {
-              final color =
-                  categoryColors[category] ??
+              final color = categoryColors[category] ??
                   Colors.lightBlueAccent; // Fallback color
               final barGroup = BarChartGroupData(
                 x: indexbar1,
@@ -1157,8 +1155,7 @@ Future<void> getClaimsReport(
 
             int indexbar1 = 0;
             predefinedCategories.forEach((category, value) {
-              final color =
-                  categoryColors[category] ??
+              final color = categoryColors[category] ??
                   Colors.lightBlueAccent; // Fallback color
               final barGroup = BarChartGroupData(
                 x: indexbar1,
@@ -1487,9 +1484,8 @@ List<ClaimStageCategory> processDataForClaimsGroups1(
   claims_by_type.forEach((type, count) {
     String mainCat = status_to_main_cat[type] ?? "Other";
     // Ensure count is treated as an int
-    int countAsInt = (count is int)
-        ? count
-        : int.tryParse(count.toString()) ?? 0;
+    int countAsInt =
+        (count is int) ? count : int.tryParse(count.toString()) ?? 0;
     reorganized[mainCat]![type] = countAsInt;
   });
 

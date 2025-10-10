@@ -248,8 +248,6 @@ class _MarketingReportState extends State<MarketingReport>
   void _animateButton10(int buttonNumber) {
     restartInactivityTimer();
 
-    setState(() {});
-
     time_index = buttonNumber;
     if (buttonNumber == 0) {
       _sliderPosition10 = 0.0;
@@ -259,8 +257,8 @@ class _MarketingReportState extends State<MarketingReport>
       if (days_difference < 31) {
         _sliderPosition10 = 2 * (MediaQuery.of(context).size.width / 3) - 32;
       }
-      setState(() {});
     }
+    setState(() {});
   }
 
   void _marketing_main_animateButton(int buttonNumber) {
@@ -464,6 +462,8 @@ class _MarketingReportState extends State<MarketingReport>
                                             setState(() {
                                               endDate = end;
                                               startDate = start;
+                                              // Store end date for month dropdown in Payments page
+                                              Constants.selectedEndDate = end;
                                               // Set loading states for circular progress indicators
                                               isLoadingMarketingData = true;
 
@@ -641,6 +641,8 @@ class _MarketingReportState extends State<MarketingReport>
                                                     setState(() {
                                                       endDate = end;
                                                       startDate = start;
+                                                      // Store end date for month dropdown in Payments page
+                                                      Constants.selectedEndDate = end;
                                                       // Set loading states for circular progress indicators
                                                       isLoadingMarketingData =
                                                           true;
@@ -1486,9 +1488,11 @@ class _MarketingReportState extends State<MarketingReport>
                                       barRadius: ui.Radius.circular(12),
                                       //linearStrokeCap: LinearStrokeCap.roundAll,
                                       progressColor:
-                                          sectionsListPercentages[0] < 1
+                                          sectionsListPercentages[0] < 0.5
                                               ? Colors.red
-                                              : Colors.green,
+                                              : sectionsListPercentages[0] < 0.8
+                                                  ? Colors.amber
+                                                  : Colors.green,
                                     ),
                                   ),
                                   SizedBox(height: 16),
@@ -4355,9 +4359,13 @@ class _MarketingReportState extends State<MarketingReport>
                                             )),
                                         barRadius: ui.Radius.circular(12),
                                         //linearStrokeCap: LinearStrokeCap.roundAll,
-                                        progressColor: variance_percentage < 1
-                                            ? Colors.red
-                                            : Colors.green,
+                                        progressColor:
+                                            actual_variance_percentage < 0.5
+                                                ? Colors.red
+                                                : actual_variance_percentage <
+                                                        0.8
+                                                    ? Colors.amber
+                                                    : Colors.green,
                                       ),
                                     ),
                                     SizedBox(height: 16),
@@ -6760,9 +6768,22 @@ class _MarketingReportState extends State<MarketingReport>
                                                       : Constants
                                                               .quoteAcceptance_rate[
                                                           2]) <
-                                              0.4
+                                              0.5
                                           ? Colors.red
-                                          : Colors.green,
+                                          : (_selectedButton == 1
+                                                      ? Constants
+                                                              .quoteAcceptance_rate[
+                                                          0]
+                                                      : _selectedButton == 2
+                                                          ? Constants
+                                                                  .quoteAcceptance_rate[
+                                                              1]
+                                                          : Constants
+                                                                  .quoteAcceptance_rate[
+                                                              2]) <
+                                                  0.8
+                                              ? Colors.amber
+                                              : Colors.green,
                                     ),
                                   ),
                                   SizedBox(height: 24),
@@ -6956,6 +6977,7 @@ class _MarketingReportState extends State<MarketingReport>
                                   SizedBox(
                                     height: 4,
                                   ),
+
                                   time_index == 0
                                       ? Padding(
                                           padding:
@@ -6963,137 +6985,120 @@ class _MarketingReportState extends State<MarketingReport>
                                           child: Container(
                                               height: 280,
                                               child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 8.0,
-                                                          bottom: 8,
-                                                          left: 16.0,
-                                                          right: 16),
+                                                  padding: const EdgeInsets.only(
+                                                      top: 8.0,
+                                                      bottom: 8,
+                                                      left: 16.0,
+                                                      right: 16),
                                                   child: CustomCard(
                                                       elevation: 6,
                                                       color: Colors.white,
                                                       surfaceTintColor:
                                                           Colors.white,
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          16)),
+                                                      shape: RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                  16)),
                                                       child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  left: 14.0,
-                                                                  right: 14,
-                                                                  top: 20,
-                                                                  bottom: 14),
-                                                          child: isLoadingMarketingData ==
-                                                                  true
-                                                              ? Center(
-                                                                  child: Center(
-                                                                  child:
-                                                                      Padding(
-                                                                    padding:
-                                                                        const EdgeInsets
-                                                                            .all(
-                                                                            8.0),
-                                                                    child:
-                                                                        Container(
-                                                                      width: 18,
-                                                                      height:
-                                                                          18,
+                                                          padding: const EdgeInsets.only(
+                                                              left: 14.0,
+                                                              right: 14,
+                                                              top: 20,
+                                                              bottom: 14),
+                                                          child:
+                                                              isLoadingMarketingData ==
+                                                                      true
+                                                                  ? Center(
                                                                       child:
-                                                                          CircularProgressIndicator(
-                                                                        color: Constants
-                                                                            .ctaColorLight,
-                                                                        strokeWidth:
-                                                                            1.8,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ))
-                                                              : LayoutBuilder(
-                                                                  builder: (context,
-                                                                      constraints) {
-                                                                  if ((_selectedButton == 1 && Constants.leads_spots1a.length < 1) ||
-                                                                      (_selectedButton ==
-                                                                              2 &&
-                                                                          Constants.leads_spots2a.length <
-                                                                              1) ||
-                                                                      (_selectedButton ==
-                                                                              3 &&
-                                                                          Constants.leads_spots3a.length <
-                                                                              1)) {
-                                                                    return Center(
+                                                                          Center(
                                                                       child:
                                                                           Padding(
                                                                         padding: const EdgeInsets
-                                                                            .only(
-                                                                            bottom:
-                                                                                12.0),
+                                                                            .all(
+                                                                            8.0),
                                                                         child:
-                                                                            Text(
-                                                                          "No data available for the selected range",
-                                                                          style:
-                                                                              TextStyle(
-                                                                            fontSize:
-                                                                                13,
-                                                                            fontWeight:
-                                                                                FontWeight.normal,
+                                                                            Container(
+                                                                          width:
+                                                                              18,
+                                                                          height:
+                                                                              18,
+                                                                          child:
+                                                                              CircularProgressIndicator(
                                                                             color:
-                                                                                Colors.grey,
+                                                                                Constants.ctaColorLight,
+                                                                            strokeWidth:
+                                                                                1.8,
                                                                           ),
                                                                         ),
                                                                       ),
-                                                                    );
-                                                                  } else {
-                                                                    return Column(
-                                                                      children: [
-                                                                        Expanded(
+                                                                    ))
+                                                                  : LayoutBuilder(builder: (context, constraints) {
+                                                                      if ((_selectedButton == 1 && Constants.leads_spots1a.length < 1) ||
+                                                                          (_selectedButton == 2 &&
+                                                                              Constants.leads_spots2a.length <
+                                                                                  1) ||
+                                                                          (_selectedButton == 3 &&
+                                                                              Constants.leads_spots3a.length < 1)) {
+                                                                        return Center(
                                                                           child:
                                                                               Padding(
                                                                             padding:
-                                                                                const EdgeInsets.only(top: 12.0),
+                                                                                const EdgeInsets.only(bottom: 12.0),
                                                                             child:
-                                                                                LineChart(
-                                                                              key: Constants.leads_chartKey1b,
-                                                                              LineChartData(
-                                                                                lineBarsData: [
-                                                                                  LineChartBarData(
-                                                                                    spots: _selectedButton == 1
-                                                                                        ? Constants.leads_spots1a
-                                                                                        : _selectedButton == 2
-                                                                                            ? Constants.leads_spots2a
-                                                                                            : Constants.leads_spots3a,
-                                                                                    isCurved: true,
-                                                                                    preventCurveOverShooting: true,
-                                                                                    barWidth: 3,
-                                                                                    color: Colors.green,
-                                                                                    dotData: FlDotData(
-                                                                                      show: true,
-                                                                                      getDotPainter: (spot, percent, barData, index) {
-                                                                                        return CustomDotPainter(
-                                                                                          dotColor: Constants.ftaColorLight,
-                                                                                          dotSize: 6,
-                                                                                        );
-                                                                                      },
-                                                                                    ),
-                                                                                  ),
-                                                                                  LineChartBarData(
-                                                                                    spots: _selectedButton == 1
-                                                                                        ? Constants.leads_spots1b
-                                                                                        : _selectedButton == 2
-                                                                                            ? Constants.leads_spots2b
-                                                                                            : Constants.leads_spots3b,
-                                                                                    preventCurveOverShooting: true,
-                                                                                    isCurved: true,
-                                                                                    barWidth: 3,
-                                                                                    color: Colors.grey,
-                                                                                    dotData: FlDotData(
-                                                                                      show: false,
-                                                                                      getDotPainter: (spot, percent, barData, index) {
-                                                                                        /*        return FlDotCirclePainter(
+                                                                                Text(
+                                                                              "No data available for the selected range",
+                                                                              style: TextStyle(
+                                                                                fontSize: 13,
+                                                                                fontWeight: FontWeight.normal,
+                                                                                color: Colors.grey,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        );
+                                                                      } else {
+                                                                        return Column(
+                                                                          children: [
+                                                                            Expanded(
+                                                                              child: Padding(
+                                                                                padding: const EdgeInsets.only(top: 12.0),
+                                                                                child: LineChart(
+                                                                                  key: Constants.leads_chartKey1b,
+                                                                                  LineChartData(
+                                                                                    lineBarsData: [
+                                                                                      LineChartBarData(
+                                                                                        spots: _selectedButton == 1
+                                                                                            ? Constants.leads_spots1a
+                                                                                            : _selectedButton == 2
+                                                                                                ? Constants.leads_spots2a
+                                                                                                : Constants.leads_spots3a,
+                                                                                        isCurved: true,
+                                                                                        preventCurveOverShooting: true,
+                                                                                        barWidth: 3,
+                                                                                        color: Colors.green,
+                                                                                        dotData: FlDotData(
+                                                                                          show: true,
+                                                                                          getDotPainter: (spot, percent, barData, index) {
+                                                                                            return CustomDotPainter(
+                                                                                              dotColor: Constants.ftaColorLight,
+                                                                                              dotSize: 6,
+                                                                                            );
+                                                                                          },
+                                                                                        ),
+                                                                                      ),
+                                                                                      LineChartBarData(
+                                                                                        spots: _selectedButton == 1
+                                                                                            ? Constants.leads_spots1b
+                                                                                            : _selectedButton == 2
+                                                                                                ? Constants.leads_spots2b
+                                                                                                : Constants.leads_spots3b,
+                                                                                        preventCurveOverShooting: true,
+                                                                                        isCurved: true,
+                                                                                        barWidth: 3,
+                                                                                        color: Colors.grey,
+                                                                                        dotData: FlDotData(
+                                                                                          show: false,
+                                                                                          getDotPainter: (spot, percent, barData, index) {
+                                                                                            /*        return FlDotCirclePainter(
                                                                               strokeWidth:
                                                                                   1,
                                                                               radius: 2,
@@ -7102,139 +7107,139 @@ class _MarketingReportState extends State<MarketingReport>
                                                                               strokeColor:
                                                                                   Colors
                                                                                       .green);*/
-                                                                                        return CustomDotPainter(
-                                                                                          dotColor: Constants.ftaColorLight,
-                                                                                          dotSize: 6,
-                                                                                        );
-                                                                                      },
-                                                                                    ),
-                                                                                  ),
-                                                                                ],
-                                                                                lineTouchData: LineTouchData(
-                                                                                    enabled: true,
-                                                                                    touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {
-                                                                                      // TODO : Utilize touch event here to perform any operation
-                                                                                    },
-                                                                                    touchTooltipData: LineTouchTooltipData(
-                                                                                      getTooltipColor: (value) {
-                                                                                        return Colors.blueGrey;
-                                                                                      },
-                                                                                      tooltipRoundedRadius: 20.0,
-                                                                                      showOnTopOfTheChartBoxArea: false,
-                                                                                      fitInsideHorizontally: true,
-                                                                                      tooltipMargin: 0,
-                                                                                      getTooltipItems: (touchedSpots) {
-                                                                                        return touchedSpots.map(
-                                                                                          (LineBarSpot touchedSpot) {
-                                                                                            const textStyle = TextStyle(
-                                                                                              fontSize: 10,
-                                                                                              fontWeight: FontWeight.w700,
-                                                                                              color: Colors.white70,
-                                                                                            );
-                                                                                            return LineTooltipItem(
-                                                                                              touchedSpot.y.round().toString(),
-                                                                                              textStyle,
+                                                                                            return CustomDotPainter(
+                                                                                              dotColor: Constants.ftaColorLight,
+                                                                                              dotSize: 6,
                                                                                             );
                                                                                           },
-                                                                                        ).toList();
-                                                                                      },
-                                                                                    ),
-                                                                                    getTouchedSpotIndicator: (LineChartBarData barData, List<int> indicators) {
-                                                                                      return indicators.map(
-                                                                                        (int index) {
-                                                                                          final line = FlLine(color: Colors.grey, strokeWidth: 1, dashArray: [2, 4]);
-                                                                                          return TouchedSpotIndicatorData(
-                                                                                            line,
-                                                                                            FlDotData(show: false),
-                                                                                          );
-                                                                                        },
-                                                                                      ).toList();
-                                                                                    },
-                                                                                    getTouchLineEnd: (_, __) => double.infinity),
-                                                                                gridData: FlGridData(
-                                                                                  show: true,
-                                                                                  drawVerticalLine: false,
-                                                                                  getDrawingHorizontalLine: (value) {
-                                                                                    return FlLine(
-                                                                                      color: Colors.grey.withOpacity(0.10),
-                                                                                      strokeWidth: 1,
-                                                                                    );
-                                                                                  },
-                                                                                  getDrawingVerticalLine: (value) {
-                                                                                    return FlLine(
-                                                                                      color: Colors.grey,
-                                                                                      strokeWidth: 1,
-                                                                                    );
-                                                                                  },
-                                                                                ),
-                                                                                titlesData: FlTitlesData(
-                                                                                  bottomTitles: AxisTitles(
-                                                                                      sideTitles: SideTitles(
-                                                                                        showTitles: true,
-                                                                                        interval: 1, // Show all hours to allow custom time labels
-                                                                                        getTitlesWidget: (value, meta) {
-                                                                                          String getTimeLabel(int hour) {
-                                                                                            switch (hour) {
-                                                                                              case 3:
-                                                                                                return '3am';
-                                                                                              case 6:
-                                                                                                return '6am';
-                                                                                              case 9:
-                                                                                                return '9am';
-                                                                                              case 12:
-                                                                                                return '12pm';
-                                                                                              case 15:
-                                                                                                return '3pm';
-                                                                                              case 18:
-                                                                                                return '6pm';
-
-                                                                                              case 21:
-                                                                                                return '9pm';
-                                                                                              default:
-                                                                                                return '';
-                                                                                            }
-                                                                                          }
-
-                                                                                          return Padding(
-                                                                                            padding: const EdgeInsets.all(0.0),
-                                                                                            child: Text(
-                                                                                              getTimeLabel(value.toInt()),
-                                                                                              style: TextStyle(fontSize: 7),
-                                                                                            ),
-                                                                                          );
-                                                                                        },
+                                                                                        ),
                                                                                       ),
-                                                                                      axisNameSize: 35,
-                                                                                      axisNameWidget: HourlyLeadsOverviewTypeGrid()),
-                                                                                  topTitles: AxisTitles(
-                                                                                    sideTitles: SideTitles(
-                                                                                      showTitles: false,
-                                                                                      getTitlesWidget: (value, meta) {
-                                                                                        return Text(value.toInt().toString());
+                                                                                    ],
+                                                                                    lineTouchData: LineTouchData(
+                                                                                        enabled: true,
+                                                                                        touchCallback: (FlTouchEvent event, LineTouchResponse? touchResponse) {
+                                                                                          // TODO : Utilize touch event here to perform any operation
+                                                                                        },
+                                                                                        touchTooltipData: LineTouchTooltipData(
+                                                                                          getTooltipColor: (value) {
+                                                                                            return Colors.blueGrey;
+                                                                                          },
+                                                                                          tooltipRoundedRadius: 20.0,
+                                                                                          showOnTopOfTheChartBoxArea: false,
+                                                                                          fitInsideHorizontally: true,
+                                                                                          tooltipMargin: 0,
+                                                                                          getTooltipItems: (touchedSpots) {
+                                                                                            return touchedSpots.map(
+                                                                                              (LineBarSpot touchedSpot) {
+                                                                                                const textStyle = TextStyle(
+                                                                                                  fontSize: 10,
+                                                                                                  fontWeight: FontWeight.w700,
+                                                                                                  color: Colors.white70,
+                                                                                                );
+                                                                                                return LineTooltipItem(
+                                                                                                  touchedSpot.y.round().toString(),
+                                                                                                  textStyle,
+                                                                                                );
+                                                                                              },
+                                                                                            ).toList();
+                                                                                          },
+                                                                                        ),
+                                                                                        getTouchedSpotIndicator: (LineChartBarData barData, List<int> indicators) {
+                                                                                          return indicators.map(
+                                                                                            (int index) {
+                                                                                              final line = FlLine(color: Colors.grey, strokeWidth: 1, dashArray: [2, 4]);
+                                                                                              return TouchedSpotIndicatorData(
+                                                                                                line,
+                                                                                                FlDotData(show: false),
+                                                                                              );
+                                                                                            },
+                                                                                          ).toList();
+                                                                                        },
+                                                                                        getTouchLineEnd: (_, __) => double.infinity),
+                                                                                    gridData: FlGridData(
+                                                                                      show: true,
+                                                                                      drawVerticalLine: false,
+                                                                                      getDrawingHorizontalLine: (value) {
+                                                                                        return FlLine(
+                                                                                          color: Colors.grey.withOpacity(0.10),
+                                                                                          strokeWidth: 1,
+                                                                                        );
                                                                                       },
-                                                                                    ),
-                                                                                  ),
-                                                                                  rightTitles: AxisTitles(
-                                                                                    sideTitles: SideTitles(
-                                                                                      showTitles: true,
-                                                                                      reservedSize: 20,
-                                                                                      getTitlesWidget: (value, meta) {
-                                                                                        return Container();
-                                                                                      },
-                                                                                    ),
-                                                                                  ),
-                                                                                  leftTitles: AxisTitles(
-                                                                                    sideTitles: SideTitles(
-                                                                                      showTitles: true,
-                                                                                      reservedSize: 35,
-                                                                                      getTitlesWidget: (value, meta) {
-                                                                                        return Text(
-                                                                                          formatLargeNumber3(value.toInt().toString()),
-                                                                                          style: const TextStyle(fontSize: 7.5),
+                                                                                      getDrawingVerticalLine: (value) {
+                                                                                        return FlLine(
+                                                                                          color: Colors.grey,
+                                                                                          strokeWidth: 1,
                                                                                         );
                                                                                       },
                                                                                     ),
-                                                                                    /*axisNameWidget: Padding(
+                                                                                    titlesData: FlTitlesData(
+                                                                                      bottomTitles: AxisTitles(
+                                                                                          sideTitles: SideTitles(
+                                                                                            showTitles: true,
+                                                                                            interval: 1, // Show all hours to allow custom time labels
+                                                                                            getTitlesWidget: (value, meta) {
+                                                                                              String getTimeLabel(int hour) {
+                                                                                                switch (hour) {
+                                                                                                  case 3:
+                                                                                                    return '3am';
+                                                                                                  case 6:
+                                                                                                    return '6am';
+                                                                                                  case 9:
+                                                                                                    return '9am';
+                                                                                                  case 12:
+                                                                                                    return '12pm';
+                                                                                                  case 15:
+                                                                                                    return '3pm';
+                                                                                                  case 18:
+                                                                                                    return '6pm';
+
+                                                                                                  case 21:
+                                                                                                    return '9pm';
+                                                                                                  default:
+                                                                                                    return '';
+                                                                                                }
+                                                                                              }
+
+                                                                                              return Padding(
+                                                                                                padding: const EdgeInsets.all(0.0),
+                                                                                                child: Text(
+                                                                                                  getTimeLabel(value.toInt()),
+                                                                                                  style: TextStyle(fontSize: 7),
+                                                                                                ),
+                                                                                              );
+                                                                                            },
+                                                                                          ),
+                                                                                          axisNameSize: 35,
+                                                                                          axisNameWidget: HourlyLeadsOverviewTypeGrid()),
+                                                                                      topTitles: AxisTitles(
+                                                                                        sideTitles: SideTitles(
+                                                                                          showTitles: false,
+                                                                                          getTitlesWidget: (value, meta) {
+                                                                                            return Text(value.toInt().toString());
+                                                                                          },
+                                                                                        ),
+                                                                                      ),
+                                                                                      rightTitles: AxisTitles(
+                                                                                        sideTitles: SideTitles(
+                                                                                          showTitles: true,
+                                                                                          reservedSize: 20,
+                                                                                          getTitlesWidget: (value, meta) {
+                                                                                            return Container();
+                                                                                          },
+                                                                                        ),
+                                                                                      ),
+                                                                                      leftTitles: AxisTitles(
+                                                                                        sideTitles: SideTitles(
+                                                                                          showTitles: true,
+                                                                                          reservedSize: 35,
+                                                                                          getTitlesWidget: (value, meta) {
+                                                                                            return Text(
+                                                                                              formatLargeNumber3(value.toInt().toString()),
+                                                                                              style: const TextStyle(fontSize: 7.5),
+                                                                                            );
+                                                                                          },
+                                                                                        ),
+                                                                                        /*axisNameWidget: Padding(
                                                                         padding:
                                                                             const EdgeInsets.only(top: 0.0),
                                                                         child: Text(
@@ -7245,88 +7250,88 @@ class _MarketingReportState extends State<MarketingReport>
                                                                               color: Colors.black),
                                                                         ),
                                                                       ),*/
-                                                                                  ),
-                                                                                ),
-                                                                                minY: 0,
-                                                                                minX: 3,
-                                                                                maxX: 22,
-                                                                                maxY: () {
-                                                                                  List<FlSpot> allSpots = [];
-                                                                                  allSpots.addAll(_selectedButton == 1
-                                                                                      ? Constants.leads_spots1a
-                                                                                      : _selectedButton == 2
-                                                                                          ? Constants.leads_spots2a
-                                                                                          : Constants.leads_spots3a);
-                                                                                  allSpots.addAll(_selectedButton == 1
-                                                                                      ? Constants.leads_spots1b
-                                                                                      : _selectedButton == 2
-                                                                                          ? Constants.leads_spots2b
-                                                                                          : Constants.leads_spots3b);
-                                                                                  if (allSpots.isEmpty) return 10.0;
-                                                                                  double maxYValue = allSpots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b).toDouble();
-                                                                                  return maxYValue * 1.2; // Add 10% padding
-                                                                                }(),
-                                                                                borderData: FlBorderData(
-                                                                                  show: true,
-                                                                                  border: Border(
-                                                                                    left: BorderSide.none,
-                                                                                    bottom: BorderSide(
-                                                                                      color: Colors.grey.withOpacity(0.35),
-                                                                                      width: 1,
+                                                                                      ),
                                                                                     ),
-                                                                                    right: BorderSide.none,
-                                                                                    top: BorderSide.none,
+                                                                                    minY: 0,
+                                                                                    minX: 3,
+                                                                                    maxX: 22,
+                                                                                    maxY: () {
+                                                                                      List<FlSpot> allSpots = [];
+                                                                                      allSpots.addAll(_selectedButton == 1
+                                                                                          ? Constants.leads_spots1a
+                                                                                          : _selectedButton == 2
+                                                                                              ? Constants.leads_spots2a
+                                                                                              : Constants.leads_spots3a);
+                                                                                      allSpots.addAll(_selectedButton == 1
+                                                                                          ? Constants.leads_spots1b
+                                                                                          : _selectedButton == 2
+                                                                                              ? Constants.leads_spots2b
+                                                                                              : Constants.leads_spots3b);
+                                                                                      if (allSpots.isEmpty) return 10.0;
+                                                                                      double maxYValue = allSpots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b).toDouble();
+                                                                                      return maxYValue * 1.2; // Add 10% padding
+                                                                                    }(),
+                                                                                    borderData: FlBorderData(
+                                                                                      show: true,
+                                                                                      border: Border(
+                                                                                        left: BorderSide.none,
+                                                                                        bottom: BorderSide(
+                                                                                          color: Colors.grey.withOpacity(0.35),
+                                                                                          width: 1,
+                                                                                        ),
+                                                                                        right: BorderSide.none,
+                                                                                        top: BorderSide.none,
+                                                                                      ),
+                                                                                    ),
                                                                                   ),
                                                                                 ),
                                                                               ),
                                                                             ),
-                                                                          ),
-                                                                        ),
-                                                                        Padding(
-                                                                          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                                                                          child: Row(
-                                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                                            children: [
-                                                                              Container(
-                                                                                width: 12,
-                                                                                height: 12,
-                                                                                decoration: BoxDecoration(
-                                                                                  color: Colors.green,
-                                                                                  shape: BoxShape.circle,
-                                                                                ),
+                                                                            Padding(
+                                                                              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                                                                              child: Row(
+                                                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                                                children: [
+                                                                                  Container(
+                                                                                    width: 12,
+                                                                                    height: 12,
+                                                                                    decoration: BoxDecoration(
+                                                                                      color: Colors.green,
+                                                                                      shape: BoxShape.circle,
+                                                                                    ),
+                                                                                  ),
+                                                                                  SizedBox(width: 6),
+                                                                                  Text(
+                                                                                    'Submitted',
+                                                                                    style: TextStyle(
+                                                                                      fontSize: 12,
+                                                                                      color: Colors.grey[700],
+                                                                                    ),
+                                                                                  ),
+                                                                                  SizedBox(width: 16),
+                                                                                  Container(
+                                                                                    width: 12,
+                                                                                    height: 12,
+                                                                                    decoration: BoxDecoration(
+                                                                                      color: Colors.grey,
+                                                                                      shape: BoxShape.circle,
+                                                                                    ),
+                                                                                  ),
+                                                                                  SizedBox(width: 6),
+                                                                                  Text(
+                                                                                    'Completed',
+                                                                                    style: TextStyle(
+                                                                                      fontSize: 12,
+                                                                                      color: Colors.grey[700],
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
                                                                               ),
-                                                                              SizedBox(width: 6),
-                                                                              Text(
-                                                                                'Submitted',
-                                                                                style: TextStyle(
-                                                                                  fontSize: 12,
-                                                                                  color: Colors.grey[700],
-                                                                                ),
-                                                                              ),
-                                                                              SizedBox(width: 16),
-                                                                              Container(
-                                                                                width: 12,
-                                                                                height: 12,
-                                                                                decoration: BoxDecoration(
-                                                                                  color: Colors.grey,
-                                                                                  shape: BoxShape.circle,
-                                                                                ),
-                                                                              ),
-                                                                              SizedBox(width: 6),
-                                                                              Text(
-                                                                                'Completed',
-                                                                                style: TextStyle(
-                                                                                  fontSize: 12,
-                                                                                  color: Colors.grey[700],
-                                                                                ),
-                                                                              ),
-                                                                            ],
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    );
-                                                                  }
-                                                                }))))))
+                                                                            ),
+                                                                          ],
+                                                                        );
+                                                                      }
+                                                                    }))))))
                                       : (isLoadingMarketingData == true)
                                           ? Padding(
                                               padding: const EdgeInsets.only(
@@ -7380,21 +7385,12 @@ class _MarketingReportState extends State<MarketingReport>
                                                                   Colors.white,
                                                               shape: RoundedRectangleBorder(
                                                                   borderRadius:
-                                                                      BorderRadius.circular(
-                                                                          16)),
+                                                                      BorderRadius.circular(16)),
                                                               child: Padding(
-                                                                  padding: const EdgeInsets.only(
-                                                                      left:
-                                                                          14.0,
-                                                                      right: 14,
-                                                                      top: 20,
-                                                                      bottom:
-                                                                          14),
-                                                                  child: isLoadingMarketingData ==
-                                                                          true
+                                                                  padding: const EdgeInsets.only(left: 14.0, right: 14, top: 20, bottom: 14),
+                                                                  child: isLoadingMarketingData == true
                                                                       ? Center(
-                                                                          child:
-                                                                              Center(
+                                                                          child: Center(
                                                                           child:
                                                                               Padding(
                                                                             padding:
@@ -7678,6 +7674,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                               } else
                                                                                 return Column(
                                                                                   children: [
+                                                                                    // Text(Constants.d_leads_spots2a.length.toString()),
                                                                                     Expanded(
                                                                                       child: Padding(
                                                                                         padding: const EdgeInsets.only(top: 12.0),
@@ -7855,8 +7852,8 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                             maxX: 31,
                                                                                             maxY: () {
                                                                                               List<FlSpot> allSpots = [];
-                                                                                              allSpots.addAll(Constants.d_leads_spots3a);
-                                                                                              allSpots.addAll(Constants.d_leads_spots3b);
+                                                                                              allSpots.addAll(Constants.d_leads_spots2a);
+                                                                                              allSpots.addAll(Constants.d_leads_spots2b);
                                                                                               if (allSpots.isEmpty) return 10.0;
                                                                                               double maxYValue = allSpots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b).toDouble();
                                                                                               return maxYValue * 1.2; // Add 10% padding
@@ -9048,6 +9045,7 @@ class _MarketingReportState extends State<MarketingReport>
             barChartData4 = processDataForCollectionsCountMonthly4(
                 response.body, formattedStartDate, formattedEndDate, context);
           }
+
           if (_selectedButton == 2) {
             barChartData2 = processDataForCollectionsCountMonthly(
                 m1["result_lista"] ?? [],
@@ -9320,7 +9318,6 @@ class _MarketingReportState extends State<MarketingReport>
         barsSpace: 4,
       ));
     });
-
     return collectionsGroupedData;
   }
 
@@ -9710,7 +9707,7 @@ class _MarketingReportState extends State<MarketingReport>
     int numberOfBars = monthlySales.length;
     double chartWidth = MediaQuery.of(context).size.width;
     double maxBarWidth = 30; // Maximum width of a bar
-    double minBarSpace = 4; // Minimum space between bars
+    double minBarSpace = 12; // Minimum space between bars
 
     double barWidth = min(maxBarWidth, (chartWidth / (2 * numberOfBars)));
     double barsSpace = max(minBarSpace,

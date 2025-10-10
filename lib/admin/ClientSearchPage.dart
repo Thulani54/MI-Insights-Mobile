@@ -26,7 +26,6 @@ class _ClientSearchPageState extends State<ClientSearchPage> {
   List<dynamic> _filteredClients = [];
   bool _isLoading = false;
   String? _error;
-
   @override
   void initState() {
     super.initState();

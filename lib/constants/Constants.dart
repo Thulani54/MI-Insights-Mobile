@@ -42,6 +42,7 @@ class Constants {
   static String selectedClientName = "";
   static String sales_formattedStartDate = "";
   static String sales_formattedEndDate = "";
+  static DateTime? selectedEndDate; // Store the selected end date for month dropdown
   static int appBarValue = 0;
   static int tabIndex = 0;
   static List<String> debitDays =

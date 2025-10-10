@@ -462,7 +462,7 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
           surfaceTintColor: Colors.white,
           shadowColor: Colors.black.withOpacity(0.6),
           title: const Text(
-            "Executive Payments Report",
+            "Collections Report",
             style: TextStyle(
               color: Colors.black,
               fontSize: 18,
@@ -691,9 +691,8 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                             showCustomDateRangePicker(
                                               context,
                                               dismissible: true,
-                                              minimumDate: DateTime.now()
-                                                  .subtract(const Duration(
-                                                      days: 350)),
+                                              minimumDate:
+                                                  DateTime.utc(2023, 06, 01),
                                               maximumDate: DateTime.now()
                                                   .add(Duration(days: 350)),
                                               endDate: null,
@@ -1442,9 +1441,11 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                     )),
                                 barRadius: ui.Radius.circular(12),
                                 //linearStrokeCap: LinearStrokeCap.roundAll,
-                                progressColor: variance_percentage < 1
+                                progressColor: actual_variance_percentage < 0.5
                                     ? Colors.red
-                                    : Colors.green,
+                                    : actual_variance_percentage < 0.8
+                                        ? Colors.amber
+                                        : Colors.green,
                               ),
                             ),
                           ),
@@ -3026,7 +3027,8 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                         ),
                         _selectedButton == 1
                             ? Padding(
-                                padding: const EdgeInsets.only(left: 16.0),
+                                padding:
+                                    const EdgeInsets.only(left: 16.0, top: 6),
                                 child: Text(
                                     "Collections Overview (MTD - ${getMonthAbbreviation(DateTime.now().month)})"),
                               )
@@ -3043,7 +3045,8 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                   ),
 
                         Padding(
-                          padding: const EdgeInsets.only(left: 4, right: 4.0),
+                          padding: const EdgeInsets.only(
+                              left: 4, right: 4.0, top: 8),
                           child: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(12),
@@ -3126,12 +3129,30 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                     .maxWidth /
                                                                 200;
 
+                                                        // Calculate max value from barChartData1
+                                                        double maxValue = 0;
+                                                        for (var group
+                                                            in barChartData1) {
+                                                          for (var rod in group
+                                                              .barRods) {
+                                                            if (rod.toY >
+                                                                maxValue) {
+                                                              maxValue =
+                                                                  rod.toY;
+                                                            }
+                                                          }
+                                                        }
+                                                        double chartMaxY =
+                                                            maxValue * 1.1;
+
                                                         return Padding(
                                                           padding:
                                                               const EdgeInsets
                                                                   .all(8.0),
                                                           child: BarChart(
                                                             BarChartData(
+                                                              minY: 0,
+                                                              maxY: chartMaxY,
                                                               alignment:
                                                                   BarChartAlignment
                                                                       .center,
@@ -3335,162 +3356,187 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                           top: 8.0,
                                                           left: 12,
                                                           right: 12),
-                                                  child: CustomCard(
-                                                    elevation: 6,
-                                                    surfaceTintColor:
-                                                        Colors.white,
-                                                    shape:
-                                                        RoundedRectangleBorder(
+                                                  child: LayoutBuilder(
+                                                    builder:
+                                                        (context, constraints) {
+                                                      final double barsSpace =
+                                                          8.0;
+
+                                                      // Calculate max value from barChartData2
+                                                      double maxValue = 0;
+                                                      for (var group
+                                                          in barChartData2) {
+                                                        for (var rod
+                                                            in group.barRods) {
+                                                          if (rod.toY >
+                                                              maxValue) {
+                                                            maxValue = rod.toY;
+                                                          }
+                                                        }
+                                                      }
+                                                      double chartMaxY =
+                                                          maxValue * 1.1;
+
+                                                      return CustomCard(
+                                                        elevation: 6,
+                                                        surfaceTintColor:
+                                                            Colors.white,
+                                                        shape: RoundedRectangleBorder(
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
                                                                         16)),
-                                                    color: Colors.white,
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: BarChart(
-                                                        BarChartData(
-                                                          alignment:
-                                                              BarChartAlignment
-                                                                  .center,
-                                                          barTouchData:
-                                                              BarTouchData(
-                                                                  enabled:
-                                                                      false),
-                                                          gridData: FlGridData(
-                                                            show: true,
-                                                            drawVerticalLine:
-                                                                false,
-                                                            getDrawingHorizontalLine:
-                                                                (value) {
-                                                              return FlLine(
-                                                                color: Colors
-                                                                    .grey
-                                                                    .withOpacity(
-                                                                        0.10),
-                                                                strokeWidth: 1,
-                                                              );
-                                                            },
-                                                            getDrawingVerticalLine:
-                                                                (value) {
-                                                              return FlLine(
-                                                                color:
-                                                                    Colors.grey,
-                                                                strokeWidth: 1,
-                                                              );
-                                                            },
-                                                          ),
-                                                          titlesData:
-                                                              FlTitlesData(
-                                                            bottomTitles:
-                                                                AxisTitles(
-                                                              sideTitles:
-                                                                  SideTitles(
-                                                                showTitles:
-                                                                    true,
-                                                                interval: 1,
-                                                                getTitlesWidget:
-                                                                    (value,
-                                                                        meta) {
-                                                                  return Padding(
-                                                                    padding:
-                                                                        const EdgeInsets
-                                                                            .all(
-                                                                            0.0),
-                                                                    child: Text(
-                                                                      getMonthAbbreviation(
-                                                                              value.toInt())
-                                                                          .toString(),
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              9.5),
-                                                                    ),
+                                                        color: Colors.white,
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: BarChart(
+                                                            BarChartData(
+                                                              minY: 0,
+                                                              maxY: chartMaxY,
+                                                              alignment:
+                                                                  BarChartAlignment
+                                                                      .center,
+                                                              barTouchData:
+                                                                  BarTouchData(
+                                                                      enabled:
+                                                                          false),
+                                                              gridData:
+                                                                  FlGridData(
+                                                                show: true,
+                                                                drawVerticalLine:
+                                                                    false,
+                                                                getDrawingHorizontalLine:
+                                                                    (value) {
+                                                                  return FlLine(
+                                                                    color: Colors
+                                                                        .grey
+                                                                        .withOpacity(
+                                                                            0.10),
+                                                                    strokeWidth:
+                                                                        1,
+                                                                  );
+                                                                },
+                                                                getDrawingVerticalLine:
+                                                                    (value) {
+                                                                  return FlLine(
+                                                                    color: Colors
+                                                                        .grey,
+                                                                    strokeWidth:
+                                                                        1,
                                                                   );
                                                                 },
                                                               ),
-                                                              axisNameWidget:
-                                                                  Padding(
-                                                                padding:
-                                                                    const EdgeInsets
+                                                              titlesData:
+                                                                  FlTitlesData(
+                                                                bottomTitles:
+                                                                    AxisTitles(
+                                                                  sideTitles:
+                                                                      SideTitles(
+                                                                    showTitles:
+                                                                        true,
+                                                                    interval: 1,
+                                                                    getTitlesWidget:
+                                                                        (value,
+                                                                            meta) {
+                                                                      return Padding(
+                                                                        padding: const EdgeInsets
+                                                                            .all(
+                                                                            0.0),
+                                                                        child:
+                                                                            Text(
+                                                                          getMonthAbbreviation(value.toInt())
+                                                                              .toString(),
+                                                                          style:
+                                                                              TextStyle(fontSize: 9.5),
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                  ),
+                                                                  axisNameWidget:
+                                                                      Padding(
+                                                                    padding: const EdgeInsets
                                                                         .only(
                                                                         top:
                                                                             0.0),
-                                                                child: Text(
-                                                                  'Months of the Year',
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          11,
-                                                                      fontWeight:
-                                                                          FontWeight
+                                                                    child: Text(
+                                                                      'Months of the Year',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              11,
+                                                                          fontWeight: FontWeight
                                                                               .w500,
-                                                                      color: Colors
-                                                                          .black),
+                                                                          color:
+                                                                              Colors.black),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                topTitles:
+                                                                    AxisTitles(
+                                                                  sideTitles:
+                                                                      SideTitles(
+                                                                    showTitles:
+                                                                        true,
+                                                                    reservedSize:
+                                                                        15,
+                                                                    getTitlesWidget:
+                                                                        (value,
+                                                                            meta) {
+                                                                      return Container();
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                                rightTitles:
+                                                                    AxisTitles(
+                                                                  sideTitles:
+                                                                      SideTitles(
+                                                                    showTitles:
+                                                                        true,
+                                                                    reservedSize:
+                                                                        15,
+                                                                    getTitlesWidget:
+                                                                        (value,
+                                                                            meta) {
+                                                                      return Container();
+                                                                    },
+                                                                  ),
+                                                                ),
+                                                                leftTitles:
+                                                                    AxisTitles(
+                                                                  sideTitles:
+                                                                      SideTitles(
+                                                                    showTitles:
+                                                                        true,
+                                                                    reservedSize:
+                                                                        32,
+                                                                    getTitlesWidget:
+                                                                        (value,
+                                                                            meta) {
+                                                                      return Text(
+                                                                        formatLargeNumber4(value
+                                                                            .toInt()
+                                                                            .toString()),
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                7.5),
+                                                                      );
+                                                                    },
+                                                                  ),
                                                                 ),
                                                               ),
-                                                            ),
-                                                            topTitles:
-                                                                AxisTitles(
-                                                              sideTitles:
-                                                                  SideTitles(
-                                                                showTitles:
-                                                                    true,
-                                                                reservedSize:
-                                                                    15,
-                                                                getTitlesWidget:
-                                                                    (value,
-                                                                        meta) {
-                                                                  return Container();
-                                                                },
-                                                              ),
-                                                            ),
-                                                            rightTitles:
-                                                                AxisTitles(
-                                                              sideTitles:
-                                                                  SideTitles(
-                                                                showTitles:
-                                                                    true,
-                                                                reservedSize:
-                                                                    15,
-                                                                getTitlesWidget:
-                                                                    (value,
-                                                                        meta) {
-                                                                  return Container();
-                                                                },
-                                                              ),
-                                                            ),
-                                                            leftTitles:
-                                                                AxisTitles(
-                                                              sideTitles:
-                                                                  SideTitles(
-                                                                showTitles:
-                                                                    true,
-                                                                reservedSize:
-                                                                    32,
-                                                                getTitlesWidget:
-                                                                    (value,
-                                                                        meta) {
-                                                                  return Text(
-                                                                    formatLargeNumber4(value
-                                                                        .toInt()
-                                                                        .toString()),
-                                                                    style: TextStyle(
-                                                                        fontSize:
-                                                                            7.5),
-                                                                  );
-                                                                },
-                                                              ),
+                                                              borderData:
+                                                                  FlBorderData(
+                                                                      show:
+                                                                          false),
+                                                              groupsSpace: 15,
+                                                              barGroups:
+                                                                  barChartData2,
                                                             ),
                                                           ),
-                                                          borderData:
-                                                              FlBorderData(
-                                                                  show: false),
-                                                          barGroups:
-                                                              barChartData2,
                                                         ),
-                                                      ),
-                                                    ),
+                                                      );
+                                                    },
                                                   ),
                                                 )
                                           : _selectedButton == 3 &&
@@ -3578,6 +3624,27 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                             .maxWidth /
                                                                         200;
 
+                                                                // Calculate max value from barChartData3
+                                                                double
+                                                                    maxValue =
+                                                                    0;
+                                                                for (var group
+                                                                    in barChartData3) {
+                                                                  for (var rod
+                                                                      in group
+                                                                          .barRods) {
+                                                                    if (rod.toY >
+                                                                        maxValue) {
+                                                                      maxValue =
+                                                                          rod.toY;
+                                                                    }
+                                                                  }
+                                                                }
+                                                                double
+                                                                    chartMaxY =
+                                                                    maxValue *
+                                                                        1.1;
+
                                                                 return Padding(
                                                                   padding:
                                                                       const EdgeInsets
@@ -3586,6 +3653,9 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                   child:
                                                                       BarChart(
                                                                     BarChartData(
+                                                                      minY: 0,
+                                                                      maxY:
+                                                                          chartMaxY,
                                                                       alignment:
                                                                           BarChartAlignment
                                                                               .center,
@@ -3793,6 +3863,27 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                             constraints.maxWidth /
                                                                             200;
 
+                                                                    // Calculate max value from barChartData4
+                                                                    double
+                                                                        maxValue =
+                                                                        0;
+                                                                    for (var group
+                                                                        in barChartData4) {
+                                                                      for (var rod
+                                                                          in group
+                                                                              .barRods) {
+                                                                        if (rod.toY >
+                                                                            maxValue) {
+                                                                          maxValue =
+                                                                              rod.toY;
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                    double
+                                                                        chartMaxY =
+                                                                        maxValue *
+                                                                            1.1;
+
                                                                     return Column(
                                                                       children: [
                                                                         Expanded(
@@ -3803,6 +3894,8 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                             child:
                                                                                 BarChart(
                                                                               BarChartData(
+                                                                                minY: 0,
+                                                                                maxY: chartMaxY,
                                                                                 alignment: BarChartAlignment.center,
                                                                                 barTouchData: BarTouchData(enabled: false),
                                                                                 gridData: FlGridData(
@@ -3876,7 +3969,7 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                                   ),
                                                                                 ),
                                                                                 borderData: FlBorderData(show: false),
-                                                                                groupsSpace: barsSpace,
+                                                                                groupsSpace: 15,
                                                                                 barGroups: barChartData4,
                                                                               ),
                                                                             ),
@@ -4129,7 +4222,7 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                 : Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Container(
-                                      height: 400,
+                                      height: 370,
                                       width: MediaQuery.of(context).size.width,
                                       child: Padding(
                                         padding: const EdgeInsets.only(
@@ -4191,12 +4284,12 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                   : Padding(
                                                       padding:
                                                           const EdgeInsets.only(
-                                                              top: 0,
+                                                              top: 8,
                                                               bottom: 8,
                                                               left: 8.0,
                                                               right: 8),
                                                       child: Container(
-                                                        height: 320,
+                                                        height: 300,
                                                         child: PieChart(
                                                           PieChartData(
                                                             centerSpaceRadius:
@@ -4216,12 +4309,12 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                           0]
                                                                       .pecentage,
                                                                   title:
-                                                                      '${Constants.customers_segment_1a[0].pecentage.toStringAsFixed(1)}',
+                                                                      '${Constants.customers_segment_1a[0].pecentage.toStringAsFixed(1)}%',
                                                                   radius: (MediaQuery.of(context)
                                                                               .size
                                                                               .width /
                                                                           2) -
-                                                                      86,
+                                                                      60,
                                                                   titleStyle: TextStyle(
                                                                       fontSize:
                                                                           11,
@@ -4245,12 +4338,12 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                           1]
                                                                       .pecentage,
                                                                   title:
-                                                                      '${Constants.customers_segment_1a[1].pecentage.toStringAsFixed(1)}',
+                                                                      '${Constants.customers_segment_1a[1].pecentage.toStringAsFixed(1)}%',
                                                                   radius: (MediaQuery.of(context)
                                                                               .size
                                                                               .width /
                                                                           2) -
-                                                                      86,
+                                                                      60,
                                                                   titleStyle: TextStyle(
                                                                       fontSize:
                                                                           11,
@@ -4274,12 +4367,12 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                           2]
                                                                       .pecentage,
                                                                   title:
-                                                                      '${Constants.customers_segment_1a[2].pecentage.toStringAsFixed(1)}',
+                                                                      '${Constants.customers_segment_1a[2].pecentage.toStringAsFixed(1)}%',
                                                                   radius: (MediaQuery.of(context)
                                                                               .size
                                                                               .width /
                                                                           2) -
-                                                                      86,
+                                                                      60,
                                                                   titleStyle: TextStyle(
                                                                       fontSize:
                                                                           11,
@@ -4303,12 +4396,12 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                                           3]
                                                                       .pecentage,
                                                                   title:
-                                                                      '${Constants.customers_segment_1a[3].pecentage.toStringAsFixed(1)}',
+                                                                      '${Constants.customers_segment_1a[3].pecentage.toStringAsFixed(1)}%',
                                                                   radius: (MediaQuery.of(context)
                                                                               .size
                                                                               .width /
                                                                           2) -
-                                                                      86,
+                                                                      60,
                                                                   titleStyle: TextStyle(
                                                                       fontSize:
                                                                           11,
@@ -4326,7 +4419,7 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                               Container(
                                                   height: 28,
                                                   child: CollectionsTypeGrid()),
-                                              SizedBox(height: 16),
+                                              SizedBox(height: 0),
                                             ],
                                           ),
                                         ),
@@ -4403,7 +4496,7 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                             ),
                                           )
                                         : Container(
-                                            height: 400,
+                                            height: 300,
                                             child: Padding(
                                               padding: const EdgeInsets.only(
                                                   top: 12.0,
@@ -5160,7 +5253,8 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
                                                       return Padding(
                                                         padding:
                                                             const EdgeInsets
-                                                                .only(top: 8.0),
+                                                                .only(
+                                                                top: 12.0),
                                                         child: Container(
                                                           child: Column(
                                                             children: [
@@ -5975,6 +6069,7 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
           if (kDebugMode) {}
         } else {
           var jsonResponse = jsonDecode(response.body);
+          print("jsonResponse $jsonResponse");
 
           if (jsonResponse["message"] == "list is empty") {
             if (kDebugMode) {
@@ -5988,7 +6083,7 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
 
             if (_selectedButton == 1) {
               barChartData1 =
-                  processDataForCollectionsCountDaily(response.body);
+                  processDataForCollectionsCountDaily(response.body, context);
             }
             if (_selectedButton == 3 && days_difference <= 31) {
               barChartData3 = processDataForCollectionsCountDaily2b(
@@ -5998,6 +6093,7 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
               barChartData4 = processDataForCollectionsCountMonthly4(
                   response.body, date_from, date_to, context);
             }
+
             if (_selectedButton == 2) {
               barChartData2 = processDataForCollectionsCountMonthly(
                   response.body, date_from, date_to, context);
@@ -6069,7 +6165,9 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
 
             int idY = 1;
             maxY5 = 0;
-
+            if (kDebugMode) {
+              print("fdhgghhgjh $baseUrl $payload");
+            }
             // Set collections JSON response based on selected button
             _setCollectionsJsonResponse(jsonResponse);
 
@@ -6203,7 +6301,9 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
 
   // Helper method to set collections JSON response
   void _setCollectionsJsonResponse(Map<String, dynamic> jsonResponse) {
-    Map<String, dynamic> branchesDict = jsonResponse["branches_dict"] ?? {};
+    Map<String, dynamic> branchesDict =
+        jsonResponse["branches_dict_receptionists"] ?? {};
+    print("branchesDict $branchesDict");
 
     if (_selectedButton == 1) {
       collections_jsonResponse1a = branchesDict;
@@ -6223,6 +6323,12 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
   // Helper method to process employee lists
   void _processEmployeeLists(Map<String, dynamic> jsonResponse) {
     List top_employee_list = jsonResponse["top_employee_list"] ?? [];
+    topsalesbyagent = [];
+    bottomsalesbyagent = [];
+    topsalesbycollectionistRates = [];
+    topsalesbyreceptionistRates = [];
+    topsalesbyreceptionist = [];
+    bottomsalesbyreceptionist = [];
     top_employee_list.forEach((element) {
       Map m1 = element as Map;
       String employee = m1["employee"] ?? "";
@@ -6547,8 +6653,8 @@ class _ExecutiveCollectionsReportState extends State<ExecutiveCollectionsReport>
           print(jsonResponse);
 
           based_on_sales = jsonResponse["total_api"] ?? 0;
-          based_on_first_premium_collected =
-              jsonResponse["total_api_by_collection"] ?? 0;
+          based_on_first_premium_collected = double.parse(
+              (jsonResponse["total_api_by_collection"] ?? 0).toString());
 
           actual_api_collected =
               jsonResponse["sum_collected_premiums_policy_year"] ?? 0;
@@ -6787,6 +6893,13 @@ class SalesCollectionAgentWidget extends StatelessWidget {
                 SizedBox(width: 4),
               ],
             ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Container(
+                height: 1,
+                color: Colors.grey.withOpacity(0.10),
+              ),
+            ),
           ],
         ),
       ),
@@ -6801,6 +6914,9 @@ class SalesCollectionAgentWidget extends StatelessWidget {
         return AlertDialog(
           surfaceTintColor: Colors.white,
           backgroundColor: Colors.white,
+          insetPadding: EdgeInsets.symmetric(horizontal: 16.0),
+          contentPadding: EdgeInsets.only(bottom: 16.0, left: 12, right: 12),
+          iconPadding: EdgeInsets.symmetric(horizontal: 0.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -6830,22 +6946,38 @@ class SalesCollectionAgentWidget extends StatelessWidget {
               ),
             ],
           ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildCollectionBreakdownCard(agent),
-                SizedBox(height: 16),
-                _buildPieChart(agent, context),
-                SizedBox(height: 16),
-                Container(
-                  height: 26,
-                  width: MediaQuery.of(context).size.width,
-                  child: CollectionsTypeGrid(),
+          content: Builder(
+            builder: (context) {
+              final hasPieChartData = _buildPieChartSections(agent).isNotEmpty;
+
+              return Container(
+                width: MediaQuery.of(context).size.width,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 1,
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildCollectionBreakdownCard(agent),
+                        if (hasPieChartData) ...[
+                          SizedBox(height: 16),
+                          _buildPieChart(agent, context),
+                          SizedBox(height: 16),
+                          Container(
+                            height: 26,
+                            width: MediaQuery.of(context).size.width,
+                            child: CollectionsTypeGrid(),
+                          ),
+                          SizedBox(height: 8),
+                        ],
+                      ],
+                    ),
+                  ),
                 ),
-                SizedBox(height: 8),
-              ],
-            ),
+              );
+            },
           ),
         );
       },
@@ -7005,13 +7137,20 @@ class SalesCollectionAgentWidget extends StatelessWidget {
   }
 
   Widget _buildPieChart(EmployeeRate agent, BuildContext context) {
+    final sections = _buildPieChartSections(agent);
+
+    // Return empty widget if no data
+    if (sections.isEmpty) {
+      return SizedBox.shrink();
+    }
+
     return Container(
       height: 250,
       width: MediaQuery.of(context).size.width,
       child: PieChart(
         PieChartData(
           centerSpaceRadius: 40,
-          sections: _buildPieChartSections(agent),
+          sections: sections,
         ),
       ),
     );
@@ -7021,7 +7160,7 @@ class SalesCollectionAgentWidget extends StatelessWidget {
     List<PieChartSectionData> sections = [];
 
     // Base radius for all sections
-    const double baseRadius = 60.0;
+    const double baseRadius = 90.0;
     const double minPercentageForLabel = 25.0;
 
     if (employee.percentageDebitOrderClients > 0) {
@@ -7096,151 +7235,6 @@ class SalesCollectionAgentWidget extends StatelessWidget {
 
     return sections;
   }
-
-  // Alternative version with helper method for cleaner code
-  List<PieChartSectionData> _buildPieChartSectionsClean(EmployeeRate employee) {
-    const double baseRadius = 60.0;
-    const double minPercentageForLabel = 25.0;
-
-    List<({double percentage, Color color, String name})> chartData = [
-      (
-        percentage: employee.percentageDebitOrderClients,
-        color: Colors.orange,
-        name: 'Debit Order'
-      ),
-      (
-        percentage: employee.percentageCashClients,
-        color: Colors.blue,
-        name: 'Cash'
-      ),
-      (
-        percentage: employee.percentageSalaryDeductionClients,
-        color: Colors.yellow,
-        name: 'Salary Deduction'
-      ),
-      (
-        percentage: employee.percentagePersalClients,
-        color: Colors.grey,
-        name: 'Persal'
-      ),
-    ];
-
-    return chartData
-        .where(
-            (data) => data.percentage > 0) // Only include non-zero percentages
-        .map((data) => _createPieSection(
-              value: data.percentage,
-              color: data.color,
-              radius: baseRadius,
-              showLabel: data.percentage >= minPercentageForLabel,
-            ))
-        .toList();
-  }
-
-  PieChartSectionData _createPieSection({
-    required double value,
-    required Color color,
-    required double radius,
-    required bool showLabel,
-  }) {
-    return PieChartSectionData(
-      color: color,
-      value: value,
-      title: showLabel ? '${value.toStringAsFixed(1)}%' : '',
-      radius: radius,
-      titleStyle: showLabel
-          ? const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            )
-          : const TextStyle(fontSize: 0), // Invisible for small sections
-    );
-  }
-
-  // Enhanced version with dynamic font sizing based on section size
-  List<PieChartSectionData> _buildPieChartSectionsEnhanced(
-      EmployeeRate employee) {
-    const double baseRadius = 60.0;
-    const double minPercentageForLabel = 25.0;
-
-    List<PieChartSectionData> sections = [];
-
-    // Helper function to get font size based on percentage
-    double _getFontSize(double percentage) {
-      if (percentage >= 40) return 12.0;
-      if (percentage >= 30) return 11.0;
-      if (percentage >= 25) return 10.0;
-      return 0.0; // Invisible for small sections
-    }
-
-    if (employee.percentageDebitOrderClients > 0) {
-      sections.add(PieChartSectionData(
-        color: Colors.orange,
-        value: employee.percentageDebitOrderClients,
-        title: employee.percentageDebitOrderClients >= minPercentageForLabel
-            ? '${employee.percentageDebitOrderClients.toStringAsFixed(1)}%'
-            : '',
-        radius: baseRadius,
-        titleStyle: TextStyle(
-          fontSize: _getFontSize(employee.percentageDebitOrderClients),
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ));
-    }
-
-    if (employee.percentageCashClients > 0) {
-      sections.add(PieChartSectionData(
-        color: Colors.blue,
-        value: employee.percentageCashClients,
-        title: employee.percentageCashClients >= minPercentageForLabel
-            ? '${employee.percentageCashClients.toStringAsFixed(1)}%'
-            : '',
-        radius: baseRadius,
-        titleStyle: TextStyle(
-          fontSize: _getFontSize(employee.percentageCashClients),
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ));
-    }
-
-    if (employee.percentageSalaryDeductionClients > 0) {
-      sections.add(PieChartSectionData(
-        color: Colors.yellow,
-        value: employee.percentageSalaryDeductionClients,
-        title: employee.percentageSalaryDeductionClients >=
-                minPercentageForLabel
-            ? '${employee.percentageSalaryDeductionClients.toStringAsFixed(1)}%'
-            : '',
-        radius: baseRadius,
-        titleStyle: TextStyle(
-          fontSize: _getFontSize(employee.percentageSalaryDeductionClients),
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ));
-    }
-
-    if (employee.percentagePersalClients > 0) {
-      sections.add(PieChartSectionData(
-        color: Colors.grey,
-        value: employee.percentagePersalClients,
-        title: employee.percentagePersalClients >= minPercentageForLabel
-            ? '${employee.percentagePersalClients.toStringAsFixed(1)}%'
-            : '',
-        radius: baseRadius,
-        titleStyle: TextStyle(
-          fontSize: _getFontSize(employee.percentagePersalClients),
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ));
-    }
-
-    return sections;
-  }
 }
 
 List<BarChartGroupData> processDataForCollectionsCountMonthly(
@@ -7287,14 +7281,24 @@ List<BarChartGroupData> processDataForCollectionsCountMonthly(
     return newMap;
   });
 
-  int numberOfBars = monthlySales.length;
-  double chartWidth = MediaQuery.of(context).size.width;
-  double maxBarWidth = 30; // Maximum width of a bar
-  double minBarSpace = 4; // Minimum space between bars
+  int numberOfBars = 12;
+  double chartWidth =
+      MediaQuery.of(context).size.width - 60; // Account for padding
 
-  double barWidth = min(maxBarWidth, (chartWidth / (2 * numberOfBars)));
-  double barsSpace = max(minBarSpace,
-      (chartWidth - (barWidth * numberOfBars)) / (numberOfBars - 1));
+  // Calculate bar width based on number of bars
+  // For 12 bars or less, use wider bars. For more, scale down but keep minimum width
+  double calculatedBarWidth;
+  if (numberOfBars <= 12) {
+    calculatedBarWidth =
+        (chartWidth / numberOfBars) * 0.77; // 77% width, 10% spacing
+  } else {
+    calculatedBarWidth = max(12.0,
+        (chartWidth / numberOfBars) * 0.85); // Minimum 12px width, 85% coverage
+  }
+
+  double barWidth = min(40.0, calculatedBarWidth); // Cap at 40px max
+  double barsSpace = max(
+      1.0, (chartWidth - (barWidth * numberOfBars)) / max(1, numberOfBars - 1));
 
   List<BarChartGroupData> collectionsGroupedData = [];
   monthlySales.forEach((monthIndex, salesData) {
@@ -7349,10 +7353,10 @@ List<BarChartGroupData> processDataForCollectionsCountMonthly(
               ? [BarChartRodStackItem(0, 0, Colors.transparent)]
               : rodStackItems,
           borderRadius: BorderRadius.zero,
-          width: (Constants.screenWidth / 12) - 9,
+          width: barWidth,
         ),
       ],
-      barsSpace: barsSpace + 2,
+      barsSpace: barsSpace,
     ));
   });
 
@@ -7398,8 +7402,9 @@ List<BarChartGroupData> processDataForCollectionsCountMonthly4(
   List<dynamic> jsonData = jsonDecode(jsonString)["daily_collection_summary"];
 
   DateTime end = DateTime.parse(endDate);
-  DateTime start = DateTime(end.year - 1, end.month, end.day);
-  int monthsInRange = 12;
+  DateTime start = DateTime.parse(startDate);
+  int monthsInRange =
+      ((end.year - start.year) * 12 + end.month - start.month).abs() + 1;
 
   // Initialize monthlySales for each month in the range
   Map<int, Map<String, double>> monthlySales = {
@@ -7434,13 +7439,23 @@ List<BarChartGroupData> processDataForCollectionsCountMonthly4(
   });
 
   int numberOfBars = monthlySales.length;
-  double chartWidth = MediaQuery.of(context).size.width;
-  double maxBarWidth = 30; // Maximum width of a bar
-  double minBarSpace = 4; // Minimum space between bars
+  double chartWidth =
+      MediaQuery.of(context).size.width - 60; // Account for padding
 
-  double barWidth = min(maxBarWidth, (chartWidth / (2 * numberOfBars)));
-  double barsSpace = max(minBarSpace,
-      (chartWidth - (barWidth * numberOfBars)) / (numberOfBars - 1));
+  // Calculate bar width based on number of bars
+  // For 12 bars or less, use wider bars. For more, scale down but keep minimum width
+  double calculatedBarWidth;
+  if (numberOfBars <= 12) {
+    calculatedBarWidth =
+        (chartWidth / numberOfBars) * 0.90; // 90% width, 10% spacing
+  } else {
+    calculatedBarWidth = max(12.0,
+        (chartWidth / numberOfBars) * 0.85); // Minimum 12px width, 85% coverage
+  }
+
+  double barWidth = min(40.0, calculatedBarWidth); // Cap at 40px max
+  double barsSpace = max(
+      1.0, (chartWidth - (barWidth * numberOfBars)) / max(1, numberOfBars - 1));
 
   List<BarChartGroupData> collectionsGroupedData = [];
   monthlySales.forEach((monthIndex, salesData) {
@@ -7495,7 +7510,7 @@ List<BarChartGroupData> processDataForCollectionsCountMonthly4(
               ? [BarChartRodStackItem(0, 0, Colors.transparent)]
               : rodStackItems,
           borderRadius: BorderRadius.zero,
-          width: (Constants.screenWidth / 12) - 7.1,
+          width: barWidth,
         ),
       ],
       barsSpace: barsSpace,
@@ -7808,7 +7823,8 @@ String formatLargeNumber4(String valueStr) {
   int index = 0;
   double newValue = value;
 
-  while (newValue >= 1000 && index < suffixes.length - 1) {
+  // Convert to higher suffix when value >= 100 (e.g., 100k becomes 0.1m, 500k becomes 0.5m)
+  while (newValue >= 100 && index < suffixes.length - 1) {
     newValue /= 1000;
     index++;
   }
@@ -7971,7 +7987,8 @@ Widget leftTitles(double value, TitleMeta meta) {
   );
 }
 
-List<BarChartGroupData> processDataForCollectionsCountDaily(String jsonString) {
+List<BarChartGroupData> processDataForCollectionsCountDaily(
+    String jsonString, BuildContext context) {
   List<dynamic> jsonData = jsonDecode(jsonString)["daily_collection_summary"];
 
   DateTime now = DateTime.now();
@@ -7983,6 +8000,19 @@ List<BarChartGroupData> processDataForCollectionsCountDaily(String jsonString) {
   Map<int, Map<String, double>> dailySales = {
     for (var day = 1; day <= daysInCurrentMonth; day++) day: {}
   };
+
+  // Calculate bar width dynamically
+  int numberOfBars = daysInCurrentMonth;
+  double chartWidth = MediaQuery.of(context).size.width - 60;
+
+  double calculatedBarWidth;
+  if (numberOfBars <= 31) {
+    calculatedBarWidth = (chartWidth / numberOfBars) * 0.80;
+  } else {
+    calculatedBarWidth = max(8.0, (chartWidth / numberOfBars) * 0.85);
+  }
+
+  double barWidth = min(30.0, calculatedBarWidth);
 
   for (var collectionItem in jsonData) {
     if (collectionItem is Map<String, dynamic>) {
@@ -8055,10 +8085,9 @@ List<BarChartGroupData> processDataForCollectionsCountDaily(String jsonString) {
               ? [BarChartRodStackItem(0, 0, Colors.transparent)]
               : rodStackItems,
           borderRadius: BorderRadius.zero,
-          width: (Constants.screenWidth / daysInCurrentMonth) - 3.3,
+          width: barWidth,
         ),
       ],
-      barsSpace: 4,
     ));
   });
 

@@ -187,14 +187,16 @@ class DemographicsGenderWidget extends StatelessWidget {
     const double totalFigureHeight = 200.0;
     const double headHeight = 30.0;
     const double bodyHeight = 170.0;
-    
+
     // Calculate how much of the total figure should be filled
     double fillHeight = totalFigureHeight * percentage;
-    
+
     // Determine head and body coloring based on fill height
-    bool shouldColorHead = fillHeight > bodyHeight; // Head gets colored when fill exceeds body height
-    double bodyFillPercentage = fillHeight <= bodyHeight ? 
-        (fillHeight / bodyHeight) : 1.0; // Body fill percentage
+    bool shouldColorHead = fillHeight >
+        bodyHeight; // Head gets colored when fill exceeds body height
+    double bodyFillPercentage = fillHeight <= bodyHeight
+        ? (fillHeight / bodyHeight)
+        : 1.0; // Body fill percentage
 
     return Container(
       width: 200,
@@ -210,7 +212,8 @@ class DemographicsGenderWidget extends StatelessWidget {
             width: 30,
             margin: const EdgeInsets.only(bottom: 3),
             decoration: BoxDecoration(
-              color: shouldColorHead ? color : Colors.grey.withValues(alpha: 0.6),
+              color:
+                  shouldColorHead ? color : Colors.grey.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(360),
             ),
           ),
@@ -414,7 +417,7 @@ class CustomClipPath extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    
+
     // Use the percentage directly for accurate representation
     double clipHeight = size.height * percentage;
 
