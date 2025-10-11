@@ -1600,7 +1600,7 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                                                   fontSize: 13),
                                                             ),
                                                             Text(
-                                                              "${formatLargeNumber(((Constants.currentSalesDataResponse.salesInfo.target.round() - Constants.currentSalesDataResponse.salesInfo.actual).abs()).toString())}",
+                                                              "${formatLargeNumber((Constants.currentSalesDataResponse.salesInfo.target.round() - Constants.currentSalesDataResponse.salesInfo.actual).toString())}",
                                                               style: TextStyle(
                                                                   fontWeight:
                                                                       FontWeight
@@ -1610,13 +1610,28 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                                             (Constants
                                                                         .currentSalesDataResponse
                                                                         .salesInfo
-                                                                        .actual >
+                                                                        .target
+                                                                        .round() >
                                                                     Constants
                                                                         .currentSalesDataResponse
                                                                         .salesInfo
-                                                                        .averageDaily
-                                                                        .round())
+                                                                        .actual)
                                                                 ? Padding(
+                                                                    padding: const EdgeInsets
+                                                                        .only(
+                                                                        left:
+                                                                            2.0),
+                                                                    child: SvgPicture
+                                                                        .asset(
+                                                                      "assets/icons/down-arrow-svgrepo-com.svg",
+                                                                      width: 20,
+                                                                      height:
+                                                                          20,
+                                                                      color: Colors
+                                                                          .red,
+                                                                    ),
+                                                                  )
+                                                                : Padding(
                                                                     padding: const EdgeInsets
                                                                         .only(
                                                                         left:
@@ -1636,33 +1651,7 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                                                             .green,
                                                                       ),
                                                                     ),
-                                                                  )
-                                                                : Constants
-                                                                            .currentSalesDataResponse
-                                                                            .salesInfo
-                                                                            .actual <
-                                                                        Constants
-                                                                            .currentSalesDataResponse
-                                                                            .salesInfo
-                                                                            .averageDaily
-                                                                            .round()
-                                                                    ? Padding(
-                                                                        padding: const EdgeInsets
-                                                                            .only(
-                                                                            left:
-                                                                                2.0),
-                                                                        child: SvgPicture
-                                                                            .asset(
-                                                                          "assets/icons/down-arrow-svgrepo-com.svg",
-                                                                          width:
-                                                                              20,
-                                                                          height:
-                                                                              20,
-                                                                          color:
-                                                                              Colors.red,
-                                                                        ),
-                                                                      )
-                                                                    : Container(),
+                                                                  ),
                                                           ],
                                                         ),
                                                       ),
@@ -1977,20 +1966,37 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                                         fontSize: 13),
                                                   ),
                                                   Text(
-                                                    "${formatLargeNumber(((Constants.currentSalesDataResponse.salesInfo.averageDaily.round() - (Constants.currentSalesDataResponse.salesInfo.actual ?? 0)).abs()).toString())}",
+                                                    "${formatLargeNumber(((Constants.currentSalesDataResponse.salesInfo.target ?? 0).round() - (Constants.currentSalesDataResponse.salesInfo.actual ?? 0)).toString())}",
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.w500,
                                                         fontSize: 13),
                                                   ),
-                                                  (Constants.currentSalesDataResponse
-                                                              .salesInfo.actual >
-                                                          Constants
-                                                              .currentSalesDataResponse
-                                                              .salesInfo
-                                                              .averageDaily
-                                                              .round())
+                                                  ((Constants
+                                                                      .currentSalesDataResponse
+                                                                      .salesInfo
+                                                                      .target ??
+                                                                  0)
+                                                              .round() >
+                                                          (Constants
+                                                                  .currentSalesDataResponse
+                                                                  .salesInfo
+                                                                  .actual ??
+                                                              0))
                                                       ? Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  left: 2.0),
+                                                          child:
+                                                              SvgPicture.asset(
+                                                            "assets/icons/down-arrow-svgrepo-com.svg",
+                                                            width: 20,
+                                                            height: 20,
+                                                            color: Colors.red,
+                                                          ),
+                                                        )
+                                                      : Padding(
                                                           padding:
                                                               const EdgeInsets
                                                                   .only(
@@ -2006,32 +2012,7 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                                                   Colors.green,
                                                             ),
                                                           ),
-                                                        )
-                                                      : Constants
-                                                                  .currentSalesDataResponse
-                                                                  .salesInfo
-                                                                  .actual <
-                                                              Constants
-                                                                  .currentSalesDataResponse
-                                                                  .salesInfo
-                                                                  .averageDaily
-                                                                  .round()
-                                                          ? Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .only(
-                                                                      left:
-                                                                          2.0),
-                                                              child: SvgPicture
-                                                                  .asset(
-                                                                "assets/icons/down-arrow-svgrepo-com.svg",
-                                                                width: 20,
-                                                                height: 20,
-                                                                color:
-                                                                    Colors.red,
-                                                              ),
-                                                            )
-                                                          : Container(),
+                                                        ),
                                                 ],
                                               ),
                                             ),
@@ -2687,23 +2668,15 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                       child: Padding(
                                         padding: const EdgeInsets.all(16.0),
                                         child: isSalesDataLoading1a
-                                            ? Container(
-                                                height: 200,
-                                                child: Center(
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Container(
-                                                      width: 18,
-                                                      height: 18,
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        color: Constants
-                                                            .ctaColorLight,
-                                                        strokeWidth: 1.8,
-                                                      ),
-                                                    ),
+                                            ? Center(
+                                                child: Container(
+                                                  width: 18,
+                                                  height: 18,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    color:
+                                                        Constants.ctaColorLight,
+                                                    strokeWidth: 1.8,
                                                   ),
                                                 ),
                                               )
@@ -2731,10 +2704,23 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.all(16.0),
-                                              child: CustomTreemap(
-                                                  treeMapdata: Constants
-                                                      .currentSalesDataResponse
-                                                      .productsGroup),
+                                              child: isSalesDataLoading2a
+                                                  ? Center(
+                                                      child: Container(
+                                                        width: 18,
+                                                        height: 18,
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          color: Constants
+                                                              .ctaColorLight,
+                                                          strokeWidth: 1.8,
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : CustomTreemap(
+                                                      treeMapdata: Constants
+                                                          .currentSalesDataResponse
+                                                          .productsGroup),
                                             ),
                                           ),
                                         ),
@@ -2758,24 +2744,15 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                                 padding:
                                                     const EdgeInsets.all(16.0),
                                                 child: isSalesDataLoading2a
-                                                    ? Container(
-                                                        height: 200,
-                                                        child: Center(
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Container(
-                                                              width: 18,
-                                                              height: 18,
-                                                              child:
-                                                                  CircularProgressIndicator(
-                                                                color: Constants
-                                                                    .ctaColorLight,
-                                                                strokeWidth:
-                                                                    1.8,
-                                                              ),
-                                                            ),
+                                                    ? Center(
+                                                        child: Container(
+                                                          width: 18,
+                                                          height: 18,
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            color: Constants
+                                                                .ctaColorLight,
+                                                            strokeWidth: 1.8,
                                                           ),
                                                         ),
                                                       )
@@ -2808,24 +2785,15 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                                 padding:
                                                     const EdgeInsets.all(16.0),
                                                 child: isSalesDataLoading3a
-                                                    ? Container(
-                                                        height: 200,
-                                                        child: Center(
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Container(
-                                                              width: 18,
-                                                              height: 18,
-                                                              child:
-                                                                  CircularProgressIndicator(
-                                                                color: Constants
-                                                                    .ctaColorLight,
-                                                                strokeWidth:
-                                                                    1.8,
-                                                              ),
-                                                            ),
+                                                    ? Center(
+                                                        child: Container(
+                                                          width: 18,
+                                                          height: 18,
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            color: Constants
+                                                                .ctaColorLight,
+                                                            strokeWidth: 1.8,
                                                           ),
                                                         ),
                                                       )
@@ -5098,34 +5066,79 @@ class AveragePremiumChartWidget extends StatelessWidget {
         salesDataResponse!.premiumResultList!.isEmpty) return [];
     print("Processing data for monthly average premium...");
 
-    return salesDataResponse!.saleSummary!.map((premium) {
-      print("Raw premium date: ${premium.dateOrMonth}");
-      print("Raw average premium: ${premium.averagePremium}");
-      // Handle both daily (YYYY-MM-DD) and monthly (YYYY-MM) formats
-      DateTime date;
-      try {
-        if (premium.dateOrMonth.length == 7) {
-          // Monthly format: "2024-07"
-          date = DateTime.parse(premium.dateOrMonth + "-01");
-        } else {
-          // Daily format: "2024-07-15"
-          date = DateTime.parse(premium.dateOrMonth);
+    // Group premium data by month and calculate averages
+    Map<String, List<double>> monthlyPremiums = {};
+    Map<String, int> monthlyCounts = {};
+    Map<String, double> monthlyTotals = {};
+
+    for (var premium in salesDataResponse!.premiumResultList!) {
+      String monthKey;
+
+      // Check if date field is available and valid
+      if (premium.date.isNotEmpty) {
+        try {
+          // Parse the date to get the month
+          DateTime date = DateTime.parse(premium.date);
+          monthKey = "${date.year}-${date.month.toString().padLeft(2, '0')}";
+        } catch (e) {
+          print(
+              "Error parsing premium date '${premium.date}': $e - using x value instead");
+          // Fallback: use x value to determine month
+          // Assuming x is 0-based index (0=Jan, 1=Feb, etc.)
+          int month = (premium.x % 12) + 1;
+          int year = DateTime.now().year;
+          monthKey = "$year-${month.toString().padLeft(2, '0')}";
         }
-      } catch (e) {
-        // Fallback if parsing fails
-        print("Error parsing date: $e");
-        date = DateTime.now();
+      } else {
+        // If date is empty, use x value to determine month
+        int month = (premium.x % 12) + 1;
+        int year = DateTime.now().year;
+        monthKey = "$year-${month.toString().padLeft(2, '0')}";
+        print("Empty date field, using x=${premium.x} -> month $monthKey");
       }
 
+      // Initialize lists if this is the first entry for this month
+      if (!monthlyPremiums.containsKey(monthKey)) {
+        monthlyPremiums[monthKey] = [];
+        monthlyCounts[monthKey] = 0;
+        monthlyTotals[monthKey] = 0.0;
+      }
+
+      // Add the premium value to the month's list
+      monthlyPremiums[monthKey]!.add(premium.averagePremium);
+      monthlyCounts[monthKey] = monthlyCounts[monthKey]! + 1;
+      monthlyTotals[monthKey] =
+          monthlyTotals[monthKey]! + premium.averagePremium;
+    }
+
+    // Convert to AveragePremiumData list with calculated averages
+    List<AveragePremiumData> result = [];
+
+    // Sort months chronologically
+    List<String> sortedMonths = monthlyPremiums.keys.toList()..sort();
+
+    for (String monthKey in sortedMonths) {
+      List<double> premiums = monthlyPremiums[monthKey]!;
+
+      // Calculate the average for this month
+      double monthAverage = premiums.reduce((a, b) => a + b) / premiums.length;
+
+      // Parse month for abbreviation
+      DateTime date = DateTime.parse(monthKey + "-01");
       String monthAbbreviation = _getMonthAbbreviation(date.month);
 
-      return AveragePremiumData(
+      print(
+          "Month $monthKey ($monthAbbreviation): Average = $monthAverage (from ${premiums.length} entries)");
+
+      result.add(AveragePremiumData(
         period: monthAbbreviation,
-        averagePremium: premium.averagePremium,
-        count: premium.count,
-        totalAmount: premium.totalAmount,
-      );
-    }).toList();
+        averagePremium: monthAverage,
+        count: monthlyCounts[monthKey]!,
+        totalAmount: monthlyTotals[monthKey]!,
+      ));
+    }
+
+    return result;
   }
 
   // Chart configuration methods
@@ -6628,16 +6641,10 @@ class _NtuChartWidgetState extends State<NtuChartWidget> {
 
   // Bottom title widget - shows month abbreviations for past 12 months
   Widget _getBottomTitleWidget(double value) {
-    List<FlSpot> data = _getChartData();
-    if (data.isEmpty) return Container();
-
-    // Find the data point that matches this x value
-    FlSpot? matchingSpot;
-    try {
-      matchingSpot = data.firstWhere((spot) => spot.x == value);
-    } catch (e) {
-      return Container();
-    }
+    // Always show labels for all 12 months (0-11)
+    // Don't check if the data point exists, as we want all month labels visible
+    int x = value.toInt();
+    if (x < 0 || x > 11) return Container();
 
     // Get the corresponding date from the original data
     String monthAbbreviation = _getMonthAbbreviationFromX(value);

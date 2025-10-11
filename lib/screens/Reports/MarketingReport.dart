@@ -642,7 +642,9 @@ class _MarketingReportState extends State<MarketingReport>
                                                       endDate = end;
                                                       startDate = start;
                                                       // Store end date for month dropdown in Payments page
-                                                      Constants.selectedEndDate = end;
+                                                      Constants
+                                                              .selectedEndDate =
+                                                          end;
                                                       // Set loading states for circular progress indicators
                                                       isLoadingMarketingData =
                                                           true;
@@ -7000,11 +7002,12 @@ class _MarketingReportState extends State<MarketingReport>
                                                               BorderRadius.circular(
                                                                   16)),
                                                       child: Padding(
-                                                          padding: const EdgeInsets.only(
-                                                              left: 14.0,
-                                                              right: 14,
-                                                              top: 20,
-                                                              bottom: 14),
+                                                          padding:
+                                                              const EdgeInsets.only(
+                                                                  left: 14.0,
+                                                                  right: 14,
+                                                                  top: 20,
+                                                                  bottom: 14),
                                                           child:
                                                               isLoadingMarketingData ==
                                                                       true
@@ -7032,7 +7035,9 @@ class _MarketingReportState extends State<MarketingReport>
                                                                         ),
                                                                       ),
                                                                     ))
-                                                                  : LayoutBuilder(builder: (context, constraints) {
+                                                                  : LayoutBuilder(builder:
+                                                                      (context,
+                                                                          constraints) {
                                                                       if ((_selectedButton == 1 && Constants.leads_spots1a.length < 1) ||
                                                                           (_selectedButton == 2 &&
                                                                               Constants.leads_spots2a.length <
@@ -7072,7 +7077,6 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                                 ? Constants.leads_spots2a
                                                                                                 : Constants.leads_spots3a,
                                                                                         isCurved: true,
-                                                                                        preventCurveOverShooting: true,
                                                                                         barWidth: 3,
                                                                                         color: Colors.green,
                                                                                         dotData: FlDotData(
@@ -7091,7 +7095,6 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                             : _selectedButton == 2
                                                                                                 ? Constants.leads_spots2b
                                                                                                 : Constants.leads_spots3b,
-                                                                                        preventCurveOverShooting: true,
                                                                                         isCurved: true,
                                                                                         barWidth: 3,
                                                                                         color: Colors.grey,
@@ -7287,47 +7290,6 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                 ),
                                                                               ),
                                                                             ),
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                                                                              child: Row(
-                                                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                                                children: [
-                                                                                  Container(
-                                                                                    width: 12,
-                                                                                    height: 12,
-                                                                                    decoration: BoxDecoration(
-                                                                                      color: Colors.green,
-                                                                                      shape: BoxShape.circle,
-                                                                                    ),
-                                                                                  ),
-                                                                                  SizedBox(width: 6),
-                                                                                  Text(
-                                                                                    'Submitted',
-                                                                                    style: TextStyle(
-                                                                                      fontSize: 12,
-                                                                                      color: Colors.grey[700],
-                                                                                    ),
-                                                                                  ),
-                                                                                  SizedBox(width: 16),
-                                                                                  Container(
-                                                                                    width: 12,
-                                                                                    height: 12,
-                                                                                    decoration: BoxDecoration(
-                                                                                      color: Colors.grey,
-                                                                                      shape: BoxShape.circle,
-                                                                                    ),
-                                                                                  ),
-                                                                                  SizedBox(width: 6),
-                                                                                  Text(
-                                                                                    'Completed',
-                                                                                    style: TextStyle(
-                                                                                      fontSize: 12,
-                                                                                      color: Colors.grey[700],
-                                                                                    ),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
                                                                           ],
                                                                         );
                                                                       }
@@ -7375,17 +7337,12 @@ class _MarketingReportState extends State<MarketingReport>
                                                               bottom: 8,
                                                               left: 16.0,
                                                               right: 16),
-                                                      child: _selectedButton ==
-                                                              1
+                                                      child: _selectedButton == 1
                                                           ? CustomCard(
                                                               elevation: 6,
-                                                              color:
-                                                                  Colors.white,
-                                                              surfaceTintColor:
-                                                                  Colors.white,
-                                                              shape: RoundedRectangleBorder(
-                                                                  borderRadius:
-                                                                      BorderRadius.circular(16)),
+                                                              color: Colors.white,
+                                                              surfaceTintColor: Colors.white,
+                                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                                               child: Padding(
                                                                   padding: const EdgeInsets.only(left: 14.0, right: 14, top: 20, bottom: 14),
                                                                   child: isLoadingMarketingData == true
@@ -7435,7 +7392,6 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                           LineChartBarData(
                                                                                             spots: Constants.d_leads_spots1b,
                                                                                             isCurved: true,
-                                                                                            preventCurveOverShooting: true,
                                                                                             barWidth: 3,
                                                                                             color: Colors.green,
                                                                                             dotData: FlDotData(
@@ -7460,7 +7416,6 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                           LineChartBarData(
                                                                                             spots: Constants.d_leads_spots1a,
                                                                                             isCurved: true,
-                                                                                            preventCurveOverShooting: true,
                                                                                             barWidth: 3,
                                                                                             color: Colors.grey.shade400,
                                                                                             dotData: FlDotData(
@@ -7684,7 +7639,6 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                             lineBarsData: [
                                                                                               LineChartBarData(
                                                                                                 spots: Constants.d_leads_spots2b,
-                                                                                                preventCurveOverShooting: true,
                                                                                                 isCurved: true,
                                                                                                 barWidth: 3,
                                                                                                 color: Colors.green,
@@ -7710,7 +7664,6 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                               LineChartBarData(
                                                                                                 spots: Constants.d_leads_spots2a,
                                                                                                 isCurved: true,
-                                                                                                preventCurveOverShooting: true,
                                                                                                 barWidth: 3,
                                                                                                 color: Colors.grey.shade400,
                                                                                                 dotData: FlDotData(
@@ -7933,7 +7886,6 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                             lineBarsData: [
                                                                                               LineChartBarData(
                                                                                                 spots: Constants.d_leads_spots3b,
-                                                                                                preventCurveOverShooting: true,
                                                                                                 isCurved: true,
                                                                                                 barWidth: 3,
                                                                                                 color: Colors.green,
@@ -7959,7 +7911,6 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                               LineChartBarData(
                                                                                                 spots: Constants.d_leads_spots3a,
                                                                                                 isCurved: true,
-                                                                                                preventCurveOverShooting: true,
                                                                                                 barWidth: 3,
                                                                                                 color: Colors.grey.shade400,
                                                                                                 dotData: FlDotData(

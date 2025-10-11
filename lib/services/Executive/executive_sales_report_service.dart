@@ -263,50 +263,56 @@ Future<void> getExecutiveLeadsReport(String dateFrom, String dateTo,
             }
           }
 
-          // Second pass: Handle weekend aggregation
+          // Second pass: Handle weekend aggregation (only for date ranges of a month or less)
           Map<int, int> adjustedLeadsSubmittedSum = {};
           Map<int, int> adjustedLeadsCompletedSum = {};
 
-          // Copy all weekday data first
-          for (var entry in daily_leads_summary) {
-            DateTime entryDate = DateTime.parse(entry["date"]);
-            int day = entryDate.day;
-            int weekday = entryDate.weekday; // 1=Monday, 7=Sunday
+          if (daysDifference <= 31) {
+            // Copy all weekday data first
+            for (var entry in daily_leads_summary) {
+              DateTime entryDate = DateTime.parse(entry["date"]);
+              int day = entryDate.day;
+              int weekday = entryDate.weekday; // 1=Monday, 7=Sunday
 
-            // If it's a weekday (Monday=1 to Friday=5), keep the data
-            if (weekday >= 1 && weekday <= 5) {
-              adjustedLeadsSubmittedSum[day] = dailyLeadsSubmittedSum[day] ?? 0;
-              adjustedLeadsCompletedSum[day] = dailyLeadsCompletedSum[day] ?? 0;
-            }
-          }
-
-          // Now handle weekend data - add to following Monday
-          for (var entry in daily_leads_summary) {
-            DateTime entryDate = DateTime.parse(entry["date"]);
-            int day = entryDate.day;
-            int weekday = entryDate.weekday; // 1=Monday, 7=Sunday
-
-            // If it's a weekend (Saturday=6 or Sunday=7)
-            if (weekday == 6 || weekday == 7) {
-              // Find the next Monday
-              DateTime nextMonday = entryDate;
-              while (nextMonday.weekday != 1) {
-                nextMonday = nextMonday.add(Duration(days: 1));
+              // If it's a weekday (Monday=1 to Friday=5), keep the data
+              if (weekday >= 1 && weekday <= 5) {
+                adjustedLeadsSubmittedSum[day] = dailyLeadsSubmittedSum[day] ?? 0;
+                adjustedLeadsCompletedSum[day] = dailyLeadsCompletedSum[day] ?? 0;
               }
-
-              int mondayDay = nextMonday.day;
-
-              // Add weekend leads to Monday
-              int weekendSubmitted = dailyLeadsSubmittedSum[day] ?? 0;
-              int weekendCompleted = dailyLeadsCompletedSum[day] ?? 0;
-
-              adjustedLeadsSubmittedSum[mondayDay] =
-                  (adjustedLeadsSubmittedSum[mondayDay] ?? 0) +
-                      weekendSubmitted;
-              adjustedLeadsCompletedSum[mondayDay] =
-                  (adjustedLeadsCompletedSum[mondayDay] ?? 0) +
-                      weekendCompleted;
             }
+
+            // Now handle weekend data - add to following Monday
+            for (var entry in daily_leads_summary) {
+              DateTime entryDate = DateTime.parse(entry["date"]);
+              int day = entryDate.day;
+              int weekday = entryDate.weekday; // 1=Monday, 7=Sunday
+
+              // If it's a weekend (Saturday=6 or Sunday=7)
+              if (weekday == 6 || weekday == 7) {
+                // Find the next Monday
+                DateTime nextMonday = entryDate;
+                while (nextMonday.weekday != 1) {
+                  nextMonday = nextMonday.add(Duration(days: 1));
+                }
+
+                int mondayDay = nextMonday.day;
+
+                // Add weekend leads to Monday
+                int weekendSubmitted = dailyLeadsSubmittedSum[day] ?? 0;
+                int weekendCompleted = dailyLeadsCompletedSum[day] ?? 0;
+
+                adjustedLeadsSubmittedSum[mondayDay] =
+                    (adjustedLeadsSubmittedSum[mondayDay] ?? 0) +
+                        weekendSubmitted;
+                adjustedLeadsCompletedSum[mondayDay] =
+                    (adjustedLeadsCompletedSum[mondayDay] ?? 0) +
+                        weekendCompleted;
+              }
+            }
+          } else {
+            // For date ranges longer than a month, keep all data including weekends
+            adjustedLeadsSubmittedSum = Map.from(dailyLeadsSubmittedSum);
+            adjustedLeadsCompletedSum = Map.from(dailyLeadsCompletedSum);
           }
 
           // Create FlSpots using the adjusted data (without weekends)
@@ -625,48 +631,54 @@ Future<void> getExecutiveLeadsReport(String dateFrom, String dateTo,
                 (dailyLeadsCompletedSum[day] ?? 0) + leadsCompletedCount;
           }
 
-          // Second pass: Handle weekend aggregation (push weekend leads to next Monday)
+          // Second pass: Handle weekend aggregation (only for date ranges of a month or less)
           Map<int, int> adjustedLeadsSubmittedSum = {};
           Map<int, int> adjustedLeadsCompletedSum = {};
 
-          // Copy all weekday data first
-          for (var entry in daily_leads_summary) {
-            DateTime entryDate = DateTime.parse(entry["date"]);
-            int day = entryDate.day;
-            int weekday = entryDate.weekday; // 1=Monday, 7=Sunday
+          if (daysDifference <= 31) {
+            // Copy all weekday data first
+            for (var entry in daily_leads_summary) {
+              DateTime entryDate = DateTime.parse(entry["date"]);
+              int day = entryDate.day;
+              int weekday = entryDate.weekday; // 1=Monday, 7=Sunday
 
-            // If it's a weekday (Monday=1 to Friday=5), keep the data
-            if (weekday >= 1 && weekday <= 5) {
-              adjustedLeadsSubmittedSum[day] = dailyLeadsSubmittedSum[day] ?? 0;
-              adjustedLeadsCompletedSum[day] = dailyLeadsCompletedSum[day] ?? 0;
-            }
-          }
-
-          // Now handle weekend data - add to following Monday
-          for (var entry in daily_leads_summary) {
-            DateTime entryDate = DateTime.parse(entry["date"]);
-            int day = entryDate.day;
-            int weekday = entryDate.weekday; // 1=Monday, 7=Sunday
-
-            // If it's a weekend (Saturday=6 or Sunday=7)
-            if (weekday == 6 || weekday == 7) {
-              // Find the next Monday
-              DateTime nextMonday = entryDate;
-              while (nextMonday.weekday != 1) {
-                nextMonday = nextMonday.add(Duration(days: 1));
+              // If it's a weekday (Monday=1 to Friday=5), keep the data
+              if (weekday >= 1 && weekday <= 5) {
+                adjustedLeadsSubmittedSum[day] = dailyLeadsSubmittedSum[day] ?? 0;
+                adjustedLeadsCompletedSum[day] = dailyLeadsCompletedSum[day] ?? 0;
               }
-
-              int mondayDay = nextMonday.day;
-
-              // Add weekend leads to Monday
-              int weekendSubmitted = dailyLeadsSubmittedSum[day] ?? 0;
-              int weekendCompleted = dailyLeadsCompletedSum[day] ?? 0;
-
-              adjustedLeadsSubmittedSum[mondayDay] =
-                  (adjustedLeadsSubmittedSum[mondayDay] ?? 0) + weekendSubmitted;
-              adjustedLeadsCompletedSum[mondayDay] =
-                  (adjustedLeadsCompletedSum[mondayDay] ?? 0) + weekendCompleted;
             }
+
+            // Now handle weekend data - add to following Monday
+            for (var entry in daily_leads_summary) {
+              DateTime entryDate = DateTime.parse(entry["date"]);
+              int day = entryDate.day;
+              int weekday = entryDate.weekday; // 1=Monday, 7=Sunday
+
+              // If it's a weekend (Saturday=6 or Sunday=7)
+              if (weekday == 6 || weekday == 7) {
+                // Find the next Monday
+                DateTime nextMonday = entryDate;
+                while (nextMonday.weekday != 1) {
+                  nextMonday = nextMonday.add(Duration(days: 1));
+                }
+
+                int mondayDay = nextMonday.day;
+
+                // Add weekend leads to Monday
+                int weekendSubmitted = dailyLeadsSubmittedSum[day] ?? 0;
+                int weekendCompleted = dailyLeadsCompletedSum[day] ?? 0;
+
+                adjustedLeadsSubmittedSum[mondayDay] =
+                    (adjustedLeadsSubmittedSum[mondayDay] ?? 0) + weekendSubmitted;
+                adjustedLeadsCompletedSum[mondayDay] =
+                    (adjustedLeadsCompletedSum[mondayDay] ?? 0) + weekendCompleted;
+              }
+            }
+          } else {
+            // For date ranges longer than a month, keep all data including weekends
+            adjustedLeadsSubmittedSum = Map.from(dailyLeadsSubmittedSum);
+            adjustedLeadsCompletedSum = Map.from(dailyLeadsCompletedSum);
           }
 
           // Create FlSpots using the adjusted data (without weekends)
