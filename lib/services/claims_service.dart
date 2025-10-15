@@ -888,8 +888,6 @@ Future<void> getClaimsReport(
             Constants.myClaimsSumOfPremiums3 = double.parse(
               (jsonResponse["sum_of_premiums"] ?? 0.0).toString(),
             );
-            Constants.claims_by_category3a =
-                jsonResponse["claims_by_category"] ?? {};
             Constants.claims_sum_by_category3a =
                 jsonResponse["claims_sum_by_category"] ?? {};
             Constants.claims_count_paid3a = totalCompleted;
@@ -920,6 +918,7 @@ Future<void> getClaimsReport(
             Map<String, int> claimsByCategory = Map<String, int>.from(
               jsonResponse["claims_by_category"],
             );
+            Constants.claims_by_category3a = claimsByCategory;
             print("ffggffg ${claimsByCategory}");
             claims_by_category1a_processed = preprocessClaimsData(
               claimsByCategory,
@@ -1101,8 +1100,6 @@ Future<void> getClaimsReport(
             isLoadingClaimsData = false;
             claimsValue.value++;
           } else {
-            Constants.claims_by_category3b =
-                jsonResponse["claims_amounts"] ?? {};
             Constants.claims_sum_by_category3b =
                 jsonResponse["claims_sum_by_category"] ?? {};
             Constants.claims_count_paid3b = totalCompleted;
@@ -1141,6 +1138,7 @@ Future<void> getClaimsReport(
             Map<String, int> claimsByCategory = Map<String, int>.from(
               jsonResponse["claims_by_category"],
             );
+            Constants.claims_by_category3b = claimsByCategory;
             print("ffggffg ${claimsByCategory}");
             claims_by_category1a_processed = preprocessClaimsData(
               claimsByCategory,

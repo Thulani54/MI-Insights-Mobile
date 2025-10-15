@@ -44,7 +44,7 @@ Future<void> main() async {
   Constants.myAppVersion = currentVersion;
   print("Current version0: $currentVersion");
   generateRandomDigits(14);
-  AppConfig.setEnvironment(EnvironmentType.prod);
+  AppConfig.setEnvironment(EnvironmentType.dev);
   // Constants.isAdmin = true;
 }
 

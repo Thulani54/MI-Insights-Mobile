@@ -6126,7 +6126,7 @@ class _ClaimsReport2State extends State<ClaimsReportGraph2> {
                           axisNameWidget: Padding(
                             padding: const EdgeInsets.only(top: 0.0),
                             child: Text(
-                              'Months of the Year',
+                              'Months of the Year1',
                               style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w500,
@@ -6186,7 +6186,7 @@ class _ClaimsReport2State extends State<ClaimsReportGraph2> {
                           : claims_spots2[0].x.toDouble(),
                       maxX: claims_spots2.length < 1
                           ? 12
-                          : claims_spots2[0].x.toDouble() + 12,
+                          : claims_spots2[0].x.toDouble() + 11,
                       borderData: FlBorderData(
                         show: true,
                         border: Border(
@@ -6210,40 +6210,49 @@ class _ClaimsReport2State extends State<ClaimsReportGraph2> {
       Map m1 = Constants.jsonMonthlyClaimsData1;
       //print("gffgfddf ${m1}");
 
-      // Get the end date (today or the selected end date)
-      DateTime endDate = DateTime.now();
+      // Get the end date from the selected claims date range
+      DateTime endDate;
+      try {
+        endDate =
+            DateFormat('yyyy-MM-dd').parse(Constants.claims_formattedEndDate);
+      } catch (e) {
+        endDate = DateTime.now();
+      }
 
-      // Calculate start date as 12 months before end date
-      DateTime startDate = DateTime(endDate.year - 1, endDate.month, 1);
+      // Use the month of the end date as the last month to display
+      DateTime lastMonth = DateTime(endDate.year, endDate.month, 1);
+      int lastMonthIndex = lastMonth.year * 12 + lastMonth.month;
+
+      // Calculate start month as 11 months before the last month (to get exactly 12 months)
+      DateTime startMonth = DateTime(lastMonth.year, lastMonth.month - 11, 1);
 
       // Map to store monthly grouped data: key = monthIndex (year*12+month), value = list of values
       Map<int, List<double>> monthlyData = {};
+      Set<int> validMonthIndices = {};
 
-      // Initialize all 12 months with empty lists to ensure all months appear
-      DateTime currentMonth = DateTime(startDate.year, startDate.month, 1);
+      // Initialize exactly 12 months from startMonth to lastMonth (inclusive)
+      DateTime currentMonth = DateTime(startMonth.year, startMonth.month, 1);
       for (int i = 0; i < 12; i++) {
         int monthIndex = currentMonth.year * 12 + currentMonth.month;
-        monthlyData[monthIndex] = [];
+
+        // Only add months up to and including lastMonth
+        if (monthIndex <= lastMonthIndex) {
+          monthlyData[monthIndex] = [];
+          validMonthIndices.add(monthIndex);
+        }
         currentMonth = DateTime(currentMonth.year, currentMonth.month + 1, 1);
       }
 
       m1.forEach((key, value) {
         try {
           DateTime dt1 = DateTime.parse(key);
+          int year = dt1.year;
+          int month = dt1.month;
+          int monthIndex = year * 12 + month;
 
-          // Only include data points within the last 12 months
-          if (dt1.isAfter(startDate.subtract(Duration(days: 1))) &&
-              dt1.isBefore(endDate.add(Duration(days: 1)))) {
-            int year = dt1.year;
-            int month = dt1.month;
-            int monthIndex = year * 12 + month;
-
+          // Only include data points that fall within our 12 valid months
+          if (validMonthIndices.contains(monthIndex)) {
             double new_value = double.parse(value.toString());
-
-            // Group values by month
-            if (!monthlyData.containsKey(monthIndex)) {
-              monthlyData[monthIndex] = [];
-            }
             monthlyData[monthIndex]!.add(new_value);
           }
         } catch (e) {
@@ -6251,7 +6260,7 @@ class _ClaimsReport2State extends State<ClaimsReportGraph2> {
         }
       });
 
-      // Sort month indices
+      // Sort month indices (should already be the 12 valid months only)
       List<int> sortedMonthIndices = monthlyData.keys.toList()..sort();
 
       // Calculate average for each month and create spots
