@@ -788,27 +788,22 @@ class _PolicyInformationState extends State<PolicyInformation>
 
     String urlPath = "onoloV6/getPoliciesMain";
     String apiUrl =
-        "${Constants.baseUrl2}$urlPath?searchKey=$searchVal&cec_client_id=${Constants.cec_client_id}";
+        "${Constants.insightsBackendUrl}$urlPath?searchKey=$searchVal&cec_client_id=${Constants.cec_client_id}&searchFrom=MOB&empid=${Constants.cec_employeeid}";
 
     if (kDebugMode) {
       print("cec_empid ${Constants.cec_employeeid}");
       print("apiUrl $apiUrl");
     }
 
-    var headers = {
-      "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
-      'Cookie':
-          'userid=expiry=2024-10-04&client_modules=1001#1002#1003#1004#1005#1006#1007#1008#1009#1010#1011#1012#1013#1014#1015#1017#1018#1020#1021#1022#1024#1025#1026#1027#1028#1029#1030#1031#1032#1033#1034#1035&clientid=379&empid=9819&empfirstname=MI Insights&emplastname=Support&email=Master@everestmpu.com&username=Master@everestmpu.com&dob=7/7/1990 12:00:00 AM&fullname=MI Insights Support&userRole=184&userImage=Master@everestmpu.com.jpg&employedAt=head office 1&role=leader&branchid=379&jobtitle=Policy Administrator / Agent&dialing_strategy=&clientname=Everest Financial Services&foldername=&client_abbr=EV&pbx_account=&device_id=Error retrieving Instance ID token.&servername=http://localhost:55661'
-    };
-
     var request = http.Request('GET', Uri.parse(apiUrl));
-    request.headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();
 
     if (response.statusCode == 200) {
       var responseBody = await response.stream.bytesToString();
+      if (kDebugMode) {
+        print(responseBody);
+      }
       restartInactivityTimer();
       isLoaded = true;
       myValue.value++;
@@ -848,7 +843,9 @@ class _PolicyInformationState extends State<PolicyInformation>
         setState(() {});
       }
     } else {
-      print(response.reasonPhrase);
+      if (kDebugMode) {
+        print(response.reasonPhrase);
+      }
       _isLoading = false;
       isLoaded = false;
     }

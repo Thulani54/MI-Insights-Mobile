@@ -340,8 +340,6 @@ Future<void> getClaimsReport(
           Map m2 = jsonResponse["claims_amounts"] ?? {};
 
           if (selectedButton1 == 1) {
-            Constants.claims_by_category1a =
-                jsonResponse["claims_by_category"] ?? {};
             Constants.claims_sum_by_category1a =
                 jsonResponse["claims_sum_by_category"] ?? {};
             Map<String, int> predefinedCategories = {
@@ -410,6 +408,7 @@ Future<void> getClaimsReport(
             Map<String, int> claimsByCategory = Map<String, int>.from(
               jsonResponse["claims_by_category"],
             );
+            Constants.claims_by_category1a = claimsByCategory;
 
             claims_by_category1a_processed = preprocessClaimsData(
               claimsByCategory,
@@ -585,8 +584,6 @@ Future<void> getClaimsReport(
           }
           if (selectedButton1 == 2) {
             print("dfgfhg $selectedButton1");
-            Constants.claims_by_category2a =
-                jsonResponse["claims_by_category"] ?? {};
             Constants.claims_sum_by_category2a =
                 jsonResponse["claims_sum_by_category"] ?? {};
 
@@ -628,6 +625,7 @@ Future<void> getClaimsReport(
             Map<String, int> claimsByCategory = Map<String, int>.from(
               jsonResponse["claims_by_category"],
             );
+            Constants.claims_by_category2a = claimsByCategory;
             print("ffggffg ${claimsByCategory}");
             claims_by_category1a_processed = preprocessClaimsData(
               claimsByCategory,
@@ -835,7 +833,8 @@ Future<void> getClaimsReport(
               claims_sections_gridmodel("After 12 Hours", ("0").toString()),
             ];
             print(
-                "claims_by_type for 12 months: ${jsonResponse["claims_by_type"]}");
+              "claims_by_type for 12 months: ${jsonResponse["claims_by_type"]}",
+            );
             Constants.claims_droupedChartData2 = processDataForClaimsGroups1(
               jsonResponse["claims_by_type"] ?? {},
             );
