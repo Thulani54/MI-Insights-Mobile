@@ -27,6 +27,7 @@ final maint4 = ValueNotifier<int>(0);
 final maintenanceValue = ValueNotifier<int>(0);
 double totalAmount = 0;
 Key key_rut1 = UniqueKey();
+Key key_rut2 = UniqueKey();
 MyNotifier? myNotifier;
 DateTime datefrom = DateTime.now().subtract(Duration(days: 60));
 DateTime dateto = DateTime.now();
@@ -122,6 +123,7 @@ class _MaintenanceReportState extends State<MaintenanceReport>
           .then((value) {
         if (mounted)
           setState(() {
+            key_rut2 = UniqueKey();
             isLoading = false;
           });
       }).catchError((error) {
@@ -1650,7 +1652,10 @@ class _MaintenanceReportState extends State<MaintenanceReport>
                                     )),
                               ))
                         else if (_selectedButton == 2)
-                          MaintanenceGraph2()
+                          MaintanenceGraph2(
+                            key: key_rut2,
+                            isLoading: isLoading,
+                          )
                         else if (_selectedButton == 3 &&
                             days_difference <= 32 &&
                             isSameDaysRange == true)
@@ -1877,11 +1882,22 @@ class _MaintenanceReportState extends State<MaintenanceReport>
                               surfaceTintColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Center(
-                                  child: Stack(
-                                    children: [
+                              child: isLoading
+                                  ? Center(
+                                      child: Container(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          color: Constants.ctaColorLight,
+                                          strokeWidth: 1.8,
+                                        ),
+                                      ),
+                                    )
+                                  : Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Center(
+                                        child: Stack(
+                                          children: [
                                       Padding(
                                         padding: const EdgeInsets.only(
                                             left: 3.0, bottom: 10),
@@ -2803,8 +2819,18 @@ class _MaintenanceReportState extends State<MaintenanceReport>
                               color: Colors.white,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16)),
-                              child:
-                                  ((_selectedButton == 1 &&
+                              child: isLoading
+                                  ? Center(
+                                      child: Container(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          color: Constants.ctaColorLight,
+                                          strokeWidth: 1.8,
+                                        ),
+                                      ),
+                                    )
+                                  : ((_selectedButton == 1 &&
                                               Constants
                                                   .maintenance_droupedChartData1
                                                   .isEmpty) ||
@@ -3897,9 +3923,21 @@ class _MaintenanceReportState extends State<MaintenanceReport>
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(12.0),
-                                child: ListView.builder(
-                                    padding: EdgeInsets.only(top: 0, bottom: 0),
-                                    itemCount: (_selectedButton == 1)
+                                child: isLoading
+                                    ? Center(
+                                        child: Container(
+                                          width: 18,
+                                          height: 18,
+                                          child: CircularProgressIndicator(
+                                            color: Constants.ctaColorLight,
+                                            strokeWidth: 1.8,
+                                          ),
+                                        ),
+                                      )
+                                    : ListView.builder(
+                                        padding:
+                                            EdgeInsets.only(top: 0, bottom: 0),
+                                        itemCount: (_selectedButton == 1)
                                         ? Constants.maintenance_salesbyagent1a
                                                     .length >
                                                 10
@@ -5660,7 +5698,9 @@ class _MaintanenceGraph1State extends State<MaintanenceGraph1> {
 }
 
 class MaintanenceGraph2 extends StatefulWidget {
-  const MaintanenceGraph2({super.key});
+  final bool isLoading;
+
+  const MaintanenceGraph2({super.key, required this.isLoading});
 
   @override
   State<MaintanenceGraph2> createState() => _MaintanenceGraph2State();
@@ -5692,18 +5732,30 @@ class _MaintanenceGraph2State extends State<MaintanenceGraph2> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 250,
+        height: 290,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Card(
+          padding:
+              const EdgeInsets.only(left: 16, right: 16, top: 8.0, bottom: 8),
+          child: CustomCard(
               surfaceTintColor: Colors.white,
               color: Colors.white,
               elevation: 6,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
-              child: Padding(
-                  padding: const EdgeInsets.all(14.0),
-                  child: maintenance_index == 0
+              child: widget.isLoading
+                  ? Center(
+                      child: Container(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          color: Constants.ctaColorLight,
+                          strokeWidth: 1.8,
+                        ),
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.all(14.0),
+                      child: maintenance_index == 0
                       ? LineChart(
                           key: sales_chartKey2a,
                           LineChartData(

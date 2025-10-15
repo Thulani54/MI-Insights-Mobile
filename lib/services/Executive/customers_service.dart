@@ -33,6 +33,7 @@ Future<void> getExecutiveCustomersReport(String dateFrom, String dateTo,
 
 // API Request handling
 Future<http.Response> _makeApiRequest(String dateFrom, String dateTo) async {
+  //String baseUrl ='${Constants.analitixAppBaseUrl}sales/view_normalized_customers_data/';
   String baseUrl = '${Constants.analitixAppBaseUrl}sales/get_customers_data/';
   if (hasTemporaryTesterRole(Constants.myUserRoles)) {
     baseUrl = '${Constants.analitixAppBaseUrl}sales/get_customers_data_test/';

@@ -342,7 +342,6 @@ class _CustomersReportState extends State<CustomersReport>
       // Update Constants
       Constants.sales_formattedStartDate = formattedStartDate;
       Constants.sales_formattedEndDate = formattedEndDate;
-
       // Call getExecutiveCustomersReport
       getExecutiveCustomersReport(formattedStartDate, formattedEndDate,
               buttonNumber, days_difference, context)
@@ -4968,7 +4967,7 @@ class ClaimsBellCurveChart extends StatelessWidget {
       lines.add(LineChartBarData(
         spots: spots3.flspots,
         isCurved: true,
-        color: Colors.green,
+        color: Colors.purple,
         dotData: FlDotData(show: false),
       ));
     }
@@ -4976,7 +4975,7 @@ class ClaimsBellCurveChart extends StatelessWidget {
       lines.add(LineChartBarData(
         spots: spots4.flspots,
         isCurved: true,
-        color: Colors.purple,
+        color: Colors.green,
         dotData: FlDotData(show: false),
       ));
     }

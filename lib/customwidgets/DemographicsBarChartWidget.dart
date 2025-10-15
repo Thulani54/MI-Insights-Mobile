@@ -109,8 +109,14 @@ class DemographicsBarChartWidget extends StatelessWidget {
                                           reservedSize: 45,
                                           interval: 50,
                                           getTitlesWidget: (value, meta) {
-                                            // Show only 0%, 50%, and 100% labels
-                                            if (value == 0 || value == 50 || value == 100) {
+                                            final maxY =
+                                                _calculateDynamicMaxY();
+                                            // Show labels based on dynamic max
+                                            if (value == 0 ||
+                                                (maxY >= 35 && value == 35) ||
+                                                (maxY >= 50 && value == 50) ||
+                                                (maxY >= 75 && value == 75) ||
+                                                (maxY == 100 && value == 100)) {
                                               return RotatedBox(
                                                   quarterTurns: 3,
                                                   child: Transform(
@@ -171,7 +177,8 @@ class DemographicsBarChartWidget extends StatelessWidget {
                                             color: Colors.transparent),
                                       ),
                                     ),
-                                    maxY: 100, // Fixed max at 100%
+                                    maxY:
+                                        _calculateDynamicMaxY(), // Dynamic max based on data
                                     minY: 0,
                                     gridData: FlGridData(
                                       show: true,
@@ -218,8 +225,13 @@ class DemographicsBarChartWidget extends StatelessWidget {
                                     reservedSize: 45,
                                     interval: 50,
                                     getTitlesWidget: (value, meta) {
-                                      // Show only 0%, 50%, and 100% labels
-                                      if (value == 0 || value == 50 || value == 100) {
+                                      final maxY = _calculateDynamicMaxY();
+                                      // Show labels based on dynamic max
+                                      if (value == 0 ||
+                                          (maxY >= 35 && value == 35) ||
+                                          (maxY >= 50 && value == 50) ||
+                                          (maxY >= 75 && value == 75) ||
+                                          (maxY == 100 && value == 100)) {
                                         return RotatedBox(
                                           quarterTurns: 1,
                                           child: Transform(
@@ -278,7 +290,8 @@ class DemographicsBarChartWidget extends StatelessWidget {
                                   );
                                 },
                               ),
-                              maxY: 100, // Fixed max at 100%
+                              maxY:
+                                  _calculateDynamicMaxY(), // Dynamic max based on data
                               minY: 0,
                               barGroups: _getBarChartData("female"),
                               groupsSpace: 10,
@@ -970,6 +983,43 @@ class DemographicsBarChartWidget extends StatelessWidget {
     }
 
     return barGroups;
+  }
+
+  // Calculate dynamic max value based on highest bar value
+  double _calculateDynamicMaxY() {
+    double maxValue = 0;
+
+    // Get both male and female data
+    final maleData = _getBarChartData("male");
+    final femaleData = _getBarChartData("female");
+
+    // Find the highest value from both datasets
+    for (var group in maleData) {
+      for (var rod in group.barRods) {
+        if (rod.toY > maxValue) {
+          maxValue = rod.toY;
+        }
+      }
+    }
+
+    for (var group in femaleData) {
+      for (var rod in group.barRods) {
+        if (rod.toY > maxValue) {
+          maxValue = rod.toY;
+        }
+      }
+    }
+
+    // Determine appropriate max based on the highest value
+    if (maxValue <= 35) {
+      return 35;
+    } else if (maxValue <= 50) {
+      return 50;
+    } else if (maxValue <= 75) {
+      return 75;
+    } else {
+      return 100;
+    }
   }
 
   double _getBarMaxData(String type) {

@@ -834,7 +834,8 @@ Future<void> getClaimsReport(
               ),
               claims_sections_gridmodel("After 12 Hours", ("0").toString()),
             ];
-            print("claims_by_type for 12 months: ${jsonResponse["claims_by_type"]}");
+            print(
+                "claims_by_type for 12 months: ${jsonResponse["claims_by_type"]}");
             Constants.claims_droupedChartData2 = processDataForClaimsGroups1(
               jsonResponse["claims_by_type"] ?? {},
             );

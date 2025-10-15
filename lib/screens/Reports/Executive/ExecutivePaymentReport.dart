@@ -4333,128 +4333,126 @@ class _ExecutivePaymentReportState extends State<ExecutivePaymentReport>
                                                               right: 8),
                                                       child: Container(
                                                         height: 300,
-                                                        child: PieChart(
-                                                          PieChartData(
-                                                            centerSpaceRadius:
-                                                                0,
-                                                            sections: [
-                                                              if (Constants
-                                                                      .customers_segment_1a
-                                                                      .length >
-                                                                  0)
-                                                                PieChartSectionData(
-                                                                  color: Constants
-                                                                      .customers_segment_1a[
-                                                                          0]
-                                                                      .color,
-                                                                  value: Constants
-                                                                      .customers_segment_1a[
-                                                                          0]
-                                                                      .pecentage,
-                                                                  title:
-                                                                      '${Constants.customers_segment_1a[0].pecentage.toStringAsFixed(1)}%',
-                                                                  radius: (MediaQuery.of(context)
-                                                                              .size
-                                                                              .width /
-                                                                          2) -
-                                                                      60,
-                                                                  titleStyle: TextStyle(
-                                                                      fontSize:
-                                                                          11,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Color(
-                                                                          0xffffffff)),
-                                                                ),
-                                                              if (Constants
-                                                                      .customers_segment_1a
-                                                                      .length >
-                                                                  1)
-                                                                PieChartSectionData(
-                                                                  color: Constants
-                                                                      .customers_segment_1a[
-                                                                          1]
-                                                                      .color,
-                                                                  value: Constants
-                                                                      .customers_segment_1a[
-                                                                          1]
-                                                                      .pecentage,
-                                                                  title:
-                                                                      '${Constants.customers_segment_1a[1].pecentage.toStringAsFixed(1)}%',
-                                                                  radius: (MediaQuery.of(context)
-                                                                              .size
-                                                                              .width /
-                                                                          2) -
-                                                                      60,
-                                                                  titleStyle: TextStyle(
-                                                                      fontSize:
-                                                                          11,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Color(
-                                                                          0xffffffff)),
-                                                                ),
-                                                              if (Constants
-                                                                      .customers_segment_1a
-                                                                      .length >
-                                                                  2)
-                                                                PieChartSectionData(
-                                                                  color: Constants
-                                                                      .customers_segment_1a[
-                                                                          2]
-                                                                      .color,
-                                                                  value: Constants
-                                                                      .customers_segment_1a[
-                                                                          2]
-                                                                      .pecentage,
-                                                                  title:
-                                                                      '${Constants.customers_segment_1a[2].pecentage.toStringAsFixed(1)}%',
-                                                                  radius: (MediaQuery.of(context)
-                                                                              .size
-                                                                              .width /
-                                                                          2) -
-                                                                      60,
-                                                                  titleStyle: TextStyle(
-                                                                      fontSize:
-                                                                          11,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Color(
-                                                                          0xffffffff)),
-                                                                ),
-                                                              if (Constants
-                                                                      .customers_segment_1a
-                                                                      .length >
-                                                                  3)
-                                                                PieChartSectionData(
-                                                                  color: Constants
-                                                                      .customers_segment_1a[
-                                                                          3]
-                                                                      .color,
-                                                                  value: Constants
-                                                                      .customers_segment_1a[
-                                                                          3]
-                                                                      .pecentage,
-                                                                  title:
-                                                                      '${Constants.customers_segment_1a[3].pecentage.toStringAsFixed(1)}%',
-                                                                  radius: (MediaQuery.of(context)
-                                                                              .size
-                                                                              .width /
-                                                                          2) -
-                                                                      60,
-                                                                  titleStyle: TextStyle(
-                                                                      fontSize:
-                                                                          11,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color: Color(
-                                                                          0xffffffff)),
-                                                                ),
-                                                            ],
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  top: 8.0),
+                                                          child: PieChart(
+                                                            PieChartData(
+                                                              centerSpaceRadius:
+                                                                  0,
+                                                              sections: [
+                                                                if (Constants
+                                                                        .customers_segment_1a
+                                                                        .length >
+                                                                    0)
+                                                                  PieChartSectionData(
+                                                                    color: Constants
+                                                                        .customers_segment_1a[
+                                                                            0]
+                                                                        .color,
+                                                                    value: Constants
+                                                                        .customers_segment_1a[
+                                                                            0]
+                                                                        .pecentage,
+                                                                    title:
+                                                                        '${Constants.customers_segment_1a[0].pecentage.toStringAsFixed(1)}%',
+                                                                    radius: (MediaQuery.of(context).size.width /
+                                                                            2) -
+                                                                        65,
+                                                                    titleStyle: TextStyle(
+                                                                        fontSize:
+                                                                            11,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        color: Color(
+                                                                            0xffffffff)),
+                                                                  ),
+                                                                if (Constants
+                                                                        .customers_segment_1a
+                                                                        .length >
+                                                                    1)
+                                                                  PieChartSectionData(
+                                                                    color: Constants
+                                                                        .customers_segment_1a[
+                                                                            1]
+                                                                        .color,
+                                                                    value: Constants
+                                                                        .customers_segment_1a[
+                                                                            1]
+                                                                        .pecentage,
+                                                                    title:
+                                                                        '${Constants.customers_segment_1a[1].pecentage.toStringAsFixed(1)}%',
+                                                                    radius: (MediaQuery.of(context).size.width /
+                                                                            2) -
+                                                                        65,
+                                                                    titleStyle: TextStyle(
+                                                                        fontSize:
+                                                                            11,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        color: Color(
+                                                                            0xffffffff)),
+                                                                  ),
+                                                                if (Constants
+                                                                        .customers_segment_1a
+                                                                        .length >
+                                                                    2)
+                                                                  PieChartSectionData(
+                                                                    color: Constants
+                                                                        .customers_segment_1a[
+                                                                            2]
+                                                                        .color,
+                                                                    value: Constants
+                                                                        .customers_segment_1a[
+                                                                            2]
+                                                                        .pecentage,
+                                                                    title:
+                                                                        '${Constants.customers_segment_1a[2].pecentage.toStringAsFixed(1)}%',
+                                                                    radius: (MediaQuery.of(context).size.width /
+                                                                            2) -
+                                                                        65,
+                                                                    titleStyle: TextStyle(
+                                                                        fontSize:
+                                                                            11,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        color: Color(
+                                                                            0xffffffff)),
+                                                                  ),
+                                                                if (Constants
+                                                                        .customers_segment_1a
+                                                                        .length >
+                                                                    3)
+                                                                  PieChartSectionData(
+                                                                    color: Constants
+                                                                        .customers_segment_1a[
+                                                                            3]
+                                                                        .color,
+                                                                    value: Constants
+                                                                        .customers_segment_1a[
+                                                                            3]
+                                                                        .pecentage,
+                                                                    title:
+                                                                        '${Constants.customers_segment_1a[3].pecentage.toStringAsFixed(1)}%',
+                                                                    radius: (MediaQuery.of(context).size.width /
+                                                                            2) -
+                                                                        65,
+                                                                    titleStyle: TextStyle(
+                                                                        fontSize:
+                                                                            11,
+                                                                        fontWeight:
+                                                                            FontWeight
+                                                                                .bold,
+                                                                        color: Color(
+                                                                            0xffffffff)),
+                                                                  ),
+                                                              ],
+                                                            ),
                                                           ),
                                                         ),
                                                       ),

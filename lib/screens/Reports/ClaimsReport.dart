@@ -253,6 +253,25 @@ class _ClaimsReportState extends State<ClaimsReport>
     restartInactivityTimer();
   }
 
+  // Helper method to get filtered claims list (excluding claims without policy numbers)
+  List<dynamic> _getFilteredClaimsList() {
+    List<dynamic> claimsList = [];
+
+    if (_selectedButton == 1) {
+      claimsList = Constants.claims_details1a;
+    } else if (_selectedButton == 2) {
+      claimsList = Constants.claims_details2a;
+    } else {
+      claimsList = Constants.claims_details3a;
+    }
+
+    // Filter out claims without policy numbers (null, empty, or whitespace only)
+    return claimsList.where((claim) {
+      String policyNumber = claim.policy_number?.toString()?.trim() ?? '';
+      return policyNumber.isNotEmpty;
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -620,20 +639,6 @@ class _ClaimsReportState extends State<ClaimsReport>
                     if (Constants.selectedClientName.isNotEmpty)
                       SizedBox(
                         height: 12,
-                      ),
-                    if (Constants.selectedClientName.isNotEmpty)
-                      Row(
-                        children: [
-                          Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 20.0),
-                            child: Text(
-                              Constants.selectedClientName,
-                              style:
-                                  TextStyle(fontSize: 9.5, color: Colors.black),
-                            ),
-                          )
-                        ],
                       ),
                     SizedBox(
                       height: 12,
@@ -4302,134 +4307,115 @@ class _ClaimsReportState extends State<ClaimsReport>
                                                       ),
                                                     ),
                                                   )
-                                                : (_selectedButton == 1 &&
-                                                            Constants.claims_details1a.length ==
-                                                                0 ||
-                                                        _selectedButton == 2 &&
-                                                            Constants
-                                                                    .claims_details2a
-                                                                    .length ==
-                                                                0 ||
-                                                        _selectedButton == 3 &&
-                                                            Constants
-                                                                    .claims_details3a
-                                                                    .length ==
-                                                                0)
-                                                    ? Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .only(
-                                                                bottom: 24.0),
-                                                        child: Center(
-                                                          child: Text(
-                                                            "No data available for the selected range",
-                                                            style: TextStyle(
-                                                              fontSize: 13,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                              color:
-                                                                  Colors.grey,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      )
-                                                    : ListView.builder(
-                                                        padding: EdgeInsets.only(
-                                                            top: 0, bottom: 16),
-                                                        itemCount: (_selectedButton ==
-                                                                1)
-                                                            ? min(
-                                                                Constants
-                                                                    .claims_details1a
-                                                                    .length,
-                                                                10)
-                                                            : (_selectedButton ==
-                                                                    2)
-                                                                ? min(
-                                                                    Constants
-                                                                        .claims_details2a
-                                                                        .length,
-                                                                    10)
-                                                                : (_selectedButton == 3 && days_difference <= 31)
-                                                                    ? min(Constants.claims_details3a.length, 10)
-                                                                    : min(Constants.claims_details3a.length, 10),
-                                                        shrinkWrap: true,
-                                                        physics: NeverScrollableScrollPhysics(),
-                                                        itemBuilder: (BuildContext context, int index) {
-                                                          return Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    top: 8.0),
-                                                            child: InkWell(
-                                                              onTap: () {},
-                                                              child: Container(
-                                                                child: Column(
-                                                                  children: [
-                                                                    SizedBox(
-                                                                        height:
-                                                                            2),
-                                                                    Row(
-                                                                      children: [
-                                                                        Container(
-                                                                          width:
-                                                                              35,
-                                                                          child:
-                                                                              Padding(
-                                                                            padding:
-                                                                                const EdgeInsets.only(left: 4.0),
-                                                                            child:
-                                                                                Text("${index + 1} "),
-                                                                          ),
-                                                                        ),
-                                                                        Expanded(
-                                                                            flex:
-                                                                                4,
-                                                                            child:
-                                                                                Text("${_selectedButton == 1 ? Constants.claims_details1a[index].policy_number : _selectedButton == 2 ? Constants.claims_details2a[index].policy_number.trimLeft() : Constants.claims_details3a[index].policy_number.trimLeft()}")),
-                                                                        Container(
-                                                                          width:
-                                                                              120,
-                                                                          child:
-                                                                              Padding(
-                                                                            padding:
-                                                                                const EdgeInsets.only(right: 12.0),
-                                                                            child:
-                                                                                Text(
-                                                                              "R${formatLargeNumber((_selectedButton == 1 ? Constants.claims_details1a[index].amount.toInt() : _selectedButton == 2 ? Constants.claims_details2a[index].amount.toInt() : (_selectedButton == 3) ? Constants.claims_details3a[index].amount.toInt() : Constants.claims_details3a[index].amount.toInt()).toString())}",
-                                                                              textAlign: TextAlign.right,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        SizedBox(
-                                                                            width:
-                                                                                28),
-                                                                      ],
-                                                                    ),
-                                                                    SizedBox(
-                                                                        height:
-                                                                            3),
-                                                                    Padding(
-                                                                      padding: const EdgeInsets
+                                                : Builder(
+                                                    builder: (context) {
+                                                      // Get filtered claims list
+                                                      final filteredClaims =
+                                                          _getFilteredClaimsList();
+
+                                                      return filteredClaims
+                                                              .isEmpty
+                                                          ? Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                      bottom:
+                                                                          24.0),
+                                                              child: Center(
+                                                                child: Text(
+                                                                  "No data available for the selected range",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .normal,
+                                                                    color: Colors
+                                                                        .grey,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            )
+                                                          : ListView.builder(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      top: 0,
+                                                                      bottom:
+                                                                          16),
+                                                              itemCount: min(
+                                                                  filteredClaims
+                                                                      .length,
+                                                                  10),
+                                                              shrinkWrap: true,
+                                                              physics:
+                                                                  NeverScrollableScrollPhysics(),
+                                                              itemBuilder:
+                                                                  (BuildContext
+                                                                          context,
+                                                                      int index) {
+                                                                final claim =
+                                                                    filteredClaims[
+                                                                        index];
+                                                                return Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
                                                                           .only(
                                                                           top:
                                                                               8.0),
+                                                                  child:
+                                                                      InkWell(
+                                                                    onTap:
+                                                                        () {},
+                                                                    child:
+                                                                        Container(
                                                                       child:
-                                                                          Container(
-                                                                        height:
-                                                                            1,
-                                                                        color: Colors
-                                                                            .grey
-                                                                            .withOpacity(0.10),
+                                                                          Column(
+                                                                        children: [
+                                                                          SizedBox(
+                                                                              height: 2),
+                                                                          Row(
+                                                                            children: [
+                                                                              Container(
+                                                                                width: 35,
+                                                                                child: Padding(
+                                                                                  padding: const EdgeInsets.only(left: 4.0),
+                                                                                  child: Text("${index + 1} "),
+                                                                                ),
+                                                                              ),
+                                                                              Expanded(flex: 4, child: Text("${claim.policy_number.toString().trimLeft()}")),
+                                                                              Container(
+                                                                                width: 120,
+                                                                                child: Padding(
+                                                                                  padding: const EdgeInsets.only(right: 12.0),
+                                                                                  child: Text(
+                                                                                    "R${formatLargeNumber(claim.amount.toInt().toString())}",
+                                                                                    textAlign: TextAlign.right,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              SizedBox(width: 28),
+                                                                            ],
+                                                                          ),
+                                                                          SizedBox(
+                                                                              height: 3),
+                                                                          Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.only(top: 8.0),
+                                                                            child:
+                                                                                Container(
+                                                                              height: 1,
+                                                                              color: Colors.grey.withOpacity(0.10),
+                                                                            ),
+                                                                          )
+                                                                        ],
                                                                       ),
-                                                                    )
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }),
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              });
+                                                    },
+                                                  ),
                                           ),
                                         ],
                                       )),
@@ -6157,17 +6143,19 @@ class _ClaimsReport2State extends State<ClaimsReportGraph2> {
                           ),
                         ),
                         rightTitles: AxisTitles(
+                          axisNameSize: 15,
                           sideTitles: SideTitles(
-                            showTitles: false,
+                            showTitles: true,
                             getTitlesWidget: (value, meta) {
-                              return Text(value.toInt().toString());
+                              return Text("");
                             },
                           ),
                         ),
                         leftTitles: AxisTitles(
+                          axisNameSize: 35,
                           sideTitles: SideTitles(
                             showTitles: true,
-                            reservedSize: 25,
+                            reservedSize: 40,
                             interval: 25,
                             getTitlesWidget: (value, meta) {
                               return Text(

@@ -37,7 +37,8 @@ Map<String, dynamic> leads_jsonResponse3a = {};
 Map<String, dynamic> leads_jsonResponse4a = {};
 
 Future<void> getExecutiveLeadsReport(String dateFrom, String dateTo,
-    int selectedButton1, int daysDifference, BuildContext context) async {
+    int selectedButton1, int daysDifference, BuildContext context,
+    {int timeIndex = 0}) async {
   try {
     String baseUrl =
         "${Constants.analitixAppBaseUrl}sales/get_normalized_leads_data/";
@@ -77,7 +78,8 @@ Future<void> getExecutiveLeadsReport(String dateFrom, String dateTo,
         .then((value) {
       http.Response response = value;
       print("hjkjkjgggg1 $dateFrom $dateTo $payload ${response.body} ");
-      print("📊 Executive Leads Report - selectedButton1: $selectedButton1, daysDifference: $daysDifference");
+      print(
+          "📊 Executive Leads Report - selectedButton1: $selectedButton1, daysDifference: $daysDifference");
       if (kDebugMode) {
         //print("baseUrljhjh $selectedButton1 $baseUrl");
       }
@@ -276,8 +278,10 @@ Future<void> getExecutiveLeadsReport(String dateFrom, String dateTo,
 
               // If it's a weekday (Monday=1 to Friday=5), keep the data
               if (weekday >= 1 && weekday <= 5) {
-                adjustedLeadsSubmittedSum[day] = dailyLeadsSubmittedSum[day] ?? 0;
-                adjustedLeadsCompletedSum[day] = dailyLeadsCompletedSum[day] ?? 0;
+                adjustedLeadsSubmittedSum[day] =
+                    dailyLeadsSubmittedSum[day] ?? 0;
+                adjustedLeadsCompletedSum[day] =
+                    dailyLeadsCompletedSum[day] ?? 0;
               }
             }
 
@@ -482,51 +486,89 @@ Future<void> getExecutiveLeadsReport(String dateFrom, String dateTo,
           Constants.leads_spots2a.sort((a, b) => a.x.compareTo(b.x));
           Constants.leads_spots2b.sort((a, b) => a.x.compareTo(b.x));
 
-          // Process daily summary - aggregate by MONTH for 12-month view
+          // Process daily summary
           List<dynamic> daily_leads_summary =
               jsonResponse["daily_summary"] ?? [];
           Constants.d_leads_spots2a.clear();
           Constants.d_leads_spots2b.clear();
 
-          // For 12-month view, aggregate by month instead of day
-          Map<int, int> monthlyLeadsSubmittedSum = {};
-          Map<int, int> monthlyLeadsCompletedSum = {};
+          if (timeIndex == 0) {
+            // Hourly View: aggregate by MONTH for 12-month view
+            Map<int, int> monthlyLeadsSubmittedSum = {};
+            Map<int, int> monthlyLeadsCompletedSum = {};
 
-          for (var entry in daily_leads_summary) {
-            DateTime entryDate = DateTime.parse(entry["date"]);
-            int month = entryDate.month; // Use month (1-12) as the key
-            int leadsSubmittedCount =
-                int.parse(entry["leads_submitted_count"].toString());
-            int leadsCompletedCount =
-                int.parse(entry["leads_completed_count"].toString());
+            for (var entry in daily_leads_summary) {
+              DateTime entryDate = DateTime.parse(entry["date"]);
+              int month = entryDate.month; // Use month (1-12) as the key
+              int leadsSubmittedCount =
+                  int.parse(entry["leads_submitted_count"].toString());
+              int leadsCompletedCount =
+                  int.parse(entry["leads_completed_count"].toString());
 
-            monthlyLeadsSubmittedSum[month] =
-                (monthlyLeadsSubmittedSum[month] ?? 0) + leadsSubmittedCount;
-            monthlyLeadsCompletedSum[month] =
-                (monthlyLeadsCompletedSum[month] ?? 0) + leadsCompletedCount;
+              monthlyLeadsSubmittedSum[month] =
+                  (monthlyLeadsSubmittedSum[month] ?? 0) + leadsSubmittedCount;
+              monthlyLeadsCompletedSum[month] =
+                  (monthlyLeadsCompletedSum[month] ?? 0) + leadsCompletedCount;
+            }
+
+            // Create FlSpots using monthly aggregated data
+            for (int month in monthlyLeadsSubmittedSum.keys) {
+              Constants.d_leads_spots2a.add(FlSpot(
+                  month.toDouble(), monthlyLeadsSubmittedSum[month]!.toDouble()));
+            }
+            for (int month in monthlyLeadsCompletedSum.keys) {
+              Constants.d_leads_spots2b.add(FlSpot(
+                  month.toDouble(), monthlyLeadsCompletedSum[month]!.toDouble()));
+            }
+
+            // Sort the FlSpots by x value (month) to ensure proper order
+            Constants.d_leads_spots2a.sort((a, b) => a.x.compareTo(b.x));
+            Constants.d_leads_spots2b.sort((a, b) => a.x.compareTo(b.x));
+          } else if (timeIndex == 1) {
+            // Daily View: aggregate by DAY OF MONTH (1-31) across all months
+            Map<int, int> dayOfMonthLeadsSubmittedSum = {};
+            Map<int, int> dayOfMonthLeadsCompletedSum = {};
+
+            // Initialize all days 1-31 with zero
+            for (int day = 1; day <= 31; day++) {
+              dayOfMonthLeadsSubmittedSum[day] = 0;
+              dayOfMonthLeadsCompletedSum[day] = 0;
+            }
+
+            // Aggregate data from daily_leads_summary
+            for (var entry in daily_leads_summary) {
+              DateTime entryDate = DateTime.parse(entry["date"]);
+              int dayOfMonth = entryDate.day; // Use day (1-31) as the key
+              int leadsSubmittedCount =
+                  int.parse(entry["leads_submitted_count"].toString());
+              int leadsCompletedCount =
+                  int.parse(entry["leads_completed_count"].toString());
+
+              dayOfMonthLeadsSubmittedSum[dayOfMonth] =
+                  (dayOfMonthLeadsSubmittedSum[dayOfMonth] ?? 0) + leadsSubmittedCount;
+              dayOfMonthLeadsCompletedSum[dayOfMonth] =
+                  (dayOfMonthLeadsCompletedSum[dayOfMonth] ?? 0) + leadsCompletedCount;
+            }
+
+            // Create FlSpots for all 31 days (1-31)
+            for (int dayOfMonth = 1; dayOfMonth <= 31; dayOfMonth++) {
+              Constants.d_leads_spots2a.add(FlSpot(
+                  dayOfMonth.toDouble(), dayOfMonthLeadsSubmittedSum[dayOfMonth]!.toDouble()));
+              Constants.d_leads_spots2b.add(FlSpot(
+                  dayOfMonth.toDouble(), dayOfMonthLeadsCompletedSum[dayOfMonth]!.toDouble()));
+            }
+
+            // No need to sort since we're adding them in order 1-31
           }
-
-          // Create FlSpots using monthly aggregated data
-          for (int month in monthlyLeadsSubmittedSum.keys) {
-            Constants.d_leads_spots2a.add(FlSpot(
-                month.toDouble(), monthlyLeadsSubmittedSum[month]!.toDouble()));
-          }
-          for (int month in monthlyLeadsCompletedSum.keys) {
-            Constants.d_leads_spots2b.add(FlSpot(
-                month.toDouble(), monthlyLeadsCompletedSum[month]!.toDouble()));
-          }
-
-          // Sort the FlSpots by x value (month) to ensure proper order
-          Constants.d_leads_spots2a.sort((a, b) => a.x.compareTo(b.x));
-          Constants.d_leads_spots2b.sort((a, b) => a.x.compareTo(b.x));
 
           if (kDebugMode) {
-            print("📊 Button 2 Monthly Data (for Daily View):");
-            print("   daily_leads_summary count: ${daily_leads_summary.length}");
-            print("   monthlyLeadsSubmittedSum: $monthlyLeadsSubmittedSum");
-            print("   monthlyLeadsCompletedSum: $monthlyLeadsCompletedSum");
-            print("   d_leads_spots2a length: ${Constants.d_leads_spots2a.length}");
-            print("   d_leads_spots2b length: ${Constants.d_leads_spots2b.length}");
+            print("📊 Button 2 Data (timeIndex: $timeIndex):");
+            print(
+                "   daily_leads_summary count: ${daily_leads_summary.length}");
+            print(
+                "   d_leads_spots2a length: ${Constants.d_leads_spots2a.length}");
+            print(
+                "   d_leads_spots2b length: ${Constants.d_leads_spots2b.length}");
           }
         } else if (selectedButton1 == 3) {
           // Extract lead status counts with null fallback
@@ -644,8 +686,10 @@ Future<void> getExecutiveLeadsReport(String dateFrom, String dateTo,
 
               // If it's a weekday (Monday=1 to Friday=5), keep the data
               if (weekday >= 1 && weekday <= 5) {
-                adjustedLeadsSubmittedSum[day] = dailyLeadsSubmittedSum[day] ?? 0;
-                adjustedLeadsCompletedSum[day] = dailyLeadsCompletedSum[day] ?? 0;
+                adjustedLeadsSubmittedSum[day] =
+                    dailyLeadsSubmittedSum[day] ?? 0;
+                adjustedLeadsCompletedSum[day] =
+                    dailyLeadsCompletedSum[day] ?? 0;
               }
             }
 
@@ -670,9 +714,11 @@ Future<void> getExecutiveLeadsReport(String dateFrom, String dateTo,
                 int weekendCompleted = dailyLeadsCompletedSum[day] ?? 0;
 
                 adjustedLeadsSubmittedSum[mondayDay] =
-                    (adjustedLeadsSubmittedSum[mondayDay] ?? 0) + weekendSubmitted;
+                    (adjustedLeadsSubmittedSum[mondayDay] ?? 0) +
+                        weekendSubmitted;
                 adjustedLeadsCompletedSum[mondayDay] =
-                    (adjustedLeadsCompletedSum[mondayDay] ?? 0) + weekendCompleted;
+                    (adjustedLeadsCompletedSum[mondayDay] ?? 0) +
+                        weekendCompleted;
               }
             }
           } else {
@@ -742,7 +788,8 @@ Future<void> getExecutiveLeadsReport(String dateFrom, String dateTo,
           }
         }
         // Set loading to false when processing completes
-        print("✅ Executive Leads Report Complete - Setting isLoadingMarketingData = false for selectedButton1: $selectedButton1");
+        print(
+            "✅ Executive Leads Report Complete - Setting isLoadingMarketingData = false for selectedButton1: $selectedButton1");
         isLoadingMarketingData = false;
         // Trigger UI update to reflect loading state change
         marketingValue.value++;
@@ -1416,7 +1463,8 @@ Future<void> getExecutiveSalesReport(
       // Parse the JSON response
       Map<String, dynamic> responseData = json.decode(responseBody);
       if (kDebugMode) {
-        print("✅ getExecutiveSalesReport response received $responseData");
+        print(
+            "✅ getExecutiveSalesReport response received $responseData $startDate");
         // print("Response length: ${responseBody.length} characters");
       }
 

@@ -1077,7 +1077,7 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
       charts.Series<SalesData1, String>(
         id: 'Sales',
         domainFn: (SalesData1 sd, _) =>
-            DateFormat('MMM yy').format(sd.dateTime).toString(),
+            DateFormat('MMM').format(sd.dateTime).toString(),
         measureFn: (SalesData1 sd, _) => sd.amount,
         data: _salesData!,
         labelAccessorFn: (SalesData1 sd, _) =>
@@ -1109,7 +1109,7 @@ class _PayoverBarChart2State extends State<PayoverBarChart2> {
       domainAxis: charts.OrdinalAxisSpec(
         renderSpec: charts.SmallTickRendererSpec(
           labelStyle: charts.TextStyleSpec(
-            fontSize: 5,
+            fontSize: 9,
             color: charts.MaterialPalette.black,
             // fontWeight: "bold",
           ),

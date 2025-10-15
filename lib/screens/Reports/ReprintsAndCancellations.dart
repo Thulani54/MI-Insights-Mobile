@@ -602,7 +602,7 @@ class _ReprintsAndCancellationsReportState
                                             .size
                                             .width /
                                         (MediaQuery.of(context).size.height /
-                                            2.15)),
+                                            2.2)),
                             itemCount: _selectedButton == 1
                                 ? Constants.cancellations_sectionsList1a.length
                                 : _selectedButton == 2
@@ -731,26 +731,29 @@ class _ReprintsAndCancellationsReportState
                                                                           4),
                                                               child: isLoading
                                                                   ? Center(
-                                                                      child: CircularProgressIndicator(
-                                                                        color: Constants.ftaColorLight,
-                                                                        strokeWidth: 2,
+                                                                      child:
+                                                                          CircularProgressIndicator(
+                                                                        color: Constants
+                                                                            .ftaColorLight,
+                                                                        strokeWidth:
+                                                                            2,
                                                                       ),
                                                                     )
                                                                   : Column(
                                                                       children: [
                                                                         SizedBox(
-                                                                          height: 16,
+                                                                          height:
+                                                                              16,
                                                                         ),
                                                                         Center(
                                                                             child:
                                                                                 Padding(
                                                                           padding: const EdgeInsets
                                                                               .only(
-                                                                              left:
-                                                                                  8.0,
-                                                                              right:
-                                                                                  8),
-                                                                          child: Text(
+                                                                              left: 8.0,
+                                                                              right: 8),
+                                                                          child:
+                                                                              Text(
                                                                             "R" +
                                                                                 formatLargeNumber((_selectedButton == 1
                                                                                         ? Constants.cancellations_sectionsList1a[index].amount
@@ -760,14 +763,10 @@ class _ReprintsAndCancellationsReportState
                                                                                                 ? Constants.cancellations_sectionsList3a[index].amount
                                                                                                 : Constants.cancellations_sectionsList3b[index].amount)
                                                                                     .toString()),
-                                                                            style: TextStyle(
-                                                                                fontSize:
-                                                                                    16.5,
-                                                                                fontWeight:
-                                                                                    FontWeight.w600),
+                                                                            style:
+                                                                                TextStyle(fontSize: 16.5, fontWeight: FontWeight.w600),
                                                                             textAlign:
-                                                                                TextAlign
-                                                                                    .center,
+                                                                                TextAlign.center,
                                                                             maxLines:
                                                                                 2,
                                                                           ),
@@ -784,51 +783,39 @@ class _ReprintsAndCancellationsReportState
                                                                                                 ? Constants.cancellations_sectionsList3a[index].count
                                                                                                 : Constants.cancellations_sectionsList3b[index].count)
                                                                                     .toString()),
-                                                                          style: TextStyle(
-                                                                              fontSize: 12.5,
-                                                                              fontWeight: FontWeight.normal),
-                                                                          textAlign:
-                                                                              TextAlign.center,
-                                                                          maxLines:
-                                                                              2,
+                                                                                style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.normal),
+                                                                                textAlign: TextAlign.center,
+                                                                                maxLines: 2,
+                                                                              )),
+                                                                        ),
+                                                                        Center(
+                                                                            child:
+                                                                                Padding(
+                                                                          padding: const EdgeInsets
+                                                                              .only(
+                                                                              left: 8,
+                                                                              right: 8,
+                                                                              top: 8,
+                                                                              bottom: 6),
+                                                                          child:
+                                                                              Text(
+                                                                            _selectedButton == 1
+                                                                                ? Constants.cancellations_sectionsList1a[index].id
+                                                                                : _selectedButton == 2
+                                                                                    ? Constants.cancellations_sectionsList2a[index].id
+                                                                                    : _selectedButton == 3 && days_difference <= 31
+                                                                                        ? Constants.cancellations_sectionsList3a[index].id
+                                                                                        : Constants.cancellations_sectionsList3b[index].id,
+                                                                            style:
+                                                                                TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500),
+                                                                            textAlign:
+                                                                                TextAlign.center,
+                                                                            maxLines:
+                                                                                1,
+                                                                          ),
                                                                         )),
-                                                                  ),
-                                                                  Center(
-                                                                      child:
-                                                                          Padding(
-                                                                    padding: const EdgeInsets
-                                                                        .only(
-                                                                        left: 8,
-                                                                        right:
-                                                                            8,
-                                                                        top: 8,
-                                                                        bottom:
-                                                                            6),
-                                                                    child: Text(
-                                                                      _selectedButton ==
-                                                                              1
-                                                                          ? Constants
-                                                                              .cancellations_sectionsList1a[index]
-                                                                              .id
-                                                                          : _selectedButton == 2
-                                                                              ? Constants.cancellations_sectionsList2a[index].id
-                                                                              : _selectedButton == 3 && days_difference <= 31
-                                                                                  ? Constants.cancellations_sectionsList3a[index].id
-                                                                                  : Constants.cancellations_sectionsList3b[index].id,
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              12.5,
-                                                                          fontWeight:
-                                                                              FontWeight.w500),
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .center,
-                                                                      maxLines:
-                                                                          1,
-                                                                    ),
-                                                                  )),
-                                                                ],
-                                                              )),
+                                                                      ],
+                                                                    )),
                                                         ),
                                                       ),
                                                     ],
@@ -1972,30 +1959,26 @@ class _ReprintsAndCancellationsReportState
                                                                     "${_selectedButton == 1 ? Constants.cancellations_agents1a[index].agent_name : _selectedButton == 2 ? Constants.cancellations_agents2a[index].agent_name : _selectedButton == 3 && days_difference <= 31 ? Constants.cancellations_agents3a[index].agent_name : Constants.cancellations_agents3b[index].agent_name}")),
                                                             Expanded(
                                                               flex: 4,
-                                                              child: Row(
-                                                                children: [
-                                                                  Expanded(
-                                                                    child:
-                                                                        Container(
-                                                                      child:
-                                                                          Padding(
-                                                                        padding:
-                                                                            const EdgeInsets.only(
-                                                                          left:
-                                                                              8,
-                                                                        ),
-                                                                        child:
-                                                                            Text(
-                                                                          "${_selectedButton == 1 ? formatLargeNumber2(Constants.cancellations_agents1a[index].sales.toStringAsFixed(0)) : _selectedButton == 2 ? formatLargeNumber2(Constants.cancellations_agents2a[index].sales.toStringAsFixed(0)) : _selectedButton == 3 && days_difference <= 31 ? formatLargeNumber2(Constants.cancellations_agents3a[index].sales.toStringAsFixed(0)) : formatLargeNumber2(Constants.cancellations_agents3b[index].sales.toStringAsFixed(0))}",
-                                                                          style:
-                                                                              TextStyle(fontSize: 13),
-                                                                          textAlign:
-                                                                              TextAlign.left,
-                                                                        ),
-                                                                      ),
+                                                              child: Container(
+                                                                child: Center(
+                                                                  child:
+                                                                      Padding(
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .only(
+                                                                      right: 24,
+                                                                    ),
+                                                                    child: Text(
+                                                                      "${_selectedButton == 1 ? formatLargeNumber2(Constants.cancellations_agents1a[index].sales.toStringAsFixed(0)) : _selectedButton == 2 ? formatLargeNumber2(Constants.cancellations_agents2a[index].sales.toStringAsFixed(0)) : _selectedButton == 3 && days_difference <= 31 ? formatLargeNumber2(Constants.cancellations_agents3a[index].sales.toStringAsFixed(0)) : formatLargeNumber2(Constants.cancellations_agents3b[index].sales.toStringAsFixed(0))}",
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              13),
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .left,
                                                                     ),
                                                                   ),
-                                                                ],
+                                                                ),
                                                               ),
                                                             )
                                                           ],
@@ -2248,7 +2231,7 @@ class _ReprintsAndCancellationsReportState
                                             .size
                                             .width /
                                         (MediaQuery.of(context).size.height /
-                                            2.15)),
+                                            2.2)),
                             itemCount: _selectedButton == 1
                                 ? Constants.reprints_sectionsList1a.length
                                 : _selectedButton == 2
@@ -2369,26 +2352,29 @@ class _ReprintsAndCancellationsReportState
                                                                           4),
                                                               child: isLoading
                                                                   ? Center(
-                                                                      child: CircularProgressIndicator(
-                                                                        color: Constants.ftaColorLight,
-                                                                        strokeWidth: 2,
+                                                                      child:
+                                                                          CircularProgressIndicator(
+                                                                        color: Constants
+                                                                            .ftaColorLight,
+                                                                        strokeWidth:
+                                                                            2,
                                                                       ),
                                                                     )
                                                                   : Column(
                                                                       children: [
                                                                         SizedBox(
-                                                                          height: 16,
+                                                                          height:
+                                                                              16,
                                                                         ),
                                                                         Center(
                                                                             child:
                                                                                 Padding(
                                                                           padding: const EdgeInsets
                                                                               .only(
-                                                                              left:
-                                                                                  8.0,
-                                                                              right:
-                                                                                  8),
-                                                                          child: Text(
+                                                                              left: 8.0,
+                                                                              right: 8),
+                                                                          child:
+                                                                              Text(
                                                                             "R" +
                                                                                 formatLargeNumber((_selectedButton == 1
                                                                                         ? Constants.reprints_sectionsList1a[index].amount
@@ -2398,14 +2384,10 @@ class _ReprintsAndCancellationsReportState
                                                                                                 ? Constants.reprints_sectionsList3a[index].amount
                                                                                                 : Constants.reprints_sectionsList3b[index].amount)
                                                                                     .toString()),
-                                                                            style: TextStyle(
-                                                                                fontSize:
-                                                                                    16.5,
-                                                                                fontWeight:
-                                                                                    FontWeight.w500),
+                                                                            style:
+                                                                                TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
                                                                             textAlign:
-                                                                                TextAlign
-                                                                                    .center,
+                                                                                TextAlign.center,
                                                                             maxLines:
                                                                                 2,
                                                                           ),
@@ -2422,51 +2404,39 @@ class _ReprintsAndCancellationsReportState
                                                                                                 ? Constants.reprints_sectionsList3a[index].count
                                                                                                 : Constants.reprints_sectionsList3b[index].count)
                                                                                     .toString()),
-                                                                                style: TextStyle(
-                                                                                    fontSize: 12.5,
-                                                                                    fontWeight: FontWeight.normal),
-                                                                                textAlign:
-                                                                                    TextAlign.center,
-                                                                                maxLines:
-                                                                                    2,
+                                                                                style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.normal),
+                                                                                textAlign: TextAlign.center,
+                                                                                maxLines: 2,
                                                                               )),
                                                                         ),
-                                                                  Center(
-                                                                      child:
-                                                                          Padding(
-                                                                    padding: const EdgeInsets
-                                                                        .only(
-                                                                        left: 8,
-                                                                        right:
-                                                                            8,
-                                                                        top: 8,
-                                                                        bottom:
-                                                                            6),
-                                                                    child: Text(
-                                                                      _selectedButton ==
-                                                                              1
-                                                                          ? Constants
-                                                                              .reprints_sectionsList1a[index]
-                                                                              .id
-                                                                          : _selectedButton == 2
-                                                                              ? Constants.reprints_sectionsList2a[index].id
-                                                                              : _selectedButton == 3 && days_difference <= 31
-                                                                                  ? Constants.reprints_sectionsList3a[index].id
-                                                                                  : Constants.reprints_sectionsList3b[index].id,
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              12.5,
-                                                                          fontWeight:
-                                                                              FontWeight.w500),
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .center,
-                                                                      maxLines:
-                                                                          1,
-                                                                    ),
-                                                                  )),
-                                                                ],
-                                                              )),
+                                                                        Center(
+                                                                            child:
+                                                                                Padding(
+                                                                          padding: const EdgeInsets
+                                                                              .only(
+                                                                              left: 8,
+                                                                              right: 8,
+                                                                              top: 8,
+                                                                              bottom: 6),
+                                                                          child:
+                                                                              Text(
+                                                                            _selectedButton == 1
+                                                                                ? Constants.reprints_sectionsList1a[index].id
+                                                                                : _selectedButton == 2
+                                                                                    ? Constants.reprints_sectionsList2a[index].id
+                                                                                    : _selectedButton == 3 && days_difference <= 31
+                                                                                        ? Constants.reprints_sectionsList3a[index].id
+                                                                                        : Constants.reprints_sectionsList3b[index].id,
+                                                                            style:
+                                                                                TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500),
+                                                                            textAlign:
+                                                                                TextAlign.center,
+                                                                            maxLines:
+                                                                                1,
+                                                                          ),
+                                                                        )),
+                                                                      ],
+                                                                    )),
                                                         ),
                                                       ),
                                                     ],

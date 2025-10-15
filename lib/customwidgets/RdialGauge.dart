@@ -227,7 +227,13 @@ class GaugeCustomPainter extends CustomPainter {
     Offset textPosition1 = Offset(size.width / 2, textY1);
     Offset textPosition = Offset(size.width / 2, textY2);
 
-    drawMultilineText(canvas, [actualPercentage.toStringAsFixed(0) + "%"],
+    // Calculate the percentage behind or ahead
+    double percentageBehindOrAhead = ((targetValue - needleValue).abs() / targetValue * 100);
+    String displayText = needleValue < targetValue
+        ? '${percentageBehindOrAhead.toStringAsFixed(0)}%'
+        : '${percentageBehindOrAhead.toStringAsFixed(0)}%';
+
+    drawMultilineText(canvas, [displayText],
         textPosition1, textStyle1, size);
     drawMultilineText(canvas, [salesText], textPosition, textStyle, size);
   }

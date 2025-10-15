@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
+import '../Constants/constants.dart';
 import '../models/CustomerProfile.dart';
 import 'CustomCard.dart';
 
@@ -117,14 +118,14 @@ class DemographicsGenderWidget extends StatelessWidget {
         color: Colors.white,
         child: Container(
           height: 300,
-          child: const Center(
+          child: Center(
             child: Padding(
               padding: EdgeInsets.all(8.0),
               child: SizedBox(
                 width: 18,
                 height: 18,
                 child: CircularProgressIndicator(
-                  color: Colors.blue, // Replace with Constants.ctaColorLight
+                  color: Constants.ctaColorLight,
                   strokeWidth: 1.8,
                 ),
               ),

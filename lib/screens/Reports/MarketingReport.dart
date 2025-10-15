@@ -219,6 +219,7 @@ class _MarketingReportState extends State<MarketingReport>
         _selectedButton,
         2,
         context,
+        timeIndex: time_index,
       ).then((val) {
         setState(() {});
       });
@@ -3119,7 +3120,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                   decoration: BoxDecoration(
                                                                       border: Border(
                                                                           bottom: BorderSide(
-                                                                              color: Constants.ctaColorLight,
+                                                                              color: Constants.ftaColorLight,
                                                                               width: 6))),
                                                                   child: isLoadingMarketingData ==
                                                                           true
@@ -3319,7 +3320,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                   decoration: BoxDecoration(
                                                                       border: Border(
                                                                           bottom: BorderSide(
-                                                                              color: Constants.ctaColorLight,
+                                                                              color: Constants.ftaColorLight,
                                                                               width: 6))),
                                                                   child: isLoadingMarketingData ==
                                                                           true
@@ -3874,7 +3875,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                     border: Border(
                                                                         bottom: BorderSide(
                                                                             color:
-                                                                                Constants.ctaColorLight,
+                                                                                Constants.ftaColorLight,
                                                                             width: 6))),
                                                                 child: Column(
                                                                   children: [
@@ -4021,7 +4022,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                     border: Border(
                                                                         bottom: BorderSide(
                                                                             color:
-                                                                                Constants.ctaColorLight,
+                                                                                Constants.ftaColorLight,
                                                                             width: 6))),
                                                                 child:
                                                                     isLoadingMarketingData ==
@@ -4166,7 +4167,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                     border: Border(
                                                                         bottom: BorderSide(
                                                                             color:
-                                                                                Constants.ctaColorLight,
+                                                                                Constants.ftaColorLight,
                                                                             width: 6))),
                                                                 child:
                                                                     isLoadingMarketingData ==
@@ -7065,7 +7066,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                           children: [
                                                                             Expanded(
                                                                               child: Padding(
-                                                                                padding: const EdgeInsets.only(top: 12.0),
+                                                                                padding: const EdgeInsets.only(top: 12.0, right: 6),
                                                                                 child: LineChart(
                                                                                   key: Constants.leads_chartKey1b,
                                                                                   LineChartData(
@@ -7557,10 +7558,11 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                         maxX: 31,
                                                                                         maxY: () {
                                                                                           List<FlSpot> allSpots = [];
+                                                                                          allSpots.addAll(Constants.d_leads_spots1a);
                                                                                           allSpots.addAll(Constants.d_leads_spots1b);
                                                                                           if (allSpots.isEmpty) return 10.0;
                                                                                           double maxYValue = allSpots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b).toDouble();
-                                                                                          return maxYValue * 1.2; // Add 10% padding
+                                                                                          return maxYValue * 1.15; // Add 50% padding for weekend leads added to Monday
                                                                                         }(),
                                                                                         borderData: FlBorderData(
                                                                                           show: true,
@@ -7629,7 +7631,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                               } else
                                                                                 return Column(
                                                                                   children: [
-                                                                                    // Text(Constants.d_leads_spots2a.length.toString()),
+                                                                                    Text(Constants.d_leads_spots2a.length.toString()),
                                                                                     Expanded(
                                                                                       child: Padding(
                                                                                         padding: const EdgeInsets.only(top: 12.0),
@@ -7809,7 +7811,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                               allSpots.addAll(Constants.d_leads_spots2b);
                                                                                               if (allSpots.isEmpty) return 10.0;
                                                                                               double maxYValue = allSpots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b).toDouble();
-                                                                                              return maxYValue * 1.2; // Add 10% padding
+                                                                                              return maxYValue * 1.15; // Add 50% padding for weekend leads added to Monday
                                                                                             }(),
                                                                                             borderData: FlBorderData(
                                                                                               show: true,
@@ -8056,7 +8058,7 @@ class _MarketingReportState extends State<MarketingReport>
                                                                                               allSpots.addAll(Constants.d_leads_spots3b);
                                                                                               if (allSpots.isEmpty) return 10.0;
                                                                                               double maxYValue = allSpots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b).toDouble();
-                                                                                              return maxYValue * 1.2;
+                                                                                              return maxYValue * 1.15; // Add 50% padding for weekend leads added to Monday
                                                                                             }(),
                                                                                             borderData: FlBorderData(
                                                                                               show: true,

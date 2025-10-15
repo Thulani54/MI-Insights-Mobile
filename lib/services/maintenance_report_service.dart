@@ -17,7 +17,8 @@ Future<void> getMaintenanceReport(String date_from, String date_to,
     int selectedButton1, BuildContext context) async {
   https: //uat.miinsightsapps.net/fieldV6/getLeadss?empId=3&searchKey=6&status=all&cec_client_id=1&type=field&startDate=2023-08-01&endDate=2023-08-31
 
-  String baseUrl = '${Constants.analitixAppBaseUrl}sales/get_maintenance_data/';
+  String baseUrl =
+      '${Constants.analitixAppBaseUrl}sales/view_normalized_maintenance_data/';
   if (hasTemporaryTesterRole(Constants.myUserRoles)) {
     baseUrl =
         '${Constants.analitixAppBaseUrl}sales/view_normalized_maintenance_data_test/';
@@ -280,10 +281,8 @@ Future<void> getMaintenanceReport(String date_from, String date_to,
           Map maintenanceByAgent =
               jsonResponse["categorized_by_transactor"] ?? {};
           maintenanceByAgent.forEach((key, value) {
-            if (int.parse(key.toString()) != 0) {
-              Constants.maintenance_salesbyagent1a.add(SalesByAgent(
-                  getEmployeeById(int.parse(key.toString())), value));
-            }
+            Constants.maintenance_salesbyagent1a
+                .add(SalesByAgent(key.toString(), value));
           });
 
           processDataForMaintenanceCountDailylineGraph(
@@ -299,8 +298,8 @@ Future<void> getMaintenanceReport(String date_from, String date_to,
           Map maintenanceByAgent = jsonResponse["categorized_by_transactor"];
           maintenanceByAgent.forEach((key, value) {
             if (int.parse(key.toString()) != 0) {
-              Constants.maintenance_salesbyagent2a.add(SalesByAgent(
-                  getEmployeeById(int.parse(key.toString())), value));
+              Constants.maintenance_salesbyagent2a
+                  .add(SalesByAgent(key.toString(), value));
             }
           });
           processDataForMaintenanceCountMonthlylineGraph(
@@ -320,8 +319,8 @@ Future<void> getMaintenanceReport(String date_from, String date_to,
           maintenanceByAgent.forEach((key, value) {
             if (int.parse(key.toString()) != 0) {
               //print("fgff");
-              Constants.maintenance_salesbyagent3a.add(SalesByAgent(
-                  getEmployeeById(int.parse(key.toString())), value));
+              Constants.maintenance_salesbyagent3a
+                  .add(SalesByAgent(key.toString(), value));
             }
           });
           processDataForMaintenanceCountDailylineGraph2(
@@ -335,8 +334,8 @@ Future<void> getMaintenanceReport(String date_from, String date_to,
           Map maintenanceByAgent = jsonResponse["categorized_by_transactor"];
           maintenanceByAgent.forEach((key, value) {
             if (int.parse(key.toString()) != 0) {
-              Constants.maintenance_salesbyagent3b.add(SalesByAgent(
-                  getEmployeeById(int.parse(key.toString())), value));
+              Constants.maintenance_salesbyagent3b
+                  .add(SalesByAgent(key.toString(), value));
             }
           });
           processDataForMaintenanceCountMonthlylineGraph2(

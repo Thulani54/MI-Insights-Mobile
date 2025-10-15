@@ -34,6 +34,104 @@ import '../../../utils/login_utils.dart';
 
 int grid_index = 0;
 
+// Global map to store sequential position -> actual day mapping for weekday-only charts
+Map<int, int> _weekdayPositionMap = {};
+
+// Utility function to consolidate weekend sales to Monday and remove weekend spots
+List<FlSpot> _consolidateWeekendsToMonday(
+    List<FlSpot> data, String startDateStr,
+    {bool isTargetLine = false}) {
+  if (data.isEmpty) return data;
+
+  try {
+    DateTime startDate = DateFormat('yyyy-MM-dd').parse(startDateStr);
+    Map<int, double> consolidatedData = {};
+
+    // Find the max day to ensure we include all weekdays in range
+    int maxDay = data.isNotEmpty ? data.last.x.toInt() : 31;
+
+    // For target lines, create a straight line across weekdays only
+    if (isTargetLine && data.isNotEmpty) {
+      // Get the target value (should be constant for a straight line)
+      double targetValue = data.first.y;
+
+      // Add all weekdays in the date range with target value
+      for (int dayIndex = 1; dayIndex <= maxDay; dayIndex++) {
+        DateTime currentDate = startDate.add(Duration(days: dayIndex - 1));
+        int weekday = currentDate.weekday;
+
+        // Only add weekdays (Monday-Friday)
+        if (weekday >= DateTime.monday && weekday <= DateTime.friday) {
+          consolidatedData[dayIndex] = targetValue;
+        }
+      }
+    } else {
+      // First, initialize all weekdays with 0
+      for (int dayIndex = 1; dayIndex <= maxDay; dayIndex++) {
+        DateTime currentDate = startDate.add(Duration(days: dayIndex - 1));
+        int weekday = currentDate.weekday;
+
+        // Initialize all weekdays with 0
+        if (weekday >= DateTime.monday && weekday <= DateTime.friday) {
+          consolidatedData[dayIndex] = 0.0;
+        }
+      }
+
+      // Then, add actual sales data and consolidate weekends to Monday
+      for (var spot in data) {
+        int dayIndex = spot.x.toInt();
+        DateTime currentDate = startDate.add(Duration(days: dayIndex - 1));
+        int weekday = currentDate.weekday;
+
+        // If it's Saturday (6) or Sunday (7), add to next Monday
+        if (weekday == DateTime.saturday || weekday == DateTime.sunday) {
+          // Find next Monday
+          int daysUntilMonday = (DateTime.monday - weekday + 7) % 7;
+          if (daysUntilMonday == 0) daysUntilMonday = 7;
+          DateTime nextMonday =
+              currentDate.add(Duration(days: daysUntilMonday));
+          int mondayIndex = nextMonday.difference(startDate).inDays + 1;
+
+          // Add weekend sales to Monday
+          consolidatedData[mondayIndex] =
+              (consolidatedData[mondayIndex] ?? 0) + spot.y;
+        } else {
+          // Weekday - add to itself
+          consolidatedData[dayIndex] =
+              (consolidatedData[dayIndex] ?? 0) + spot.y;
+        }
+      }
+    }
+
+    // Convert back to FlSpot list and remap x-coordinates to sequential positions (no gaps)
+    List<FlSpot> result = [];
+    List<int> sortedKeys = consolidatedData.keys.toList()..sort();
+
+    // Clear and rebuild the position map for this data
+    _weekdayPositionMap.clear();
+
+    // Remap to sequential x positions (1, 2, 3, ...) to remove weekend gaps
+    for (int i = 0; i < sortedKeys.length; i++) {
+      int originalDay = sortedKeys[i];
+      double value = consolidatedData[originalDay]!;
+      int sequentialPosition = i + 1;
+
+      // Store the mapping: sequential position -> original day
+      _weekdayPositionMap[sequentialPosition] = originalDay;
+
+      // Use sequential position as the new x coordinate
+      result.add(FlSpot(sequentialPosition.toDouble(), value));
+    }
+
+    print(
+        "📅 Weekend consolidation (${isTargetLine ? 'target' : 'sales'}): ${data.length} spots -> ${result.length} weekday spots (all weekdays included)");
+    return result;
+  } catch (e) {
+    print("Error consolidating weekends: $e");
+    return data;
+  }
+}
+
 // Utility function to remove FlSpots with zero values (only for daily data)
 List<FlSpot> _removeZeroValuesFromDaily(
     List<FlSpot> data, int selectedButton, int daysDifference) {
@@ -1358,7 +1456,9 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                           Expanded(
                                             child: Padding(
                                               padding: const EdgeInsets.only(
-                                                  left: 12.0, right: 4, top: 0),
+                                                  left: 12.0,
+                                                  right: 12,
+                                                  top: 0),
                                               child: GestureDetector(
                                                 onTap: () {
                                                   target_index = 0;
@@ -1600,7 +1700,7 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                                                   fontSize: 13),
                                                             ),
                                                             Text(
-                                                              "${formatLargeNumber((Constants.currentSalesDataResponse.salesInfo.target.round() - Constants.currentSalesDataResponse.salesInfo.actual).toString())}",
+                                                              "${formatLargeNumber((Constants.currentSalesDataResponse.salesInfo.target.round() - Constants.currentSalesDataResponse.salesInfo.actual).abs().toString())}",
                                                               style: TextStyle(
                                                                   fontWeight:
                                                                       FontWeight
@@ -1946,7 +2046,7 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                               padding: const EdgeInsets.only(
                                                   left: 16.0, top: 0),
                                               child: Text(
-                                                "MTD Actual = ${formatLargeNumber((Constants.currentSalesDataResponse.salesInfo.actual ?? 0).toString())}",
+                                                "MTD Actual = ${formatLargeNumber((Constants.currentSalesDataResponse.totalInforcedCounts ?? 0).toString())}",
                                                 style: TextStyle(
                                                     fontWeight:
                                                         FontWeight.normal,
@@ -1966,7 +2066,7 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                                         fontSize: 13),
                                                   ),
                                                   Text(
-                                                    "${formatLargeNumber(((Constants.currentSalesDataResponse.salesInfo.target ?? 0).round() - (Constants.currentSalesDataResponse.salesInfo.actual ?? 0)).toString())}",
+                                                    "${formatLargeNumber((((Constants.currentSalesDataResponse.salesInfo.target ?? 0).round() - (Constants.currentSalesDataResponse.totalInforcedCounts ?? 0)).round()).toString())}",
                                                     style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.w500,
@@ -1980,8 +2080,7 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                                               .round() >
                                                           (Constants
                                                                   .currentSalesDataResponse
-                                                                  .salesInfo
-                                                                  .actual ??
+                                                                  .totalInforcedCounts ??
                                                               0))
                                                       ? Padding(
                                                           padding:
@@ -2017,7 +2116,7 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                               ),
                                             ),
                                             Container(
-                                                height: 200,
+                                                height: 270,
                                                 width: MediaQuery.of(context)
                                                     .size
                                                     .width,
@@ -2025,28 +2124,34 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                                     padding:
                                                         const EdgeInsets.all(
                                                             0.0),
-                                                    child: Constants
-                                                                .currentSalesDataResponse
-                                                                .salesInfo
-                                                                .averageDaily ==
-                                                            0
-                                                        ? Container()
-                                                        : CustomGaugeWithLabel4(
-                                                            maxValue: Constants
-                                                                .currentSalesDataResponse
-                                                                .salesInfo
-                                                                .averageDaily,
-                                                            actualValue: (Constants
-                                                                        .currentSalesDataResponse
-                                                                        .salesInfo
-                                                                        .actual ??
-                                                                    0)
-                                                                .toDouble(),
-                                                            targetValue: Constants
-                                                                .currentSalesDataResponse
-                                                                .salesInfo
-                                                                .target
-                                                                .toDouble()))),
+                                                    child: Container(
+                                                      height: 250,
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                              .size
+                                                              .width,
+                                                      child: CustomGaugeWithLabel2(
+                                                          maxValue: Constants
+                                                                      .currentSalesDataResponse
+                                                                      .salesInfo
+                                                                      .averageDaily ==
+                                                                  0
+                                                              ? 1.0
+                                                              : Constants
+                                                                  .currentSalesDataResponse
+                                                                  .salesInfo
+                                                                  .averageDaily,
+                                                          actualValue: (Constants
+                                                                      .currentSalesDataResponse
+                                                                      .totalInforcedCounts ??
+                                                                  0)
+                                                              .toDouble(),
+                                                          targetValue: Constants
+                                                              .currentSalesDataResponse
+                                                              .salesInfo
+                                                              .target
+                                                              .toDouble()),
+                                                    ))),
                                           ],
                                         ),
                                       ),
@@ -2080,6 +2185,7 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                                   child:
                                       Text("Sales Overview (12 Months View)"),
                                 ),
+
                       SalesOverviewChart(
                         isLoading: (((_selectedButton == 1 &&
                                 isSalesDataLoading1a == true) ||
@@ -2822,7 +2928,12 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                           gridIndex2: grid_index_2,
                           salesIndex: sales_index,
                           salesDataResponse: Constants.currentSalesDataResponse,
-                          isLoading: isSalesDataLoading1a,
+                          isLoading: (((_selectedButton == 1 &&
+                                  isSalesDataLoading1a == true) ||
+                              (_selectedButton == 2 &&
+                                  isSalesDataLoading2a == true) ||
+                              (_selectedButton == 3 &&
+                                  isSalesDataLoading3a == true))),
                         ),
 
                       /*   if (grid_index_2 == 1)
@@ -2853,7 +2964,12 @@ class _ExecutivesSalesReportState extends State<ExecutivesSalesReport>
                           daysDifference: days_difference,
                           gridIndex2: grid_index_2,
                           salesDataResponse: Constants.currentSalesDataResponse,
-                          isLoading: isSalesDataLoading1a,
+                          isLoading: (((_selectedButton == 1 &&
+                                  isSalesDataLoading1a == true) ||
+                              (_selectedButton == 2 &&
+                                  isSalesDataLoading2a == true) ||
+                              (_selectedButton == 3 &&
+                                  isSalesDataLoading3a == true))),
                         ),
 
                       SizedBox(
@@ -4543,13 +4659,24 @@ class AveragePremiumChartWidget extends StatelessWidget {
   }
 
   Widget _buildLoadingIndicator() {
-    return Center(
-      child: Container(
-        width: 18,
-        height: 18,
-        child: CircularProgressIndicator(
-          color: Constants.ctaColorLight,
-          strokeWidth: 1.8,
+    return Container(
+      height: 400,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: CustomCard(
+          elevation: 6,
+          surfaceTintColor: Colors.white,
+          color: Colors.white,
+          child: Center(
+            child: Container(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                color: Constants.ctaColorLight,
+                strokeWidth: 1.8,
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -4557,6 +4684,14 @@ class AveragePremiumChartWidget extends StatelessWidget {
 
   Widget _buildChart(BuildContext context) {
     print('  📊 Building chart for button: $selectedButton');
+
+    // Check if data is available before rendering chart
+    if (salesDataResponse?.premiumResultList == null ||
+        salesDataResponse!.premiumResultList!.isEmpty) {
+      print(
+          '  ⚠️ No premium data available - showing loading or no data message');
+      return isLoading ? _buildLoadingIndicator() : _buildNoDataMessage();
+    }
 
     switch (selectedButton) {
       case 1:
@@ -4620,8 +4755,8 @@ class AveragePremiumChartWidget extends StatelessWidget {
       return 150;
     }
 
-    // Add padding above the highest value for better visualization
-    return maxValue * 0.75;
+    // Add minimal padding above the highest value - smaller multiplier means bars fill more of the chart
+    return maxValue * 0.45;
   }
 
   // Button 1: FL Chart with daily data - Updated with dynamic maxY and proper day labels
@@ -4690,9 +4825,13 @@ class AveragePremiumChartWidget extends StatelessWidget {
         surfaceTintColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Container(
-          height: 180, // Reduced height for better fitting
+          height: 300, // Increased height for better bar visibility
           child: Padding(
-            padding: const EdgeInsets.all(8.0), // Reduced padding
+            padding: const EdgeInsets.only(
+                left: 4.0,
+                right: 4.0,
+                top: 20,
+                bottom: 8), // Reduced side padding, adjusted vertical
             child: charts.BarChart(
               seriesData,
               animate: true,
@@ -6642,7 +6781,6 @@ class _NtuChartWidgetState extends State<NtuChartWidget> {
   // Bottom title widget - shows month abbreviations for past 12 months
   Widget _getBottomTitleWidget(double value) {
     // Always show labels for all 12 months (0-11)
-    // Don't check if the data point exists, as we want all month labels visible
     int x = value.toInt();
     if (x < 0 || x > 11) return Container();
 
@@ -6732,20 +6870,26 @@ class _NtuChartWidgetState extends State<NtuChartWidget> {
 
     List<FlSpot> allSpots = _convertMonthlyRateToFlSpot(sourceData);
 
-    // Trim trailing zero spots while keeping the x-axis domain the same
-    return _trimTrailingZeroSpots(allSpots);
+    // Debug print FlSpots before trimming
+    print("🎯 FlSpots before trimming:");
+    for (var spot in allSpots) {
+      print("  x: ${spot.x}, y: ${spot.y}");
+    }
+
+    // Trim trailing zero spots (x-axis will still show all 12 months)
+    List<FlSpot> trimmedSpots = _trimTrailingZeroSpots(allSpots);
+
+    print("✂️  FlSpots after trimming: ${trimmedSpots.length} spots");
+
+    return trimmedSpots;
   }
 
   List<FlSpot> _getTargetData() {
-    // Get chart data to match the x-coordinates
-    List<FlSpot> chartData = _getChartData();
-    if (chartData.isEmpty) return [];
-
     // Define target values: NTU = 30%, Lapse = 40%
     double targetValue = ntu_lapse_index == 0 ? 30.0 : 40.0;
 
-    // Create a straight line across all x points
-    return chartData.map((spot) => FlSpot(spot.x, targetValue)).toList();
+    // Create a straight line across the entire x-axis range (0 to 11 for 12 months)
+    return List.generate(12, (index) => FlSpot(index.toDouble(), targetValue));
   }
 
   // Get 12 months of NTU data from the dedicated field
@@ -6795,44 +6939,20 @@ class _NtuChartWidgetState extends State<NtuChartWidget> {
     return data.sublist(startIndex, endIndex);
   }
 
-  // Helper method to get data points with hidden trailing non-zero points
+  // Helper method to get data points - just return the last 12 months as-is
   List<MonthlyRateData> _getLast12MonthsFromLastData(
       List<MonthlyRateData> data) {
     if (data.isEmpty) return [];
 
-    // Get the full 12-month range for x-axis consistency
+    // Get the full 12-month range for x-axis consistency - no modifications
     List<MonthlyRateData> full12Months = _getLast12MonthsForXAxis(data);
 
-    // Find the original last non-zero index in the full data
-    int lastNonZeroIndex = _findLastNonZeroIndex(data);
-
-    // If we found a last non-zero point, hide some trailing non-zero points
-    if (lastNonZeroIndex >= 0 && lastNonZeroIndex < data.length - 1) {
-      // Calculate how many months to hide (hide last 1-2 non-zero months)
-      int monthsToHide = 2; // Adjust this value as needed
-      int cutoffIndex =
-          (lastNonZeroIndex - monthsToHide + 1).clamp(0, lastNonZeroIndex);
-
-      // Map the cutoff to the 12-month range
-      int dataStartIndex = data.length - full12Months.length;
-      int relativeCutoff = cutoffIndex - dataStartIndex;
-
-      if (relativeCutoff > 0 && relativeCutoff < full12Months.length) {
-        // Create modified data with zero values for hidden months
-        List<MonthlyRateData> modifiedData = List.from(full12Months);
-        for (int i = relativeCutoff; i < modifiedData.length; i++) {
-          // Set rate to 0 but keep the month structure for x-axis
-          modifiedData[i] = MonthlyRateData(
-            x: modifiedData[i].x,
-            rate: 0.0,
-            count: 0,
-            totalSales: 0,
-            totalInforced: 0,
-            date: modifiedData[i].date,
-          );
-        }
-        return modifiedData;
-      }
+    // Debug print to see all months
+    print(
+        "📊 NTU/Lapse Chart Data (${ntu_lapse_index == 0 ? 'NTU' : 'Lapse'}):");
+    for (var i = 0; i < full12Months.length; i++) {
+      print(
+          "  Month $i: ${full12Months[i].date} - Rate: ${full12Months[i].rate.toStringAsFixed(2)}%");
     }
 
     return full12Months;
@@ -6882,8 +7002,9 @@ class _NtuChartWidgetState extends State<NtuChartWidget> {
   }
 
   double _getMaxX() {
-    // Always return 11 to maintain 12-month x-axis domain (0-11)
-    // regardless of trimmed data points
+    // Always return 11 to show all 12 months (0-11) on x-axis
+    // even when data spots are trimmed
+    print("📏 MaxX set to: 11 (always show all 12 months)");
     return 11;
   }
 
@@ -7415,51 +7536,68 @@ class _AgentDataWidgetState extends State<AgentDataWidget> {
   List<Employee> _getSalesEmployeeList() {
     if (widget.salesDataResponse == null) return [];
 
+    List<Employee> employees = [];
+
     if (widget.selectedButton == 1) {
       switch (widget.salesIndex) {
         case 0:
-          return widget.salesDataResponse!.topEmployeesa;
+          employees = widget.salesDataResponse!.topEmployeesa;
+          break;
         case 1:
-          return widget.salesDataResponse!.topEmployeesb;
+          employees = widget.salesDataResponse!.topEmployeesb;
+          break;
         case 2:
-          return widget.salesDataResponse!.topEmployeesc;
+          employees = widget.salesDataResponse!.topEmployeesc;
+          break;
         default:
-          return widget.salesDataResponse!.topEmployeesa;
+          employees = widget.salesDataResponse!.topEmployeesa;
       }
     } else if (widget.selectedButton == 2) {
       switch (widget.salesIndex) {
         case 0:
-          return widget.salesDataResponse!.topEmployeesa;
+          employees = widget.salesDataResponse!.topEmployeesa;
+          break;
         case 1:
-          return widget.salesDataResponse!.topEmployeesb;
+          employees = widget.salesDataResponse!.topEmployeesb;
+          break;
         case 2:
-          return widget.salesDataResponse!.topEmployeesc;
+          employees = widget.salesDataResponse!.topEmployeesc;
+          break;
         default:
-          return widget.salesDataResponse!.topEmployeesa;
+          employees = widget.salesDataResponse!.topEmployeesa;
       }
     } else if (widget.selectedButton == 3 && widget.daysDifference <= 31) {
       switch (widget.salesIndex) {
         case 0:
-          return widget.salesDataResponse!.topEmployeesa;
+          employees = widget.salesDataResponse!.topEmployeesa;
+          break;
         case 1:
-          return widget.salesDataResponse!.topEmployeesb;
+          employees = widget.salesDataResponse!.topEmployeesb;
+          break;
         case 2:
-          return widget.salesDataResponse!.topEmployeesc;
+          employees = widget.salesDataResponse!.topEmployeesc;
+          break;
         default:
-          return widget.salesDataResponse!.topEmployeesa;
+          employees = widget.salesDataResponse!.topEmployeesa;
       }
     } else {
       switch (widget.salesIndex) {
         case 0:
-          return widget.salesDataResponse!.topEmployeesa;
+          employees = widget.salesDataResponse!.topEmployeesa;
+          break;
         case 1:
-          return widget.salesDataResponse!.topEmployeesb;
+          employees = widget.salesDataResponse!.topEmployeesb;
+          break;
         case 2:
-          return widget.salesDataResponse!.topEmployeesc;
+          employees = widget.salesDataResponse!.topEmployeesc;
+          break;
         default:
-          return widget.salesDataResponse!.topEmployeesa;
+          employees = widget.salesDataResponse!.topEmployeesa;
       }
     }
+
+    // Filter out employees with zero sales
+    return employees.where((employee) => employee.totalSales > 0).toList();
   }
 
   List<EmployeeRate> _getNTULapseEmployeeList() {
@@ -7473,7 +7611,10 @@ class _AgentDataWidgetState extends State<AgentDataWidget> {
     if (widget.salesDataResponse == null) return [];
 
     // For Amount grid, we also use topEmployeeRates which contains collection amounts
-    return widget.salesDataResponse!.topEmployeeRates;
+    // Filter out employees with zero collected amount
+    return widget.salesDataResponse!.topEmployeeRates
+        .where((employee) => employee.totalCollected > 0)
+        .toList();
   }
 
   // Helper widgets
@@ -7929,7 +8070,7 @@ class BottomPerformersWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(bottom: 12.0),
         child: Text(
-          "No data available for the selected range",
+          "No bottom sales agents available for date range",
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.normal,
@@ -8000,53 +8141,70 @@ class BottomPerformersWidget extends StatelessWidget {
   List<Employee> _getBottomPerformersData() {
     if (salesDataResponse == null) return [];
 
+    List<Employee> employees = [];
+
     // Determine which data source to use based on business logic
     if (selectedButton == 1) {
       switch (salesIndex) {
         case 0:
-          return salesDataResponse!.bottomEmployeesa;
+          employees = salesDataResponse!.bottomEmployeesa;
+          break;
         case 1:
-          return salesDataResponse!.bottomEmployeesb;
+          employees = salesDataResponse!.bottomEmployeesb;
+          break;
         case 2:
-          return salesDataResponse!.bottomEmployeesc;
+          employees = salesDataResponse!.bottomEmployeesc;
+          break;
         default:
-          return salesDataResponse!.bottomEmployeesa;
+          employees = salesDataResponse!.bottomEmployeesa;
       }
     } else if (selectedButton == 2) {
       switch (salesIndex) {
         case 0:
-          return salesDataResponse!.bottomEmployeesa;
+          employees = salesDataResponse!.bottomEmployeesa;
+          break;
         case 1:
-          return salesDataResponse!.bottomEmployeesb;
+          employees = salesDataResponse!.bottomEmployeesb;
+          break;
         case 2:
-          return salesDataResponse!.bottomEmployeesc;
+          employees = salesDataResponse!.bottomEmployeesc;
+          break;
         default:
-          return salesDataResponse!.bottomEmployeesa;
+          employees = salesDataResponse!.bottomEmployeesa;
       }
     } else if (selectedButton == 3 && daysDifference <= 31) {
       switch (salesIndex) {
         case 0:
-          return salesDataResponse!.bottomEmployeesa;
+          employees = salesDataResponse!.bottomEmployeesa;
+          break;
         case 1:
-          return salesDataResponse!.bottomEmployeesb;
+          employees = salesDataResponse!.bottomEmployeesb;
+          break;
         case 2:
-          return salesDataResponse!.bottomEmployeesc;
+          employees = salesDataResponse!.bottomEmployeesc;
+          break;
         default:
-          return salesDataResponse!.bottomEmployeesa;
+          employees = salesDataResponse!.bottomEmployeesa;
       }
     } else {
       // For selectedButton == 3 && daysDifference > 31
       switch (salesIndex) {
         case 0:
-          return salesDataResponse!.bottomEmployeesa;
+          employees = salesDataResponse!.bottomEmployeesa;
+          break;
         case 1:
-          return salesDataResponse!.bottomEmployeesb;
+          employees = salesDataResponse!.bottomEmployeesb;
+          break;
         case 2:
-          return salesDataResponse!.bottomEmployeesc;
+          employees = salesDataResponse!.bottomEmployeesc;
+          break;
         default:
-          return salesDataResponse!.bottomEmployeesa;
+          employees = salesDataResponse!.bottomEmployeesa;
       }
     }
+
+    // Filter out employees with zero sales
+    return employees.where((employee) => employee.totalSales > 0).toList();
   }
 
   // Helper method for name extraction
@@ -8737,12 +8895,12 @@ class SalesOverviewChart extends StatelessWidget {
   }
 
   Widget _buildLoadingIndicator() {
-    return const Center(
+    return Center(
       child: SizedBox(
         width: 18,
         height: 18,
         child: CircularProgressIndicator(
-          color: Colors.blue, // Replace with Constants.ctaColorLight
+          color: Constants.ctaColorLight,
           strokeWidth: 1.8,
         ),
       ),
@@ -8804,7 +8962,7 @@ class SalesOverviewChart extends StatelessWidget {
       LineChartBarData(
         spots: _getSalesSpots(),
         isCurved: true,
-        preventCurveOverShooting: true,
+        //preventCurveOverShooting: true,
         barWidth: 3,
         color: Colors.grey.shade400,
         dotData: FlDotData(
@@ -8949,20 +9107,40 @@ class SalesOverviewChart extends StatelessWidget {
         ),
       );
     } else {
-      if (selectedButton == 3 && daysDifference <= 31) {
-        // For custom date ranges, show the actual date
-        String dateLabel = _getDateLabelForCustomRange(value.toInt());
+      // For 1 month view or custom range < 31 days, use sequential weekday positions
+      if (selectedButton == 1 || (selectedButton == 3 && daysDifference < 31)) {
+        try {
+          int sequentialPosition = value.toInt();
 
-        return Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: Text(
-            dateLabel,
-            style: const TextStyle(fontSize: 7),
-          ),
-        );
+          // Get the original day from the position map
+          int? originalDay = _weekdayPositionMap[sequentialPosition];
+          if (originalDay == null) {
+            return Container(); // No mapping found
+          }
+
+          DateTime startDate = DateFormat('yyyy-MM-dd')
+              .parse(Constants.sales_formattedStartDate);
+          DateTime currentDate = startDate.add(Duration(days: originalDay - 1));
+
+          // For custom range, use date label, for 1 month use day number
+          String label = (selectedButton == 3 && daysDifference <= 31)
+              ? DateFormat('d/M').format(currentDate)
+              : currentDate.day.toString();
+
+          return Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 7),
+            ),
+          );
+        } catch (e) {
+          print("Error getting date label: $e");
+          return Container();
+        }
       }
 
-      // Daily view - show day numbers
+      // Fallback for other views - show day numbers
       return Padding(
         padding: const EdgeInsets.all(2.0),
         child: Text(
@@ -9006,6 +9184,24 @@ class SalesOverviewChart extends StatelessWidget {
           Constants.currentSalesDataResponse.salesSpotsDaily,
         );
       } else {
+        // For 1 month view (selectedButton == 1), consolidate weekends to Monday
+        if (selectedButton == 1) {
+          // Don't filter zeros - pass original data to consolidation
+          // The consolidation function will handle all weekdays including those with 0 sales
+          List<FlSpot> consolidatedSpots = _consolidateWeekendsToMonday(
+            Constants.currentSalesDataResponse.salesSpotsDaily,
+            Constants.sales_formattedStartDate,
+          );
+
+          // Trim trailing zero spots
+          List<FlSpot> trimmedSpots = _trimTrailingZeroSpots(consolidatedSpots);
+          print(
+              "✂️  Sales data trimmed: ${consolidatedSpots.length} -> ${trimmedSpots.length} spots");
+
+          return trimmedSpots;
+        }
+
+        // For other daily views, filter zeros
         return _removeZeroValuesFromDaily(
           Constants.currentSalesDataResponse.salesSpotsDaily,
           selectedButton,
@@ -9032,6 +9228,18 @@ class SalesOverviewChart extends StatelessWidget {
           Constants.currentSalesDataResponse.targetSpotsDaily,
         );
       } else {
+        // For 1 month view (selectedButton == 1), consolidate weekends to Monday
+        if (selectedButton == 1) {
+          // Don't filter zeros - pass original data to consolidation
+          // The consolidation function will create a straight line across all weekdays
+          return _consolidateWeekendsToMonday(
+            Constants.currentSalesDataResponse.targetSpotsDaily,
+            Constants.sales_formattedStartDate,
+            isTargetLine: true,
+          );
+        }
+
+        // For other daily views, filter zeros
         return _removeZeroValuesFromDaily(
           Constants.currentSalesDataResponse.targetSpotsDaily,
           selectedButton,
@@ -9043,6 +9251,26 @@ class SalesOverviewChart extends StatelessWidget {
 
   bool _isMonthlyView() {
     return selectedButton == 2 || (selectedButton == 3 && daysDifference > 31);
+  }
+
+  // Utility function to trim trailing zero spots from a list of FlSpots
+  List<FlSpot> _trimTrailingZeroSpots(List<FlSpot> spots) {
+    if (spots.isEmpty) return spots;
+
+    // Find the last non-zero spot
+    int lastNonZeroIndex = -1;
+    for (int i = spots.length - 1; i >= 0; i--) {
+      if (spots[i].y > 0) {
+        lastNonZeroIndex = i;
+        break;
+      }
+    }
+
+    // If no non-zero spots found, return original list
+    if (lastNonZeroIndex == -1) return spots;
+
+    // Return only up to the last non-zero spot
+    return spots.sublist(0, lastNonZeroIndex + 1);
   }
 
   double _calculateMinX() {
@@ -9072,6 +9300,17 @@ class SalesOverviewChart extends StatelessWidget {
       // The axis ends at the last month with data
       return spots.last.x;
     } else {
+      // For 1 month view or custom range < 31 days with weekend consolidation
+      if (selectedButton == 1 || (selectedButton == 3 && daysDifference < 31)) {
+        // Use target spots (not trimmed) to get the full x-axis range
+        final targetSpots = _getTargetSpots();
+        if (targetSpots.isEmpty) {
+          return 31.0;
+        }
+        // Use the last target spot's x value to show full x-axis with all weekdays
+        // This ensures x-axis shows all weekdays even if sales line is trimmed
+        return targetSpots.last.x;
+      }
       // Daily view (custom range <= 31 days) uses a fixed 31-day window
       return 31.0;
     }
@@ -9093,14 +9332,16 @@ class SalesOverviewChart extends StatelessWidget {
         ? 100
         : (_selectedButton == 2 ||
                 (_selectedButton == 3 && daysDifference > 31))
-            ? maxY * 1.2
-            : maxY * 1.1; // Add padding, handle all-zero case
+            ? maxY * 1.08
+            : maxY * 1.08; // Add more padding to stretch the graph vertically
   }
 
   // Helper methods
   List<FlSpot> _removeZeroValuesFromDaily(
       List<FlSpot> spots, int selectedButton, int daysDifference) {
-    return spots.where((spot) => spot.y > 0).toList();
+    final filteredSpots = spots.where((spot) => spot.y > 0).toList();
+    filteredSpots.sort((a, b) => a.x.compareTo(b.x));
+    return filteredSpots;
   }
 
   // ✨ NEW HELPER to remove leading spots with a y-value of 0

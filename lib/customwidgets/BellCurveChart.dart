@@ -410,7 +410,7 @@ class SalesBellCurveChart extends StatelessWidget {
       lines.add(LineChartBarData(
         spots: spots3.flspots,
         isCurved: true,
-        color: Colors.purple,
+        color: Colors.purple, // child = purple
         dotData: FlDotData(show: false),
       ));
     }
@@ -418,7 +418,7 @@ class SalesBellCurveChart extends StatelessWidget {
       lines.add(LineChartBarData(
         spots: spots4.flspots,
         isCurved: true,
-        color: Colors.green,
+        color: Colors.green, // extended_family = green
         dotData: FlDotData(show: false),
       ));
     }
@@ -512,14 +512,14 @@ class SalesBellCurveChart extends StatelessWidget {
               if (spots3 != null)
                 VerticalLine(
                   x: spots3.mean_hor,
-                  color: Colors.green,
+                  color: Colors.purple,
                   strokeWidth: 1,
                   dashArray: [5, 5],
                 ),
               if (spots4 != null)
                 VerticalLine(
                   x: spots4.mean_hor,
-                  color: Colors.purple,
+                  color: Colors.green,
                   strokeWidth: 1,
                   dashArray: [5, 5],
                 ),
@@ -690,7 +690,8 @@ class ClaimsBellCurveChart extends StatelessWidget {
     List<double> mainMemberAges = _getClaimsMainMemberAgesList(customerProfile);
     List<double> partnerAges = _getClaimsPartnerAgesList(customerProfile);
     List<double> childAges = _getClaimsChildAgesList(customerProfile);
-    List<double> extendedFamilyAges = _getClaimsExtendedFamilyAgesList(customerProfile);
+    List<double> extendedFamilyAges =
+        _getClaimsExtendedFamilyAgesList(customerProfile);
 
     // Generate bell curve spots for all member types
     spots = generateSkewedSpots(mainMemberAges);
@@ -751,7 +752,8 @@ class ClaimsBellCurveChart extends StatelessWidget {
     ];
 
     // Get comprehensive age distribution data from customer profile
-    Map<String, dynamic> data = _getAllClaimsAgeDistributionData(customerProfile);
+    Map<String, dynamic> data =
+        _getAllClaimsAgeDistributionData(customerProfile);
 
     barGroups1 = List.generate(ageGroups.length, (index) {
       final ageRange = ageGroups[index];
@@ -1161,83 +1163,86 @@ class ClaimsBellCurveChart extends StatelessWidget {
   // Helper method to generate age list for claims main members
   List<double> _getClaimsMainMemberAgesList(CustomerProfile customerProfile) {
     if (customerProfile.isEmpty) return [];
-    
+
     List<double> agesList = [];
     final membersData = customerProfile.claimsData.membersCountsData;
-    int totalMainMembers = membersData.mainMember.genders.male.total + 
-                          membersData.mainMember.genders.female.total;
-    
+    int totalMainMembers = membersData.mainMember.genders.male.total +
+        membersData.mainMember.genders.female.total;
+
     // Generate age distribution focused on typical main member age ranges (30-55)
     for (int i = 0; i < totalMainMembers; i++) {
       double age = 30 + (i % 25) + (i * 0.1 % 10);
       agesList.add(age);
     }
-    
+
     return agesList;
   }
 
   // Helper method to generate age list for claims partners
   List<double> _getClaimsPartnerAgesList(CustomerProfile customerProfile) {
     if (customerProfile.isEmpty) return [];
-    
+
     List<double> agesList = [];
     final membersData = customerProfile.claimsData.membersCountsData;
-    int totalPartners = membersData.partner.genders.male.total + 
-                       membersData.partner.genders.female.total;
-    
+    int totalPartners = membersData.partner.genders.male.total +
+        membersData.partner.genders.female.total;
+
     // Generate age distribution focused on typical partner age ranges (25-65)
     for (int i = 0; i < totalPartners; i++) {
       double age = 25 + (i % 40) + (i * 0.15 % 20);
       agesList.add(age);
     }
-    
+
     return agesList;
   }
 
   // Helper method to generate age list for claims children
   List<double> _getClaimsChildAgesList(CustomerProfile customerProfile) {
     if (customerProfile.isEmpty) return [];
-    
+
     List<double> agesList = [];
     final membersData = customerProfile.claimsData.membersCountsData;
-    int totalChildren = membersData.child.genders.male.total + 
-                       membersData.child.genders.female.total;
-    
+    int totalChildren = membersData.child.genders.male.total +
+        membersData.child.genders.female.total;
+
     // Generate age distribution focused on typical child age ranges (0-21)
     for (int i = 0; i < totalChildren; i++) {
       double age = (i % 22) + (i * 0.05 % 10);
       agesList.add(age);
     }
-    
+
     return agesList;
   }
 
   // Helper method to generate age list for claims extended family
-  List<double> _getClaimsExtendedFamilyAgesList(CustomerProfile customerProfile) {
+  List<double> _getClaimsExtendedFamilyAgesList(
+      CustomerProfile customerProfile) {
     if (customerProfile.isEmpty) return [];
-    
+
     List<double> agesList = [];
     final membersData = customerProfile.claimsData.membersCountsData;
-    int totalExtendedFamily = membersData.extendedFamily.genders.male.total + 
-                             membersData.extendedFamily.genders.female.total;
-    
+    int totalExtendedFamily = membersData.extendedFamily.genders.male.total +
+        membersData.extendedFamily.genders.female.total;
+
     // Generate age distribution spread across all age ranges for extended family
     for (int i = 0; i < totalExtendedFamily; i++) {
-      double age = 20 + (i % 50) + (i * 0.2 % 25); // Spread across 20-70 age range
+      double age =
+          20 + (i % 50) + (i * 0.2 % 25); // Spread across 20-70 age range
       agesList.add(age);
     }
-    
+
     return agesList;
   }
 
   // Helper method to get comprehensive age distribution data for all claims member types
-  Map<String, dynamic> _getAllClaimsAgeDistributionData(CustomerProfile customerProfile) {
+  Map<String, dynamic> _getAllClaimsAgeDistributionData(
+      CustomerProfile customerProfile) {
     if (customerProfile.isEmpty) return {};
-    
+
     Map<String, dynamic> allData = {};
     final genderDistribution = customerProfile.claimsData.genderDistribution;
     final membersData = customerProfile.claimsData.membersCountsData;
-    
+
     // Calculate total members for proportional distribution
     int totalMaleMembers = membersData.mainMember.genders.male.total +
         membersData.partner.genders.male.total +
@@ -1252,31 +1257,38 @@ class ClaimsBellCurveChart extends StatelessWidget {
         membersData.adultChild.genders.female.total +
         membersData.beneficiary.genders.female.total +
         membersData.extendedFamily.genders.female.total;
-    
+
     // Define member types for the chart (matching the original structure)
     Map<String, String> memberTypeMappings = {
       'main_member': 'main_member',
-      'partner': 'partner', 
+      'partner': 'partner',
       'child': 'child',
       'extended_family': 'extended_family',
     };
-    
+
     for (String memberType in memberTypeMappings.keys) {
       Map<String, int> maleData = {};
       Map<String, int> femaleData = {};
-      
+
       for (String ageRange in genderDistribution.ageGroups.keys) {
         final ageGenderData = genderDistribution.ageGroups[ageRange]!;
-        
+
         if (totalMaleMembers > 0 && totalFemaleMembers > 0) {
           // Get the member counts for this type
-          int memberTypeMaleTotal = _getMemberTypeTotal(membersData, memberType, 'male');
-          int memberTypeFemaleTotal = _getMemberTypeTotal(membersData, memberType, 'female');
-          
+          int memberTypeMaleTotal =
+              _getMemberTypeTotal(membersData, memberType, 'male');
+          int memberTypeFemaleTotal =
+              _getMemberTypeTotal(membersData, memberType, 'female');
+
           // Calculate proportional distribution
-          final maleCount = (ageGenderData.male * memberTypeMaleTotal / totalMaleMembers).round();
-          final femaleCount = (ageGenderData.female * memberTypeFemaleTotal / totalFemaleMembers).round();
-          
+          final maleCount =
+              (ageGenderData.male * memberTypeMaleTotal / totalMaleMembers)
+                  .round();
+          final femaleCount = (ageGenderData.female *
+                  memberTypeFemaleTotal /
+                  totalFemaleMembers)
+              .round();
+
           maleData[ageRange] = maleCount;
           femaleData[ageRange] = femaleCount;
         } else {
@@ -1284,21 +1296,22 @@ class ClaimsBellCurveChart extends StatelessWidget {
           femaleData[ageRange] = 0;
         }
       }
-      
+
       allData[memberType] = {
         'male': maleData,
         'female': femaleData,
       };
     }
-    
+
     return allData;
   }
-  
+
   // Helper method to get member type totals
-  int _getMemberTypeTotal(dynamic membersData, String memberType, String gender) {
+  int _getMemberTypeTotal(
+      dynamic membersData, String memberType, String gender) {
     switch (memberType) {
       case 'main_member':
-        return gender == 'male' 
+        return gender == 'male'
             ? membersData.mainMember.genders.male.total
             : membersData.mainMember.genders.female.total;
       case 'partner':
